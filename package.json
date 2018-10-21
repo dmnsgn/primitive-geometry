@@ -1,0 +1,54 @@
+{
+  "name": "primitive-geometry",
+  "version": "1.0.0",
+  "description": "A package exporting geometries for 3D rendering, including normals, UVs and cell indices (faces).",
+  "main": "index.js",
+  "author": "Damien Seguin (https://dmnsgn.me)",
+  "license": "MIT",
+  "scripts": {
+    "start": "budo demo/index.js:bundle.js --open --live",
+    "build": "browserify demo/index.js | uglifyjs -c > bundle.js"
+  },
+  "devDependencies": {
+    "async-preloader": "^4.1.0",
+    "budo": "^11.5.0",
+    "dat.gui": "^0.7.3",
+    "get-canvas-context": "^1.0.2",
+    "gl-matrix": "^2.8.1",
+    "orbit-controls": "^1.2.4",
+    "perspective-camera": "^2.0.1",
+    "regl": "^1.3.7"
+  },
+  "dependencies": {
+    "primitive-capsule": "^3.0.1",
+    "primitive-cube": "^2.0.1",
+    "primitive-cylinder": "^1.0.1",
+    "primitive-ellipsoid": "^1.1.0",
+    "primitive-icosphere": "^1.0.2",
+    "primitive-plane": "^2.0.0",
+    "primitive-quad": "^2.0.0",
+    "primitive-rounded-cube": "^1.0.2",
+    "primitive-sphere": "^3.0.0",
+    "primitive-torus": "^1.0.4"
+  },
+  "keywords": [
+    "simplicial",
+    "complex",
+    "mesh",
+    "geom",
+    "geometry",
+    "primitive",
+    "stackgl",
+    "glsl",
+    "webgl",
+    "gl"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/dmnsgn/primitive-geometry.git"
+  },
+  "homepage": "https://github.com/dmnsgn/primitive-geometry",
+  "bugs": {
+    "url": "https://github.com/dmnsgn/primitive-geometry/issues"
+  }
+}
