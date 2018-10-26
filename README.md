@@ -49,7 +49,7 @@ See individual packages for details:
 - [primitive-quad](https://npmjs.com/package/primitive-quad)
 - [primitive-plane](https://npmjs.com/package/primitive-plane)
 - [primitive-cube](https://npmjs.com/package/primitive-cube)
-- [primitive-roundedCube](https://npmjs.com/package/primitive-roundedCube)
+- [primitive-rounded-cube](https://npmjs.com/package/primitive-rounded-cube)
 - [primitive-capsule](https://npmjs.com/package/primitive-capsule)
 - [primitive-sphere](https://npmjs.com/package/primitive-sphere)
 - [primitive-icosphere](https://npmjs.com/package/primitive-icosphere)
