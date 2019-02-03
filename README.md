@@ -1,5 +1,6 @@
 # primitive-geometry [![stable](http://badges.github.io/stability-badges/dist/stable.svg)](http://github.com/badges/stability-badges)
 
+[![Build Status](https://travis-ci.org/dmnsgn/primitive-geometry.svg?branch=master)](https://travis-ci.org/dmnsgn/primitive-geometry)
 [![npm version](https://badge.fury.io/js/primitive-geometry.svg)](https://www.npmjs.com/package/primitive-geometry)
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
