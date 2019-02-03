@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "async-preloader": "^4.4.0",
+    "browserify": "^16.2.3",
     "budo": "^11.6.0",
     "dat.gui": "^0.7.5",
     "get-canvas-context": "^1.0.2",
