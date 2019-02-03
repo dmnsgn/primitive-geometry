@@ -82,7 +82,7 @@ async function loadTexture(src) {
     createMesh(Primitives.icosphere(), material),
     createMesh(Primitives.ellipsoid(), material),
     createMesh(Primitives.torus(), material),
-    createMesh(Primitives.cylinder(1, 1, 5, 64, 8), material)
+    createMesh(Primitives.cylinder(), material)
   );
 
   // Position them
