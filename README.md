@@ -16,7 +16,7 @@ See the [demo](https://dmnsgn.github.io/primitive-geometry/) and its [source](de
 npm install primitive-geometry
 ```
 
-[![NPM](https://nodei.co/npm/primitive-geometry.png)](https://nodei.co/npm/primitive-geometry/)
+[![NPM](https://nodei.co/npm/primitive-geometry.png)](https://nodei.co/npm/primitive-geometry/) [![Greenkeeper badge](https://badges.greenkeeper.io/dmnsgn/primitive-geometry.svg)](https://greenkeeper.io/)
 
 ## Usage
 
