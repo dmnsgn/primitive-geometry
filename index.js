@@ -12,6 +12,9 @@ const torus = require("primitive-torus");
 
 const cylinder = require("primitive-cylinder");
 
+const box = require("primitive-box");
+const circle = require("primitive-circle");
+
 module.exports = {
   quad,
   plane,
@@ -22,5 +25,7 @@ module.exports = {
   icosphere,
   ellipsoid,
   torus,
-  cylinder
+  cylinder,
+  box,
+  circle
 };

@@ -8,6 +8,7 @@ class Mesh {
   constructor(geometry, material) {
     this.geometry = geometry;
     this.material = material;
+    this.color = [0.8, 0.8, 0.8, 1.0];
 
     this.rotation = [0, 0, 0, 1];
     this.translation = [0, 0, 0];
@@ -23,8 +24,12 @@ class Mesh {
 
   createBuffers() {
     this.positions = regl.buffer(this.geometry.positions);
-    this.normals = regl.buffer(this.geometry.normals);
-    this.uvs = regl.buffer(this.geometry.uvs);
+    if (this.geometry.normals) {
+      this.normals = regl.buffer(this.geometry.normals);
+    }
+    if (this.geometry.uvs) {
+      this.uvs = regl.buffer(this.geometry.uvs);
+    }
   }
 
   update(camera, mode) {
@@ -46,8 +51,53 @@ class Mesh {
   }
 }
 
+Mesh.prototype.drawUnlit = regl({
+  frag: /* glsl */ `
+  precision mediump float;
+
+  uniform vec4 uColor;
+
+  varying vec3 vViewPosition;
+  varying vec4 vWorldPosition;
+
+  void main () {
+    gl_FragColor = uColor;
+  }`,
+  vert: /* glsl */ `
+  precision mediump float;
+
+  attribute vec3 aPosition;
+
+  uniform mat4 uProjectionMatrix;
+  uniform mat4 uModelMatrix;
+  uniform mat4 uModelViewMatrix;
+  uniform mat3 uNormalMatrix;
+
+  varying vec3 vViewPosition;
+  varying vec4 vWorldPosition;
+
+  void main() {
+    vec4 modelViewPosition = uModelViewMatrix * vec4(aPosition, 1.0);
+    vViewPosition = -modelViewPosition.xyz;
+    vWorldPosition = uModelMatrix * vec4(aPosition, 1.0);
+
+    gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aPosition, 1.0);
+  }`,
+  attributes: {
+    aPosition: regl.this("positions")
+  },
+  elements: regl.this("geometry.cells"),
+  uniforms: {
+    uColor: regl.this("color"),
+    uModelViewMatrix: regl.this("modelViewMatrix"),
+    uModelMatrix: regl.this("modelMatrix"),
+    uNormalMatrix: regl.this("normalMatrix"),
+    uProjectionMatrix: regl.this("projectionMatrix")
+  }
+});
+
 Mesh.prototype.draw = regl({
-  frag: `
+  frag: /* glsl */ `
   precision mediump float;
 
   uniform sampler2D uColorMap;
@@ -63,7 +113,7 @@ Mesh.prototype.draw = regl({
     if (uMode == 1.0) gl_FragColor = vec4(vNormal.xyz, 1.0);
     if (uMode == 2.0) gl_FragColor = vec4(vUv.xy, 0.0, 1.0);
   }`,
-  vert: `
+  vert: /* glsl */ `
   precision mediump float;
 
   attribute vec3 aPosition;

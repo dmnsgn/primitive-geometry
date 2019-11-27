@@ -3,6 +3,7 @@ const AsyncPreloader = require("async-preloader").default;
 const createCamera = require("perspective-camera");
 const createOrbitControls = require("orbit-controls");
 const dat = require("dat.gui");
+const triangulate = require("geom-triangulate");
 
 const createMesh = require("./mesh.js");
 const regl = require("./context.js");
@@ -38,8 +39,11 @@ const frame = ({ viewportWidth, viewportHeight }) => {
     color: [0, 0, 0, 1]
   });
   meshes.forEach(mesh => {
-    mesh.update(camera, modeOptions.findIndex(o => o === options.mode));
-    mesh.draw();
+    mesh.update(
+      camera,
+      modeOptions.findIndex(o => o === options.mode)
+    );
+    !mesh.geometry.normals ? mesh.drawUnlit() : mesh.draw();
   });
 };
 
@@ -56,9 +60,8 @@ function frameCatch(frameFunc) {
 
 async function loadTexture(src) {
   const image = await AsyncPreloader.loadImage({ src });
-  const bitmap = await createImageBitmap(image);
 
-  const texture = regl.texture({ data: bitmap, flipY: false });
+  const texture = regl.texture({ data: image, flipY: false });
   texture.resize(image.width, image.height);
 
   return texture;
@@ -72,6 +75,10 @@ async function loadTexture(src) {
   };
 
   // Create meshes
+  const circle = Primitives.circle();
+  circle.positions = circle.positions.map(([x, y]) => [x, y, 0]);
+  circle.cells.unshift([0, 31]);
+
   meshes.push(
     createMesh(Primitives.quad(), material),
     createMesh(Primitives.plane(), material),
@@ -82,7 +89,9 @@ async function loadTexture(src) {
     createMesh(Primitives.icosphere(), material),
     createMesh(Primitives.ellipsoid(), material),
     createMesh(Primitives.torus(), material),
-    createMesh(Primitives.cylinder(), material)
+    createMesh(Primitives.cylinder(), material),
+    createMesh(triangulate(Primitives.box()), material),
+    createMesh(circle, material)
   );
 
   // Position them

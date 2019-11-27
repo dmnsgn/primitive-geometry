@@ -34,6 +34,9 @@ const icosphereGeometry = Primitives.icosphere();
 const ellipsoidGeometry = Primitives.ellipsoid();
 const torusGeometry = Primitives.torus();
 const cylinderGeometry = Primitives.cylinder();
+// without normals/uvs
+const boxGeometry = Primitives.box();
+const circleGeometry = Primitives.circle();
 
 console.log(quadGeometry);
 // {
@@ -56,8 +59,10 @@ See individual packages for details:
 - [primitive-sphere](https://npmjs.com/package/primitive-sphere)
 - [primitive-icosphere](https://npmjs.com/package/primitive-icosphere)
 - [primitive-ellipsoid](https://npmjs.com/package/primitive-ellipsoid)
-- [primitive-cylinder](https://npmjs.com/package/primitive-cylinder)
 - [primitive-torus](https://npmjs.com/package/primitive-torus)
+- [primitive-cylinder](https://npmjs.com/package/primitive-cylinder)
+- [primitive-box](https://npmjs.com/package/primitive-box)
+- [primitive-circle](https://npmjs.com/package/primitive-circle)
 
 ## License
 
