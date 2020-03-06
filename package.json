@@ -11,13 +11,13 @@
     "test": "npm run build"
   },
   "devDependencies": {
-    "async-preloader": "^4.8.1",
+    "async-preloader": "^4.8.4",
     "browserify": "^16.5.0",
     "budo": "^11.6.3",
     "dat.gui": "^0.7.6",
     "geom-triangulate": "^1.0.1",
     "get-canvas-context": "^1.0.2",
-    "gl-matrix": "^3.1.0",
+    "gl-matrix": "^3.2.1",
     "orbit-controls": "^1.2.4",
     "perspective-camera": "^2.0.1",
     "regl": "^1.3.13",
