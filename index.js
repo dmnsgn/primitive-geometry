@@ -1,31 +1,23 @@
-const quad = require("primitive-quad");
-const plane = require("primitive-plane");
+/**
+ * Re-export all geometries and utils.
+ * @module index
+ */
+export { default as quad } from "./src/quad.js";
+export { default as plane } from "./src/plane.js";
 
-const cube = require("primitive-cube");
-const roundedCube = require("primitive-rounded-cube");
-const capsule = require("primitive-capsule");
+export { default as cube } from "./src/cube.js";
+export { default as roundedCube } from "./src/rounded-cube.js";
 
-const sphere = require("primitive-sphere");
-const icosphere = require("primitive-icosphere");
-const ellipsoid = require("primitive-ellipsoid");
-const torus = require("primitive-torus");
+export { default as cylinder } from "./src/cylinder.js";
+export { default as cone } from "./src/cone.js";
+export { default as capsule } from "./src/capsule.js";
 
-const cylinder = require("primitive-cylinder");
+export { default as sphere } from "./src/sphere.js";
+export { default as icosphere } from "./src/icosphere.js";
+export { default as ellipsoid } from "./src/ellipsoid.js";
+export { default as torus } from "./src/torus.js";
 
-const box = require("primitive-box");
-const circle = require("primitive-circle");
+export { default as box } from "./src/box.js";
+export { default as circle } from "./src/circle.js";
 
-module.exports = {
-  quad,
-  plane,
-  cube,
-  roundedCube,
-  capsule,
-  sphere,
-  icosphere,
-  ellipsoid,
-  torus,
-  cylinder,
-  box,
-  circle
-};
+export * as utils from "./src/utils.js";

@@ -1,42 +1,7 @@
 {
   "name": "primitive-geometry",
   "version": "1.2.1",
-  "description": "A package exporting geometries for 3D rendering, including normals, UVs and cell indices (faces).",
-  "main": "index.js",
-  "author": "Damien Seguin (https://dmnsgn.me)",
-  "license": "MIT",
-  "scripts": {
-    "start": "budo demo/index.js:bundle.js --open --live",
-    "build": "browserify demo/index.js | uglifyjs -c > bundle.js",
-    "test": "npm run build"
-  },
-  "devDependencies": {
-    "async-preloader": "^4.9.2",
-    "browserify": "^16.5.1",
-    "budo": "^11.6.4",
-    "dat.gui": "^0.7.7",
-    "geom-triangulate": "^1.0.1",
-    "get-canvas-context": "^1.0.2",
-    "gl-matrix": "^3.3.0",
-    "orbit-controls": "^1.2.4",
-    "perspective-camera": "^2.0.1",
-    "regl": "^1.6.1",
-    "uglify-es": "^3.3.9"
-  },
-  "dependencies": {
-    "primitive-box": "^1.0.0",
-    "primitive-capsule": "^3.0.1",
-    "primitive-circle": "^1.0.2",
-    "primitive-cube": "^2.0.1",
-    "primitive-cylinder": "^1.0.3",
-    "primitive-ellipsoid": "^1.1.0",
-    "primitive-icosphere": "^1.0.2",
-    "primitive-plane": "^2.0.1",
-    "primitive-quad": "^2.0.0",
-    "primitive-rounded-cube": "^1.0.2",
-    "primitive-sphere": "^3.0.0",
-    "primitive-torus": "^1.0.4"
-  },
+  "description": "Geometries for 3D rendering, including normals, UVs and cell indices (faces). Perfect if you want to supercharge your dependency folder... with 30KB of geometries.",
   "keywords": [
     "simplicial",
     "complex",
@@ -47,14 +12,56 @@
     "stackgl",
     "glsl",
     "webgl",
-    "gl"
+    "gl",
+    "quad",
+    "plane",
+    "cube",
+    "roundedCube",
+    "cylinder",
+    "cone",
+    "capsule",
+    "sphere",
+    "icosphere",
+    "ellipsoid",
+    "torus",
+    "box",
+    "circle"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/dmnsgn/primitive-geometry.git"
-  },
   "homepage": "https://github.com/dmnsgn/primitive-geometry",
-  "bugs": {
-    "url": "https://github.com/dmnsgn/primitive-geometry/issues"
+  "bugs": "https://github.com/dmnsgn/primitive-geometry/issues",
+  "repository": "dmnsgn/primitive-geometry",
+  "funding": [
+    {
+      "type": "individual",
+      "url": "https://paypal.me/dmnsgn"
+    },
+    {
+      "type": "individual",
+      "url": "https://commerce.coinbase.com/checkout/56cbdf28-e323-48d8-9c98-7019e72c97f3"
+    }
+  ],
+  "license": "MIT",
+  "author": "Damien Seguin (https://github.com/dmnsgn)",
+  "type": "module",
+  "main": "index.js",
+  "types": "types/index.d.ts",
+  "scripts": {
+    "dev": "npx snowdev dev",
+    "deps": "npx snowdev install",
+    "build": "npx snowdev build"
+  },
+  "devDependencies": {
+    "async-preloader": "^5.0.2",
+    "cameras": "^3.0.1",
+    "concat-typed-array": "^2.0.0",
+    "core-js": "^3.11.0",
+    "dat.gui": "^0.7.7",
+    "es-module-shims": "^0.10.4",
+    "gl-matrix": "^3.3.0",
+    "regl": "^2.1.0"
+  },
+  "engines": {
+    "node": ">=15.0.0",
+    "npm": ">=7.0.0"
   }
 }

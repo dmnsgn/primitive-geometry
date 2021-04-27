@@ -1,0 +1,12 @@
+{
+  "imports": {
+    "async-preloader": "./async-preloader.js",
+    "cameras": "./cameras.js",
+    "concat-typed-array": "./concat-typed-array.js",
+    "core-js": "./core-js.js",
+    "dat.gui": "./dat.gui.js",
+    "es-module-shims": "./es-module-shims.js",
+    "gl-matrix": "./gl-matrix.js",
+    "regl": "./regl.js"
+  }
+}
