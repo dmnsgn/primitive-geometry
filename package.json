@@ -52,13 +52,13 @@
   },
   "devDependencies": {
     "async-preloader": "^5.0.2",
-    "cameras": "^3.0.1",
+    "cameras": "^3.0.3",
     "concat-typed-array": "^2.0.0",
-    "core-js": "^3.11.0",
-    "dat.gui": "^0.7.7",
-    "es-module-shims": "^0.10.4",
+    "core-js": "^3.14.0",
+    "es-module-shims": "^0.10.7",
     "gl-matrix": "^3.3.0",
-    "regl": "^2.1.0"
+    "regl": "^2.1.0",
+    "tweakpane": "^3.0.2"
   },
   "engines": {
     "node": ">=15.0.0",

@@ -1,9 +1,9 @@
-import { f as fromValues, c as create, a as create$1, l as lookAt, b as copy, i as invert, d as frustum, p as perspective, o as ortho, e as create$2, z as zero, s as subtract, g as distance, h as set, j as copy$1, k as create$3, m as copy$2, n as subtract$1, q as length, r as sub, t as add, u as scale, v as transformQuat, w as rotationTo, x as invert$1, y as glMatrix } from './common/vec2-5a52f3b1.js';
-import './common/es.string.replace-b28e0e34.js';
-import './common/es.typed-array.float32-array-4cb354d9.js';
-import './common/well-known-symbol-99bf8c2e.js';
-import './common/redefine-all-0e12fbc7.js';
-import './common/string-multibyte-57fbe8e1.js';
+import { f as fromValues, c as create, a as create$1, l as lookAt, b as copy, i as invert, d as frustum, p as perspective, o as ortho, e as create$2, z as zero, s as subtract, g as distance, h as set, j as copy$1, k as create$3, m as copy$2, n as subtract$1, q as length, r as sub, t as add, u as scale, v as transformQuat, w as rotationTo, x as invert$1, y as glMatrix } from './common/vec2-bc2d6fdf.js';
+import './common/es.string.replace-bccc259e.js';
+import './common/es.typed-array.float32-array-b0c49f63.js';
+import './common/is-array-iterator-method-02e028bb.js';
+import './common/redefine-all-fdb3392a.js';
+import './common/string-multibyte-d7a22384.js';
 
 // Camera
 var CameraType;
@@ -675,6 +675,7 @@ var normalizeWheel_1 = normalizeWheel;
 var normalizeWheel$1 = normalizeWheel_1;
 
 const HAS_TOUCH_EVENTS = ("TouchEvent" in window);
+const WHEEL_EVENT = normalizeWheel$1.getEventType();
 const EVENT_LISTENER_OPTIONS = {
   passive: false
 };
@@ -704,7 +705,7 @@ class PointerManager {
     this.isElementRoot = this.element === document.body;
 
     if (this.config.wheel) {
-      this.element.addEventListener(normalizeWheel$1.getEventType(), this.onMouseWheel);
+      this.element.addEventListener(WHEEL_EVENT, this.onMouseWheel);
     }
 
     if (this.config.drag) {
@@ -715,7 +716,7 @@ class PointerManager {
 
   disable() {
     if (this.config.wheel) {
-      this.element.removeEventListener("wheel", this.onMouseWheel);
+      this.element.removeEventListener(WHEEL_EVENT, this.onMouseWheel);
     }
 
     if (this.config.drag) {

@@ -1,5 +1,5 @@
-import { w as wellKnownSymbol, q as global_1, C as uid, j as descriptors, h as has, p as isObject, c as createNonEnumerableProperty, m as objectDefineProperty, r as redefine, f as fails, B as toInteger, t as toLength, d as toObject, D as toAbsoluteIndex, E as objectGetOwnPropertyNames, i as internalState, s as classofRaw, e as indexedObject, g as getBuiltIn, F as createCommonjsModule, _ as _export, l as toPrimitive, b as createPropertyDescriptor, G as objectGetOwnPropertyDescriptor } from './well-known-symbol-99bf8c2e.js';
-import { o as objectGetPrototypeOf, d as objectSetPrototypeOf, h as classof, j as anInstance, r as redefineAll, s as setToStringTag, g as getIteratorMethod, i as isArrayIteratorMethod, f as functionBindContext, b as objectCreate } from './redefine-all-0e12fbc7.js';
+import { w as wellKnownSymbol, z as global_1, H as uid, y as classof, o as descriptors, h as has, x as isObject, e as createNonEnumerableProperty, u as objectDefineProperty, r as redefine, d as fails, G as toInteger, t as toLength, m as toObject, I as toAbsoluteIndex, J as objectGetOwnPropertyNames, l as internalState, g as getIteratorMethod, i as isArrayIteratorMethod, f as functionBindContext, K as classofRaw, n as indexedObject, c as getBuiltIn, L as createCommonjsModule, _ as _export, s as toPrimitive, j as createPropertyDescriptor, M as objectGetOwnPropertyDescriptor } from './is-array-iterator-method-02e028bb.js';
+import { o as objectGetPrototypeOf, b as objectSetPrototypeOf, d as anInstance, r as redefineAll, s as setToStringTag, a as objectCreate } from './redefine-all-fdb3392a.js';
 
 var ITERATOR = wellKnownSymbol('iterator');
 var SAFE_CLOSING = false;
@@ -115,9 +115,9 @@ var exportTypedArrayMethod = function (KEY, property, forced) {
   if (!descriptors) return;
   if (forced) for (var ARRAY in TypedArrayConstructorsList) {
     var TypedArrayConstructor = global_1[ARRAY];
-    if (TypedArrayConstructor && has(TypedArrayConstructor.prototype, KEY)) {
+    if (TypedArrayConstructor && has(TypedArrayConstructor.prototype, KEY)) try {
       delete TypedArrayConstructor.prototype[KEY];
-    }
+    } catch (error) { /* empty */ }
   }
   if (!TypedArrayPrototype[KEY] || forced) {
     redefine(TypedArrayPrototype, KEY, forced ? property
@@ -131,14 +131,14 @@ var exportTypedArrayStaticMethod = function (KEY, property, forced) {
   if (objectSetPrototypeOf) {
     if (forced) for (ARRAY in TypedArrayConstructorsList) {
       TypedArrayConstructor = global_1[ARRAY];
-      if (TypedArrayConstructor && has(TypedArrayConstructor, KEY)) {
+      if (TypedArrayConstructor && has(TypedArrayConstructor, KEY)) try {
         delete TypedArrayConstructor[KEY];
-      }
+      } catch (error) { /* empty */ }
     }
     if (!TypedArray[KEY] || forced) {
       // V8 ~ Chrome 49-50 `%TypedArray%` methods are non-writable non-configurable
       try {
-        return redefine(TypedArray, KEY, forced ? property : NATIVE_ARRAY_BUFFER_VIEWS && Int8Array[KEY] || property);
+        return redefine(TypedArray, KEY, forced ? property : NATIVE_ARRAY_BUFFER_VIEWS && TypedArray[KEY] || property);
       } catch (error) { /* empty */ }
     } else return;
   }

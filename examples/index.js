@@ -3,7 +3,7 @@ import * as Primitives from "../index.js";
 import concatTypedArray from "concat-typed-array";
 import AsyncPreloader from "async-preloader";
 import { PerspectiveCamera, Controls } from "cameras";
-import dat from "dat.gui";
+import { Pane } from "tweakpane";
 
 import createMesh from "./mesh.js";
 import regl from "./context.js";
@@ -24,12 +24,17 @@ const controls = new Controls({
   distanceBounds: [1, 100],
 });
 
-const gui = new dat.GUI();
 const modeOptions = ["texture", "normal", "flat-shaded", "uv"];
-const options = {
+const CONFIG = {
   mode: "flat-shaded",
 };
-gui.add(options, "mode", modeOptions);
+const pane = new Pane();
+pane.addInput(CONFIG, "mode", {
+  options: modeOptions.map((value) => ({
+    text: value.toUpperCase(),
+    value,
+  })),
+});
 
 // Events
 const onResize = () => {
@@ -85,7 +90,7 @@ const frame = () => {
   meshes.forEach((mesh) => {
     mesh.update(
       camera,
-      modeOptions.findIndex((o) => o === options.mode)
+      modeOptions.findIndex((o) => o === CONFIG.mode)
     );
     !mesh.geometry.normals ? mesh.drawLines() : mesh.draw();
   });
@@ -108,10 +113,9 @@ function frameCatch(frameFunc) {
 
   // Circle and box are rendered as lines
   const circle = Primitives.circle();
-  circle.positions = new Float32Array(
-    (circle.positions.length / 2) * 3
-  ).map((_, index) =>
-    index % 3 === 2 ? 0 : circle.positions[Math.round((index * 2) / 3)]
+  circle.positions = new Float32Array((circle.positions.length / 2) * 3).map(
+    (_, index) =>
+      index % 3 === 2 ? 0 : circle.positions[Math.round((index * 2) / 3)]
   );
   circle.cells = concatTypedArray(
     Primitives.utils.getCellsTypedArray(circle.positions.length / 3),

@@ -1,291 +1,7 @@
-import { a as anObject, _ as _export, t as toLength, w as wellKnownSymbol, g as getBuiltIn, f as fails, h as has, c as createNonEnumerableProperty, b as createPropertyDescriptor, r as redefine, i as internalState, d as toObject, e as indexedObject, j as descriptors, o as objectGetOwnPropertySymbols, k as objectPropertyIsEnumerable, l as toPrimitive, m as objectDefineProperty, n as toIndexedObject, p as isObject, q as global_1 } from './well-known-symbol-99bf8c2e.js';
-import { a as aFunction, g as getIteratorMethod, f as functionBindContext, i as isArrayIteratorMethod, o as objectGetPrototypeOf, b as objectCreate, s as setToStringTag, c as iterators, d as objectSetPrototypeOf, e as objectKeys, r as redefineAll, h as classof, j as anInstance, k as objectDefineProperties } from './redefine-all-0e12fbc7.js';
-import { s as stringMultibyte } from './string-multibyte-57fbe8e1.js';
-
-var isPure = false;
-
-// https://github.com/tc39/collection-methods
-var collectionDeleteAll = function (/* ...elements */) {
-  var collection = anObject(this);
-  var remover = aFunction(collection['delete']);
-  var allDeleted = true;
-  var wasDeleted;
-  for (var k = 0, len = arguments.length; k < len; k++) {
-    wasDeleted = remover.call(collection, arguments[k]);
-    allDeleted = allDeleted && wasDeleted;
-  }
-  return !!allDeleted;
-};
-
-// `Map.prototype.deleteAll` method
-// https://github.com/tc39/proposal-collection-methods
-_export({ target: 'Map', proto: true, real: true, forced: isPure }, {
-  deleteAll: function deleteAll(/* ...elements */) {
-    return collectionDeleteAll.apply(this, arguments);
-  }
-});
-
-var getIterator = function (it) {
-  var iteratorMethod = getIteratorMethod(it);
-  if (typeof iteratorMethod != 'function') {
-    throw TypeError(String(it) + ' is not iterable');
-  } return anObject(iteratorMethod.call(it));
-};
-
-var getMapIterator =  function (it) {
-  // eslint-disable-next-line es/no-map -- safe
-  return Map.prototype.entries.call(it);
-};
-
-var iteratorClose = function (iterator) {
-  var returnMethod = iterator['return'];
-  if (returnMethod !== undefined) {
-    return anObject(returnMethod.call(iterator)).value;
-  }
-};
-
-var Result = function (stopped, result) {
-  this.stopped = stopped;
-  this.result = result;
-};
-
-var iterate = function (iterable, unboundFunction, options) {
-  var that = options && options.that;
-  var AS_ENTRIES = !!(options && options.AS_ENTRIES);
-  var IS_ITERATOR = !!(options && options.IS_ITERATOR);
-  var INTERRUPTED = !!(options && options.INTERRUPTED);
-  var fn = functionBindContext(unboundFunction, that, 1 + AS_ENTRIES + INTERRUPTED);
-  var iterator, iterFn, index, length, result, next, step;
-
-  var stop = function (condition) {
-    if (iterator) iteratorClose(iterator);
-    return new Result(true, condition);
-  };
-
-  var callFn = function (value) {
-    if (AS_ENTRIES) {
-      anObject(value);
-      return INTERRUPTED ? fn(value[0], value[1], stop) : fn(value[0], value[1]);
-    } return INTERRUPTED ? fn(value, stop) : fn(value);
-  };
-
-  if (IS_ITERATOR) {
-    iterator = iterable;
-  } else {
-    iterFn = getIteratorMethod(iterable);
-    if (typeof iterFn != 'function') throw TypeError('Target is not iterable');
-    // optimisation for array iterators
-    if (isArrayIteratorMethod(iterFn)) {
-      for (index = 0, length = toLength(iterable.length); length > index; index++) {
-        result = callFn(iterable[index]);
-        if (result && result instanceof Result) return result;
-      } return new Result(false);
-    }
-    iterator = iterFn.call(iterable);
-  }
-
-  next = iterator.next;
-  while (!(step = next.call(iterator)).done) {
-    try {
-      result = callFn(step.value);
-    } catch (error) {
-      iteratorClose(iterator);
-      throw error;
-    }
-    if (typeof result == 'object' && result && result instanceof Result) return result;
-  } return new Result(false);
-};
-
-// `Map.prototype.every` method
-// https://github.com/tc39/proposal-collection-methods
-_export({ target: 'Map', proto: true, real: true, forced: isPure }, {
-  every: function every(callbackfn /* , thisArg */) {
-    var map = anObject(this);
-    var iterator = getMapIterator(map);
-    var boundFunction = functionBindContext(callbackfn, arguments.length > 1 ? arguments[1] : undefined, 3);
-    return !iterate(iterator, function (key, value, stop) {
-      if (!boundFunction(value, key, map)) return stop();
-    }, { AS_ENTRIES: true, IS_ITERATOR: true, INTERRUPTED: true }).stopped;
-  }
-});
-
-var SPECIES = wellKnownSymbol('species');
-
-// `SpeciesConstructor` abstract operation
-// https://tc39.es/ecma262/#sec-speciesconstructor
-var speciesConstructor = function (O, defaultConstructor) {
-  var C = anObject(O).constructor;
-  var S;
-  return C === undefined || (S = anObject(C)[SPECIES]) == undefined ? defaultConstructor : aFunction(S);
-};
-
-// `Map.prototype.filter` method
-// https://github.com/tc39/proposal-collection-methods
-_export({ target: 'Map', proto: true, real: true, forced: isPure }, {
-  filter: function filter(callbackfn /* , thisArg */) {
-    var map = anObject(this);
-    var iterator = getMapIterator(map);
-    var boundFunction = functionBindContext(callbackfn, arguments.length > 1 ? arguments[1] : undefined, 3);
-    var newMap = new (speciesConstructor(map, getBuiltIn('Map')))();
-    var setter = aFunction(newMap.set);
-    iterate(iterator, function (key, value) {
-      if (boundFunction(value, key, map)) setter.call(newMap, key, value);
-    }, { AS_ENTRIES: true, IS_ITERATOR: true });
-    return newMap;
-  }
-});
-
-// `Map.prototype.find` method
-// https://github.com/tc39/proposal-collection-methods
-_export({ target: 'Map', proto: true, real: true, forced: isPure }, {
-  find: function find(callbackfn /* , thisArg */) {
-    var map = anObject(this);
-    var iterator = getMapIterator(map);
-    var boundFunction = functionBindContext(callbackfn, arguments.length > 1 ? arguments[1] : undefined, 3);
-    return iterate(iterator, function (key, value, stop) {
-      if (boundFunction(value, key, map)) return stop(value);
-    }, { AS_ENTRIES: true, IS_ITERATOR: true, INTERRUPTED: true }).result;
-  }
-});
-
-// `Map.prototype.findKey` method
-// https://github.com/tc39/proposal-collection-methods
-_export({ target: 'Map', proto: true, real: true, forced: isPure }, {
-  findKey: function findKey(callbackfn /* , thisArg */) {
-    var map = anObject(this);
-    var iterator = getMapIterator(map);
-    var boundFunction = functionBindContext(callbackfn, arguments.length > 1 ? arguments[1] : undefined, 3);
-    return iterate(iterator, function (key, value, stop) {
-      if (boundFunction(value, key, map)) return stop(key);
-    }, { AS_ENTRIES: true, IS_ITERATOR: true, INTERRUPTED: true }).result;
-  }
-});
-
-// `SameValueZero` abstract operation
-// https://tc39.es/ecma262/#sec-samevaluezero
-var sameValueZero = function (x, y) {
-  // eslint-disable-next-line no-self-compare -- NaN check
-  return x === y || x != x && y != y;
-};
-
-// `Map.prototype.includes` method
-// https://github.com/tc39/proposal-collection-methods
-_export({ target: 'Map', proto: true, real: true, forced: isPure }, {
-  includes: function includes(searchElement) {
-    return iterate(getMapIterator(anObject(this)), function (key, value, stop) {
-      if (sameValueZero(value, searchElement)) return stop();
-    }, { AS_ENTRIES: true, IS_ITERATOR: true, INTERRUPTED: true }).stopped;
-  }
-});
-
-// `Map.prototype.includes` method
-// https://github.com/tc39/proposal-collection-methods
-_export({ target: 'Map', proto: true, real: true, forced: isPure }, {
-  keyOf: function keyOf(searchElement) {
-    return iterate(getMapIterator(anObject(this)), function (key, value, stop) {
-      if (value === searchElement) return stop(key);
-    }, { AS_ENTRIES: true, IS_ITERATOR: true, INTERRUPTED: true }).result;
-  }
-});
-
-// `Map.prototype.mapKeys` method
-// https://github.com/tc39/proposal-collection-methods
-_export({ target: 'Map', proto: true, real: true, forced: isPure }, {
-  mapKeys: function mapKeys(callbackfn /* , thisArg */) {
-    var map = anObject(this);
-    var iterator = getMapIterator(map);
-    var boundFunction = functionBindContext(callbackfn, arguments.length > 1 ? arguments[1] : undefined, 3);
-    var newMap = new (speciesConstructor(map, getBuiltIn('Map')))();
-    var setter = aFunction(newMap.set);
-    iterate(iterator, function (key, value) {
-      setter.call(newMap, boundFunction(value, key, map), value);
-    }, { AS_ENTRIES: true, IS_ITERATOR: true });
-    return newMap;
-  }
-});
-
-// `Map.prototype.mapValues` method
-// https://github.com/tc39/proposal-collection-methods
-_export({ target: 'Map', proto: true, real: true, forced: isPure }, {
-  mapValues: function mapValues(callbackfn /* , thisArg */) {
-    var map = anObject(this);
-    var iterator = getMapIterator(map);
-    var boundFunction = functionBindContext(callbackfn, arguments.length > 1 ? arguments[1] : undefined, 3);
-    var newMap = new (speciesConstructor(map, getBuiltIn('Map')))();
-    var setter = aFunction(newMap.set);
-    iterate(iterator, function (key, value) {
-      setter.call(newMap, key, boundFunction(value, key, map));
-    }, { AS_ENTRIES: true, IS_ITERATOR: true });
-    return newMap;
-  }
-});
-
-// `Map.prototype.merge` method
-// https://github.com/tc39/proposal-collection-methods
-_export({ target: 'Map', proto: true, real: true, forced: isPure }, {
-  // eslint-disable-next-line no-unused-vars -- required for `.length`
-  merge: function merge(iterable /* ...iterbles */) {
-    var map = anObject(this);
-    var setter = aFunction(map.set);
-    var i = 0;
-    while (i < arguments.length) {
-      iterate(arguments[i++], setter, { that: map, AS_ENTRIES: true });
-    }
-    return map;
-  }
-});
-
-// `Map.prototype.reduce` method
-// https://github.com/tc39/proposal-collection-methods
-_export({ target: 'Map', proto: true, real: true, forced: isPure }, {
-  reduce: function reduce(callbackfn /* , initialValue */) {
-    var map = anObject(this);
-    var iterator = getMapIterator(map);
-    var noInitial = arguments.length < 2;
-    var accumulator = noInitial ? undefined : arguments[1];
-    aFunction(callbackfn);
-    iterate(iterator, function (key, value) {
-      if (noInitial) {
-        noInitial = false;
-        accumulator = value;
-      } else {
-        accumulator = callbackfn(accumulator, value, key, map);
-      }
-    }, { AS_ENTRIES: true, IS_ITERATOR: true });
-    if (noInitial) throw TypeError('Reduce of empty map with no initial value');
-    return accumulator;
-  }
-});
-
-// `Set.prototype.some` method
-// https://github.com/tc39/proposal-collection-methods
-_export({ target: 'Map', proto: true, real: true, forced: isPure }, {
-  some: function some(callbackfn /* , thisArg */) {
-    var map = anObject(this);
-    var iterator = getMapIterator(map);
-    var boundFunction = functionBindContext(callbackfn, arguments.length > 1 ? arguments[1] : undefined, 3);
-    return iterate(iterator, function (key, value, stop) {
-      if (boundFunction(value, key, map)) return stop();
-    }, { AS_ENTRIES: true, IS_ITERATOR: true, INTERRUPTED: true }).stopped;
-  }
-});
-
-// `Set.prototype.update` method
-// https://github.com/tc39/proposal-collection-methods
-_export({ target: 'Map', proto: true, real: true, forced: isPure }, {
-  update: function update(key, callback /* , thunk */) {
-    var map = anObject(this);
-    var length = arguments.length;
-    aFunction(callback);
-    var isPresentInMap = map.has(key);
-    if (!isPresentInMap && length < 3) {
-      throw TypeError('Updating absent value');
-    }
-    var value = isPresentInMap ? map.get(key) : aFunction(length > 2 ? arguments[2] : undefined)(key, map);
-    map.set(key, callback(value, key, map));
-    return map;
-  }
-});
+import { s as stringMultibyte } from './string-multibyte-d7a22384.js';
+import { w as wellKnownSymbol, d as fails, h as has, e as createNonEnumerableProperty, j as createPropertyDescriptor, k as iterators, r as redefine, _ as _export, l as internalState, m as toObject, n as indexedObject, o as descriptors, p as objectGetOwnPropertySymbols, q as objectPropertyIsEnumerable, a as anObject, s as toPrimitive, u as objectDefineProperty, g as getIteratorMethod, f as functionBindContext, i as isArrayIteratorMethod, t as toLength, v as toIndexedObject, c as getBuiltIn, x as isObject, y as classof, z as global_1 } from './is-array-iterator-method-02e028bb.js';
+import { o as objectGetPrototypeOf, a as objectCreate, s as setToStringTag, b as objectSetPrototypeOf, c as objectKeys, r as redefineAll, d as anInstance, e as objectDefineProperties } from './redefine-all-fdb3392a.js';
+import { i as isPure, a as iteratorClose, g as getIterator } from './esnext.map.update-95c88744.js';
 
 var ITERATOR = wellKnownSymbol('iterator');
 var BUGGY_SAFARI_ITERATORS = false;
@@ -315,7 +31,8 @@ var NEW_ITERATOR_PROTOTYPE = IteratorPrototype == undefined || fails(function ()
 
 if (NEW_ITERATOR_PROTOTYPE) IteratorPrototype = {};
 
-// 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
+// `%IteratorPrototype%[@@iterator]()` method
+// https://tc39.es/ecma262/#sec-%iteratorprototype%-@@iterator
 if ( !has(IteratorPrototype, ITERATOR)) {
   createNonEnumerableProperty(IteratorPrototype, ITERATOR, returnThis);
 }
@@ -389,7 +106,7 @@ var defineIterator = function (Iterable, NAME, IteratorConstructor, next, DEFAUL
     }
   }
 
-  // fix Array#{values, @@iterator}.name in V8 / FF
+  // fix Array.prototype.{ values, @@iterator }.name in V8 / FF
   if (DEFAULT == VALUES && nativeIterator && nativeIterator.name !== VALUES) {
     INCORRECT_VALUES_NAME = true;
     defaultIterator = function values() { return nativeIterator.call(this); };
@@ -527,7 +244,6 @@ var objectAssign = !$assign || fails(function () {
 var callWithSafeIterationClosing = function (iterator, fn, value, ENTRIES) {
   try {
     return ENTRIES ? fn(anObject(value)[0], value[1]) : fn(value);
-  // 7.4.6 IteratorClose(iterator, completion)
   } catch (error) {
     iteratorClose(iterator);
     throw error;
@@ -2158,4 +1874,4 @@ _export({ global: true, forced: !nativeUrl, sham: !descriptors }, {
   URL: URLConstructor
 });
 
-export { addToUnscopables as a, arrayFrom as b, createProperty as c, defineIterator as d, createIteratorConstructor as e, isPure as f, es_array_iterator as g, iteratorsCore as h, iterate as i, callWithSafeIterationClosing as j, iteratorClose as k, getIterator as l, collectionDeleteAll as m, objectAssign as o, speciesConstructor as s };
+export { addToUnscopables as a, arrayFrom as b, createProperty as c, defineIterator as d, createIteratorConstructor as e, es_array_iterator as f, callWithSafeIterationClosing as g, iteratorsCore as i, objectAssign as o };

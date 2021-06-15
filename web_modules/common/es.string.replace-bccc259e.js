@@ -1,5 +1,5 @@
-import { a as anObject, f as fails, H as shared, _ as _export, w as wellKnownSymbol, r as redefine, c as createNonEnumerableProperty, d as toObject, s as classofRaw, A as requireObjectCoercible, t as toLength, B as toInteger } from './well-known-symbol-99bf8c2e.js';
-import { s as stringMultibyte } from './string-multibyte-57fbe8e1.js';
+import { a as anObject, d as fails, N as shared, _ as _export, w as wellKnownSymbol, r as redefine, e as createNonEnumerableProperty, m as toObject, K as classofRaw, F as requireObjectCoercible, t as toLength, G as toInteger } from './is-array-iterator-method-02e028bb.js';
+import { s as stringMultibyte } from './string-multibyte-d7a22384.js';
 
 // `RegExp.prototype.flags` getter implementation
 // https://tc39.es/ecma262/#sec-get-regexp.prototype.flags
@@ -40,6 +40,12 @@ var regexpStickyHelpers = {
 	BROKEN_CARET: BROKEN_CARET
 };
 
+/* eslint-disable regexp/no-assertion-capturing-group, regexp/no-empty-group, regexp/no-lazy-ends -- testing */
+/* eslint-disable regexp/no-useless-quantifier -- testing */
+
+
+
+
 var nativeExec = RegExp.prototype.exec;
 var nativeReplace = shared('native-string-replace', String.prototype.replace);
 
@@ -56,7 +62,6 @@ var UPDATES_LAST_INDEX_WRONG = (function () {
 var UNSUPPORTED_Y$1 = regexpStickyHelpers.UNSUPPORTED_Y || regexpStickyHelpers.BROKEN_CARET;
 
 // nonparticipating capturing group, copied from es5-shim's String#split patch.
-// eslint-disable-next-line regexp/no-assertion-capturing-group, regexp/no-empty-group, regexp/no-lazy-ends -- testing
 var NPCG_INCLUDED = /()??/.exec('')[1] !== undefined;
 
 var PATCH = UPDATES_LAST_INDEX_WRONG || NPCG_INCLUDED || UNSUPPORTED_Y$1;
@@ -135,7 +140,9 @@ _export({ target: 'RegExp', proto: true, forced: /./.exec !== regexpExec }, {
 
 
 
+
 var SPECIES = wellKnownSymbol('species');
+var RegExpPrototype = RegExp.prototype;
 
 var REPLACE_SUPPORTS_NAMED_GROUPS = !fails(function () {
   // #replace needs built-in support for named groups.
@@ -223,7 +230,8 @@ var fixRegexpWellKnownSymbolLogic = function (KEY, length, exec, sham) {
   ) {
     var nativeRegExpMethod = /./[SYMBOL];
     var methods = exec(SYMBOL, ''[KEY], function (nativeMethod, regexp, str, arg2, forceStringMethod) {
-      if (regexp.exec === RegExp.prototype.exec) {
+      var $exec = regexp.exec;
+      if ($exec === regexpExec || $exec === RegExpPrototype.exec) {
         if (DELEGATES_TO_SYMBOL && !forceStringMethod) {
           // The native String method already delegates to @@method (this
           // polyfilled function), leasing to infinite recursion.
@@ -241,7 +249,7 @@ var fixRegexpWellKnownSymbolLogic = function (KEY, length, exec, sham) {
     var regexMethod = methods[1];
 
     redefine(String.prototype, KEY, stringMethod);
-    redefine(RegExp.prototype, SYMBOL, length == 2
+    redefine(RegExpPrototype, SYMBOL, length == 2
       // 21.2.5.8 RegExp.prototype[@@replace](string, replaceValue)
       // 21.2.5.11 RegExp.prototype[@@split](string, limit)
       ? function (string, arg) { return regexMethod.call(string, this, arg); }
@@ -251,7 +259,7 @@ var fixRegexpWellKnownSymbolLogic = function (KEY, length, exec, sham) {
     );
   }
 
-  if (sham) createNonEnumerableProperty(RegExp.prototype[SYMBOL], 'sham', true);
+  if (sham) createNonEnumerableProperty(RegExpPrototype[SYMBOL], 'sham', true);
 };
 
 var charAt = stringMultibyte.charAt;
@@ -267,6 +275,7 @@ var replace = ''.replace;
 var SUBSTITUTION_SYMBOLS = /\$([$&'`]|\d{1,2}|<[^>]*>)/g;
 var SUBSTITUTION_SYMBOLS_NO_NAMED = /\$([$&'`]|\d{1,2})/g;
 
+// `GetSubstitution` abstract operation
 // https://tc39.es/ecma262/#sec-getsubstitution
 var getSubstitution = function (matched, str, position, captures, namedCaptures, replacement) {
   var tailPos = position + matched.length;
