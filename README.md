@@ -556,6 +556,7 @@ Default to an oblate spheroid.
   - [.TAU](#module_utils.TAU) : <code>number</code>
   - [.getCellsTypedArray](#module_utils.getCellsTypedArray) ⇒ <code>Uint8Array</code> \| <code>Uint16Array</code> \| <code>Uint32Array</code>
   - [.normalize(v)](#module_utils.normalize) ⇒ <code>Array.&lt;number&gt;</code>
+  - [.checkArguments(...args)](#module_utils.checkArguments)
   - [.setTypedArrayType(type)](#module_utils.setTypedArrayType)
 
 <a name="module_utils.TAU"></a>
@@ -590,6 +591,18 @@ Normalize a vector 3.
 | Param | Type                              | Description    |
 | ----- | --------------------------------- | -------------- |
 | v     | <code>Array.&lt;number&gt;</code> | Vector 3 array |
+
+<a name="module_utils.checkArguments"></a>
+
+### utils.checkArguments(...args)
+
+Ensure first argument passed to the primitive functions is an object
+
+**Kind**: static method of [<code>utils</code>](#module_utils)
+
+| Param   | Type            |
+| ------- | --------------- |
+| ...args | <code>\*</code> |
 
 <a name="module_utils.setTypedArrayType"></a>
 

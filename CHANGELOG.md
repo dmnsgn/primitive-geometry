@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [2.1.0](https://github.com/dmnsgn/primitive-geometry/compare/v2.0.1...v2.1.0) (2021-08-16)
+
+
+### Features
+
+* add arguments check ([797003b](https://github.com/dmnsgn/primitive-geometry/commit/797003bee9de62b8f7a03ccec5d34a0730605f1b)), closes [#10](https://github.com/dmnsgn/primitive-geometry/issues/10)
+
+
+
 ## [2.0.1](https://github.com/dmnsgn/primitive-geometry/compare/v2.0.0...v2.0.1) (2021-06-15)
 
 
