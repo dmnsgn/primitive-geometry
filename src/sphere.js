@@ -2,6 +2,7 @@
  * @module sphere
  */
 import ellipsoid from "./ellipsoid.js";
+import { checkArguments } from "./utils.js";
 
 /**
  * @typedef {Object} SphereOptions
@@ -15,7 +16,10 @@ import ellipsoid from "./ellipsoid.js";
  * @param {SphereOptions} [options={}]
  * @returns {import("../types.js").SimplicialComplex}
  */
-const sphere = ({ radius = 0.5, nx = 32, ny = 16 } = {}) =>
-  ellipsoid({ radius, nx, ny, rx: 1, ry: 1 });
+function sphere({ radius = 0.5, nx = 32, ny = 16 } = {}) {
+  checkArguments(arguments);
+
+  return ellipsoid({ radius, nx, ny, rx: 1, ry: 1 });
+}
 
 export default sphere;

@@ -1,7 +1,7 @@
 /**
  * @module torus
  */
-import { getCellsTypedArray, normalize, TAU } from "./utils.js";
+import { checkArguments, getCellsTypedArray, normalize, TAU } from "./utils.js";
 
 const TMP = [0, 0, 0];
 
@@ -27,6 +27,8 @@ function torus({
   minorSegments = 32,
   arc = TAU,
 } = {}) {
+  checkArguments(arguments);
+
   const size = (minorSegments + 1) * (segments + 1);
 
   const positions = new Float32Array(size * 3);

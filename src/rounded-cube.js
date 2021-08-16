@@ -2,7 +2,7 @@
  * @module rounded-cube
  */
 import cube from "./cube.js";
-import { normalize } from "./utils.js";
+import { checkArguments, normalize } from "./utils.js";
 
 const TMP = [0, 0, 0];
 
@@ -31,6 +31,8 @@ function roundedCube({
   nz = nx,
   radius = sx * 0.25,
 } = {}) {
+  checkArguments(arguments);
+
   const geometry = cube({ sx, sy, sz, nx, ny, nz });
 
   const rx = sx * 0.5;

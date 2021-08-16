@@ -2,7 +2,7 @@
  * @module cube
  */
 
-import { getCellsTypedArray } from "./utils.js";
+import { checkArguments, getCellsTypedArray } from "./utils.js";
 
 /**
  * @typedef {Object} CubeOptions
@@ -20,6 +20,8 @@ import { getCellsTypedArray } from "./utils.js";
  * @returns {import("../types.js").SimplicialComplex}
  */
 function cube({ sx = 1, sy = sx, sz = sx, nx = 1, ny = nx, nz = nx } = {}) {
+  checkArguments(arguments);
+
   const size =
     (nx + 1) * (ny + 1) * 2 + (nx + 1) * (nz + 1) * 2 + (nz + 1) * (ny + 1) * 2;
 

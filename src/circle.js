@@ -1,7 +1,7 @@
 /**
  * @module circle
  */
-import { getCellsTypedArray, TAU } from "./utils.js";
+import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
 
 /**
  * @typedef {Object} BoxOptions
@@ -15,6 +15,8 @@ import { getCellsTypedArray, TAU } from "./utils.js";
  * @returns {import("../types.js").BasicSimplicialComplex}
  */
 function circle({ radius = 0.5, segments = 32 } = {}) {
+  checkArguments(arguments);
+
   const positions = new Float32Array(segments * 2);
   const cells = new (getCellsTypedArray(segments))((segments - 1) * 2);
 

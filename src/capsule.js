@@ -1,7 +1,7 @@
 /**
  * @module capsule
  */
-import { getCellsTypedArray, TAU } from "./utils.js";
+import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
 
 /**
  * @typedef {Object} CapsuleOptions
@@ -18,6 +18,8 @@ import { getCellsTypedArray, TAU } from "./utils.js";
  */
 
 function capsule({ height = 0.5, radius = 0.25, nx = 16, ny = 32 } = {}) {
+  checkArguments(arguments);
+
   const ringsBody = ny + 1;
   const ringsTotal = ny + ringsBody;
 

@@ -1,7 +1,7 @@
 /**
  * @module cylinder
  */
-import { getCellsTypedArray, normalize, TAU } from "./utils.js";
+import { checkArguments, getCellsTypedArray, normalize, TAU } from "./utils.js";
 
 const TMP = [0, 0, 0];
 
@@ -33,6 +33,8 @@ function cylinder({
   capApex = true,
   capBase = true,
 } = {}) {
+  checkArguments(arguments);
+
   let capCount = 0;
   if (capApex) capCount++;
   if (capBase) capCount++;

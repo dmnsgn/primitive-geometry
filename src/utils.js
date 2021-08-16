@@ -22,6 +22,17 @@ export function normalize(v) {
 }
 
 /**
+ * Ensure first argument passed to the primitive functions is an object
+ * @param {...*} args
+ */
+export function checkArguments(args) {
+  const argumentType = typeof args[0];
+  if (argumentType !== "object" && argumentType !== "undefined") {
+    console.error("First argument must be an object.");
+  }
+}
+
+/**
  * @private
  */
 let TYPED_ARRAY_TYPE;

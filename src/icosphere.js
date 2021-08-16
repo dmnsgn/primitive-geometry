@@ -1,7 +1,7 @@
 /**
  * @module icosphere
  */
-import { getCellsTypedArray, TAU } from "./utils.js";
+import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
 
 const f = 0.5 + Math.sqrt(5) / 2;
 
@@ -17,6 +17,8 @@ const f = 0.5 + Math.sqrt(5) / 2;
  * @returns {import("../types.js").SimplicialComplex}
  */
 function icosphere({ radius = 0.5, subdivisions = 2 } = {}) {
+  checkArguments(arguments);
+
   if (subdivisions > 10) throw new Error("Max subdivisions is 10.");
 
   const T = Math.pow(4, subdivisions);

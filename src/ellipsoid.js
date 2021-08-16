@@ -1,7 +1,7 @@
 /**
  * @module ellipsoid
  */
-import { getCellsTypedArray, normalize, TAU } from "./utils.js";
+import { checkArguments, getCellsTypedArray, normalize, TAU } from "./utils.js";
 
 const TMP = [0, 0, 0];
 
@@ -29,6 +29,8 @@ function ellipsoid({
   ry = 0.25,
   rz = ry,
 } = {}) {
+  checkArguments(arguments);
+
   const size = (ny + 1) * (nx + 1);
 
   const positions = new Float32Array(size * 3);

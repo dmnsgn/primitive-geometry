@@ -1,6 +1,8 @@
 /**
  * @module box
  */
+import { checkArguments } from "./utils.js";
+
 /**
  * @typedef {Object} BoxOptions
  * @property {number} [sx=1]
@@ -14,6 +16,8 @@
  * @returns {import("../types.js").BasicSimplicialComplex}
  */
 function box({ sx = 1, sy = sx, sz = sx } = {}) {
+  checkArguments(arguments);
+
   const x = sx / 2;
   const y = sy / 2;
   const z = sz / 2;

@@ -2,7 +2,7 @@
  * @module plane
  */
 
-import { getCellsTypedArray } from "./utils.js";
+import { checkArguments, getCellsTypedArray } from "./utils.js";
 
 /**
  * @typedef {Object} PlaneOptions
@@ -18,6 +18,8 @@ import { getCellsTypedArray } from "./utils.js";
  * @returns {import("../types.js").SimplicialComplex}
  */
 function plane({ sx = 1, sy = sx, nx = 1, ny = nx } = {}) {
+  checkArguments(arguments);
+
   const size = (nx + 1) * (ny + 1);
 
   const positions = new Float32Array(size * 3);
