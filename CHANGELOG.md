@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [2.2.0](https://github.com/dmnsgn/primitive-geometry/compare/v2.1.0...v2.2.0) (2021-10-02)
+
+
+### Features
+
+* add exports field to package.json ([09700e2](https://github.com/dmnsgn/primitive-geometry/commit/09700e218efe30b29e5d8b3bf71a44864adf2f32))
+
+
+
 # [2.1.0](https://github.com/dmnsgn/primitive-geometry/compare/v2.0.1...v2.1.0) (2021-08-16)
 
 
