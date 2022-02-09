@@ -40,24 +40,94 @@ See the [example](https://dmnsgn.github.io/primitive-geometry/) and its [source]
 ```js
 import Primitives from "primitive-geometry";
 
-const quadGeometry = Primitives.quad();
-const planeGeometry = Primitives.plane();
+const quadGeometry = Primitives.quad({
+  scale: 0.5,
+});
+const planeGeometry = Primitives.plane({
+  sx: 1,
+  sy: 1,
+  nx: 1,
+  ny: 1,
+});
 
-const cubeGeometry = Primitives.cube();
-const roundedCubeGeometry = Primitives.roundedCube();
+const cubeGeometry = Primitives.cube({
+  sx: 1,
+  sy: 1,
+  sz: 1,
+  nx: 1,
+  ny: 1,
+  nz: 1,
+});
+const roundedCubeGeometry = Primitives.roundedCube({
+  sx: 1,
+  sy: 1,
+  sz: 1,
+  nx: 16,
+  ny: 16,
+  nz: 16,
+  radius: 0.25,
+});
 
-const cylinderGeometry = Primitives.cylinder();
-const coneGeometry = Primitives.cone();
-const capsuleGeometry = Primitives.capsule();
+const cylinderGeometry = Primitives.cylinder({
+  height: 1,
+  radius: 0.25,
+  nx: 16,
+  ny: 1,
+  radiusApex: 0.25,
+  capSegments: 1,
+  capApex: true,
+  capBase: true,
+});
+const coneGeometry = Primitives.cone({
+  height: 1,
+  radius: 0.25,
+  nx: 16,
+  ny: 1,
+  capSegments: 1,
+  capBase: true,
+});
+const capsuleGeometry = Primitives.capsule({
+  height: 0.5,
+  radius: 0.25,
+  nx: 16,
+  ny: 32,
+});
 
-const sphereGeometry = Primitives.sphere();
-const icosphereGeometry = Primitives.icosphere();
-const ellipsoidGeometry = Primitives.ellipsoid();
-const torusGeometry = Primitives.torus();
+const sphereGeometry = Primitives.sphere({
+  radius: 0.5,
+  nx: 32,
+  ny: 16,
+});
+const icosphereGeometry = Primitives.icosphere({
+  radius: 0.5,
+  subdivisions: 2,
+});
+const ellipsoidGeometry = Primitives.ellipsoid({
+  radius: 1,
+  nx: 32,
+  ny: 16,
+  rx: 0.5,
+  ry: 0.25,
+  rz: 0.25,
+});
+const torusGeometry = Primitives.torus({
+  radius: 0.3,
+  segments: 64,
+  minorRadius: 0.1,
+  minorSegments: 32,
+  arc: Math.PI * 2,
+});
 
 // without normals/uvs
-const boxGeometry = Primitives.box();
-const circleGeometry = Primitives.circle();
+const boxGeometry = Primitives.box({
+  sx: 1,
+  sy: 1,
+  sz: 1,
+});
+const circleGeometry = Primitives.circle({
+  radius: 0.5,
+  segments: 32,
+});
 
 console.log(quadGeometry);
 // {
