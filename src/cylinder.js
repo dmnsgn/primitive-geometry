@@ -36,24 +36,23 @@ function cylinder({
   capSegments = 1,
   capApex = true,
   capBase = true,
+  capBaseSegments = capSegments,
 } = {}) {
   checkArguments(arguments);
 
   let capCount = 0;
-  if (capApex) capCount++;
-  if (capBase) capCount++;
+  if (capApex) capCount += capSegments;
+  if (capBase) capCount += capBaseSegments;
 
   const segments = nx + 1;
   const slices = ny + 1;
 
-  const size = segments * slices + segments * capSegments * 2 * capCount;
+  const size = segments * slices + segments * 2 * capCount;
 
   const positions = new Float32Array(size * 3);
   const normals = new Float32Array(size * 3);
   const uvs = new Float32Array(size * 2);
-  const cells = new (getCellsTypedArray(size))(
-    (nx * ny + nx * capSegments * capCount) * 6
-  );
+  const cells = new (getCellsTypedArray(size))((nx * ny + nx * capCount) * 6);
 
   let vertexIndex = 0;
   let cellIndex = 0;
@@ -106,7 +105,7 @@ function cylinder({
     }
   }
 
-  function computeCap(flip, height, radius) {
+  function computeCap(flip, height, radius, capSegments) {
     const index = vertexIndex;
 
     const segmentIncrement = 1 / (segments - 1);
@@ -177,8 +176,8 @@ function cylinder({
     }
   }
 
-  if (capBase) computeCap(1, -halfHeight, radius);
-  if (capApex) computeCap(-1, halfHeight, radiusApex);
+  if (capBase) computeCap(1, -halfHeight, radius, capBaseSegments);
+  if (capApex) computeCap(-1, halfHeight, radiusApex, capSegments);
 
   return {
     positions,
