@@ -4,25 +4,34 @@
 import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
 
 /**
- * @typedef {Object} BoxOptions
+ * @typedef {Object} CircleOptions
  * @property {number} [radius=0.5]
  * @property {number} [segments=32]
+ * @property {number} [theta=TAU]
+ * @property {boolean} [closed=false]
  */
 
 /**
  * @alias module:circle
- * @param {BoxOptions} [options={}]
+ * @param {CircleOptions} [options={}]
  * @returns {import("../types.js").BasicSimplicialComplex}
  */
-function circle({ radius = 0.5, segments = 32 } = {}) {
+function circle({
+  radius = 0.5,
+  segments = 32,
+  theta = TAU,
+  closed = false,
+} = {}) {
   checkArguments(arguments);
 
   const positions = new Float32Array(segments * 2);
-  const cells = new (getCellsTypedArray(segments))((segments - 1) * 2);
+  const cells = new (getCellsTypedArray(segments))(
+    (segments - (closed ? 0 : 1)) * 2
+  );
 
   for (let i = 0; i < segments; i++) {
-    positions[i * 2] = radius * Math.cos((i / segments) * TAU);
-    positions[i * 2 + 1] = radius * Math.sin((i / segments) * TAU);
+    positions[i * 2] = radius * Math.cos((i / segments) * theta);
+    positions[i * 2 + 1] = radius * Math.sin((i / segments) * theta);
 
     if (i > 0) {
       cells[(i - 1) * 2] = i - 1;
@@ -30,10 +39,12 @@ function circle({ radius = 0.5, segments = 32 } = {}) {
     }
   }
 
-  return {
-    positions: positions,
-    cells: cells,
-  };
+  if (closed) {
+    cells[(segments - 1) * 2] = segments - 1;
+    cells[(segments - 1) * 2 + 1] = 0;
+  }
+
+  return { positions, cells };
 }
 
 export default circle;
