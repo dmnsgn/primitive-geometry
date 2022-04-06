@@ -66,24 +66,24 @@ function capsule({
     }
   }
 
+  for (let r = 0; r < ny / 2; r++) {
+    computeRing(
+      Math.sin(Math.PI * r * ringIncrement),
+      Math.sin(Math.PI * (r * ringIncrement - 0.5)),
+      -0.5
+    );
+  }
+
   for (let r = 0; r < ringsBody; r++) {
     computeRing(1, 0, r * bodyIncrement - 0.5);
   }
 
-  for (let r = 0; r < ny; r++) {
-    if (r < ny * 0.5) {
-      computeRing(
-        Math.sin(Math.PI * r * ringIncrement),
-        Math.sin(Math.PI * (r * ringIncrement - 0.5)),
-        -0.5
-      );
-    } else {
-      computeRing(
-        Math.sin(Math.PI * r * ringIncrement),
-        Math.sin(Math.PI * (r * ringIncrement - 0.5)),
-        0.5
-      );
-    }
+  for (let r = ny / 2; r < ny; r++) {
+    computeRing(
+      Math.sin(Math.PI * r * ringIncrement),
+      Math.sin(Math.PI * (r * ringIncrement - 0.5)),
+      0.5
+    );
   }
 
   for (let r = 0; r < ringsTotal - 1; r++) {
