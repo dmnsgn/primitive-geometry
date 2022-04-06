@@ -17,6 +17,8 @@ import {
  * @property {number} [rx=1]
  * @property {number} [rx=0.5]
  * @property {number} [rz=ry]
+ * @property {number} [theta=Math.PI]
+ * @property {number} [phi=TAU]
  */
 
 /**
@@ -32,6 +34,8 @@ function ellipsoid({
   rx = 0.5,
   ry = 0.25,
   rz = ry,
+  theta = Math.PI,
+  phi = TAU,
 } = {}) {
   checkArguments(arguments);
 
@@ -47,15 +51,15 @@ function ellipsoid({
 
   for (let y = 0; y <= ny; y++) {
     const v = y / ny;
-    const theta = v * Math.PI;
-    const cosTheta = Math.cos(theta);
-    const sinTheta = Math.sin(theta);
+    const t = v * theta;
+    const cosTheta = Math.cos(t);
+    const sinTheta = Math.sin(t);
 
     for (let x = 0; x <= nx; x++) {
       const u = x / nx;
-      const phi = u * TAU;
-      const cosPhi = Math.cos(phi);
-      const sinPhi = Math.sin(phi);
+      const p = u * phi;
+      const cosPhi = Math.cos(p);
+      const sinPhi = Math.sin(p);
 
       TMP[0] = -rx * cosPhi * sinTheta;
       TMP[1] = -ry * cosTheta;

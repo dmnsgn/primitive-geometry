@@ -15,7 +15,8 @@ import {
  * @property {number} [segments=64]
  * @property {number} [minorRadius=0.1]
  * @property {number} [minorSegments=16]
- * @property {number} [arc=2 * Math.PI]
+ * @property {number} [theta=TAU]
+ * @property {number} [phi=TAU]
  */
 
 /**
@@ -29,7 +30,8 @@ function torus({
 
   minorRadius = 0.1,
   minorSegments = 32,
-  arc = TAU,
+  theta = TAU,
+  phi = TAU,
 } = {}) {
   checkArguments(arguments);
 
@@ -49,13 +51,13 @@ function torus({
     for (let i = 0; i <= segments; i++) {
       const u = i / segments;
 
-      const phi = u * arc;
-      const cosPhi = -Math.cos(phi);
-      const sinPhi = Math.sin(phi);
+      const p = u * phi;
+      const cosPhi = -Math.cos(p);
+      const sinPhi = Math.sin(p);
 
-      const theta = v * TAU;
-      const cosTheta = -Math.cos(theta);
-      const sinTheta = Math.sin(theta);
+      const t = v * theta;
+      const cosTheta = -Math.cos(t);
+      const sinTheta = Math.sin(t);
 
       TMP[0] = (radius + minorRadius * cosTheta) * cosPhi;
       TMP[1] = (radius + minorRadius * cosTheta) * sinPhi;

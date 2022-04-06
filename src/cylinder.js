@@ -19,6 +19,7 @@ import {
  * @property {number} [capSegments=1]
  * @property {boolean} [capApex=true]
  * @property {boolean} [capBase=true]
+ * @property {number} [phi=TAU]
  */
 
 /**
@@ -37,6 +38,7 @@ function cylinder({
   capApex = true,
   capBase = true,
   capBaseSegments = capSegments,
+  phi = TAU,
 } = {}) {
   checkArguments(arguments);
 
@@ -66,9 +68,9 @@ function cylinder({
 
     for (let j = 0; j < slices; j++) {
       const v = j * ringIncrement;
-      const phi = u * TAU;
-      const cosPhi = -Math.cos(phi);
-      const sinPhi = Math.sin(phi);
+      const p = u * phi;
+      const cosPhi = -Math.cos(p);
+      const sinPhi = Math.sin(p);
 
       const r = radius * (1 - v) + radiusApex * v;
       positions[vertexIndex * 3] = r * cosPhi;
@@ -111,8 +113,9 @@ function cylinder({
     const segmentIncrement = 1 / (segments - 1);
     for (let r = 0; r < capSegments; r++) {
       for (let i = 0; i < segments; i++) {
-        const cosPhi = -Math.cos(i * segmentIncrement * TAU);
-        const sinPhi = Math.sin(i * segmentIncrement * TAU);
+        const p = i * segmentIncrement * phi;
+        const cosPhi = -Math.cos(p);
+        const sinPhi = Math.sin(p);
 
         // inner point
         positions[vertexIndex * 3] = (radius * cosPhi * r) / capSegments;

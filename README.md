@@ -77,6 +77,8 @@ const cylinderGeometry = Primitives.cylinder({
   capSegments: 1,
   capApex: true,
   capBase: true,
+  capBaseSegments: 1,
+  phi: Math.PI * 2,
 });
 const coneGeometry = Primitives.cone({
   height: 1,
@@ -85,18 +87,22 @@ const coneGeometry = Primitives.cone({
   ny: 1,
   capSegments: 1,
   capBase: true,
+  theta: Math.PI * 2,
 });
 const capsuleGeometry = Primitives.capsule({
   height: 0.5,
   radius: 0.25,
   nx: 16,
   ny: 32,
+  theta: Math.PI * 2,
 });
 
 const sphereGeometry = Primitives.sphere({
   radius: 0.5,
   nx: 32,
   ny: 16,
+  theta: Math.PI,
+  phi: Math.PI * 2,
 });
 const icosphereGeometry = Primitives.icosphere({
   radius: 0.5,
@@ -109,13 +115,23 @@ const ellipsoidGeometry = Primitives.ellipsoid({
   rx: 0.5,
   ry: 0.25,
   rz: 0.25,
+  theta: Math.PI,
+  phi: Math.PI * 2,
 });
 const torusGeometry = Primitives.torus({
   radius: 0.3,
   segments: 64,
   minorRadius: 0.1,
   minorSegments: 32,
-  arc: Math.PI * 2,
+  theta: Math.PI * 2,
+  phi: Math.PI * 2,
+});
+
+const tetrahedron = Primitives.tetrahedron({
+  radius: 0.5,
+});
+const icosahedron = Primitives.icosahedron({
+  radius: 0.5,
 });
 
 // without normals/uvs
@@ -127,6 +143,8 @@ const boxGeometry = Primitives.box({
 const circleGeometry = Primitives.circle({
   radius: 0.5,
   segments: 32,
+  closed: false,
+  theta: Math.PI * 2,
 });
 
 console.log(quadGeometry);

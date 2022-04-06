@@ -12,6 +12,7 @@ import { checkArguments } from "./utils.js";
  * @property {number} [ny=1]
  * @property {number} [capSegments=1]
  * @property {boolean} [capBase=true]
+ * @property {number} [phi=TAU]
  */
 
 /**
@@ -19,7 +20,7 @@ import { checkArguments } from "./utils.js";
  * @param {ConeOptions} [options={}]
  * @returns {import("../types.js").SimplicialComplex}
  */
-function cone({ height, radius, nx, ny, capSegments, capBase } = {}) {
+function cone({ height, radius, nx, ny, capSegments, capBase, phi } = {}) {
   checkArguments(arguments);
 
   return cylinder({
@@ -29,6 +30,7 @@ function cone({ height, radius, nx, ny, capSegments, capBase } = {}) {
     ny,
     capSegments,
     capBase,
+    phi,
 
     radiusApex: 0,
     capApex: false,

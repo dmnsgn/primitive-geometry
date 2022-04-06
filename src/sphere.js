@@ -9,6 +9,8 @@ import { checkArguments } from "./utils.js";
  * @property {number} [radius=0.5]
  * @property {number} [nx=32]
  * @property {number} [ny=16]
+ * @property {number} [theta=Math.PI]
+ * @property {number} [phi=TAU]
  */
 
 /**
@@ -16,10 +18,10 @@ import { checkArguments } from "./utils.js";
  * @param {SphereOptions} [options={}]
  * @returns {import("../types.js").SimplicialComplex}
  */
-function sphere({ radius = 0.5, nx = 32, ny = 16 } = {}) {
+function sphere({ radius = 0.5, nx = 32, ny = 16, theta, phi } = {}) {
   checkArguments(arguments);
 
-  return ellipsoid({ radius, nx, ny, rx: 1, ry: 1 });
+  return ellipsoid({ radius, nx, ny, theta, phi, rx: 1, ry: 1 });
 }
 
 export default sphere;

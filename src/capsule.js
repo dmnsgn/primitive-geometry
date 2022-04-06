@@ -9,6 +9,7 @@ import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
  * @property {number} [radius=0.25]
  * @property {number} [nx=16]
  * @property {number} [ny=32]
+ * @property {number} [phi=TAU]
  */
 
 /**
@@ -17,7 +18,13 @@ import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
  * @returns {import("../types.js").SimplicialComplex}
  */
 
-function capsule({ height = 0.5, radius = 0.25, nx = 16, ny = 32 } = {}) {
+function capsule({
+  height = 0.5,
+  radius = 0.25,
+  nx = 16,
+  ny = 32,
+  phi = TAU,
+} = {}) {
   checkArguments(arguments);
 
   const ringsBody = ny + 1;
@@ -39,8 +46,8 @@ function capsule({ height = 0.5, radius = 0.25, nx = 16, ny = 32 } = {}) {
 
   function computeRing(r, y, dy) {
     for (let s = 0; s < nx; s++) {
-      const x = -Math.cos(s * segmentIncrement * TAU) * r;
-      const z = Math.sin(s * segmentIncrement * TAU) * r;
+      const x = -Math.cos(s * segmentIncrement * phi) * r;
+      const z = Math.sin(s * segmentIncrement * phi) * r;
 
       const py = radius * y + height * dy;
 
