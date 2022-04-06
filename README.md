@@ -279,6 +279,7 @@ Re-export all geometries and utils.
 | [radius] | <code>number</code> | <code>0.25</code> |
 | [nx]     | <code>number</code> | <code>16</code>   |
 | [ny]     | <code>number</code> | <code>32</code>   |
+| [phi]    | <code>number</code> | <code>TAU</code>  |
 
 <a name="module_circle"></a>
 
@@ -345,6 +346,7 @@ Re-export all geometries and utils.
 | [ny]          | <code>number</code>  | <code>1</code>    |
 | [capSegments] | <code>number</code>  | <code>1</code>    |
 | [capBase]     | <code>boolean</code> | <code>true</code> |
+| [phi]         | <code>number</code>  | <code>TAU</code>  |
 
 <a name="module_cube"></a>
 
@@ -415,6 +417,7 @@ Re-export all geometries and utils.
 | [capSegments] | <code>number</code>  | <code>1</code>      |
 | [capApex]     | <code>boolean</code> | <code>true</code>   |
 | [capBase]     | <code>boolean</code> | <code>true</code>   |
+| [phi]         | <code>number</code>  | <code>TAU</code>    |
 
 <a name="module_ellipsoid"></a>
 
@@ -443,14 +446,16 @@ Default to an oblate spheroid.
 **Kind**: inner typedef of [<code>ellipsoid</code>](#exp_module_ellipsoid--ellipsoid)
 **Properties**
 
-| Name     | Type                | Default          |
-| -------- | ------------------- | ---------------- |
-| [radius] | <code>number</code> | <code>0.5</code> |
-| [nx]     | <code>number</code> | <code>32</code>  |
-| [ny]     | <code>number</code> | <code>16</code>  |
-| [rx]     | <code>number</code> | <code>1</code>   |
-| [rx]     | <code>number</code> | <code>0.5</code> |
-| [rz]     | <code>number</code> | <code>ry</code>  |
+| Name     | Type                | Default              |
+| -------- | ------------------- | -------------------- |
+| [radius] | <code>number</code> | <code>0.5</code>     |
+| [nx]     | <code>number</code> | <code>32</code>      |
+| [ny]     | <code>number</code> | <code>16</code>      |
+| [rx]     | <code>number</code> | <code>1</code>       |
+| [rx]     | <code>number</code> | <code>0.5</code>     |
+| [rz]     | <code>number</code> | <code>ry</code>      |
+| [theta]  | <code>number</code> | <code>Math.PI</code> |
+| [phi]    | <code>number</code> | <code>TAU</code>     |
 
 <a name="module_icosahedron"></a>
 
@@ -639,11 +644,13 @@ Default to an oblate spheroid.
 **Kind**: inner typedef of [<code>sphere</code>](#exp_module_sphere--sphere)
 **Properties**
 
-| Name     | Type                | Default          |
-| -------- | ------------------- | ---------------- |
-| [radius] | <code>number</code> | <code>0.5</code> |
-| [nx]     | <code>number</code> | <code>32</code>  |
-| [ny]     | <code>number</code> | <code>16</code>  |
+| Name     | Type                | Default              |
+| -------- | ------------------- | -------------------- |
+| [radius] | <code>number</code> | <code>0.5</code>     |
+| [nx]     | <code>number</code> | <code>32</code>      |
+| [ny]     | <code>number</code> | <code>16</code>      |
+| [theta]  | <code>number</code> | <code>Math.PI</code> |
+| [phi]    | <code>number</code> | <code>TAU</code>     |
 
 <a name="module_tetrahedron"></a>
 
@@ -699,13 +706,14 @@ Default to an oblate spheroid.
 **Kind**: inner typedef of [<code>torus</code>](#exp_module_torus--torus)
 **Properties**
 
-| Name            | Type                | Default                   |
-| --------------- | ------------------- | ------------------------- |
-| [radius]        | <code>number</code> | <code>0.5</code>          |
-| [segments]      | <code>number</code> | <code>64</code>           |
-| [minorRadius]   | <code>number</code> | <code>0.1</code>          |
-| [minorSegments] | <code>number</code> | <code>16</code>           |
-| [arc]           | <code>number</code> | <code>2 \* Math.PI</code> |
+| Name            | Type                | Default          |
+| --------------- | ------------------- | ---------------- |
+| [radius]        | <code>number</code> | <code>0.5</code> |
+| [segments]      | <code>number</code> | <code>64</code>  |
+| [minorRadius]   | <code>number</code> | <code>0.1</code> |
+| [minorSegments] | <code>number</code> | <code>16</code>  |
+| [theta]         | <code>number</code> | <code>TAU</code> |
+| [phi]           | <code>number</code> | <code>TAU</code> |
 
 <a name="module_utils"></a>
 

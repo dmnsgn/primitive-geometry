@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [2.4.0](https://github.com/dmnsgn/primitive-geometry/compare/v2.3.0...v2.4.0) (2022-04-06)
+
+
+### Bug Fixes
+
+* **capsule:** wrong cell order ([0aa7efb](https://github.com/dmnsgn/primitive-geometry/commit/0aa7efb8c5e1f6e00c9a7c21d465c4048e8d983d))
+
+
+### Features
+
+* add phi/theta for all geometries ([b3afdf8](https://github.com/dmnsgn/primitive-geometry/commit/b3afdf8e320b0056f7f1274e908cac97d78df632))
+
+
+
 # [2.3.0](https://github.com/dmnsgn/primitive-geometry/compare/v2.2.0...v2.3.0) (2022-04-06)
 
 
