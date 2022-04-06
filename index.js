@@ -17,6 +17,9 @@ export { default as icosphere } from "./src/icosphere.js";
 export { default as ellipsoid } from "./src/ellipsoid.js";
 export { default as torus } from "./src/torus.js";
 
+export { default as tetrahedron } from "./src/tetrahedron.js";
+export { default as icosahedron } from "./src/icosahedron.js";
+
 export { default as box } from "./src/box.js";
 export { default as circle } from "./src/circle.js";
 

@@ -24,6 +24,9 @@
     "icosphere",
     "ellipsoid",
     "torus",
+    "platonic-solid",
+    "tetrahedron",
+    "icosahedron",
     "box",
     "circle"
   ],
