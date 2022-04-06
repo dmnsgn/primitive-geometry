@@ -162,6 +162,8 @@ console.log(quadGeometry);
 <dd></dd>
 <dt><a href="#module_ellipsoid">ellipsoid</a></dt>
 <dd></dd>
+<dt><a href="#module_icosahedron">icosahedron</a></dt>
+<dd></dd>
 <dt><a href="#module_icosphere">icosphere</a></dt>
 <dd></dd>
 <dt><a href="#module_plane">plane</a></dt>
@@ -171,6 +173,8 @@ console.log(quadGeometry);
 <dt><a href="#module_rounded-cube">rounded-cube</a></dt>
 <dd></dd>
 <dt><a href="#module_sphere">sphere</a></dt>
+<dd></dd>
+<dt><a href="#module_tetrahedron">tetrahedron</a></dt>
 <dd></dd>
 <dt><a href="#module_torus">torus</a></dt>
 <dd></dd>
@@ -217,7 +221,7 @@ Re-export all geometries and utils.
 
 #### box~BoxOptions : <code>Object</code>
 
-**Kind**: inner typedef of [<code>box</code>](#exp_module_box--box)  
+**Kind**: inner typedef of [<code>box</code>](#exp_module_box--box)
 **Properties**
 
 | Name | Type                | Default         |
@@ -248,7 +252,7 @@ Re-export all geometries and utils.
 
 #### capsule~CapsuleOptions : <code>Object</code>
 
-**Kind**: inner typedef of [<code>capsule</code>](#exp_module_capsule--capsule)  
+**Kind**: inner typedef of [<code>capsule</code>](#exp_module_capsule--capsule)
 **Properties**
 
 | Name     | Type                | Default           |
@@ -264,7 +268,7 @@ Re-export all geometries and utils.
 
 - [circle](#module_circle)
   - [circle([options])](#exp_module_circle--circle) ⇒ [<code>BasicSimplicialComplex</code>](#BasicSimplicialComplex) ⏏
-    - [~BoxOptions](#module_circle--circle..BoxOptions) : <code>Object</code>
+    - [~CircleOptions](#module_circle--circle..CircleOptions) : <code>Object</code>
 
 <a name="exp_module_circle--circle"></a>
 
@@ -272,21 +276,23 @@ Re-export all geometries and utils.
 
 **Kind**: Exported function
 
-| Param     | Type                                                          | Default         |
-| --------- | ------------------------------------------------------------- | --------------- |
-| [options] | [<code>BoxOptions</code>](#module_circle--circle..BoxOptions) | <code>{}</code> |
+| Param     | Type                                                                | Default         |
+| --------- | ------------------------------------------------------------------- | --------------- |
+| [options] | [<code>CircleOptions</code>](#module_circle--circle..CircleOptions) | <code>{}</code> |
 
-<a name="module_circle--circle..BoxOptions"></a>
+<a name="module_circle--circle..CircleOptions"></a>
 
-#### circle~BoxOptions : <code>Object</code>
+#### circle~CircleOptions : <code>Object</code>
 
-**Kind**: inner typedef of [<code>circle</code>](#exp_module_circle--circle)  
+**Kind**: inner typedef of [<code>circle</code>](#exp_module_circle--circle)
 **Properties**
 
-| Name       | Type                | Default          |
-| ---------- | ------------------- | ---------------- |
-| [radius]   | <code>number</code> | <code>0.5</code> |
-| [segments] | <code>number</code> | <code>32</code>  |
+| Name       | Type                 | Default            |
+| ---------- | -------------------- | ------------------ |
+| [radius]   | <code>number</code>  | <code>0.5</code>   |
+| [segments] | <code>number</code>  | <code>32</code>    |
+| [theta]    | <code>number</code>  | <code>TAU</code>   |
+| [closed]   | <code>boolean</code> | <code>false</code> |
 
 <a name="module_cone"></a>
 
@@ -310,7 +316,7 @@ Re-export all geometries and utils.
 
 #### cone~ConeOptions : <code>Object</code>
 
-**Kind**: inner typedef of [<code>cone</code>](#exp_module_cone--cone)  
+**Kind**: inner typedef of [<code>cone</code>](#exp_module_cone--cone)
 **Properties**
 
 | Name          | Type                 | Default           |
@@ -344,7 +350,7 @@ Re-export all geometries and utils.
 
 #### cube~CubeOptions : <code>Object</code>
 
-**Kind**: inner typedef of [<code>cube</code>](#exp_module_cube--cube)  
+**Kind**: inner typedef of [<code>cube</code>](#exp_module_cube--cube)
 **Properties**
 
 | Name | Type                | Default         |
@@ -378,7 +384,7 @@ Re-export all geometries and utils.
 
 #### cylinder~CylinderOptions : <code>Object</code>
 
-**Kind**: inner typedef of [<code>cylinder</code>](#exp_module_cylinder--cylinder)  
+**Kind**: inner typedef of [<code>cylinder</code>](#exp_module_cylinder--cylinder)
 **Properties**
 
 | Name          | Type                 | Default             |
@@ -416,7 +422,7 @@ Default to an oblate spheroid.
 
 #### ellipsoid~EllipsoidOptions : <code>Object</code>
 
-**Kind**: inner typedef of [<code>ellipsoid</code>](#exp_module_ellipsoid--ellipsoid)  
+**Kind**: inner typedef of [<code>ellipsoid</code>](#exp_module_ellipsoid--ellipsoid)
 **Properties**
 
 | Name     | Type                | Default          |
@@ -427,6 +433,35 @@ Default to an oblate spheroid.
 | [rx]     | <code>number</code> | <code>1</code>   |
 | [rx]     | <code>number</code> | <code>0.5</code> |
 | [rz]     | <code>number</code> | <code>ry</code>  |
+
+<a name="module_icosahedron"></a>
+
+## icosahedron
+
+- [icosahedron](#module_icosahedron)
+  - [icosahedron([options])](#exp_module_icosahedron--icosahedron) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
+    - [~IcosahedronOptions](#module_icosahedron--icosahedron..IcosahedronOptions) : <code>Object</code>
+
+<a name="exp_module_icosahedron--icosahedron"></a>
+
+### icosahedron([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
+
+**Kind**: Exported function
+
+| Param     | Type                                                                                    | Default         |
+| --------- | --------------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>IcosahedronOptions</code>](#module_icosahedron--icosahedron..IcosahedronOptions) | <code>{}</code> |
+
+<a name="module_icosahedron--icosahedron..IcosahedronOptions"></a>
+
+#### icosahedron~IcosahedronOptions : <code>Object</code>
+
+**Kind**: inner typedef of [<code>icosahedron</code>](#exp_module_icosahedron--icosahedron)
+**Properties**
+
+| Name     | Type                | Default          |
+| -------- | ------------------- | ---------------- |
+| [radius] | <code>number</code> | <code>0.5</code> |
 
 <a name="module_icosphere"></a>
 
@@ -450,7 +485,7 @@ Default to an oblate spheroid.
 
 #### icosphere~IcosphereOptions : <code>Object</code>
 
-**Kind**: inner typedef of [<code>icosphere</code>](#exp_module_icosphere--icosphere)  
+**Kind**: inner typedef of [<code>icosphere</code>](#exp_module_icosphere--icosphere)
 **Properties**
 
 | Name           | Type                | Default          |
@@ -464,6 +499,7 @@ Default to an oblate spheroid.
 
 - [plane](#module_plane)
   - [plane([options])](#exp_module_plane--plane) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
+    - [~PlaneDirection](#module_plane--plane..PlaneDirection) : <code>&quot;x&quot;</code> \| <code>&quot;-x&quot;</code> \| <code>&quot;y&quot;</code> \| <code>&quot;-y&quot;</code> \| <code>&quot;z&quot;</code> \| <code>&quot;-z&quot;</code>
     - [~PlaneOptions](#module_plane--plane..PlaneOptions) : <code>Object</code>
 
 <a name="exp_module_plane--plane"></a>
@@ -476,19 +512,25 @@ Default to an oblate spheroid.
 | --------- | --------------------------------------------------------------- | --------------- |
 | [options] | [<code>PlaneOptions</code>](#module_plane--plane..PlaneOptions) | <code>{}</code> |
 
+<a name="module_plane--plane..PlaneDirection"></a>
+
+#### plane~PlaneDirection : <code>&quot;x&quot;</code> \| <code>&quot;-x&quot;</code> \| <code>&quot;y&quot;</code> \| <code>&quot;-y&quot;</code> \| <code>&quot;z&quot;</code> \| <code>&quot;-z&quot;</code>
+
+**Kind**: inner typedef of [<code>plane</code>](#exp_module_plane--plane)
 <a name="module_plane--plane..PlaneOptions"></a>
 
 #### plane~PlaneOptions : <code>Object</code>
 
-**Kind**: inner typedef of [<code>plane</code>](#exp_module_plane--plane)  
+**Kind**: inner typedef of [<code>plane</code>](#exp_module_plane--plane)
 **Properties**
 
-| Name | Type                | Default         |
-| ---- | ------------------- | --------------- |
-| [sx] | <code>number</code> | <code>1</code>  |
-| [sy] | <code>number</code> | <code>sx</code> |
-| [nx] | <code>number</code> | <code>1</code>  |
-| [ny] | <code>number</code> | <code>nx</code> |
+| Name        | Type                | Default                                  |
+| ----------- | ------------------- | ---------------------------------------- |
+| [sx]        | <code>number</code> | <code>1</code>                           |
+| [sy]        | <code>number</code> | <code>sx</code>                          |
+| [nx]        | <code>number</code> | <code>1</code>                           |
+| [ny]        | <code>number</code> | <code>nx</code>                          |
+| [direction] | <code>string</code> | <code>&quot;\&quot;z\&quot;&quot;</code> |
 
 <a name="module_quad"></a>
 
@@ -512,7 +554,7 @@ Default to an oblate spheroid.
 
 #### quad~QuadOptions : <code>Object</code>
 
-**Kind**: inner typedef of [<code>quad</code>](#exp_module_quad--quad)  
+**Kind**: inner typedef of [<code>quad</code>](#exp_module_quad--quad)
 **Properties**
 
 | Name    | Type                | Default          |
@@ -541,7 +583,7 @@ Default to an oblate spheroid.
 
 #### roundedCube~RoundedCubeOptions : <code>Object</code>
 
-**Kind**: inner typedef of [<code>roundedCube</code>](#exp_module_rounded-cube--roundedCube)  
+**Kind**: inner typedef of [<code>roundedCube</code>](#exp_module_rounded-cube--roundedCube)
 **Properties**
 
 | Name     | Type                | Default                 |
@@ -576,7 +618,7 @@ Default to an oblate spheroid.
 
 #### sphere~SphereOptions : <code>Object</code>
 
-**Kind**: inner typedef of [<code>sphere</code>](#exp_module_sphere--sphere)  
+**Kind**: inner typedef of [<code>sphere</code>](#exp_module_sphere--sphere)
 **Properties**
 
 | Name     | Type                | Default          |
@@ -584,6 +626,35 @@ Default to an oblate spheroid.
 | [radius] | <code>number</code> | <code>0.5</code> |
 | [nx]     | <code>number</code> | <code>32</code>  |
 | [ny]     | <code>number</code> | <code>16</code>  |
+
+<a name="module_tetrahedron"></a>
+
+## tetrahedron
+
+- [tetrahedron](#module_tetrahedron)
+  - [tetrahedron([options])](#exp_module_tetrahedron--tetrahedron) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
+    - [~TetrahedronOptions](#module_tetrahedron--tetrahedron..TetrahedronOptions) : <code>Object</code>
+
+<a name="exp_module_tetrahedron--tetrahedron"></a>
+
+### tetrahedron([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
+
+**Kind**: Exported function
+
+| Param     | Type                                                                                    | Default         |
+| --------- | --------------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>TetrahedronOptions</code>](#module_tetrahedron--tetrahedron..TetrahedronOptions) | <code>{}</code> |
+
+<a name="module_tetrahedron--tetrahedron..TetrahedronOptions"></a>
+
+#### tetrahedron~TetrahedronOptions : <code>Object</code>
+
+**Kind**: inner typedef of [<code>tetrahedron</code>](#exp_module_tetrahedron--tetrahedron)
+**Properties**
+
+| Name     | Type                | Default          |
+| -------- | ------------------- | ---------------- |
+| [radius] | <code>number</code> | <code>0.5</code> |
 
 <a name="module_torus"></a>
 
@@ -607,7 +678,7 @@ Default to an oblate spheroid.
 
 #### torus~TorusOptions : <code>Object</code>
 
-**Kind**: inner typedef of [<code>torus</code>](#exp_module_torus--torus)  
+**Kind**: inner typedef of [<code>torus</code>](#exp_module_torus--torus)
 **Properties**
 
 | Name            | Type                | Default                   |
@@ -635,14 +706,14 @@ Default to an oblate spheroid.
 
 Two times PI.
 
-**Kind**: static constant of [<code>utils</code>](#module_utils)  
+**Kind**: static constant of [<code>utils</code>](#module_utils)
 <a name="module_utils.getCellsTypedArray"></a>
 
 ### utils.getCellsTypedArray ⇒ <code>Uint8Array</code> \| <code>Uint16Array</code> \| <code>Uint32Array</code>
 
 Select cells typed array from a size determined by amount of vertices.
 
-**Kind**: static constant of [<code>utils</code>](#module_utils)  
+**Kind**: static constant of [<code>utils</code>](#module_utils)
 **See**: [MDN TypedArray objects](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray#typedarray_objects)
 
 | Param | Type                | Description            |
@@ -655,7 +726,7 @@ Select cells typed array from a size determined by amount of vertices.
 
 Normalize a vector 3.
 
-**Kind**: static method of [<code>utils</code>](#module_utils)  
+**Kind**: static method of [<code>utils</code>](#module_utils)
 **Returns**: <code>Array.&lt;number&gt;</code> - Normalized vector
 
 | Param | Type                              | Description    |
@@ -692,7 +763,7 @@ Enforce a typed array constructor for cells
 
 Geometry definition without normals and UVs.
 
-**Kind**: global typedef  
+**Kind**: global typedef
 **Properties**
 
 | Name      | Type                                                                            |
@@ -706,7 +777,7 @@ Geometry definition without normals and UVs.
 
 Geometry definition.
 
-**Kind**: global typedef  
+**Kind**: global typedef
 **Properties**
 
 | Name      | Type                                                                            |

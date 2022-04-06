@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [2.3.0](https://github.com/dmnsgn/primitive-geometry/compare/v2.2.0...v2.3.0) (2022-04-06)
+
+
+### Features
+
+* add tetrahedron + add icosahedron ([cd341d2](https://github.com/dmnsgn/primitive-geometry/commit/cd341d203274cec347242f58d373f69501caee13))
+* **cylinder:** add capBaseSegments option ([92dc090](https://github.com/dmnsgn/primitive-geometry/commit/92dc090880ab1de82f0d68c5becddb10b90ab22e))
+* add plane direction + refactor computePlane for use in both plane and cube ([a5392c3](https://github.com/dmnsgn/primitive-geometry/commit/a5392c30de99db8e2190d041451c9c963d1bd549))
+* **circle:** add theta and closed options ([cf34b04](https://github.com/dmnsgn/primitive-geometry/commit/cf34b047c837efb6514b74da9848dab7d97c8eca))
+
+
+
 # [2.2.0](https://github.com/dmnsgn/primitive-geometry/compare/v2.1.0...v2.2.0) (2021-10-02)
 
 
