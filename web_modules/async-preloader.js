@@ -1,8 +1,11 @@
-import './common/esnext.map.update-95c88744.js';
-import './common/web.url-f0dbe7ec.js';
-import './common/is-array-iterator-method-02e028bb.js';
-import './common/string-multibyte-d7a22384.js';
-import './common/redefine-all-fdb3392a.js';
+import './common/esnext.map.update-3463daaf.js';
+import './common/web.dom-collections.iterator-8ea35636.js';
+import './common/web.url-c370a1ac.js';
+import './common/esnext.iterator.filter-fb9a5ca2.js';
+import './common/esnext.iterator.find-de00bed3.js';
+import './common/set-to-string-tag-66b9f676.js';
+import './common/string-multibyte-899afb37.js';
+import './common/array-sort-bfab3e41.js';
 
 /* Font Face Observer v3.3.1 - © Bram Stein - Damien Seguin. License: BSD-3-Clause */
 function _classCallCheck(instance, Constructor) {
@@ -598,7 +601,7 @@ var LoaderKey;
   LoaderKey["Font"] = "Font";
 })(LoaderKey || (LoaderKey = {}));
 
-const isSafari = navigator && navigator.userAgent.indexOf("Safari") > -1;
+const isSafari = typeof navigator !== "undefined" && navigator && navigator.userAgent.indexOf("Safari") > -1;
 /**
  * AsyncPreloader: assets preloader using ES2017 async/await and fetch.
  *
@@ -659,7 +662,7 @@ class AsyncPreloader {
 
 
     this.loadItem = async item => {
-      const extension = AsyncPreloader.getFileExtension(item.src);
+      const extension = AsyncPreloader.getFileExtension(item.src || "");
       const loaderKey = item.loader || AsyncPreloader.getLoaderKey(extension);
       const loadedItem = await this[`load` + loaderKey](item);
       this.items.set(item.id || item.src, loadedItem);
@@ -687,7 +690,7 @@ class AsyncPreloader {
      * Load an item and parse the Response as text
      *
      * @param {LoadItem} item Item to load
-     * @returns {Promise<LoadedValue>} Fulfilled value of parsed Response
+     * @returns {Promise<string>} Fulfilled value of parsed Response
      */
 
 
@@ -699,7 +702,7 @@ class AsyncPreloader {
      * Load an item and parse the Response as json
      *
      * @param {LoadItem} item Item to load
-     * @returns {Promise<LoadedValue>} Fulfilled value of parsed Response
+     * @returns {Promise<JSON>} Fulfilled value of parsed Response
      */
 
 
@@ -711,7 +714,7 @@ class AsyncPreloader {
      * Load an item and parse the Response as arrayBuffer
      *
      * @param {LoadItem} item Item to load
-     * @returns {Promise<LoadedValue>} Fulfilled value of parsed Response
+     * @returns {Promise<ArrayBuffer>} Fulfilled value of parsed Response
      */
 
 
@@ -723,7 +726,7 @@ class AsyncPreloader {
      * Load an item and parse the Response as blob
      *
      * @param {LoadItem} item Item to load
-     * @returns {Promise<LoadedValue>} Fulfilled value of parsed Response
+     * @returns {Promise<Blob>} Fulfilled value of parsed Response
      */
 
 
@@ -735,7 +738,7 @@ class AsyncPreloader {
      * Load an item and parse the Response as formData
      *
      * @param {LoadItem} item Item to load
-     * @returns {Promise<LoadedValue>} Fulfilled value of parsed Response
+     * @returns {Promise<FormData>} Fulfilled value of parsed Response
      */
 
 
@@ -870,18 +873,31 @@ class AsyncPreloader {
       return AsyncPreloader.domParser.parseFromString(data, item.mimeType);
     };
     /**
-     * Load a font via a FontFaceObserver instance
+     * Load a font via FontFace or check a font is loaded via FontFaceObserver instance
      *
-     * @param {LoadItem} item Item to load (id correspond to the fontName).
-     * @returns {Promise<string>} Fulfilled value with fontName initial id.
+     * @param {LoadItem} item Item to load (id correspond to the font family name).
+     * @returns {Promise<FontFace | string>} Fulfilled value with FontFace instance or initial id if no src provided.
      */
 
 
     this.loadFont = async item => {
-      const fontName = item.id;
-      const font = new FontFaceObserver(fontName, item.options || {});
-      await font.load();
-      return fontName;
+      const fontName = item.id || AsyncPreloader.getFileName(item.src);
+      const options = item.fontOptions || {};
+
+      if (!item.src) {
+        const font = new FontFaceObserver(fontName, options.variant || {});
+        await font.load(options.testString, options.timeout);
+        return fontName;
+      }
+
+      const source = item.body === "arrayBuffer" ? await this.loadArrayBuffer({
+        src: item.src
+      }) : `url(${item.src})`;
+      const font = new FontFace(fontName, source, options.descriptors);
+      return await font.load().then(font => {
+        document.fonts.add(font);
+        return font;
+      });
     };
   } // Utils
 
@@ -912,15 +928,37 @@ class AsyncPreloader {
     return AsyncPreloader.getProp(object[p.shift()], p);
   }
   /**
-   * Get file extension from path
+   * Get file extension
    *
-   * @param {(RequestInfo | string)} path
+   * @param {string} path
    * @returns {string}
    */
 
 
   static getFileExtension(path) {
-    return (path.match(/[^\\/]\.([^.\\/]+)$/) || [null]).pop();
+    return ((path === null || path === void 0 ? void 0 : path.match(/[^\\/]\.([^.\\/]+)$/)) || [null]).pop();
+  }
+  /**
+   * Get file base name
+   *
+   * @param {string} path
+   * @returns {string}
+   */
+
+
+  static getFileBaseName(path) {
+    return path.split(/[\\/]/).pop();
+  }
+  /**
+   * Get file name
+   *
+   * @param {string} path
+   * @returns {string}
+   */
+
+
+  static getFileName(path) {
+    return AsyncPreloader.getFileBaseName(path).split(".").slice(0, -1).join(".") || path;
   }
   /**
    * Retrieve loader key from extension (when the loader option isn't specified in the LoadItem)
@@ -981,7 +1019,7 @@ AsyncPreloader.loaders = new Map().set(LoaderKey.Text, {
  * DOMParser instance for the XML loader
  */
 
-AsyncPreloader.domParser = new DOMParser();
+AsyncPreloader.domParser = typeof DOMParser !== "undefined" && new DOMParser();
 const AsyncPreloaderInstance = new AsyncPreloader();
 
 export default AsyncPreloaderInstance;

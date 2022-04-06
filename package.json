@@ -50,19 +50,18 @@
   "main": "index.js",
   "types": "types/index.d.ts",
   "scripts": {
-    "dev": "npx snowdev dev",
+    "build": "npx snowdev build",
     "deps": "npx snowdev install",
-    "build": "npx snowdev build"
+    "dev": "npx snowdev dev"
   },
   "devDependencies": {
-    "async-preloader": "^5.0.2",
-    "cameras": "^3.0.3",
-    "concat-typed-array": "^2.0.0",
-    "core-js": "^3.14.0",
-    "es-module-shims": "^0.10.7",
-    "gl-matrix": "^3.3.0",
-    "regl": "^2.1.0",
-    "tweakpane": "^3.0.2"
+    "assert": "^2.0.0",
+    "async-preloader": "^6.1.2",
+    "cameras": "^3.1.1",
+    "es-module-shims": "^1.5.4",
+    "gl-matrix": "^3.4.3",
+    "pex-context": "^2.11.0-2",
+    "tweakpane": "^3.0.8"
   },
   "engines": {
     "node": ">=15.0.0",

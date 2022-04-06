@@ -1,12 +1,14 @@
-import './common/es.array.reduce-231fae2a.js';
-import './common/esnext.set.union-b1736316.js';
-import './common/esnext.map.update-95c88744.js';
-import './common/es.string.replace-bccc259e.js';
-import { a1 as getDefaultExportFromCjs, L as createCommonjsModule, a0 as commonjsGlobal } from './common/is-array-iterator-method-02e028bb.js';
-import './common/string-multibyte-d7a22384.js';
+import './common/web.dom-collections.iterator-8ea35636.js';
+import './common/esnext.iterator.filter-fb9a5ca2.js';
+import './common/esnext.map.update-3463daaf.js';
+import './common/esnext.set.union-c73f5bd6.js';
+import './common/esnext.iterator.find-de00bed3.js';
+import './common/es.string.replace-f2834016.js';
+import { ab as getDefaultExportFromCjs, j as createCommonjsModule, k as commonjsGlobal } from './common/set-to-string-tag-66b9f676.js';
+import './common/string-multibyte-899afb37.js';
 
 var tweakpane = createCommonjsModule(function (module, exports) {
-  /*! Tweakpane 3.0.2 (c) 2016 cocopon, licensed under the MIT license. */
+  /*! Tweakpane 3.0.8 (c) 2016 cocopon, licensed under the MIT license. */
   (function (global, factory) {
      factory(exports) ;
   })(commonjsGlobal, function (exports) {
@@ -69,10 +71,11 @@ var tweakpane = createCommonjsModule(function (module, exports) {
     }
 
     class TpChangeEvent extends TpEvent {
-      constructor(target, value, presetKey) {
+      constructor(target, value, presetKey, last) {
         super(target);
         this.value = value;
         this.presetKey = presetKey;
+        this.last = last !== null && last !== void 0 ? last : true;
       }
 
     }
@@ -217,22 +220,6 @@ var tweakpane = createCommonjsModule(function (module, exports) {
     }
 
     class ButtonApi extends BladeApi {
-      get disabled() {
-        return this.controller_.viewProps.get('disabled');
-      }
-
-      set disabled(disabled) {
-        this.controller_.viewProps.set('disabled', disabled);
-      }
-
-      get hidden() {
-        return this.controller_.viewProps.get('hidden');
-      }
-
-      set hidden(hidden) {
-        this.controller_.viewProps.set('hidden', hidden);
-      }
-
       get label() {
         return this.controller_.props.get('label');
       }
@@ -306,6 +293,94 @@ var tweakpane = createCommonjsModule(function (module, exports) {
 
     }
 
+    const PREFIX = 'tp';
+
+    function ClassName(viewName) {
+      const fn = (opt_elementName, opt_modifier) => {
+        return [PREFIX, '-', viewName, 'v', opt_elementName ? `_${opt_elementName}` : '', opt_modifier ? `-${opt_modifier}` : ''].join('');
+      };
+
+      return fn;
+    }
+
+    function compose(h1, h2) {
+      return input => h2(h1(input));
+    }
+
+    function extractValue(ev) {
+      return ev.rawValue;
+    }
+
+    function bindValue(value, applyValue) {
+      value.emitter.on('change', compose(extractValue, applyValue));
+      applyValue(value.rawValue);
+    }
+
+    function bindValueMap(valueMap, key, applyValue) {
+      bindValue(valueMap.value(key), applyValue);
+    }
+
+    function applyClass(elem, className, active) {
+      if (active) {
+        elem.classList.add(className);
+      } else {
+        elem.classList.remove(className);
+      }
+    }
+
+    function valueToClassName(elem, className) {
+      return value => {
+        applyClass(elem, className, value);
+      };
+    }
+
+    function bindValueToTextContent(value, elem) {
+      bindValue(value, text => {
+        elem.textContent = text !== null && text !== void 0 ? text : '';
+      });
+    }
+
+    const className$q = ClassName('btn');
+
+    class ButtonView {
+      constructor(doc, config) {
+        this.element = doc.createElement('div');
+        this.element.classList.add(className$q());
+        config.viewProps.bindClassModifiers(this.element);
+        const buttonElem = doc.createElement('button');
+        buttonElem.classList.add(className$q('b'));
+        config.viewProps.bindDisabled(buttonElem);
+        this.element.appendChild(buttonElem);
+        this.buttonElement = buttonElem;
+        const titleElem = doc.createElement('div');
+        titleElem.classList.add(className$q('t'));
+        bindValueToTextContent(config.props.value('title'), titleElem);
+        this.buttonElement.appendChild(titleElem);
+      }
+
+    }
+
+    class ButtonController {
+      constructor(doc, config) {
+        this.emitter = new Emitter();
+        this.onClick_ = this.onClick_.bind(this);
+        this.props = config.props;
+        this.viewProps = config.viewProps;
+        this.view = new ButtonView(doc, {
+          props: this.props,
+          viewProps: this.viewProps
+        });
+        this.view.buttonElement.addEventListener('click', this.onClick_);
+      }
+
+      onClick_() {
+        this.emitter.emit('click', {
+          sender: this
+        });
+      }
+
+    }
+
     class BoundValue {
       constructor(initialValue, config) {
         var _a;
@@ -325,10 +400,21 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       }
 
       set rawValue(rawValue) {
+        this.setRawValue(rawValue, {
+          forceEmit: false,
+          last: true
+        });
+      }
+
+      setRawValue(rawValue, options) {
+        const opts = options !== null && options !== void 0 ? options : {
+          forceEmit: false,
+          last: true
+        };
         const constrainedValue = this.constraint_ ? this.constraint_.constrain(rawValue) : rawValue;
         const changed = !this.equals_(this.rawValue_, constrainedValue);
 
-        if (!changed) {
+        if (!changed && !opts.forceEmit) {
           return;
         }
 
@@ -337,6 +423,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         });
         this.rawValue_ = constrainedValue;
         this.emitter.emit('change', {
+          options: opts,
           rawValue: constrainedValue,
           sender: this
         });
@@ -355,7 +442,19 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       }
 
       set rawValue(value) {
-        if (this.value_ === value) {
+        this.setRawValue(value, {
+          forceEmit: false,
+          last: true
+        });
+      }
+
+      setRawValue(value, options) {
+        const opts = options !== null && options !== void 0 ? options : {
+          forceEmit: false,
+          last: true
+        };
+
+        if (this.value_ === value && !opts.forceEmit) {
           return;
         }
 
@@ -364,8 +463,9 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         });
         this.value_ = value;
         this.emitter.emit('change', {
-          sender: this,
-          rawValue: this.value_
+          options: opts,
+          rawValue: this.value_,
+          sender: this
         });
       }
 
@@ -537,21 +637,11 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       return null;
     }
 
-    const PREFIX = 'tp';
-
-    function ClassName(viewName) {
-      const fn = (opt_elementName, opt_modifier) => {
-        return [PREFIX, '-', viewName, 'v', opt_elementName ? `_${opt_elementName}` : '', opt_modifier ? `-${opt_modifier}` : ''].join('');
-      };
-
-      return fn;
-    }
-
     function getAllBladePositions() {
       return ['veryfirst', 'first', 'last', 'verylast'];
     }
 
-    const className$q = ClassName('');
+    const className$p = ClassName('');
     const POS_TO_CLASS_NAME_MAP = {
       veryfirst: 'vfst',
       first: 'fst',
@@ -568,10 +658,10 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         const elem = this.view.element;
         this.blade.value('positions').emitter.on('change', () => {
           getAllBladePositions().forEach(pos => {
-            elem.classList.remove(className$q(undefined, POS_TO_CLASS_NAME_MAP[pos]));
+            elem.classList.remove(className$p(undefined, POS_TO_CLASS_NAME_MAP[pos]));
           });
           this.blade.get('positions').forEach(pos => {
-            elem.classList.add(className$q(undefined, POS_TO_CLASS_NAME_MAP[pos]));
+            elem.classList.add(className$p(undefined, POS_TO_CLASS_NAME_MAP[pos]));
           });
         });
         this.viewProps.handleDispose(() => {
@@ -611,12 +701,15 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       return globalObj.document;
     }
 
-    function isBrowser() {
-      return 'document' in getGlobalObject();
-    }
-
     function getCanvasContext(canvasElement) {
-      return isBrowser() ? canvasElement.getContext('2d') : null;
+      const win = canvasElement.ownerDocument.defaultView;
+
+      if (!win) {
+        return null;
+      }
+
+      const isBrowser = ('document' in win);
+      return isBrowser ? canvasElement.getContext('2d') : null;
     }
 
     const ICON_ID_TO_INNER_HTML_MAP = {
@@ -665,24 +758,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       return null;
     }
 
-    function compose(h1, h2) {
-      return input => h2(h1(input));
-    }
-
-    function extractValue(ev) {
-      return ev.rawValue;
-    }
-
-    function bindValue(value, applyValue) {
-      value.emitter.on('change', compose(extractValue, applyValue));
-      applyValue(value.rawValue);
-    }
-
-    function bindValueMap(valueMap, key, applyValue) {
-      bindValue(valueMap.value(key), applyValue);
-    }
-
-    const className$p = ClassName('lbl');
+    const className$o = ClassName('lbl');
 
     function createLabelNode(doc, label) {
       const frag = doc.createDocumentFragment();
@@ -702,15 +778,15 @@ var tweakpane = createCommonjsModule(function (module, exports) {
     class LabelView {
       constructor(doc, config) {
         this.element = doc.createElement('div');
-        this.element.classList.add(className$p());
+        this.element.classList.add(className$o());
         config.viewProps.bindClassModifiers(this.element);
         const labelElem = doc.createElement('div');
-        labelElem.classList.add(className$p('l'));
+        labelElem.classList.add(className$o('l'));
         bindValueMap(config.props, 'label', value => {
           if (isEmpty(value)) {
-            this.element.classList.add(className$p(undefined, 'nol'));
+            this.element.classList.add(className$o(undefined, 'nol'));
           } else {
-            this.element.classList.remove(className$p(undefined, 'nol'));
+            this.element.classList.remove(className$o(undefined, 'nol'));
             removeChildNodes(labelElem);
             labelElem.appendChild(createLabelNode(doc, value));
           }
@@ -718,7 +794,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         this.element.appendChild(labelElem);
         this.labelElement = labelElem;
         const valueElem = doc.createElement('div');
-        valueElem.classList.add(className$p('v'));
+        valueElem.classList.add(className$o('v'));
         this.element.appendChild(valueElem);
         this.valueElement = valueElem;
       }
@@ -738,64 +814,6 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         this.props = config.props;
         this.valueController = config.valueController;
         this.view.valueElement.appendChild(this.valueController.view.element);
-      }
-
-    }
-
-    function applyClass(elem, className, active) {
-      if (active) {
-        elem.classList.add(className);
-      } else {
-        elem.classList.remove(className);
-      }
-    }
-
-    function valueToClassName(elem, className) {
-      return value => {
-        applyClass(elem, className, value);
-      };
-    }
-
-    function bindValueToTextContent(value, elem) {
-      bindValue(value, text => {
-        elem.textContent = text !== null && text !== void 0 ? text : '';
-      });
-    }
-
-    const className$o = ClassName('btn');
-
-    class ButtonView {
-      constructor(doc, config) {
-        this.element = doc.createElement('div');
-        this.element.classList.add(className$o());
-        config.viewProps.bindClassModifiers(this.element);
-        const buttonElem = doc.createElement('button');
-        buttonElem.classList.add(className$o('b'));
-        config.viewProps.bindDisabled(buttonElem);
-        bindValueToTextContent(config.props.value('title'), buttonElem);
-        this.element.appendChild(buttonElem);
-        this.buttonElement = buttonElem;
-      }
-
-    }
-
-    class ButtonController {
-      constructor(doc, config) {
-        this.emitter = new Emitter();
-        this.onClick_ = this.onClick_.bind(this);
-        this.props = config.props;
-        this.viewProps = config.viewProps;
-        this.view = new ButtonView(doc, {
-          props: this.props,
-          viewProps: this.viewProps
-        });
-        this.view.buttonElement.addEventListener('click', this.onClick_);
-      }
-
-      onClick_() {
-        this.emitter.emit('click', {
-          sender: this
-        });
       }
 
     }
@@ -899,7 +917,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       }
 
       bindExpandedClass(elem, expandedClassName) {
-        bindValueMap(this, 'expanded', () => {
+        const onExpand = () => {
           const expanded = this.styleExpanded;
 
           if (expanded) {
@@ -907,7 +925,16 @@ var tweakpane = createCommonjsModule(function (module, exports) {
           } else {
             elem.classList.remove(expandedClassName);
           }
-        });
+        };
+
+        bindValueMap(this, 'expanded', onExpand);
+        bindValueMap(this, 'temporaryExpanded', onExpand);
+      }
+
+      cleanUpTransition() {
+        this.set('shouldFixHeight', false);
+        this.set('expandedHeight', null);
+        this.set('completed', true);
       }
 
     }
@@ -949,9 +976,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
           return;
         }
 
-        foldable.set('shouldFixHeight', false);
-        foldable.set('expandedHeight', null);
-        foldable.set('completed', true);
+        foldable.cleanUpTransition();
       });
     }
 
@@ -1123,7 +1148,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       onBindingChange_(ev) {
         const value = ev.sender.target.read();
         this.emitter_.emit('change', {
-          event: new TpChangeEvent(this, forceCast(value), this.controller_.binding.target.presetKey)
+          event: new TpChangeEvent(this, forceCast(value), this.controller_.binding.target.presetKey, ev.options.last)
         });
       }
 
@@ -1329,12 +1354,12 @@ var tweakpane = createCommonjsModule(function (module, exports) {
           const api = getApiByController(this.apiSet_, bc);
           const binding = bc.binding;
           this.emitter_.emit('change', {
-            event: new TpChangeEvent(api, forceCast(binding.target.read()), binding.target.presetKey)
+            event: new TpChangeEvent(api, forceCast(binding.target.read()), binding.target.presetKey, ev.options.last)
           });
         } else if (bc instanceof ValueBladeController) {
           const api = getApiByController(this.apiSet_, bc);
           this.emitter_.emit('change', {
-            event: new TpChangeEvent(api, bc.value.rawValue, undefined)
+            event: new TpChangeEvent(api, bc.value.rawValue, undefined, ev.options.last)
           });
         }
       }
@@ -1692,6 +1717,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
 
         this.emitter.emit('inputchange', {
           bladeController: bc,
+          options: ev.options,
           sender: this
         });
       }
@@ -1718,6 +1744,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
 
         this.emitter.emit('inputchange', {
           bladeController: bc,
+          options: ev.options,
           sender: this
         });
       }
@@ -1732,6 +1759,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       onDescendantInputChange_(ev) {
         this.emitter.emit('inputchange', {
           bladeController: ev.bladeController,
+          options: ev.options,
           sender: this
         });
       }
@@ -1852,6 +1880,12 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         this.props = config.props;
         this.foldable = foldable;
         bindFoldable(this.foldable, this.view.containerElement);
+        this.rackController.rack.emitter.on('add', () => {
+          this.foldable.cleanUpTransition();
+        });
+        this.rackController.rack.emitter.on('remove', () => {
+          this.foldable.cleanUpTransition();
+        });
         this.view.buttonElement.addEventListener('click', this.onTitleClick_);
       }
 
@@ -2467,6 +2501,75 @@ var tweakpane = createCommonjsModule(function (module, exports) {
 
       tick() {
         if (this.disabled) {
+          return;
+        }
+
+        this.emitter.emit('tick', {
+          sender: this
+        });
+      }
+
+    }
+
+    class IntervalTicker {
+      constructor(doc, interval) {
+        this.disabled_ = false;
+        this.timerId_ = null;
+        this.onTick_ = this.onTick_.bind(this);
+        this.doc_ = doc;
+        this.emitter = new Emitter();
+        this.interval_ = interval;
+        this.setTimer_();
+      }
+
+      get disabled() {
+        return this.disabled_;
+      }
+
+      set disabled(inactive) {
+        this.disabled_ = inactive;
+
+        if (this.disabled_) {
+          this.clearTimer_();
+        } else {
+          this.setTimer_();
+        }
+      }
+
+      dispose() {
+        this.clearTimer_();
+      }
+
+      clearTimer_() {
+        if (this.timerId_ === null) {
+          return;
+        }
+
+        const win = this.doc_.defaultView;
+
+        if (win) {
+          win.clearInterval(this.timerId_);
+        }
+
+        this.timerId_ = null;
+      }
+
+      setTimer_() {
+        this.clearTimer_();
+
+        if (this.interval_ <= 0) {
+          return;
+        }
+
+        const win = this.doc_.defaultView;
+
+        if (win) {
+          this.timerId_ = win.setInterval(this.onTick_, this.interval_);
+        }
+      }
+
+      onTick_() {
+        if (this.disabled_) {
           return;
         }
 
@@ -3280,21 +3383,24 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         changing = false;
       }
 
-      primary.emitter.on('change', () => {
+      primary.emitter.on('change', ev => {
         preventFeedback(() => {
-          secondary.rawValue = forward(primary, secondary);
+          secondary.setRawValue(forward(primary, secondary), ev.options);
         });
       });
-      secondary.emitter.on('change', () => {
+      secondary.emitter.on('change', ev => {
         preventFeedback(() => {
-          primary.rawValue = backward(primary, secondary);
+          primary.setRawValue(backward(primary, secondary), ev.options);
         });
         preventFeedback(() => {
-          secondary.rawValue = forward(primary, secondary);
+          secondary.setRawValue(forward(primary, secondary), ev.options);
         });
       });
       preventFeedback(() => {
-        secondary.rawValue = forward(primary, secondary);
+        secondary.setRawValue(forward(primary, secondary), {
+          forceEmit: false,
+          last: true
+        });
       });
     }
 
@@ -3336,7 +3442,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       return isVerticalArrowKey(key) || key === 'ArrowLeft' || key === 'ArrowRight';
     }
 
-    function computeOffset(ev, elem) {
+    function computeOffset$1(ev, elem) {
       const win = elem.ownerDocument.defaultView;
       const rect = elem.getBoundingClientRect();
       return {
@@ -3347,6 +3453,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
 
     class PointerHandler {
       constructor(element) {
+        this.lastTouch_ = null;
         this.onDocumentMouseMove_ = this.onDocumentMouseMove_.bind(this);
         this.onDocumentMouseUp_ = this.onDocumentMouseUp_.bind(this);
         this.onMouseDown_ = this.onMouseDown_.bind(this);
@@ -3355,8 +3462,12 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         this.onTouchStart_ = this.onTouchStart_.bind(this);
         this.elem_ = element;
         this.emitter = new Emitter();
-        element.addEventListener('touchstart', this.onTouchStart_);
-        element.addEventListener('touchmove', this.onTouchMove_);
+        element.addEventListener('touchstart', this.onTouchStart_, {
+          passive: false
+        });
+        element.addEventListener('touchmove', this.onTouchMove_, {
+          passive: true
+        });
         element.addEventListener('touchend', this.onTouchEnd_);
         element.addEventListener('mousedown', this.onMouseDown_);
       }
@@ -3385,7 +3496,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         doc.addEventListener('mouseup', this.onDocumentMouseUp_);
         this.emitter.emit('down', {
           altKey: ev.altKey,
-          data: this.computePosition_(computeOffset(ev, this.elem_)),
+          data: this.computePosition_(computeOffset$1(ev, this.elem_)),
           sender: this,
           shiftKey: ev.shiftKey
         });
@@ -3394,7 +3505,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       onDocumentMouseMove_(ev) {
         this.emitter.emit('move', {
           altKey: ev.altKey,
-          data: this.computePosition_(computeOffset(ev, this.elem_)),
+          data: this.computePosition_(computeOffset$1(ev, this.elem_)),
           sender: this,
           shiftKey: ev.shiftKey
         });
@@ -3406,7 +3517,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         doc.removeEventListener('mouseup', this.onDocumentMouseUp_);
         this.emitter.emit('up', {
           altKey: ev.altKey,
-          data: this.computePosition_(computeOffset(ev, this.elem_)),
+          data: this.computePosition_(computeOffset$1(ev, this.elem_)),
           sender: this,
           shiftKey: ev.shiftKey
         });
@@ -3425,6 +3536,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
           sender: this,
           shiftKey: ev.shiftKey
         });
+        this.lastTouch_ = touch;
       }
 
       onTouchMove_(ev) {
@@ -3439,10 +3551,13 @@ var tweakpane = createCommonjsModule(function (module, exports) {
           sender: this,
           shiftKey: ev.shiftKey
         });
+        this.lastTouch_ = touch;
       }
 
       onTouchEnd_(ev) {
-        const touch = ev.targetTouches.item(0);
+        var _a;
+
+        const touch = (_a = ev.targetTouches.item(0)) !== null && _a !== void 0 ? _a : this.lastTouch_;
         const rect = this.elem_.getBoundingClientRect();
         this.emitter.emit('up', {
           altKey: ev.altKey,
@@ -3559,6 +3674,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         this.originRawValue_ = 0;
         this.onInputChange_ = this.onInputChange_.bind(this);
         this.onInputKeyDown_ = this.onInputKeyDown_.bind(this);
+        this.onInputKeyUp_ = this.onInputKeyUp_.bind(this);
         this.onPointerDown_ = this.onPointerDown_.bind(this);
         this.onPointerMove_ = this.onPointerMove_.bind(this);
         this.onPointerUp_ = this.onPointerUp_.bind(this);
@@ -3577,6 +3693,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         });
         this.view.inputElement.addEventListener('change', this.onInputChange_);
         this.view.inputElement.addEventListener('keydown', this.onInputKeyDown_);
+        this.view.inputElement.addEventListener('keyup', this.onInputKeyUp_);
         const ph = new PointerHandler(this.view.knobElement);
         ph.emitter.on('down', this.onPointerDown_);
         ph.emitter.on('move', this.onPointerMove_);
@@ -3595,12 +3712,30 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         this.view.refresh();
       }
 
-      onInputKeyDown_(e) {
-        const step = getStepForKey(this.baseStep_, getVerticalStepKeys(e));
+      onInputKeyDown_(ev) {
+        const step = getStepForKey(this.baseStep_, getVerticalStepKeys(ev));
 
-        if (step !== 0) {
-          this.value.rawValue += step;
+        if (step === 0) {
+          return;
         }
+
+        this.value.setRawValue(this.value.rawValue + step, {
+          forceEmit: false,
+          last: false
+        });
+      }
+
+      onInputKeyUp_(ev) {
+        const step = getStepForKey(this.baseStep_, getVerticalStepKeys(ev));
+
+        if (step === 0) {
+          return;
+        }
+
+        this.value.setRawValue(this.value.rawValue, {
+          forceEmit: true,
+          last: true
+        });
       }
 
       onPointerDown_() {
@@ -3608,17 +3743,40 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         this.dragging_.rawValue = 0;
       }
 
+      computeDraggingValue_(data) {
+        if (!data.point) {
+          return null;
+        }
+
+        const dx = data.point.x - data.bounds.width / 2;
+        return this.originRawValue_ + dx * this.props.get('draggingScale');
+      }
+
       onPointerMove_(ev) {
-        if (!ev.data.point) {
+        const v = this.computeDraggingValue_(ev.data);
+
+        if (v === null) {
           return;
         }
 
-        const dx = ev.data.point.x - ev.data.bounds.width / 2;
-        this.value.rawValue = this.originRawValue_ + dx * this.props.get('draggingScale');
+        this.value.setRawValue(v, {
+          forceEmit: false,
+          last: false
+        });
         this.dragging_.rawValue = this.value.rawValue - this.originRawValue_;
       }
 
-      onPointerUp_() {
+      onPointerUp_(ev) {
+        const v = this.computeDraggingValue_(ev.data);
+
+        if (v === null) {
+          return;
+        }
+
+        this.value.setRawValue(v, {
+          forceEmit: true,
+          last: true
+        });
         this.dragging_.rawValue = null;
       }
 
@@ -3662,7 +3820,9 @@ var tweakpane = createCommonjsModule(function (module, exports) {
     class SliderController {
       constructor(doc, config) {
         this.onKeyDown_ = this.onKeyDown_.bind(this);
-        this.onPoint_ = this.onPoint_.bind(this);
+        this.onKeyUp_ = this.onKeyUp_.bind(this);
+        this.onPointerDownOrMove_ = this.onPointerDownOrMove_.bind(this);
+        this.onPointerUp_ = this.onPointerUp_.bind(this);
         this.baseStep_ = config.baseStep;
         this.value = config.value;
         this.viewProps = config.viewProps;
@@ -3673,26 +3833,59 @@ var tweakpane = createCommonjsModule(function (module, exports) {
           viewProps: this.viewProps
         });
         this.ptHandler_ = new PointerHandler(this.view.trackElement);
-        this.ptHandler_.emitter.on('down', this.onPoint_);
-        this.ptHandler_.emitter.on('move', this.onPoint_);
-        this.ptHandler_.emitter.on('up', this.onPoint_);
+        this.ptHandler_.emitter.on('down', this.onPointerDownOrMove_);
+        this.ptHandler_.emitter.on('move', this.onPointerDownOrMove_);
+        this.ptHandler_.emitter.on('up', this.onPointerUp_);
         this.view.trackElement.addEventListener('keydown', this.onKeyDown_);
+        this.view.trackElement.addEventListener('keyup', this.onKeyUp_);
       }
 
-      handlePointerEvent_(d) {
+      handlePointerEvent_(d, opts) {
         if (!d.point) {
           return;
         }
 
-        this.value.rawValue = mapRange(constrainRange(d.point.x, 0, d.bounds.width), 0, d.bounds.width, this.props.get('minValue'), this.props.get('maxValue'));
+        this.value.setRawValue(mapRange(constrainRange(d.point.x, 0, d.bounds.width), 0, d.bounds.width, this.props.get('minValue'), this.props.get('maxValue')), opts);
       }
 
-      onPoint_(ev) {
-        this.handlePointerEvent_(ev.data);
+      onPointerDownOrMove_(ev) {
+        this.handlePointerEvent_(ev.data, {
+          forceEmit: false,
+          last: false
+        });
+      }
+
+      onPointerUp_(ev) {
+        this.handlePointerEvent_(ev.data, {
+          forceEmit: true,
+          last: true
+        });
       }
 
       onKeyDown_(ev) {
-        this.value.rawValue += getStepForKey(this.baseStep_, getHorizontalStepKeys(ev));
+        const step = getStepForKey(this.baseStep_, getHorizontalStepKeys(ev));
+
+        if (step === 0) {
+          return;
+        }
+
+        this.value.setRawValue(this.value.rawValue + step, {
+          forceEmit: false,
+          last: false
+        });
+      }
+
+      onKeyUp_(ev) {
+        const step = getStepForKey(this.baseStep_, getHorizontalStepKeys(ev));
+
+        if (step === 0) {
+          return;
+        }
+
+        this.value.setRawValue(this.value.rawValue, {
+          forceEmit: true,
+          last: true
+        });
       }
 
     }
@@ -4393,31 +4586,31 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         return new Color(comps, 'hsl');
       },
       'hex.rgb': text => {
-        const mRrggbb = text.match(/^#([0-9A-Fa-f])([0-9A-Fa-f])([0-9A-Fa-f])$/);
-
-        if (mRrggbb) {
-          return new Color([parseInt(mRrggbb[1] + mRrggbb[1], 16), parseInt(mRrggbb[2] + mRrggbb[2], 16), parseInt(mRrggbb[3] + mRrggbb[3], 16)], 'rgb');
-        }
-
-        const mRgb = text.match(/^#([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})$/);
+        const mRgb = text.match(/^#([0-9A-Fa-f])([0-9A-Fa-f])([0-9A-Fa-f])$/);
 
         if (mRgb) {
-          return new Color([parseInt(mRgb[1], 16), parseInt(mRgb[2], 16), parseInt(mRgb[3], 16)], 'rgb');
+          return new Color([parseInt(mRgb[1] + mRgb[1], 16), parseInt(mRgb[2] + mRgb[2], 16), parseInt(mRgb[3] + mRgb[3], 16)], 'rgb');
+        }
+
+        const mRrggbb = text.match(/^(?:#|0x)([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})$/);
+
+        if (mRrggbb) {
+          return new Color([parseInt(mRrggbb[1], 16), parseInt(mRrggbb[2], 16), parseInt(mRrggbb[3], 16)], 'rgb');
         }
 
         return null;
       },
       'hex.rgba': text => {
-        const mRrggbb = text.match(/^#?([0-9A-Fa-f])([0-9A-Fa-f])([0-9A-Fa-f])([0-9A-Fa-f])$/);
-
-        if (mRrggbb) {
-          return new Color([parseInt(mRrggbb[1] + mRrggbb[1], 16), parseInt(mRrggbb[2] + mRrggbb[2], 16), parseInt(mRrggbb[3] + mRrggbb[3], 16), mapRange(parseInt(mRrggbb[4] + mRrggbb[4], 16), 0, 255, 0, 1)], 'rgb');
-        }
-
-        const mRgb = text.match(/^#?([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})$/);
+        const mRgb = text.match(/^#?([0-9A-Fa-f])([0-9A-Fa-f])([0-9A-Fa-f])([0-9A-Fa-f])$/);
 
         if (mRgb) {
-          return new Color([parseInt(mRgb[1], 16), parseInt(mRgb[2], 16), parseInt(mRgb[3], 16), mapRange(parseInt(mRgb[4], 16), 0, 255, 0, 1)], 'rgb');
+          return new Color([parseInt(mRgb[1] + mRgb[1], 16), parseInt(mRgb[2] + mRgb[2], 16), parseInt(mRgb[3] + mRgb[3], 16), mapRange(parseInt(mRgb[4] + mRgb[4], 16), 0, 255, 0, 1)], 'rgb');
+        }
+
+        const mRrggbb = text.match(/^(?:#|0x)?([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})$/);
+
+        if (mRrggbb) {
+          return new Color([parseInt(mRrggbb[1], 16), parseInt(mRrggbb[2], 16), parseInt(mRrggbb[3], 16), mapRange(parseInt(mRrggbb[4], 16), 0, 255, 0, 1)], 'rgb');
         }
 
         return null;
@@ -4462,15 +4655,15 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       return hex.length === 1 ? `0${hex}` : hex;
     }
 
-    function colorToHexRgbString(value) {
+    function colorToHexRgbString(value, prefix = '#') {
       const hexes = removeAlphaComponent(value.getComponents('rgb')).map(zerofill).join('');
-      return `#${hexes}`;
+      return `${prefix}${hexes}`;
     }
 
-    function colorToHexRgbaString(value) {
+    function colorToHexRgbaString(value, prefix = '#') {
       const rgbaComps = value.getComponents('rgb');
       const hexes = [rgbaComps[0], rgbaComps[1], rgbaComps[2], rgbaComps[3] * 255].map(zerofill).join('');
-      return `#${hexes}`;
+      return `${prefix}${hexes}`;
     }
 
     function colorToFunctionalRgbString(value) {
@@ -4563,6 +4756,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
     class APaletteController {
       constructor(doc, config) {
         this.onKeyDown_ = this.onKeyDown_.bind(this);
+        this.onKeyUp_ = this.onKeyUp_.bind(this);
         this.onPointerDown_ = this.onPointerDown_.bind(this);
         this.onPointerMove_ = this.onPointerMove_.bind(this);
         this.onPointerUp_ = this.onPointerUp_.bind(this);
@@ -4577,9 +4771,10 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         this.ptHandler_.emitter.on('move', this.onPointerMove_);
         this.ptHandler_.emitter.on('up', this.onPointerUp_);
         this.view.element.addEventListener('keydown', this.onKeyDown_);
+        this.view.element.addEventListener('keyup', this.onKeyUp_);
       }
 
-      handlePointerEvent_(d) {
+      handlePointerEvent_(d, opts) {
         if (!d.point) {
           return;
         }
@@ -4587,26 +4782,56 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         const alpha = d.point.x / d.bounds.width;
         const c = this.value.rawValue;
         const [h, s, v] = c.getComponents('hsv');
-        this.value.rawValue = new Color([h, s, v, alpha], 'hsv');
+        this.value.setRawValue(new Color([h, s, v, alpha], 'hsv'), opts);
       }
 
       onPointerDown_(ev) {
-        this.handlePointerEvent_(ev.data);
+        this.handlePointerEvent_(ev.data, {
+          forceEmit: false,
+          last: false
+        });
       }
 
       onPointerMove_(ev) {
-        this.handlePointerEvent_(ev.data);
+        this.handlePointerEvent_(ev.data, {
+          forceEmit: false,
+          last: false
+        });
       }
 
       onPointerUp_(ev) {
-        this.handlePointerEvent_(ev.data);
+        this.handlePointerEvent_(ev.data, {
+          forceEmit: true,
+          last: true
+        });
       }
 
       onKeyDown_(ev) {
         const step = getStepForKey(getBaseStepForColor(true), getHorizontalStepKeys(ev));
+
+        if (step === 0) {
+          return;
+        }
+
         const c = this.value.rawValue;
         const [h, s, v, a] = c.getComponents('hsv');
-        this.value.rawValue = new Color([h, s, v, a + step], 'hsv');
+        this.value.setRawValue(new Color([h, s, v, a + step], 'hsv'), {
+          forceEmit: false,
+          last: false
+        });
+      }
+
+      onKeyUp_(ev) {
+        const step = getStepForKey(getBaseStepForColor(true), getHorizontalStepKeys(ev));
+
+        if (step === 0) {
+          return;
+        }
+
+        this.value.setRawValue(this.value.rawValue, {
+          forceEmit: true,
+          last: true
+        });
       }
 
     }
@@ -4816,6 +5041,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
     class HPaletteController {
       constructor(doc, config) {
         this.onKeyDown_ = this.onKeyDown_.bind(this);
+        this.onKeyUp_ = this.onKeyUp_.bind(this);
         this.onPointerDown_ = this.onPointerDown_.bind(this);
         this.onPointerMove_ = this.onPointerMove_.bind(this);
         this.onPointerUp_ = this.onPointerUp_.bind(this);
@@ -4830,36 +5056,67 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         this.ptHandler_.emitter.on('move', this.onPointerMove_);
         this.ptHandler_.emitter.on('up', this.onPointerUp_);
         this.view.element.addEventListener('keydown', this.onKeyDown_);
+        this.view.element.addEventListener('keyup', this.onKeyUp_);
       }
 
-      handlePointerEvent_(d) {
+      handlePointerEvent_(d, opts) {
         if (!d.point) {
           return;
         }
 
-        const hue = mapRange(d.point.x, 0, d.bounds.width, 0, 360);
+        const hue = mapRange(constrainRange(d.point.x, 0, d.bounds.width), 0, d.bounds.width, 0, 359);
         const c = this.value.rawValue;
         const [, s, v, a] = c.getComponents('hsv');
-        this.value.rawValue = new Color([hue, s, v, a], 'hsv');
+        this.value.setRawValue(new Color([hue, s, v, a], 'hsv'), opts);
       }
 
       onPointerDown_(ev) {
-        this.handlePointerEvent_(ev.data);
+        this.handlePointerEvent_(ev.data, {
+          forceEmit: false,
+          last: false
+        });
       }
 
       onPointerMove_(ev) {
-        this.handlePointerEvent_(ev.data);
+        this.handlePointerEvent_(ev.data, {
+          forceEmit: false,
+          last: false
+        });
       }
 
       onPointerUp_(ev) {
-        this.handlePointerEvent_(ev.data);
+        this.handlePointerEvent_(ev.data, {
+          forceEmit: true,
+          last: true
+        });
       }
 
       onKeyDown_(ev) {
         const step = getStepForKey(getBaseStepForColor(false), getHorizontalStepKeys(ev));
+
+        if (step === 0) {
+          return;
+        }
+
         const c = this.value.rawValue;
         const [h, s, v, a] = c.getComponents('hsv');
-        this.value.rawValue = new Color([h + step, s, v, a], 'hsv');
+        this.value.setRawValue(new Color([h + step, s, v, a], 'hsv'), {
+          forceEmit: false,
+          last: false
+        });
+      }
+
+      onKeyUp_(ev) {
+        const step = getStepForKey(getBaseStepForColor(false), getHorizontalStepKeys(ev));
+
+        if (step === 0) {
+          return;
+        }
+
+        this.value.setRawValue(this.value.rawValue, {
+          forceEmit: true,
+          last: true
+        });
       }
 
     }
@@ -4931,6 +5188,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
     class SvPaletteController {
       constructor(doc, config) {
         this.onKeyDown_ = this.onKeyDown_.bind(this);
+        this.onKeyUp_ = this.onKeyUp_.bind(this);
         this.onPointerDown_ = this.onPointerDown_.bind(this);
         this.onPointerMove_ = this.onPointerMove_.bind(this);
         this.onPointerUp_ = this.onPointerUp_.bind(this);
@@ -4945,9 +5203,10 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         this.ptHandler_.emitter.on('move', this.onPointerMove_);
         this.ptHandler_.emitter.on('up', this.onPointerUp_);
         this.view.element.addEventListener('keydown', this.onKeyDown_);
+        this.view.element.addEventListener('keyup', this.onKeyUp_);
       }
 
-      handlePointerEvent_(d) {
+      handlePointerEvent_(d, opts) {
         if (!d.point) {
           return;
         }
@@ -4955,19 +5214,28 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         const saturation = mapRange(d.point.x, 0, d.bounds.width, 0, 100);
         const value = mapRange(d.point.y, 0, d.bounds.height, 100, 0);
         const [h,,, a] = this.value.rawValue.getComponents('hsv');
-        this.value.rawValue = new Color([h, saturation, value, a], 'hsv');
+        this.value.setRawValue(new Color([h, saturation, value, a], 'hsv'), opts);
       }
 
       onPointerDown_(ev) {
-        this.handlePointerEvent_(ev.data);
+        this.handlePointerEvent_(ev.data, {
+          forceEmit: false,
+          last: false
+        });
       }
 
       onPointerMove_(ev) {
-        this.handlePointerEvent_(ev.data);
+        this.handlePointerEvent_(ev.data, {
+          forceEmit: false,
+          last: false
+        });
       }
 
       onPointerUp_(ev) {
-        this.handlePointerEvent_(ev.data);
+        this.handlePointerEvent_(ev.data, {
+          forceEmit: true,
+          last: true
+        });
       }
 
       onKeyDown_(ev) {
@@ -4977,7 +5245,32 @@ var tweakpane = createCommonjsModule(function (module, exports) {
 
         const [h, s, v, a] = this.value.rawValue.getComponents('hsv');
         const baseStep = getBaseStepForColor(false);
-        this.value.rawValue = new Color([h, s + getStepForKey(baseStep, getHorizontalStepKeys(ev)), v + getStepForKey(baseStep, getVerticalStepKeys(ev)), a], 'hsv');
+        const ds = getStepForKey(baseStep, getHorizontalStepKeys(ev));
+        const dv = getStepForKey(baseStep, getVerticalStepKeys(ev));
+
+        if (ds === 0 && dv === 0) {
+          return;
+        }
+
+        this.value.setRawValue(new Color([h, s + ds, v + dv, a], 'hsv'), {
+          forceEmit: false,
+          last: false
+        });
+      }
+
+      onKeyUp_(ev) {
+        const baseStep = getBaseStepForColor(false);
+        const ds = getStepForKey(baseStep, getHorizontalStepKeys(ev));
+        const dv = getStepForKey(baseStep, getVerticalStepKeys(ev));
+
+        if (ds === 0 && dv === 0) {
+          return;
+        }
+
+        this.value.setRawValue(this.value.rawValue, {
+          forceEmit: true,
+          last: true
+        });
       }
 
     }
@@ -5298,6 +5591,10 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       return 'alpha' in inputParams && inputParams.alpha === true;
     }
 
+    function createFormatter$1(supportsAlpha) {
+      return supportsAlpha ? v => colorToHexRgbaString(v, '0x') : v => colorToHexRgbString(v, '0x');
+    }
+
     const NumberColorInputPlugin = {
       id: 'input-color-number',
       type: 'input',
@@ -5333,10 +5630,9 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         const supportsAlpha = shouldSupportAlpha$1(args.params);
         const expanded = 'expanded' in args.params ? args.params.expanded : undefined;
         const picker = 'picker' in args.params ? args.params.picker : undefined;
-        const formatter = supportsAlpha ? colorToHexRgbaString : colorToHexRgbString;
         return new ColorController(args.document, {
           expanded: expanded !== null && expanded !== void 0 ? expanded : false,
-          formatter: formatter,
+          formatter: createFormatter$1(supportsAlpha),
           parser: CompositeColorParser,
           pickerLayout: picker !== null && picker !== void 0 ? picker : 'popup',
           supportsAlpha: supportsAlpha,
@@ -5804,9 +6100,14 @@ var tweakpane = createCommonjsModule(function (module, exports) {
 
     }
 
+    function computeOffset(ev, baseSteps, invertsY) {
+      return [getStepForKey(baseSteps[0], getHorizontalStepKeys(ev)), getStepForKey(baseSteps[1], getVerticalStepKeys(ev)) * (invertsY ? 1 : -1)];
+    }
+
     class Point2dPickerController {
       constructor(doc, config) {
         this.onPadKeyDown_ = this.onPadKeyDown_.bind(this);
+        this.onPadKeyUp_ = this.onPadKeyUp_.bind(this);
         this.onPointerDown_ = this.onPointerDown_.bind(this);
         this.onPointerMove_ = this.onPointerMove_.bind(this);
         this.onPointerUp_ = this.onPointerUp_.bind(this);
@@ -5827,9 +6128,10 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         this.ptHandler_.emitter.on('move', this.onPointerMove_);
         this.ptHandler_.emitter.on('up', this.onPointerUp_);
         this.view.padElement.addEventListener('keydown', this.onPadKeyDown_);
+        this.view.padElement.addEventListener('keyup', this.onPadKeyUp_);
       }
 
-      handlePointerEvent_(d) {
+      handlePointerEvent_(d, opts) {
         if (!d.point) {
           return;
         }
@@ -5837,19 +6139,28 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         const max = this.maxValue_;
         const px = mapRange(d.point.x, 0, d.bounds.width, -max, +max);
         const py = mapRange(this.invertsY_ ? d.bounds.height - d.point.y : d.point.y, 0, d.bounds.height, -max, +max);
-        this.value.rawValue = new Point2d(px, py);
+        this.value.setRawValue(new Point2d(px, py), opts);
       }
 
       onPointerDown_(ev) {
-        this.handlePointerEvent_(ev.data);
+        this.handlePointerEvent_(ev.data, {
+          forceEmit: false,
+          last: false
+        });
       }
 
       onPointerMove_(ev) {
-        this.handlePointerEvent_(ev.data);
+        this.handlePointerEvent_(ev.data, {
+          forceEmit: false,
+          last: false
+        });
       }
 
       onPointerUp_(ev) {
-        this.handlePointerEvent_(ev.data);
+        this.handlePointerEvent_(ev.data, {
+          forceEmit: true,
+          last: true
+        });
       }
 
       onPadKeyDown_(ev) {
@@ -5857,7 +6168,29 @@ var tweakpane = createCommonjsModule(function (module, exports) {
           ev.preventDefault();
         }
 
-        this.value.rawValue = new Point2d(this.value.rawValue.x + getStepForKey(this.baseSteps_[0], getHorizontalStepKeys(ev)), this.value.rawValue.y + getStepForKey(this.baseSteps_[1], getVerticalStepKeys(ev)) * (this.invertsY_ ? 1 : -1));
+        const [dx, dy] = computeOffset(ev, this.baseSteps_, this.invertsY_);
+
+        if (dx === 0 && dy === 0) {
+          return;
+        }
+
+        this.value.setRawValue(new Point2d(this.value.rawValue.x + dx, this.value.rawValue.y + dy), {
+          forceEmit: false,
+          last: false
+        });
+      }
+
+      onPadKeyUp_(ev) {
+        const [dx, dy] = computeOffset(ev, this.baseSteps_, this.invertsY_);
+
+        if (dx === 0 && dy === 0) {
+          return;
+        }
+
+        this.value.setRawValue(this.value.rawValue, {
+          forceEmit: true,
+          last: true
+        });
       }
 
     }
@@ -6529,7 +6862,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         inputElem.type = 'text';
         config.viewProps.bindDisabled(inputElem);
         this.element.appendChild(inputElem);
-        this.inputElem_ = inputElem;
+        this.inputElement = inputElem;
         config.value.emitter.on('change', this.onValueUpdate_);
         this.value = config.value;
         this.update_();
@@ -6538,7 +6871,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       update_() {
         const values = this.value.rawValue;
         const lastValue = values[values.length - 1];
-        this.inputElem_.value = lastValue !== undefined ? this.formatter_(lastValue) : '';
+        this.inputElement.value = lastValue !== undefined ? this.formatter_(lastValue) : '';
       }
 
       onValueUpdate_() {
@@ -6765,8 +7098,8 @@ var tweakpane = createCommonjsModule(function (module, exports) {
 
     }
 
-    function createFormatter() {
-      return createNumberFormatter(2);
+    function createFormatter(params) {
+      return 'format' in params && !isEmpty(params.format) ? params.format : createNumberFormatter(2);
     }
 
     function createTextMonitor(args) {
@@ -6774,14 +7107,14 @@ var tweakpane = createCommonjsModule(function (module, exports) {
 
       if (args.value.rawValue.length === 1) {
         return new SingleLogController(args.document, {
-          formatter: createFormatter(),
+          formatter: createFormatter(args.params),
           value: args.value,
           viewProps: args.viewProps
         });
       }
 
       return new MultiLogController(args.document, {
-        formatter: createFormatter(),
+        formatter: createFormatter(args.params),
         lineCount: (_a = args.params.lineCount) !== null && _a !== void 0 ? _a : Constants.monitor.defaultLineCount,
         value: args.value,
         viewProps: args.viewProps
@@ -6792,7 +7125,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       var _a, _b, _c;
 
       return new GraphLogController(args.document, {
-        formatter: createFormatter(),
+        formatter: createFormatter(args.params),
         lineCount: (_a = args.params.lineCount) !== null && _a !== void 0 ? _a : Constants.monitor.defaultLineCount,
         maxValue: (_b = 'max' in args.params ? args.params.max : null) !== null && _b !== void 0 ? _b : 100,
         minValue: (_c = 'min' in args.params ? args.params.min : null) !== null && _c !== void 0 ? _c : 0,
@@ -6815,6 +7148,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
 
         const p = ParamsParsers;
         const result = parseParams(params, {
+          format: p.optional.function,
           lineCount: p.optional.number,
           max: p.optional.number,
           min: p.optional.number,
@@ -6908,6 +7242,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       onValueChange_(ev) {
         this.write_(ev.rawValue);
         this.emitter.emit('change', {
+          options: ev.options,
           rawValue: ev.rawValue,
           sender: this
         });
@@ -6998,75 +7333,6 @@ var tweakpane = createCommonjsModule(function (module, exports) {
 
       onTick_(_) {
         this.read();
-      }
-
-    }
-
-    class IntervalTicker {
-      constructor(doc, interval) {
-        this.disabled_ = false;
-        this.timerId_ = null;
-        this.onTick_ = this.onTick_.bind(this);
-        this.doc_ = doc;
-        this.emitter = new Emitter();
-        this.interval_ = interval;
-        this.setTimer_();
-      }
-
-      get disabled() {
-        return this.disabled_;
-      }
-
-      set disabled(inactive) {
-        this.disabled_ = inactive;
-
-        if (this.disabled_) {
-          this.clearTimer_();
-        } else {
-          this.setTimer_();
-        }
-      }
-
-      dispose() {
-        this.clearTimer_();
-      }
-
-      clearTimer_() {
-        if (this.timerId_ === null) {
-          return;
-        }
-
-        const win = this.doc_.defaultView;
-
-        if (win) {
-          win.clearInterval(this.timerId_);
-        }
-
-        this.timerId_ = null;
-      }
-
-      setTimer_() {
-        this.clearTimer_();
-
-        if (this.interval_ <= 0) {
-          return;
-        }
-
-        const win = this.doc_.defaultView;
-
-        if (win) {
-          this.timerId_ = win.setInterval(this.onTick_, this.interval_);
-        }
-      }
-
-      onTick_() {
-        if (this.disabled_) {
-          return;
-        }
-
-        this.emitter.emit('tick', {
-          sender: this
-        });
       }
 
     }
@@ -7740,7 +8006,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
 
       setUpDefaultPlugins_() {
         // NOTE: This string literal will be replaced with the default CSS by Rollup at the compilation time
-        embedStyle(this.document, 'default', '.tp-lstv_s,.tp-btnv_b,.tp-p2dv_b,.tp-colswv_sw,.tp-p2dpv_p,.tp-txtv_i,.tp-grlv_g,.tp-sglv_i,.tp-mllv_i,.tp-fldv_b,.tp-rotv_b,.tp-ckbv_i,.tp-coltxtv_ms,.tp-tbiv_b{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:transparent;border-width:0;font-family:inherit;font-size:inherit;font-weight:inherit;margin:0;outline:none;padding:0}.tp-lstv_s,.tp-btnv_b,.tp-p2dv_b{background-color:var(--btn-bg);border-radius:var(--elm-br);color:var(--btn-fg);cursor:pointer;display:block;font-weight:bold;height:var(--bld-us);line-height:var(--bld-us);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tp-lstv_s:hover,.tp-btnv_b:hover,.tp-p2dv_b:hover{background-color:var(--btn-bg-h)}.tp-lstv_s:focus,.tp-btnv_b:focus,.tp-p2dv_b:focus{background-color:var(--btn-bg-f)}.tp-lstv_s:active,.tp-btnv_b:active,.tp-p2dv_b:active{background-color:var(--btn-bg-a)}.tp-lstv_s:disabled,.tp-btnv_b:disabled,.tp-p2dv_b:disabled{opacity:0.5}.tp-colswv_sw,.tp-p2dpv_p,.tp-txtv_i{background-color:var(--in-bg);border-radius:var(--elm-br);box-sizing:border-box;color:var(--in-fg);font-family:inherit;height:var(--bld-us);line-height:var(--bld-us);min-width:0;width:100%}.tp-colswv_sw:hover,.tp-p2dpv_p:hover,.tp-txtv_i:hover{background-color:var(--in-bg-h)}.tp-colswv_sw:focus,.tp-p2dpv_p:focus,.tp-txtv_i:focus{background-color:var(--in-bg-f)}.tp-colswv_sw:active,.tp-p2dpv_p:active,.tp-txtv_i:active{background-color:var(--in-bg-a)}.tp-colswv_sw:disabled,.tp-p2dpv_p:disabled,.tp-txtv_i:disabled{opacity:0.5}.tp-grlv_g,.tp-sglv_i,.tp-mllv_i{background-color:var(--mo-bg);border-radius:var(--elm-br);box-sizing:border-box;color:var(--mo-fg);height:var(--bld-us);width:100%}.tp-rotv{--font-family: var(--tp-font-family, Roboto Mono,Source Code Pro,Menlo,Courier,monospace);--bs-br: var(--tp-base-border-radius, 6px);--cnt-h-p: var(--tp-container-horizontal-padding, 4px);--cnt-v-p: var(--tp-container-vertical-padding, 4px);--elm-br: var(--tp-element-border-radius, 2px);--bld-s: var(--tp-blade-spacing, 4px);--bld-us: var(--tp-blade-unit-size, 20px);--bs-bg: var(--tp-base-background-color, #2f3137);--bs-sh: var(--tp-base-shadow-color, rgba(0,0,0,0.2));--btn-bg: var(--tp-button-background-color, #adafb8);--btn-bg-a: var(--tp-button-background-color-active, #d6d7db);--btn-bg-f: var(--tp-button-background-color-focus, #c8cad0);--btn-bg-h: var(--tp-button-background-color-hover, #bbbcc4);--btn-fg: var(--tp-button-foreground-color, #2f3137);--cnt-bg: var(--tp-container-background-color, rgba(187,188,196,0.1));--cnt-bg-a: var(--tp-container-background-color-active, rgba(187,188,196,0.25));--cnt-bg-f: var(--tp-container-background-color-focus, rgba(187,188,196,0.2));--cnt-bg-h: var(--tp-container-background-color-hover, rgba(187,188,196,0.15));--cnt-fg: var(--tp-container-foreground-color, #bbbcc4);--in-bg: var(--tp-input-background-color, rgba(0,0,0,0.2));--in-bg-a: var(--tp-input-background-color-active, rgba(0,0,0,0.35));--in-bg-f: var(--tp-input-background-color-focus, rgba(0,0,0,0.3));--in-bg-h: var(--tp-input-background-color-hover, rgba(0,0,0,0.25));--in-fg: var(--tp-input-foreground-color, #bbbcc4);--lbl-fg: var(--tp-label-foreground-color, rgba(187,188,196,0.7));--mo-bg: var(--tp-monitor-background-color, rgba(0,0,0,0.2));--mo-fg: var(--tp-monitor-foreground-color, rgba(187,188,196,0.7));--grv-fg: var(--tp-groove-foreground-color, rgba(0,0,0,0.2))}.tp-fldv_c>.tp-cntv.tp-v-lst,.tp-tabv_c .tp-brkv>.tp-cntv.tp-v-lst,.tp-rotv_c>.tp-cntv.tp-v-lst{margin-bottom:calc(-1 * var(--cnt-v-p))}.tp-fldv_c>.tp-fldv.tp-v-lst .tp-fldv_c,.tp-tabv_c .tp-brkv>.tp-fldv.tp-v-lst .tp-fldv_c,.tp-rotv_c>.tp-fldv.tp-v-lst .tp-fldv_c{border-bottom-left-radius:0}.tp-fldv_c>.tp-fldv.tp-v-lst .tp-fldv_b,.tp-tabv_c .tp-brkv>.tp-fldv.tp-v-lst .tp-fldv_b,.tp-rotv_c>.tp-fldv.tp-v-lst .tp-fldv_b{border-bottom-left-radius:0}.tp-fldv_c>*:not(.tp-v-fst),.tp-tabv_c .tp-brkv>*:not(.tp-v-fst),.tp-rotv_c>*:not(.tp-v-fst){margin-top:var(--bld-s)}.tp-fldv_c>.tp-sprv:not(.tp-v-fst),.tp-tabv_c .tp-brkv>.tp-sprv:not(.tp-v-fst),.tp-rotv_c>.tp-sprv:not(.tp-v-fst),.tp-fldv_c>.tp-cntv:not(.tp-v-fst),.tp-tabv_c .tp-brkv>.tp-cntv:not(.tp-v-fst),.tp-rotv_c>.tp-cntv:not(.tp-v-fst){margin-top:var(--cnt-v-p)}.tp-fldv_c>.tp-sprv+*:not(.tp-v-hidden),.tp-tabv_c .tp-brkv>.tp-sprv+*:not(.tp-v-hidden),.tp-rotv_c>.tp-sprv+*:not(.tp-v-hidden),.tp-fldv_c>.tp-cntv+*:not(.tp-v-hidden),.tp-tabv_c .tp-brkv>.tp-cntv+*:not(.tp-v-hidden),.tp-rotv_c>.tp-cntv+*:not(.tp-v-hidden){margin-top:var(--cnt-v-p)}.tp-fldv_c>.tp-sprv:not(.tp-v-hidden)+.tp-sprv,.tp-tabv_c .tp-brkv>.tp-sprv:not(.tp-v-hidden)+.tp-sprv,.tp-rotv_c>.tp-sprv:not(.tp-v-hidden)+.tp-sprv,.tp-fldv_c>.tp-cntv:not(.tp-v-hidden)+.tp-cntv,.tp-tabv_c .tp-brkv>.tp-cntv:not(.tp-v-hidden)+.tp-cntv,.tp-rotv_c>.tp-cntv:not(.tp-v-hidden)+.tp-cntv{margin-top:0}.tp-fldv_c>.tp-cntv,.tp-tabv_c .tp-brkv>.tp-cntv{margin-left:4px}.tp-fldv_c>.tp-fldv>.tp-fldv_b,.tp-tabv_c .tp-brkv>.tp-fldv>.tp-fldv_b{border-top-left-radius:var(--elm-br);border-bottom-left-radius:var(--elm-br)}.tp-fldv_c>.tp-fldv.tp-fldv-expanded>.tp-fldv_b,.tp-tabv_c .tp-brkv>.tp-fldv.tp-fldv-expanded>.tp-fldv_b{border-bottom-left-radius:0}.tp-fldv_c .tp-fldv>.tp-fldv_c,.tp-tabv_c .tp-brkv .tp-fldv>.tp-fldv_c{border-bottom-left-radius:var(--elm-br)}.tp-fldv_c>.tp-tabv>.tp-tabv_i,.tp-tabv_c .tp-brkv>.tp-tabv>.tp-tabv_i{border-top-left-radius:var(--elm-br)}.tp-fldv_c .tp-tabv>.tp-tabv_c,.tp-tabv_c .tp-brkv .tp-tabv>.tp-tabv_c{border-bottom-left-radius:var(--elm-br)}.tp-fldv_b,.tp-rotv_b{background-color:var(--cnt-bg);color:var(--cnt-fg);cursor:pointer;display:block;height:calc(var(--bld-us) + 4px);line-height:calc(var(--bld-us) + 4px);overflow:hidden;padding-left:calc(var(--cnt-h-p) + 8px);padding-right:calc(2px * 2 + var(--bld-us) + var(--cnt-h-p));position:relative;text-align:left;text-overflow:ellipsis;white-space:nowrap;width:100%;transition:border-radius .2s ease-in-out .2s}.tp-fldv_b:hover,.tp-rotv_b:hover{background-color:var(--cnt-bg-h)}.tp-fldv_b:focus,.tp-rotv_b:focus{background-color:var(--cnt-bg-f)}.tp-fldv_b:active,.tp-rotv_b:active{background-color:var(--cnt-bg-a)}.tp-fldv_b:disabled,.tp-rotv_b:disabled{opacity:0.5}.tp-fldv_m,.tp-rotv_m{background:linear-gradient(to left, var(--cnt-fg), var(--cnt-fg) 2px, transparent 2px, transparent 4px, var(--cnt-fg) 4px);border-radius:2px;bottom:0;content:\'\';display:block;height:6px;right:calc(var(--cnt-h-p) + (var(--bld-us) + 4px - 6px) / 2 - 2px);margin:auto;opacity:0.5;position:absolute;top:0;transform:rotate(90deg);transition:transform .2s ease-in-out;width:6px}.tp-fldv.tp-fldv-expanded>.tp-fldv_b>.tp-fldv_m,.tp-rotv.tp-rotv-expanded .tp-rotv_m{transform:none}.tp-fldv_c,.tp-rotv_c{box-sizing:border-box;height:0;opacity:0;overflow:hidden;padding-bottom:0;padding-top:0;position:relative;transition:height .2s ease-in-out,opacity .2s linear,padding .2s ease-in-out}.tp-fldv.tp-fldv-cpl:not(.tp-fldv-expanded)>.tp-fldv_c,.tp-rotv.tp-rotv-cpl:not(.tp-rotv-expanded) .tp-rotv_c{display:none}.tp-fldv.tp-fldv-expanded>.tp-fldv_c,.tp-rotv.tp-rotv-expanded .tp-rotv_c{opacity:1;padding-bottom:var(--cnt-v-p);padding-top:var(--cnt-v-p);transform:none;overflow:visible;transition:height .2s ease-in-out,opacity .2s linear .2s,padding .2s ease-in-out}.tp-coltxtv_m,.tp-lstv{position:relative}.tp-lstv_s{padding:0 20px 0 4px;width:100%}.tp-coltxtv_mm,.tp-lstv_m{bottom:0;margin:auto;pointer-events:none;position:absolute;right:2px;top:0}.tp-coltxtv_mm svg,.tp-lstv_m svg{bottom:0;height:16px;margin:auto;position:absolute;right:0;top:0;width:16px}.tp-coltxtv_mm svg path,.tp-lstv_m svg path{fill:currentColor}.tp-coltxtv_w,.tp-pndtxtv{display:flex}.tp-coltxtv_c,.tp-pndtxtv_a{width:100%}.tp-coltxtv_c+.tp-coltxtv_c,.tp-pndtxtv_a+.tp-coltxtv_c,.tp-coltxtv_c+.tp-pndtxtv_a,.tp-pndtxtv_a+.tp-pndtxtv_a{margin-left:2px}.tp-btnv_b{width:100%}.tp-ckbv_l{display:block;position:relative}.tp-ckbv_i{left:0;opacity:0;position:absolute;top:0}.tp-ckbv_w{background-color:var(--in-bg);border-radius:var(--elm-br);cursor:pointer;display:block;height:var(--bld-us);position:relative;width:var(--bld-us)}.tp-ckbv_w svg{bottom:0;display:block;height:16px;left:0;margin:auto;opacity:0;position:absolute;right:0;top:0;width:16px}.tp-ckbv_w svg path{fill:none;stroke:var(--in-fg);stroke-width:2}.tp-ckbv_i:hover+.tp-ckbv_w{background-color:var(--in-bg-h)}.tp-ckbv_i:focus+.tp-ckbv_w{background-color:var(--in-bg-f)}.tp-ckbv_i:active+.tp-ckbv_w{background-color:var(--in-bg-a)}.tp-ckbv_i:checked+.tp-ckbv_w svg{opacity:1}.tp-ckbv.tp-v-disabled .tp-ckbv_w{opacity:0.5}.tp-colv{position:relative}.tp-colv_h{display:flex}.tp-colv_s{flex-grow:0;flex-shrink:0;width:var(--bld-us)}.tp-colv_t{flex:1;margin-left:4px}.tp-colv_p{height:0;margin-top:0;opacity:0;overflow:hidden;transition:height .2s ease-in-out,opacity .2s linear,margin .2s ease-in-out}.tp-colv.tp-colv-cpl .tp-colv_p{overflow:visible}.tp-colv.tp-colv-expanded .tp-colv_p{margin-top:var(--bld-s);opacity:1}.tp-colv .tp-popv{left:calc(-1 * var(--cnt-h-p));right:calc(-1 * var(--cnt-h-p));top:var(--bld-us)}.tp-colpv_h,.tp-colpv_ap{margin-left:6px;margin-right:6px}.tp-colpv_h{margin-top:var(--bld-s)}.tp-colpv_rgb{display:flex;margin-top:var(--bld-s);width:100%}.tp-colpv_a{display:flex;margin-top:var(--cnt-v-p);padding-top:calc(var(--cnt-v-p) + 2px);position:relative}.tp-colpv_a:before{background-color:var(--grv-fg);content:\'\';height:2px;left:calc(-1 * var(--cnt-h-p));position:absolute;right:calc(-1 * var(--cnt-h-p));top:0}.tp-colpv_ap{align-items:center;display:flex;flex:3}.tp-colpv_at{flex:1;margin-left:4px}.tp-svpv{border-radius:var(--elm-br);outline:none;overflow:hidden;position:relative}.tp-svpv_c{cursor:crosshair;display:block;height:calc(var(--bld-us) * 4);width:100%}.tp-svpv_m{border-radius:100%;border:rgba(255,255,255,0.75) solid 2px;box-sizing:border-box;filter:drop-shadow(0 0 1px rgba(0,0,0,0.3));height:12px;margin-left:-6px;margin-top:-6px;pointer-events:none;position:absolute;width:12px}.tp-svpv:focus .tp-svpv_m{border-color:#fff}.tp-hplv{cursor:pointer;height:var(--bld-us);outline:none;position:relative}.tp-hplv_c{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAABCAYAAABubagXAAAAQ0lEQVQoU2P8z8Dwn0GCgQEDi2OK/RBgYHjBgIpfovFh8j8YBIgzFGQxuqEgPhaDOT5gOhPkdCxOZeBg+IDFZZiGAgCaSSMYtcRHLgAAAABJRU5ErkJggg==);background-position:left top;background-repeat:no-repeat;background-size:100% 100%;border-radius:2px;display:block;height:4px;left:0;margin-top:-2px;position:absolute;top:50%;width:100%}.tp-hplv_m{border-radius:var(--elm-br);border:rgba(255,255,255,0.75) solid 2px;box-shadow:0 0 2px rgba(0,0,0,0.1);box-sizing:border-box;height:12px;left:50%;margin-left:-6px;margin-top:-6px;pointer-events:none;position:absolute;top:50%;width:12px}.tp-hplv:focus .tp-hplv_m{border-color:#fff}.tp-aplv{cursor:pointer;height:var(--bld-us);outline:none;position:relative;width:100%}.tp-aplv_b{background-color:#fff;background-image:linear-gradient(to top right, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%),linear-gradient(to top right, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%);background-size:4px 4px;background-position:0 0,2px 2px;border-radius:2px;display:block;height:4px;left:0;margin-top:-2px;overflow:hidden;position:absolute;top:50%;width:100%}.tp-aplv_c{bottom:0;left:0;position:absolute;right:0;top:0}.tp-aplv_m{background-color:#fff;background-image:linear-gradient(to top right, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%),linear-gradient(to top right, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%);background-size:12px 12px;background-position:0 0,6px 6px;border-radius:var(--elm-br);box-shadow:0 0 2px rgba(0,0,0,0.1);height:12px;left:50%;margin-left:-6px;margin-top:-6px;overflow:hidden;pointer-events:none;position:absolute;top:50%;width:12px}.tp-aplv_p{border-radius:var(--elm-br);border:rgba(255,255,255,0.75) solid 2px;box-sizing:border-box;bottom:0;left:0;position:absolute;right:0;top:0}.tp-aplv:focus .tp-aplv_p{border-color:#fff}.tp-colswv{background-color:#fff;background-image:linear-gradient(to top right, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%),linear-gradient(to top right, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%);background-size:10px 10px;background-position:0 0,5px 5px;border-radius:var(--elm-br)}.tp-colswv.tp-v-disabled{opacity:0.5}.tp-colswv_b{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:transparent;border-width:0;cursor:pointer;display:block;height:var(--bld-us);left:0;margin:0;outline:none;padding:0;position:absolute;top:0;width:var(--bld-us)}.tp-colswv_b:focus::after{border:rgba(255,255,255,0.75) solid 2px;border-radius:var(--elm-br);bottom:0;content:\'\';display:block;left:0;position:absolute;right:0;top:0}.tp-coltxtv{display:flex;width:100%}.tp-coltxtv_m{margin-right:4px}.tp-coltxtv_ms{border-radius:var(--elm-br);color:var(--lbl-fg);cursor:pointer;height:var(--bld-us);line-height:var(--bld-us);padding:0 18px 0 4px}.tp-coltxtv_ms:hover{background-color:var(--in-bg-h)}.tp-coltxtv_ms:focus{background-color:var(--in-bg-f)}.tp-coltxtv_ms:active{background-color:var(--in-bg-a)}.tp-coltxtv_mm{color:var(--lbl-fg)}.tp-coltxtv_w{flex:1}.tp-dfwv{position:absolute;top:8px;right:8px;width:256px}.tp-fldv.tp-fldv-not .tp-fldv_b{display:none}.tp-fldv_c{border-left:var(--cnt-bg) solid 4px}.tp-fldv_b:hover+.tp-fldv_c{border-left-color:var(--cnt-bg-h)}.tp-fldv_b:focus+.tp-fldv_c{border-left-color:var(--cnt-bg-f)}.tp-fldv_b:active+.tp-fldv_c{border-left-color:var(--cnt-bg-a)}.tp-grlv{position:relative}.tp-grlv_g{display:block;height:calc(var(--bld-us) * 3)}.tp-grlv_g polyline{fill:none;stroke:var(--mo-fg);stroke-linejoin:round}.tp-grlv_t{margin-top:-4px;transition:left 0.05s, top 0.05s;visibility:hidden}.tp-grlv_t.tp-grlv_t-a{visibility:visible}.tp-grlv_t.tp-grlv_t-in{transition:none}.tp-grlv.tp-v-disabled .tp-grlv_g{opacity:0.5}.tp-grlv .tp-ttv{background-color:var(--mo-fg)}.tp-grlv .tp-ttv::before{border-top-color:var(--mo-fg)}.tp-lblv{align-items:center;display:flex;line-height:1.3;padding-left:var(--cnt-h-p);padding-right:var(--cnt-h-p)}.tp-lblv.tp-lblv-nol{display:block}.tp-lblv_l{color:var(--lbl-fg);flex:1;-webkit-hyphens:auto;-ms-hyphens:auto;hyphens:auto;overflow:hidden;padding-left:4px;padding-right:16px}.tp-lblv.tp-v-disabled .tp-lblv_l{opacity:0.5}.tp-lblv.tp-lblv-nol .tp-lblv_l{display:none}.tp-lblv_v{align-self:flex-start;flex-grow:0;flex-shrink:0;width:160px}.tp-lblv.tp-lblv-nol .tp-lblv_v{width:100%}.tp-lstv_s{padding:0 20px 0 4px;width:100%}.tp-lstv.tp-v-disabled .tp-lstv_s{opacity:0.5}.tp-lstv_m{color:var(--btn-fg)}.tp-sglv_i{padding:0 4px}.tp-sglv.tp-v-disabled .tp-sglv_i{opacity:0.5}.tp-mllv_i{display:block;height:calc(var(--bld-us) * 3);line-height:var(--bld-us);padding:0 4px;resize:none;white-space:pre}.tp-mllv.tp-v-disabled .tp-mllv_i{opacity:0.5}.tp-p2dv{position:relative}.tp-p2dv_h{display:flex}.tp-p2dv_b{height:var(--bld-us);margin-right:4px;position:relative;width:var(--bld-us)}.tp-p2dv_b svg{display:block;height:16px;left:50%;margin-left:-8px;margin-top:-8px;position:absolute;top:50%;width:16px}.tp-p2dv_b svg path{stroke:currentColor;stroke-width:2}.tp-p2dv_b svg circle{fill:currentColor}.tp-p2dv_t{flex:1}.tp-p2dv_p{height:0;margin-top:0;opacity:0;overflow:hidden;transition:height .2s ease-in-out,opacity .2s linear,margin .2s ease-in-out}.tp-p2dv.tp-p2dv-expanded .tp-p2dv_p{margin-top:var(--bld-s);opacity:1}.tp-p2dv .tp-popv{left:calc(-1 * var(--cnt-h-p));right:calc(-1 * var(--cnt-h-p));top:var(--bld-us)}.tp-p2dpv{padding-left:calc(var(--bld-us) + 4px)}.tp-p2dpv_p{cursor:crosshair;height:0;overflow:hidden;padding-bottom:100%;position:relative}.tp-p2dpv_g{display:block;height:100%;left:0;pointer-events:none;position:absolute;top:0;width:100%}.tp-p2dpv_ax{opacity:0.1;stroke:var(--in-fg);stroke-dasharray:1}.tp-p2dpv_l{opacity:0.5;stroke:var(--in-fg);stroke-dasharray:1}.tp-p2dpv_m{border:var(--in-fg) solid 1px;border-radius:50%;box-sizing:border-box;height:4px;margin-left:-2px;margin-top:-2px;position:absolute;width:4px}.tp-p2dpv_p:focus .tp-p2dpv_m{background-color:var(--in-fg);border-width:0}.tp-popv{background-color:var(--bs-bg);border-radius:6px;box-shadow:0 2px 4px var(--bs-sh);display:none;max-width:168px;padding:var(--cnt-v-p) var(--cnt-h-p);position:absolute;visibility:hidden;z-index:1000}.tp-popv.tp-popv-v{display:block;visibility:visible}.tp-sprv_r{background-color:var(--grv-fg);border-width:0;display:block;height:2px;margin:0;width:100%}.tp-sldv.tp-v-disabled{opacity:0.5}.tp-sldv_t{box-sizing:border-box;cursor:pointer;height:var(--bld-us);margin:0 6px;outline:none;position:relative}.tp-sldv_t::before{background-color:var(--in-bg);border-radius:1px;bottom:0;content:\'\';display:block;height:2px;left:0;margin:auto;position:absolute;right:0;top:0}.tp-sldv_k{height:100%;left:0;position:absolute;top:0}.tp-sldv_k::before{background-color:var(--in-fg);border-radius:1px;bottom:0;content:\'\';display:block;height:2px;left:0;margin-bottom:auto;margin-top:auto;position:absolute;right:0;top:0}.tp-sldv_k::after{background-color:var(--btn-bg);border-radius:var(--elm-br);bottom:0;content:\'\';display:block;height:12px;margin-bottom:auto;margin-top:auto;position:absolute;right:-6px;top:0;width:12px}.tp-sldv_t:hover .tp-sldv_k::after{background-color:var(--btn-bg-h)}.tp-sldv_t:focus .tp-sldv_k::after{background-color:var(--btn-bg-f)}.tp-sldv_t:active .tp-sldv_k::after{background-color:var(--btn-bg-a)}.tp-sldtxtv{display:flex}.tp-sldtxtv_s{flex:2}.tp-sldtxtv_t{flex:1;margin-left:4px}.tp-tabv.tp-v-disabled{opacity:0.5}.tp-tabv_i{align-items:flex-end;display:flex;overflow:hidden}.tp-tabv.tp-tabv-nop .tp-tabv_i{height:calc(var(--bld-us) + 4px);position:relative}.tp-tabv.tp-tabv-nop .tp-tabv_i::before{background-color:var(--cnt-bg);bottom:0;content:\'\';height:2px;left:0;position:absolute;right:0}.tp-tabv_c{border-left:var(--cnt-bg) solid 4px;padding-bottom:var(--cnt-v-p);padding-top:var(--cnt-v-p)}.tp-tbiv{flex:1;min-width:0;position:relative}.tp-tbiv+.tp-tbiv{margin-left:2px}.tp-tbiv+.tp-tbiv::before{background-color:var(--cnt-bg);bottom:0;content:\'\';height:2px;left:-2px;position:absolute;width:2px}.tp-tbiv_b{background-color:var(--cnt-bg);display:block;padding-left:calc(var(--cnt-h-p) + 4px);padding-right:calc(var(--cnt-h-p) + 4px);width:100%}.tp-tbiv_b:hover{background-color:var(--cnt-bg-h)}.tp-tbiv_b:focus{background-color:var(--cnt-bg-f)}.tp-tbiv_b:active{background-color:var(--cnt-bg-a)}.tp-tbiv_b:disabled{opacity:0.5}.tp-tbiv_t{color:var(--cnt-fg);height:calc(var(--bld-us) + 4px);line-height:calc(var(--bld-us) + 4px);opacity:0.5;overflow:hidden;text-overflow:ellipsis}.tp-tbiv.tp-tbiv-sel .tp-tbiv_t{opacity:1}.tp-txtv{position:relative}.tp-txtv_i{padding:0 4px}.tp-txtv.tp-txtv-fst .tp-txtv_i{border-bottom-right-radius:0;border-top-right-radius:0}.tp-txtv.tp-txtv-mid .tp-txtv_i{border-radius:0}.tp-txtv.tp-txtv-lst .tp-txtv_i{border-bottom-left-radius:0;border-top-left-radius:0}.tp-txtv.tp-txtv-num .tp-txtv_i{text-align:right}.tp-txtv.tp-txtv-drg .tp-txtv_i{opacity:0.3}.tp-txtv_k{cursor:pointer;height:100%;left:-3px;position:absolute;top:0;width:12px}.tp-txtv_k::before{background-color:var(--in-fg);border-radius:1px;bottom:0;content:\'\';height:calc(var(--bld-us) - 4px);left:50%;margin-bottom:auto;margin-left:-1px;margin-top:auto;opacity:0.1;position:absolute;top:0;transition:border-radius 0.1s, height 0.1s, transform 0.1s, width 0.1s;width:2px}.tp-txtv_k:hover::before,.tp-txtv.tp-txtv-drg .tp-txtv_k::before{opacity:1}.tp-txtv.tp-txtv-drg .tp-txtv_k::before{border-radius:50%;height:4px;transform:translateX(-1px);width:4px}.tp-txtv_g{bottom:0;display:block;height:8px;left:50%;margin:auto;overflow:visible;pointer-events:none;position:absolute;top:0;visibility:hidden;width:100%}.tp-txtv.tp-txtv-drg .tp-txtv_g{visibility:visible}.tp-txtv_gb{fill:none;stroke:var(--in-fg);stroke-dasharray:1}.tp-txtv_gh{fill:none;stroke:var(--in-fg)}.tp-txtv .tp-ttv{margin-left:6px;visibility:hidden}.tp-txtv.tp-txtv-drg .tp-ttv{visibility:visible}.tp-ttv{background-color:var(--in-fg);border-radius:var(--elm-br);color:var(--bs-bg);padding:2px 4px;pointer-events:none;position:absolute;transform:translate(-50%, -100%)}.tp-ttv::before{border-color:var(--in-fg) transparent transparent transparent;border-style:solid;border-width:2px;box-sizing:border-box;content:\'\';font-size:0.9em;height:4px;left:50%;margin-left:-2px;position:absolute;top:100%;width:4px}.tp-rotv{background-color:var(--bs-bg);border-radius:var(--bs-br);box-shadow:0 2px 4px var(--bs-sh);font-family:var(--font-family);font-size:11px;font-weight:500;line-height:1;text-align:left}.tp-rotv_b{border-bottom-left-radius:var(--bs-br);border-bottom-right-radius:var(--bs-br);border-top-left-radius:var(--bs-br);border-top-right-radius:var(--bs-br);padding-left:calc(2px * 2 + var(--bld-us) + var(--cnt-h-p));text-align:center}.tp-rotv.tp-rotv-expanded .tp-rotv_b{border-bottom-left-radius:0;border-bottom-right-radius:0}.tp-rotv.tp-rotv-not .tp-rotv_b{display:none}.tp-rotv_c>.tp-fldv.tp-v-lst>.tp-fldv_c,.tp-rotv_c>.tp-tabv.tp-v-lst>.tp-tabv_c{border-bottom-left-radius:var(--bs-br);border-bottom-right-radius:var(--bs-br)}.tp-rotv_c>.tp-fldv.tp-v-lst:not(.tp-fldv-expanded)>.tp-fldv_b{border-bottom-left-radius:var(--bs-br);border-bottom-right-radius:var(--bs-br)}.tp-rotv_c .tp-fldv.tp-v-vlst:not(.tp-fldv-expanded)>.tp-fldv_b{border-bottom-right-radius:var(--bs-br)}.tp-rotv.tp-rotv-not .tp-rotv_c>.tp-fldv.tp-v-fst{margin-top:calc(-1 * var(--cnt-v-p))}.tp-rotv.tp-rotv-not .tp-rotv_c>.tp-fldv.tp-v-fst>.tp-fldv_b{border-top-left-radius:var(--bs-br);border-top-right-radius:var(--bs-br)}.tp-rotv.tp-rotv-not .tp-rotv_c>.tp-tabv.tp-v-fst{margin-top:calc(-1 * var(--cnt-v-p))}.tp-rotv.tp-rotv-not .tp-rotv_c>.tp-tabv.tp-v-fst>.tp-tabv_i{border-top-left-radius:var(--bs-br);border-top-right-radius:var(--bs-br)}.tp-rotv.tp-v-disabled,.tp-rotv .tp-v-disabled{pointer-events:none}.tp-rotv.tp-v-hidden,.tp-rotv .tp-v-hidden{display:none}');
+        embedStyle(this.document, 'default', '.tp-tbiv_b,.tp-coltxtv_ms,.tp-ckbv_i,.tp-rotv_b,.tp-fldv_b,.tp-mllv_i,.tp-sglv_i,.tp-grlv_g,.tp-txtv_i,.tp-p2dpv_p,.tp-colswv_sw,.tp-p2dv_b,.tp-btnv_b,.tp-lstv_s{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:transparent;border-width:0;font-family:inherit;font-size:inherit;font-weight:inherit;margin:0;outline:none;padding:0}.tp-p2dv_b,.tp-btnv_b,.tp-lstv_s{background-color:var(--btn-bg);border-radius:var(--elm-br);color:var(--btn-fg);cursor:pointer;display:block;font-weight:bold;height:var(--bld-us);line-height:var(--bld-us);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tp-p2dv_b:hover,.tp-btnv_b:hover,.tp-lstv_s:hover{background-color:var(--btn-bg-h)}.tp-p2dv_b:focus,.tp-btnv_b:focus,.tp-lstv_s:focus{background-color:var(--btn-bg-f)}.tp-p2dv_b:active,.tp-btnv_b:active,.tp-lstv_s:active{background-color:var(--btn-bg-a)}.tp-p2dv_b:disabled,.tp-btnv_b:disabled,.tp-lstv_s:disabled{opacity:.5}.tp-txtv_i,.tp-p2dpv_p,.tp-colswv_sw{background-color:var(--in-bg);border-radius:var(--elm-br);box-sizing:border-box;color:var(--in-fg);font-family:inherit;height:var(--bld-us);line-height:var(--bld-us);min-width:0;width:100%}.tp-txtv_i:hover,.tp-p2dpv_p:hover,.tp-colswv_sw:hover{background-color:var(--in-bg-h)}.tp-txtv_i:focus,.tp-p2dpv_p:focus,.tp-colswv_sw:focus{background-color:var(--in-bg-f)}.tp-txtv_i:active,.tp-p2dpv_p:active,.tp-colswv_sw:active{background-color:var(--in-bg-a)}.tp-txtv_i:disabled,.tp-p2dpv_p:disabled,.tp-colswv_sw:disabled{opacity:.5}.tp-mllv_i,.tp-sglv_i,.tp-grlv_g{background-color:var(--mo-bg);border-radius:var(--elm-br);box-sizing:border-box;color:var(--mo-fg);height:var(--bld-us);scrollbar-color:currentColor transparent;scrollbar-width:thin;width:100%}.tp-mllv_i::-webkit-scrollbar,.tp-sglv_i::-webkit-scrollbar,.tp-grlv_g::-webkit-scrollbar{height:8px;width:8px}.tp-mllv_i::-webkit-scrollbar-corner,.tp-sglv_i::-webkit-scrollbar-corner,.tp-grlv_g::-webkit-scrollbar-corner{background-color:transparent}.tp-mllv_i::-webkit-scrollbar-thumb,.tp-sglv_i::-webkit-scrollbar-thumb,.tp-grlv_g::-webkit-scrollbar-thumb{background-clip:padding-box;background-color:currentColor;border:transparent solid 2px;border-radius:4px}.tp-rotv{--font-family: var(--tp-font-family, Roboto Mono, Source Code Pro, Menlo, Courier, monospace);--bs-br: var(--tp-base-border-radius, 6px);--cnt-h-p: var(--tp-container-horizontal-padding, 4px);--cnt-v-p: var(--tp-container-vertical-padding, 4px);--elm-br: var(--tp-element-border-radius, 2px);--bld-s: var(--tp-blade-spacing, 4px);--bld-us: var(--tp-blade-unit-size, 20px);--bs-bg: var(--tp-base-background-color, #28292e);--bs-sh: var(--tp-base-shadow-color, rgba(0, 0, 0, 0.2));--btn-bg: var(--tp-button-background-color, #adafb8);--btn-bg-a: var(--tp-button-background-color-active, #d6d7db);--btn-bg-f: var(--tp-button-background-color-focus, #c8cad0);--btn-bg-h: var(--tp-button-background-color-hover, #bbbcc4);--btn-fg: var(--tp-button-foreground-color, #28292e);--cnt-bg: var(--tp-container-background-color, rgba(187, 188, 196, 0.1));--cnt-bg-a: var(--tp-container-background-color-active, rgba(187, 188, 196, 0.25));--cnt-bg-f: var(--tp-container-background-color-focus, rgba(187, 188, 196, 0.2));--cnt-bg-h: var(--tp-container-background-color-hover, rgba(187, 188, 196, 0.15));--cnt-fg: var(--tp-container-foreground-color, #bbbcc4);--in-bg: var(--tp-input-background-color, rgba(187, 188, 196, 0.1));--in-bg-a: var(--tp-input-background-color-active, rgba(187, 188, 196, 0.25));--in-bg-f: var(--tp-input-background-color-focus, rgba(187, 188, 196, 0.2));--in-bg-h: var(--tp-input-background-color-hover, rgba(187, 188, 196, 0.15));--in-fg: var(--tp-input-foreground-color, #bbbcc4);--lbl-fg: var(--tp-label-foreground-color, rgba(187, 188, 196, 0.7));--mo-bg: var(--tp-monitor-background-color, rgba(0, 0, 0, 0.2));--mo-fg: var(--tp-monitor-foreground-color, rgba(187, 188, 196, 0.7));--grv-fg: var(--tp-groove-foreground-color, rgba(187, 188, 196, 0.1))}.tp-rotv_c>.tp-cntv.tp-v-lst,.tp-tabv_c .tp-brkv>.tp-cntv.tp-v-lst,.tp-fldv_c>.tp-cntv.tp-v-lst{margin-bottom:calc(-1*var(--cnt-v-p))}.tp-rotv_c>.tp-fldv.tp-v-lst .tp-fldv_c,.tp-tabv_c .tp-brkv>.tp-fldv.tp-v-lst .tp-fldv_c,.tp-fldv_c>.tp-fldv.tp-v-lst .tp-fldv_c{border-bottom-left-radius:0}.tp-rotv_c>.tp-fldv.tp-v-lst .tp-fldv_b,.tp-tabv_c .tp-brkv>.tp-fldv.tp-v-lst .tp-fldv_b,.tp-fldv_c>.tp-fldv.tp-v-lst .tp-fldv_b{border-bottom-left-radius:0}.tp-rotv_c>*:not(.tp-v-fst),.tp-tabv_c .tp-brkv>*:not(.tp-v-fst),.tp-fldv_c>*:not(.tp-v-fst){margin-top:var(--bld-s)}.tp-rotv_c>.tp-sprv:not(.tp-v-fst),.tp-tabv_c .tp-brkv>.tp-sprv:not(.tp-v-fst),.tp-fldv_c>.tp-sprv:not(.tp-v-fst),.tp-rotv_c>.tp-cntv:not(.tp-v-fst),.tp-tabv_c .tp-brkv>.tp-cntv:not(.tp-v-fst),.tp-fldv_c>.tp-cntv:not(.tp-v-fst){margin-top:var(--cnt-v-p)}.tp-rotv_c>.tp-sprv+*:not(.tp-v-hidden),.tp-tabv_c .tp-brkv>.tp-sprv+*:not(.tp-v-hidden),.tp-fldv_c>.tp-sprv+*:not(.tp-v-hidden),.tp-rotv_c>.tp-cntv+*:not(.tp-v-hidden),.tp-tabv_c .tp-brkv>.tp-cntv+*:not(.tp-v-hidden),.tp-fldv_c>.tp-cntv+*:not(.tp-v-hidden){margin-top:var(--cnt-v-p)}.tp-rotv_c>.tp-sprv:not(.tp-v-hidden)+.tp-sprv,.tp-tabv_c .tp-brkv>.tp-sprv:not(.tp-v-hidden)+.tp-sprv,.tp-fldv_c>.tp-sprv:not(.tp-v-hidden)+.tp-sprv,.tp-rotv_c>.tp-cntv:not(.tp-v-hidden)+.tp-cntv,.tp-tabv_c .tp-brkv>.tp-cntv:not(.tp-v-hidden)+.tp-cntv,.tp-fldv_c>.tp-cntv:not(.tp-v-hidden)+.tp-cntv{margin-top:0}.tp-tabv_c .tp-brkv>.tp-cntv,.tp-fldv_c>.tp-cntv{margin-left:4px}.tp-tabv_c .tp-brkv>.tp-fldv>.tp-fldv_b,.tp-fldv_c>.tp-fldv>.tp-fldv_b{border-top-left-radius:var(--elm-br);border-bottom-left-radius:var(--elm-br)}.tp-tabv_c .tp-brkv>.tp-fldv.tp-fldv-expanded>.tp-fldv_b,.tp-fldv_c>.tp-fldv.tp-fldv-expanded>.tp-fldv_b{border-bottom-left-radius:0}.tp-tabv_c .tp-brkv .tp-fldv>.tp-fldv_c,.tp-fldv_c .tp-fldv>.tp-fldv_c{border-bottom-left-radius:var(--elm-br)}.tp-tabv_c .tp-brkv>.tp-tabv>.tp-tabv_i,.tp-fldv_c>.tp-tabv>.tp-tabv_i{border-top-left-radius:var(--elm-br)}.tp-tabv_c .tp-brkv .tp-tabv>.tp-tabv_c,.tp-fldv_c .tp-tabv>.tp-tabv_c{border-bottom-left-radius:var(--elm-br)}.tp-rotv_b,.tp-fldv_b{background-color:var(--cnt-bg);color:var(--cnt-fg);cursor:pointer;display:block;height:calc(var(--bld-us) + 4px);line-height:calc(var(--bld-us) + 4px);overflow:hidden;padding-left:var(--cnt-h-p);padding-right:calc(4px + var(--bld-us) + var(--cnt-h-p));position:relative;text-align:left;text-overflow:ellipsis;white-space:nowrap;width:100%;transition:border-radius .2s ease-in-out .2s}.tp-rotv_b:hover,.tp-fldv_b:hover{background-color:var(--cnt-bg-h)}.tp-rotv_b:focus,.tp-fldv_b:focus{background-color:var(--cnt-bg-f)}.tp-rotv_b:active,.tp-fldv_b:active{background-color:var(--cnt-bg-a)}.tp-rotv_b:disabled,.tp-fldv_b:disabled{opacity:.5}.tp-rotv_m,.tp-fldv_m{background:linear-gradient(to left, var(--cnt-fg), var(--cnt-fg) 2px, transparent 2px, transparent 4px, var(--cnt-fg) 4px);border-radius:2px;bottom:0;content:"";display:block;height:6px;right:calc(var(--cnt-h-p) + (var(--bld-us) + 4px - 6px)/2 - 2px);margin:auto;opacity:.5;position:absolute;top:0;transform:rotate(90deg);transition:transform .2s ease-in-out;width:6px}.tp-rotv.tp-rotv-expanded .tp-rotv_m,.tp-fldv.tp-fldv-expanded>.tp-fldv_b>.tp-fldv_m{transform:none}.tp-rotv_c,.tp-fldv_c{box-sizing:border-box;height:0;opacity:0;overflow:hidden;padding-bottom:0;padding-top:0;position:relative;transition:height .2s ease-in-out,opacity .2s linear,padding .2s ease-in-out}.tp-rotv.tp-rotv-cpl:not(.tp-rotv-expanded) .tp-rotv_c,.tp-fldv.tp-fldv-cpl:not(.tp-fldv-expanded)>.tp-fldv_c{display:none}.tp-rotv.tp-rotv-expanded .tp-rotv_c,.tp-fldv.tp-fldv-expanded>.tp-fldv_c{opacity:1;padding-bottom:var(--cnt-v-p);padding-top:var(--cnt-v-p);transform:none;overflow:visible;transition:height .2s ease-in-out,opacity .2s linear .2s,padding .2s ease-in-out}.tp-lstv,.tp-coltxtv_m{position:relative}.tp-lstv_s{padding:0 20px 0 4px;width:100%}.tp-lstv_m,.tp-coltxtv_mm{bottom:0;margin:auto;pointer-events:none;position:absolute;right:2px;top:0}.tp-lstv_m svg,.tp-coltxtv_mm svg{bottom:0;height:16px;margin:auto;position:absolute;right:0;top:0;width:16px}.tp-lstv_m svg path,.tp-coltxtv_mm svg path{fill:currentColor}.tp-pndtxtv,.tp-coltxtv_w{display:flex}.tp-pndtxtv_a,.tp-coltxtv_c{width:100%}.tp-pndtxtv_a+.tp-pndtxtv_a,.tp-coltxtv_c+.tp-pndtxtv_a,.tp-pndtxtv_a+.tp-coltxtv_c,.tp-coltxtv_c+.tp-coltxtv_c{margin-left:2px}.tp-btnv_b{width:100%}.tp-btnv_t{text-align:center}.tp-ckbv_l{display:block;position:relative}.tp-ckbv_i{left:0;opacity:0;position:absolute;top:0}.tp-ckbv_w{background-color:var(--in-bg);border-radius:var(--elm-br);cursor:pointer;display:block;height:var(--bld-us);position:relative;width:var(--bld-us)}.tp-ckbv_w svg{bottom:0;display:block;height:16px;left:0;margin:auto;opacity:0;position:absolute;right:0;top:0;width:16px}.tp-ckbv_w svg path{fill:none;stroke:var(--in-fg);stroke-width:2}.tp-ckbv_i:hover+.tp-ckbv_w{background-color:var(--in-bg-h)}.tp-ckbv_i:focus+.tp-ckbv_w{background-color:var(--in-bg-f)}.tp-ckbv_i:active+.tp-ckbv_w{background-color:var(--in-bg-a)}.tp-ckbv_i:checked+.tp-ckbv_w svg{opacity:1}.tp-ckbv.tp-v-disabled .tp-ckbv_w{opacity:.5}.tp-colv{position:relative}.tp-colv_h{display:flex}.tp-colv_s{flex-grow:0;flex-shrink:0;width:var(--bld-us)}.tp-colv_t{flex:1;margin-left:4px}.tp-colv_p{height:0;margin-top:0;opacity:0;overflow:hidden;transition:height .2s ease-in-out,opacity .2s linear,margin .2s ease-in-out}.tp-colv.tp-colv-cpl .tp-colv_p{overflow:visible}.tp-colv.tp-colv-expanded .tp-colv_p{margin-top:var(--bld-s);opacity:1}.tp-colv .tp-popv{left:calc(-1*var(--cnt-h-p));right:calc(-1*var(--cnt-h-p));top:var(--bld-us)}.tp-colpv_h,.tp-colpv_ap{margin-left:6px;margin-right:6px}.tp-colpv_h{margin-top:var(--bld-s)}.tp-colpv_rgb{display:flex;margin-top:var(--bld-s);width:100%}.tp-colpv_a{display:flex;margin-top:var(--cnt-v-p);padding-top:calc(var(--cnt-v-p) + 2px);position:relative}.tp-colpv_a:before{background-color:var(--grv-fg);content:"";height:2px;left:calc(-1*var(--cnt-h-p));position:absolute;right:calc(-1*var(--cnt-h-p));top:0}.tp-colpv_ap{align-items:center;display:flex;flex:3}.tp-colpv_at{flex:1;margin-left:4px}.tp-svpv{border-radius:var(--elm-br);outline:none;overflow:hidden;position:relative}.tp-svpv_c{cursor:crosshair;display:block;height:calc(var(--bld-us)*4);width:100%}.tp-svpv_m{border-radius:100%;border:rgba(255,255,255,.75) solid 2px;box-sizing:border-box;filter:drop-shadow(0 0 1px rgba(0, 0, 0, 0.3));height:12px;margin-left:-6px;margin-top:-6px;pointer-events:none;position:absolute;width:12px}.tp-svpv:focus .tp-svpv_m{border-color:#fff}.tp-hplv{cursor:pointer;height:var(--bld-us);outline:none;position:relative}.tp-hplv_c{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAABCAYAAABubagXAAAAQ0lEQVQoU2P8z8Dwn0GCgQEDi2OK/RBgYHjBgIpfovFh8j8YBIgzFGQxuqEgPhaDOT5gOhPkdCxOZeBg+IDFZZiGAgCaSSMYtcRHLgAAAABJRU5ErkJggg==);background-position:left top;background-repeat:no-repeat;background-size:100% 100%;border-radius:2px;display:block;height:4px;left:0;margin-top:-2px;position:absolute;top:50%;width:100%}.tp-hplv_m{border-radius:var(--elm-br);border:rgba(255,255,255,.75) solid 2px;box-shadow:0 0 2px rgba(0,0,0,.1);box-sizing:border-box;height:12px;left:50%;margin-left:-6px;margin-top:-6px;pointer-events:none;position:absolute;top:50%;width:12px}.tp-hplv:focus .tp-hplv_m{border-color:#fff}.tp-aplv{cursor:pointer;height:var(--bld-us);outline:none;position:relative;width:100%}.tp-aplv_b{background-color:#fff;background-image:linear-gradient(to top right, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%),linear-gradient(to top right, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%);background-size:4px 4px;background-position:0 0,2px 2px;border-radius:2px;display:block;height:4px;left:0;margin-top:-2px;overflow:hidden;position:absolute;top:50%;width:100%}.tp-aplv_c{bottom:0;left:0;position:absolute;right:0;top:0}.tp-aplv_m{background-color:#fff;background-image:linear-gradient(to top right, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%),linear-gradient(to top right, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%);background-size:12px 12px;background-position:0 0,6px 6px;border-radius:var(--elm-br);box-shadow:0 0 2px rgba(0,0,0,.1);height:12px;left:50%;margin-left:-6px;margin-top:-6px;overflow:hidden;pointer-events:none;position:absolute;top:50%;width:12px}.tp-aplv_p{border-radius:var(--elm-br);border:rgba(255,255,255,.75) solid 2px;box-sizing:border-box;bottom:0;left:0;position:absolute;right:0;top:0}.tp-aplv:focus .tp-aplv_p{border-color:#fff}.tp-colswv{background-color:#fff;background-image:linear-gradient(to top right, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%),linear-gradient(to top right, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%);background-size:10px 10px;background-position:0 0,5px 5px;border-radius:var(--elm-br);overflow:hidden}.tp-colswv.tp-v-disabled{opacity:.5}.tp-colswv_sw{border-radius:0}.tp-colswv_b{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-color:transparent;border-width:0;cursor:pointer;display:block;height:var(--bld-us);left:0;margin:0;outline:none;padding:0;position:absolute;top:0;width:var(--bld-us)}.tp-colswv_b:focus::after{border:rgba(255,255,255,.75) solid 2px;border-radius:var(--elm-br);bottom:0;content:"";display:block;left:0;position:absolute;right:0;top:0}.tp-coltxtv{display:flex;width:100%}.tp-coltxtv_m{margin-right:4px}.tp-coltxtv_ms{border-radius:var(--elm-br);color:var(--lbl-fg);cursor:pointer;height:var(--bld-us);line-height:var(--bld-us);padding:0 18px 0 4px}.tp-coltxtv_ms:hover{background-color:var(--in-bg-h)}.tp-coltxtv_ms:focus{background-color:var(--in-bg-f)}.tp-coltxtv_ms:active{background-color:var(--in-bg-a)}.tp-coltxtv_mm{color:var(--lbl-fg)}.tp-coltxtv_w{flex:1}.tp-dfwv{position:absolute;top:8px;right:8px;width:256px}.tp-fldv.tp-fldv-not .tp-fldv_b{display:none}.tp-fldv_t{padding-left:4px}.tp-fldv_c{border-left:var(--cnt-bg) solid 4px}.tp-fldv_b:hover+.tp-fldv_c{border-left-color:var(--cnt-bg-h)}.tp-fldv_b:focus+.tp-fldv_c{border-left-color:var(--cnt-bg-f)}.tp-fldv_b:active+.tp-fldv_c{border-left-color:var(--cnt-bg-a)}.tp-grlv{position:relative}.tp-grlv_g{display:block;height:calc(var(--bld-us)*3)}.tp-grlv_g polyline{fill:none;stroke:var(--mo-fg);stroke-linejoin:round}.tp-grlv_t{margin-top:-4px;transition:left .05s,top .05s;visibility:hidden}.tp-grlv_t.tp-grlv_t-a{visibility:visible}.tp-grlv_t.tp-grlv_t-in{transition:none}.tp-grlv.tp-v-disabled .tp-grlv_g{opacity:.5}.tp-grlv .tp-ttv{background-color:var(--mo-fg)}.tp-grlv .tp-ttv::before{border-top-color:var(--mo-fg)}.tp-lblv{align-items:center;display:flex;line-height:1.3;padding-left:var(--cnt-h-p);padding-right:var(--cnt-h-p)}.tp-lblv.tp-lblv-nol{display:block}.tp-lblv_l{color:var(--lbl-fg);flex:1;-webkit-hyphens:auto;-ms-hyphens:auto;hyphens:auto;overflow:hidden;padding-left:4px;padding-right:16px}.tp-lblv.tp-v-disabled .tp-lblv_l{opacity:.5}.tp-lblv.tp-lblv-nol .tp-lblv_l{display:none}.tp-lblv_v{align-self:flex-start;flex-grow:0;flex-shrink:0;width:160px}.tp-lblv.tp-lblv-nol .tp-lblv_v{width:100%}.tp-lstv_s{padding:0 20px 0 4px;width:100%}.tp-lstv_m{color:var(--btn-fg)}.tp-sglv_i{padding:0 4px}.tp-sglv.tp-v-disabled .tp-sglv_i{opacity:.5}.tp-mllv_i{display:block;height:calc(var(--bld-us)*3);line-height:var(--bld-us);padding:0 4px;resize:none;white-space:pre}.tp-mllv.tp-v-disabled .tp-mllv_i{opacity:.5}.tp-p2dv{position:relative}.tp-p2dv_h{display:flex}.tp-p2dv_b{height:var(--bld-us);margin-right:4px;position:relative;width:var(--bld-us)}.tp-p2dv_b svg{display:block;height:16px;left:50%;margin-left:-8px;margin-top:-8px;position:absolute;top:50%;width:16px}.tp-p2dv_b svg path{stroke:currentColor;stroke-width:2}.tp-p2dv_b svg circle{fill:currentColor}.tp-p2dv_t{flex:1}.tp-p2dv_p{height:0;margin-top:0;opacity:0;overflow:hidden;transition:height .2s ease-in-out,opacity .2s linear,margin .2s ease-in-out}.tp-p2dv.tp-p2dv-expanded .tp-p2dv_p{margin-top:var(--bld-s);opacity:1}.tp-p2dv .tp-popv{left:calc(-1*var(--cnt-h-p));right:calc(-1*var(--cnt-h-p));top:var(--bld-us)}.tp-p2dpv{padding-left:calc(var(--bld-us) + 4px)}.tp-p2dpv_p{cursor:crosshair;height:0;overflow:hidden;padding-bottom:100%;position:relative}.tp-p2dpv_g{display:block;height:100%;left:0;pointer-events:none;position:absolute;top:0;width:100%}.tp-p2dpv_ax{opacity:.1;stroke:var(--in-fg);stroke-dasharray:1}.tp-p2dpv_l{opacity:.5;stroke:var(--in-fg);stroke-dasharray:1}.tp-p2dpv_m{border:var(--in-fg) solid 1px;border-radius:50%;box-sizing:border-box;height:4px;margin-left:-2px;margin-top:-2px;position:absolute;width:4px}.tp-p2dpv_p:focus .tp-p2dpv_m{background-color:var(--in-fg);border-width:0}.tp-popv{background-color:var(--bs-bg);border-radius:6px;box-shadow:0 2px 4px var(--bs-sh);display:none;max-width:168px;padding:var(--cnt-v-p) var(--cnt-h-p);position:absolute;visibility:hidden;z-index:1000}.tp-popv.tp-popv-v{display:block;visibility:visible}.tp-sprv_r{background-color:var(--grv-fg);border-width:0;display:block;height:2px;margin:0;width:100%}.tp-sldv.tp-v-disabled{opacity:.5}.tp-sldv_t{box-sizing:border-box;cursor:pointer;height:var(--bld-us);margin:0 6px;outline:none;position:relative}.tp-sldv_t::before{background-color:var(--in-bg);border-radius:1px;bottom:0;content:"";display:block;height:2px;left:0;margin:auto;position:absolute;right:0;top:0}.tp-sldv_k{height:100%;left:0;position:absolute;top:0}.tp-sldv_k::before{background-color:var(--in-fg);border-radius:1px;bottom:0;content:"";display:block;height:2px;left:0;margin-bottom:auto;margin-top:auto;position:absolute;right:0;top:0}.tp-sldv_k::after{background-color:var(--btn-bg);border-radius:var(--elm-br);bottom:0;content:"";display:block;height:12px;margin-bottom:auto;margin-top:auto;position:absolute;right:-6px;top:0;width:12px}.tp-sldv_t:hover .tp-sldv_k::after{background-color:var(--btn-bg-h)}.tp-sldv_t:focus .tp-sldv_k::after{background-color:var(--btn-bg-f)}.tp-sldv_t:active .tp-sldv_k::after{background-color:var(--btn-bg-a)}.tp-sldtxtv{display:flex}.tp-sldtxtv_s{flex:2}.tp-sldtxtv_t{flex:1;margin-left:4px}.tp-tabv.tp-v-disabled{opacity:.5}.tp-tabv_i{align-items:flex-end;display:flex;overflow:hidden}.tp-tabv.tp-tabv-nop .tp-tabv_i{height:calc(var(--bld-us) + 4px);position:relative}.tp-tabv.tp-tabv-nop .tp-tabv_i::before{background-color:var(--cnt-bg);bottom:0;content:"";height:2px;left:0;position:absolute;right:0}.tp-tabv_c{border-left:var(--cnt-bg) solid 4px;padding-bottom:var(--cnt-v-p);padding-top:var(--cnt-v-p)}.tp-tbiv{flex:1;min-width:0;position:relative}.tp-tbiv+.tp-tbiv{margin-left:2px}.tp-tbiv+.tp-tbiv::before{background-color:var(--cnt-bg);bottom:0;content:"";height:2px;left:-2px;position:absolute;width:2px}.tp-tbiv_b{background-color:var(--cnt-bg);display:block;padding-left:calc(var(--cnt-h-p) + 4px);padding-right:calc(var(--cnt-h-p) + 4px);width:100%}.tp-tbiv_b:hover{background-color:var(--cnt-bg-h)}.tp-tbiv_b:focus{background-color:var(--cnt-bg-f)}.tp-tbiv_b:active{background-color:var(--cnt-bg-a)}.tp-tbiv_b:disabled{opacity:.5}.tp-tbiv_t{color:var(--cnt-fg);height:calc(var(--bld-us) + 4px);line-height:calc(var(--bld-us) + 4px);opacity:.5;overflow:hidden;text-overflow:ellipsis}.tp-tbiv.tp-tbiv-sel .tp-tbiv_t{opacity:1}.tp-txtv{position:relative}.tp-txtv_i{padding:0 4px}.tp-txtv.tp-txtv-fst .tp-txtv_i{border-bottom-right-radius:0;border-top-right-radius:0}.tp-txtv.tp-txtv-mid .tp-txtv_i{border-radius:0}.tp-txtv.tp-txtv-lst .tp-txtv_i{border-bottom-left-radius:0;border-top-left-radius:0}.tp-txtv.tp-txtv-num .tp-txtv_i{text-align:right}.tp-txtv.tp-txtv-drg .tp-txtv_i{opacity:.3}.tp-txtv_k{cursor:pointer;height:100%;left:-3px;position:absolute;top:0;width:12px}.tp-txtv_k::before{background-color:var(--in-fg);border-radius:1px;bottom:0;content:"";height:calc(var(--bld-us) - 4px);left:50%;margin-bottom:auto;margin-left:-1px;margin-top:auto;opacity:.1;position:absolute;top:0;transition:border-radius .1s,height .1s,transform .1s,width .1s;width:2px}.tp-txtv_k:hover::before,.tp-txtv.tp-txtv-drg .tp-txtv_k::before{opacity:1}.tp-txtv.tp-txtv-drg .tp-txtv_k::before{border-radius:50%;height:4px;transform:translateX(-1px);width:4px}.tp-txtv_g{bottom:0;display:block;height:8px;left:50%;margin:auto;overflow:visible;pointer-events:none;position:absolute;top:0;visibility:hidden;width:100%}.tp-txtv.tp-txtv-drg .tp-txtv_g{visibility:visible}.tp-txtv_gb{fill:none;stroke:var(--in-fg);stroke-dasharray:1}.tp-txtv_gh{fill:none;stroke:var(--in-fg)}.tp-txtv .tp-ttv{margin-left:6px;visibility:hidden}.tp-txtv.tp-txtv-drg .tp-ttv{visibility:visible}.tp-ttv{background-color:var(--in-fg);border-radius:var(--elm-br);color:var(--bs-bg);padding:2px 4px;pointer-events:none;position:absolute;transform:translate(-50%, -100%)}.tp-ttv::before{border-color:var(--in-fg) transparent transparent transparent;border-style:solid;border-width:2px;box-sizing:border-box;content:"";font-size:.9em;height:4px;left:50%;margin-left:-2px;position:absolute;top:100%;width:4px}.tp-rotv{background-color:var(--bs-bg);border-radius:var(--bs-br);box-shadow:0 2px 4px var(--bs-sh);font-family:var(--font-family);font-size:11px;font-weight:500;line-height:1;text-align:left}.tp-rotv_b{border-bottom-left-radius:var(--bs-br);border-bottom-right-radius:var(--bs-br);border-top-left-radius:var(--bs-br);border-top-right-radius:var(--bs-br);padding-left:calc(4px + var(--bld-us) + var(--cnt-h-p));text-align:center}.tp-rotv.tp-rotv-expanded .tp-rotv_b{border-bottom-left-radius:0;border-bottom-right-radius:0}.tp-rotv.tp-rotv-not .tp-rotv_b{display:none}.tp-rotv_c>.tp-fldv.tp-v-lst>.tp-fldv_c,.tp-rotv_c>.tp-tabv.tp-v-lst>.tp-tabv_c{border-bottom-left-radius:var(--bs-br);border-bottom-right-radius:var(--bs-br)}.tp-rotv_c>.tp-fldv.tp-v-lst:not(.tp-fldv-expanded)>.tp-fldv_b{border-bottom-left-radius:var(--bs-br);border-bottom-right-radius:var(--bs-br)}.tp-rotv_c .tp-fldv.tp-v-vlst:not(.tp-fldv-expanded)>.tp-fldv_b{border-bottom-right-radius:var(--bs-br)}.tp-rotv.tp-rotv-not .tp-rotv_c>.tp-fldv.tp-v-fst{margin-top:calc(-1*var(--cnt-v-p))}.tp-rotv.tp-rotv-not .tp-rotv_c>.tp-fldv.tp-v-fst>.tp-fldv_b{border-top-left-radius:var(--bs-br);border-top-right-radius:var(--bs-br)}.tp-rotv.tp-rotv-not .tp-rotv_c>.tp-tabv.tp-v-fst{margin-top:calc(-1*var(--cnt-v-p))}.tp-rotv.tp-rotv-not .tp-rotv_c>.tp-tabv.tp-v-fst>.tp-tabv_i{border-top-left-radius:var(--bs-br);border-top-right-radius:var(--bs-br)}.tp-rotv.tp-v-disabled,.tp-rotv .tp-v-disabled{pointer-events:none}.tp-rotv.tp-v-hidden,.tp-rotv .tp-v-hidden{display:none}');
         this.pool_.getAll().forEach(plugin => {
           this.embedPluginStyle_(plugin);
         });
@@ -7751,7 +8017,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
 
     }
 
-    const VERSION = new Semver('3.0.2');
+    const VERSION = new Semver('3.0.8');
     exports.BladeApi = BladeApi;
     exports.ButtonApi = ButtonApi;
     exports.FolderApi = FolderApi;

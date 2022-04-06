@@ -1,9 +1,10 @@
-import { f as fromValues, c as create, a as create$1, l as lookAt, b as copy, i as invert, d as frustum, p as perspective, o as ortho, e as create$2, z as zero, s as subtract, g as distance, h as set, j as copy$1, k as create$3, m as copy$2, n as subtract$1, q as length, r as sub, t as add, u as scale, v as transformQuat, w as rotationTo, x as invert$1, y as glMatrix } from './common/vec2-bc2d6fdf.js';
-import './common/es.string.replace-bccc259e.js';
-import './common/es.typed-array.float32-array-b0c49f63.js';
-import './common/is-array-iterator-method-02e028bb.js';
-import './common/redefine-all-fdb3392a.js';
-import './common/string-multibyte-d7a22384.js';
+import { f as fromValues, c as create, a as create$1, l as lookAt, b as copy, i as invert, d as frustum, p as perspective, o as ortho, e as create$2, z as zero, s as subtract, g as distance, h as set, j as copy$1, k as create$3, m as copy$2, n as subtract$1, q as length, r as sub, t as add, u as scale, v as transformQuat, w as rotationTo, x as invert$1, y as glMatrix } from './common/vec2-add48ac3.js';
+import './common/es.string.replace-f2834016.js';
+import './common/es.typed-array.float32-array-dc5d97af.js';
+import './common/esnext.typed-array.with-454b67df.js';
+import './common/set-to-string-tag-66b9f676.js';
+import './common/array-sort-bfab3e41.js';
+import './common/string-multibyte-899afb37.js';
 
 // Camera
 var CameraType;
@@ -893,12 +894,12 @@ class Controls {
       this.updatePosition();
     } // Set by position and optional target
     else {
-        if (!options.position) copy$2(this.position, options.camera.position);
-        subtract$1(TEMP, this.position, this.target);
-        this.distance = length(TEMP);
-        this.theta = Math.atan2(this.position[0], this.position[2]);
-        this.phi = Math.acos(clamp_1(this.position[1] / this.distance, -1, 1));
-      } // Init private targets
+      if (!options.position) copy$2(this.position, options.camera.position);
+      subtract$1(TEMP, this.position, this.target);
+      this.distance = length(TEMP);
+      this.theta = Math.atan2(this.position[0], this.position[2]);
+      this.phi = Math.acos(clamp_1(this.position[1] / this.distance, -1, 1));
+    } // Init private targets
 
 
     this.sphericalTarget[0] = this.theta;
