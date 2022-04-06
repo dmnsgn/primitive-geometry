@@ -2,9 +2,7 @@
  * @module rounded-cube
  */
 import cube from "./cube.js";
-import { checkArguments, normalize } from "./utils.js";
-
-const TMP = [0, 0, 0];
+import { checkArguments, normalize, TMP } from "./utils.js";
 
 /**
  * @typedef {Object} RoundedCubeOptions

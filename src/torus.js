@@ -1,9 +1,13 @@
 /**
  * @module torus
  */
-import { checkArguments, getCellsTypedArray, normalize, TAU } from "./utils.js";
-
-const TMP = [0, 0, 0];
+import {
+  checkArguments,
+  getCellsTypedArray,
+  normalize,
+  TAU,
+  TMP,
+} from "./utils.js";
 
 /**
  * @typedef {Object} TorusOptions

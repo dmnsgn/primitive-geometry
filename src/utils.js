@@ -55,6 +55,12 @@ export function setTypedArrayType(type) {
 export const getCellsTypedArray = (size) =>
   TYPED_ARRAY_TYPE ||
   (size <= 255 ? Uint8Array : size <= 65535 ? Uint16Array : Uint32Array);
+
+/**
+ * @private
+ */
+export const TMP = [0, 0, 0];
+
 /**
  * @private
  */
