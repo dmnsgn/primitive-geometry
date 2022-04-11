@@ -6,6 +6,7 @@
     "es-module-shims": "./es-module-shims.js",
     "gl-matrix": "./gl-matrix.js",
     "pex-context": "./pex-context.js",
+    "pex-geom": "./pex-geom.js",
     "tweakpane": "./tweakpane.js"
   }
 }

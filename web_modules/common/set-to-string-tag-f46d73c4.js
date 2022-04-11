@@ -797,38 +797,6 @@ var _export = function (options, source) {
   }
 };
 
-var TO_STRING_TAG = wellKnownSymbol('toStringTag');
-var test = {};
-
-test[TO_STRING_TAG] = 'z';
-
-var toStringTagSupport = String(test) === '[object z]';
-
-var TO_STRING_TAG$1 = wellKnownSymbol('toStringTag');
-var Object$4 = global_1.Object;
-
-// ES3 wrong here
-var CORRECT_ARGUMENTS = classofRaw(function () { return arguments; }()) == 'Arguments';
-
-// fallback for IE11 Script Access Denied error
-var tryGet = function (it, key) {
-  try {
-    return it[key];
-  } catch (error) { /* empty */ }
-};
-
-// getting tag from ES6+ `Object.prototype.toString`
-var classof = toStringTagSupport ? classofRaw : function (it) {
-  var O, tag, result;
-  return it === undefined ? 'Undefined' : it === null ? 'Null'
-    // @@toStringTag case
-    : typeof (tag = tryGet(O = Object$4(it), TO_STRING_TAG$1)) == 'string' ? tag
-    // builtinTag case
-    : CORRECT_ARGUMENTS ? classofRaw(O)
-    // ES3 arguments fallback
-    : (result = classofRaw(O)) == 'Object' && isCallable(O.callee) ? 'Arguments' : result;
-};
-
 // `Object.keys` method
 // https://tc39.es/ecma262/#sec-object.keys
 // eslint-disable-next-line es/no-object-keys -- safe
@@ -975,28 +943,6 @@ var objectSetPrototypeOf = Object.setPrototypeOf || ('__proto__' in {} ? functio
   };
 }() : undefined);
 
-// makes subclassing work correct for wrapped built-ins
-var inheritIfRequired = function ($this, dummy, Wrapper) {
-  var NewTarget, NewTargetPrototype;
-  if (
-    // it can work only with native `setPrototypeOf`
-    objectSetPrototypeOf &&
-    // we haven't completely correct pre-ES6 way for getting `new.target`, so use this
-    isCallable(NewTarget = dummy.constructor) &&
-    NewTarget !== Wrapper &&
-    isObject(NewTargetPrototype = NewTarget.prototype) &&
-    NewTargetPrototype !== Wrapper.prototype
-  ) objectSetPrototypeOf($this, NewTargetPrototype);
-  return $this;
-};
-
-var TypeError$8 = global_1.TypeError;
-
-var anInstance = function (it, Prototype) {
-  if (objectIsPrototypeOf(Prototype, it)) return it;
-  throw TypeError$8('Incorrect invocation');
-};
-
 var correctPrototypeGetter = !fails(function () {
   function F() { /* empty */ }
   F.prototype.constructor = null;
@@ -1005,136 +951,33 @@ var correctPrototypeGetter = !fails(function () {
 });
 
 var IE_PROTO$1 = sharedKey('IE_PROTO');
-var Object$5 = global_1.Object;
-var ObjectPrototype = Object$5.prototype;
+var Object$4 = global_1.Object;
+var ObjectPrototype = Object$4.prototype;
 
 // `Object.getPrototypeOf` method
 // https://tc39.es/ecma262/#sec-object.getprototypeof
-var objectGetPrototypeOf = correctPrototypeGetter ? Object$5.getPrototypeOf : function (O) {
+var objectGetPrototypeOf = correctPrototypeGetter ? Object$4.getPrototypeOf : function (O) {
   var object = toObject(O);
   if (hasOwnProperty_1(object, IE_PROTO$1)) return object[IE_PROTO$1];
   var constructor = object.constructor;
   if (isCallable(constructor) && object instanceof constructor) {
     return constructor.prototype;
-  } return object instanceof Object$5 ? ObjectPrototype : null;
-};
-
-var bind$1 = functionUncurryThis(functionUncurryThis.bind);
-
-// optional / simple context binding
-var functionBindContext = function (fn, that) {
-  aCallable(fn);
-  return that === undefined ? fn : functionBindNative ? bind$1(fn, that) : function (/* ...args */) {
-    return fn.apply(that, arguments);
-  };
+  } return object instanceof Object$4 ? ObjectPrototype : null;
 };
 
 var iterators = {};
-
-var ITERATOR = wellKnownSymbol('iterator');
-var ArrayPrototype = Array.prototype;
-
-// check on default Array iterator
-var isArrayIteratorMethod = function (it) {
-  return it !== undefined && (iterators.Array === it || ArrayPrototype[ITERATOR] === it);
-};
-
-var ITERATOR$1 = wellKnownSymbol('iterator');
-
-var getIteratorMethod = function (it) {
-  if (it != undefined) return getMethod(it, ITERATOR$1)
-    || getMethod(it, '@@iterator')
-    || iterators[classof(it)];
-};
-
-var TypeError$9 = global_1.TypeError;
-
-var getIterator = function (argument, usingIterator) {
-  var iteratorMethod = arguments.length < 2 ? getIteratorMethod(argument) : usingIterator;
-  if (aCallable(iteratorMethod)) return anObject(functionCall(iteratorMethod, argument));
-  throw TypeError$9(tryToString(argument) + ' is not iterable');
-};
-
-var redefineAll = function (target, src, options) {
-  for (var key in src) redefine(target, key, src[key], options);
-  return target;
-};
-
-var noop = function () { /* empty */ };
-var empty = [];
-var construct = getBuiltIn('Reflect', 'construct');
-var constructorRegExp = /^\s*(?:class|function)\b/;
-var exec = functionUncurryThis(constructorRegExp.exec);
-var INCORRECT_TO_STRING = !constructorRegExp.exec(noop);
-
-var isConstructorModern = function isConstructor(argument) {
-  if (!isCallable(argument)) return false;
-  try {
-    construct(noop, empty, argument);
-    return true;
-  } catch (error) {
-    return false;
-  }
-};
-
-var isConstructorLegacy = function isConstructor(argument) {
-  if (!isCallable(argument)) return false;
-  switch (classof(argument)) {
-    case 'AsyncFunction':
-    case 'GeneratorFunction':
-    case 'AsyncGeneratorFunction': return false;
-  }
-  try {
-    // we can't check .prototype since constructors produced by .bind haven't it
-    // `Function#toString` throws on some built-it function in some legacy engines
-    // (for example, `DOMQuad` and similar in FF41-)
-    return INCORRECT_TO_STRING || !!exec(constructorRegExp, inspectSource(argument));
-  } catch (error) {
-    return true;
-  }
-};
-
-isConstructorLegacy.sham = true;
-
-// `IsConstructor` abstract operation
-// https://tc39.es/ecma262/#sec-isconstructor
-var isConstructor = !construct || fails(function () {
-  var called;
-  return isConstructorModern(isConstructorModern.call)
-    || !isConstructorModern(Object)
-    || !isConstructorModern(function () { called = true; })
-    || called;
-}) ? isConstructorLegacy : isConstructorModern;
-
-var TypeError$a = global_1.TypeError;
-
-// `Assert: IsConstructor(argument) is true`
-var aConstructor = function (argument) {
-  if (isConstructor(argument)) return argument;
-  throw TypeError$a(tryToString(argument) + ' is not a constructor');
-};
-
-var SPECIES = wellKnownSymbol('species');
-
-// `SpeciesConstructor` abstract operation
-// https://tc39.es/ecma262/#sec-speciesconstructor
-var speciesConstructor = function (O, defaultConstructor) {
-  var C = anObject(O).constructor;
-  var S;
-  return C === undefined || (S = anObject(C)[SPECIES]) == undefined ? defaultConstructor : aConstructor(S);
-};
 
 var defineProperty$1 = objectDefineProperty.f;
 
 
 
-var TO_STRING_TAG$2 = wellKnownSymbol('toStringTag');
+var TO_STRING_TAG = wellKnownSymbol('toStringTag');
 
 var setToStringTag = function (target, TAG, STATIC) {
   if (target && !STATIC) target = target.prototype;
-  if (target && !hasOwnProperty_1(target, TO_STRING_TAG$2)) {
-    defineProperty$1(target, TO_STRING_TAG$2, { configurable: true, value: TAG });
+  if (target && !hasOwnProperty_1(target, TO_STRING_TAG)) {
+    defineProperty$1(target, TO_STRING_TAG, { configurable: true, value: TAG });
   }
 };
 
-export { aConstructor as $, toIntegerOrInfinity as A, isObject as B, hasOwnProperty_1 as C, inheritIfRequired as D, aCallable as E, anInstance as F, functionBindContext as G, getIteratorMethod as H, tryToString as I, isArrayIteratorMethod as J, lengthOfArrayLike as K, getIterator as L, sharedStore as M, redefineAll as N, documentCreateElement as O, objectDefineProperty as P, iterators as Q, functionName as R, descriptors as S, toIndexedObject as T, speciesConstructor as U, functionBindNative as V, classof as W, uid as X, toAbsoluteIndex as Y, objectGetOwnPropertyNames as Z, _export as _, objectCreate as a, isConstructor as a0, indexedObject as a1, toPropertyKey as a2, isSymbol as a3, objectGetOwnPropertyDescriptor as a4, engineUserAgent as a5, engineV8Version as a6, objectKeys as a7, objectGetOwnPropertySymbols as a8, objectPropertyIsEnumerable as a9, objectDefineProperties as aa, getDefaultExportFromCjs as ab, createPropertyDescriptor as b, copyConstructorProperties as c, objectIsPrototypeOf as d, objectGetPrototypeOf as e, createNonEnumerableProperty as f, global_1 as g, getBuiltIn as h, fails as i, createCommonjsModule as j, commonjsGlobal as k, anObject as l, shared as m, functionUncurryThis as n, objectSetPrototypeOf as o, functionCall as p, internalState as q, redefine as r, setToStringTag as s, toObject as t, isCallable as u, classofRaw as v, wellKnownSymbol as w, requireObjectCoercible as x, getMethod as y, toLength as z };
+export { objectPropertyIsEnumerable as $, toIntegerOrInfinity as A, isObject as B, hasOwnProperty_1 as C, aCallable as D, tryToString as E, lengthOfArrayLike as F, sharedStore as G, functionBindNative as H, iterators as I, inspectSource as J, documentCreateElement as K, objectDefineProperty as L, functionName as M, descriptors as N, toIndexedObject as O, uid as P, toAbsoluteIndex as Q, objectGetOwnPropertyNames as R, indexedObject as S, toPropertyKey as T, isSymbol as U, objectGetOwnPropertyDescriptor as V, engineUserAgent as W, engineV8Version as X, objectKeys as Y, objectGetOwnPropertySymbols as Z, _export as _, objectCreate as a, objectDefineProperties as a0, getDefaultExportFromCjs as a1, createPropertyDescriptor as b, copyConstructorProperties as c, objectIsPrototypeOf as d, objectGetPrototypeOf as e, createNonEnumerableProperty as f, global_1 as g, getBuiltIn as h, fails as i, createCommonjsModule as j, commonjsGlobal as k, anObject as l, shared as m, functionUncurryThis as n, objectSetPrototypeOf as o, functionCall as p, internalState as q, redefine as r, setToStringTag as s, toObject as t, isCallable as u, classofRaw as v, wellKnownSymbol as w, requireObjectCoercible as x, getMethod as y, toLength as z };

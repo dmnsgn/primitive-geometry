@@ -61,6 +61,7 @@
     "es-module-shims": "^1.5.4",
     "gl-matrix": "^3.4.3",
     "pex-context": "^2.11.0-2",
+    "pex-geom": "github:pex-gl/pex-geom#v3",
     "tweakpane": "^3.0.8"
   },
   "engines": {

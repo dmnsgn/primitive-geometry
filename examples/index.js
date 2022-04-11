@@ -2,6 +2,7 @@ import * as Primitives from "../index.js";
 
 import { mat3, mat4 } from "gl-matrix";
 import createContext from "pex-context";
+import { aabb } from "pex-geom";
 import AsyncPreloader from "async-preloader";
 import { PerspectiveCamera, Controls } from "cameras";
 import { Pane } from "tweakpane";
@@ -20,7 +21,7 @@ const camera = new PerspectiveCamera({
 const controls = new Controls({
   phi: Math.PI / 3,
   theta: Math.PI / 4,
-  distance: 15 * (window.innerHeight / window.innerWidth),
+  distance: 18 * (window.innerHeight / window.innerWidth),
   element: ctx.gl.canvas,
   camera,
   distanceBounds: [1, 100],
@@ -30,7 +31,7 @@ controls.target = [0, -0.5, 0];
 
 // GUI
 const modeOptions = ["texture", "normal", "flat-shaded", "uv", "wireframe"];
-const CONFIG = { mode: "texture", cycle: false };
+const CONFIG = { mode: "texture", cycle: false, bbox: false };
 const pane = new Pane();
 pane.addInput(CONFIG, "mode", {
   options: modeOptions.map((value) => ({
@@ -39,6 +40,7 @@ pane.addInput(CONFIG, "mode", {
   })),
 });
 pane.addInput(CONFIG, "cycle");
+pane.addInput(CONFIG, "bbox");
 
 setInterval(() => {
   if (CONFIG.cycle) {
@@ -151,8 +153,6 @@ attribute vec3 aPosition;
 uniform mat4 uProjectionMatrix;
 uniform mat4 uModelMatrix;
 uniform mat4 uViewMatrix;
-uniform mat4 uInverseViewMatrix;
-uniform mat3 uNormalMatrix;
 
 varying vec3 vPositionWorld;
 varying vec3 vPositionView;
@@ -222,6 +222,8 @@ const geometries = [
   Primitives.tetrahedron(),
   Primitives.icosahedron(),
 
+  Primitives.disc(),
+  Primitives.annulus(),
   box,
   circle,
 ];
@@ -237,6 +239,13 @@ const meshes = geometries.map((geometry) => ({
   translation: [0, 0, 0],
   scale: [1, 1, 1],
   geometry,
+  bbox: aabb.getPoints(
+    aabb.fromPoints(
+      Array.from({ length: geometry.positions.length / 3 }, (_, index) =>
+        geometry.positions.slice(index * 3, index * 3 + 3)
+      )
+    )
+  ),
   edges: ctx.indexBuffer(
     geometry.edges || computeEdges(geometry.positions, geometry.cells)
   ),
@@ -249,10 +258,20 @@ const meshes = geometries.map((geometry) => ({
     : { aPosition: ctx.vertexBuffer(geometry.positions) },
   indices: ctx.indexBuffer(geometry.cells),
 }));
+console.log(meshes);
+
+const bboxCells = ctx.indexBuffer(
+  // prettier-ignore
+  Uint8Array.of(
+    0, 1, 1, 2, 2, 3, 3, 0,
+    4, 5, 5, 6, 6, 7, 7, 4,
+    0, 4, 1, 5, 2, 6, 3, 7
+  )
+);
 
 // Position them
 const offset = 1.5;
-const gridSize = Math.ceil(Math.sqrt(meshes.length));
+const gridSize = Math.floor(Math.sqrt(meshes.length));
 
 const halfSize = (gridSize - 1) * 0.5;
 meshes.forEach(
@@ -317,5 +336,23 @@ ctx.frame(() => {
         uModelMatrix: mesh.modelMatrix,
       },
     });
+
+    if (CONFIG.bbox) {
+      mesh.bboxPositions ||= ctx.vertexBuffer(mesh.bbox);
+
+      ctx.submit(drawLinesCmd, {
+        attributes: { aPosition: mesh.bboxPositions },
+        indices: bboxCells,
+        uniforms: {
+          uColor: [1, 0, 0, 1],
+          uMode: modeOptions.findIndex((o) => o === CONFIG.mode),
+          uProjectionMatrix: camera.projectionMatrix,
+          uViewMatrix: camera.viewMatrix,
+          uInverseViewMatrix: camera.inverseViewMatrix,
+          uNormalMatrix: mesh.normalMatrix,
+          uModelMatrix: mesh.modelMatrix,
+        },
+      });
+    }
   });
 });
