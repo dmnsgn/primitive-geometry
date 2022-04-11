@@ -48,7 +48,7 @@ function torus({
   for (let j = 0; j <= minorSegments; j++) {
     const v = j / minorSegments;
 
-    for (let i = 0; i <= segments; i++) {
+    for (let i = 0; i <= segments; i++, vertexIndex++) {
       const u = i / segments;
 
       const p = u * phi;
@@ -78,8 +78,6 @@ function torus({
 
       uvs[vertexIndex * 2] = u;
       uvs[vertexIndex * 2 + 1] = v;
-
-      vertexIndex++;
 
       if (j > 0 && i > 0) {
         const a = (segments + 1) * j + i - 1;

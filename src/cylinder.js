@@ -122,9 +122,7 @@ function cylinder({
         positions[vertexIndex * 3 + 1] = height;
         positions[vertexIndex * 3 + 2] = (radius * sinPhi * r) / capSegments;
 
-        normals[vertexIndex * 3] = 0;
         normals[vertexIndex * 3 + 1] = -flip;
-        normals[vertexIndex * 3 + 2] = 0;
 
         uvs[vertexIndex * 2] = (0.5 * cosPhi * r) / capSegments + 0.5;
         uvs[vertexIndex * 2 + 1] = (0.5 * sinPhi * r) / capSegments + 0.5;
@@ -137,9 +135,7 @@ function cylinder({
         positions[vertexIndex * 3 + 2] =
           (radius * sinPhi * (r + 1)) / capSegments;
 
-        normals[vertexIndex * 3] = 0;
         normals[vertexIndex * 3 + 1] = -flip;
-        normals[vertexIndex * 3 + 2] = 0;
 
         uvs[vertexIndex * 2] = (0.5 * (cosPhi * (r + 1))) / capSegments + 0.5;
         uvs[vertexIndex * 2 + 1] =

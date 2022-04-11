@@ -45,7 +45,7 @@ function capsule({
   const bodyIncrement = 1 / (ringsBody - 1);
 
   function computeRing(r, y, dy) {
-    for (let s = 0; s < nx; s++) {
+    for (let s = 0; s < nx; s++, vertexIndex++) {
       const x = -Math.cos(s * segmentIncrement * phi) * r;
       const z = Math.sin(s * segmentIncrement * phi) * r;
 
@@ -61,8 +61,6 @@ function capsule({
 
       uvs[vertexIndex * 2] = s * segmentIncrement;
       uvs[vertexIndex * 2 + 1] = 1 - (0.5 - py / (2 * radius + height));
-
-      vertexIndex++;
     }
   }
 
