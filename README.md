@@ -166,6 +166,8 @@ console.log(quadGeometry);
 <dt><a href="#module_index">index</a></dt>
 <dd><p>Re-export all geometries and utils.</p>
 </dd>
+<dt><a href="#module_annulus">annulus</a></dt>
+<dd></dd>
 <dt><a href="#module_box">box</a></dt>
 <dd></dd>
 <dt><a href="#module_capsule">capsule</a></dt>
@@ -177,6 +179,8 @@ console.log(quadGeometry);
 <dt><a href="#module_cube">cube</a></dt>
 <dd></dd>
 <dt><a href="#module_cylinder">cylinder</a></dt>
+<dd></dd>
+<dt><a href="#module_disc">disc</a></dt>
 <dd></dd>
 <dt><a href="#module_ellipsoid">ellipsoid</a></dt>
 <dd></dd>
@@ -216,6 +220,39 @@ console.log(quadGeometry);
 ## index
 
 Re-export all geometries and utils.
+
+<a name="module_annulus"></a>
+
+## annulus
+
+- [annulus](#module_annulus)
+  - [annulus([options])](#exp_module_annulus--annulus) ⇒ [<code>BasicSimplicialComplex</code>](#BasicSimplicialComplex) ⏏
+    - [~AnnulusOptions](#module_annulus--annulus..AnnulusOptions) : <code>Object</code>
+
+<a name="exp_module_annulus--annulus"></a>
+
+### annulus([options]) ⇒ [<code>BasicSimplicialComplex</code>](#BasicSimplicialComplex) ⏏
+
+**Kind**: Exported function
+
+| Param     | Type                                                                    | Default         |
+| --------- | ----------------------------------------------------------------------- | --------------- |
+| [options] | [<code>AnnulusOptions</code>](#module_annulus--annulus..AnnulusOptions) | <code>{}</code> |
+
+<a name="module_annulus--annulus..AnnulusOptions"></a>
+
+#### annulus~AnnulusOptions : <code>Object</code>
+
+**Kind**: inner typedef of [<code>annulus</code>](#exp_module_annulus--annulus)
+**Properties**
+
+| Name            | Type                | Default                    |
+| --------------- | ------------------- | -------------------------- |
+| [radius]        | <code>number</code> | <code>0.5</code>           |
+| [segments]      | <code>number</code> | <code>32</code>            |
+| [theta]         | <code>number</code> | <code>TAU</code>           |
+| [innerRadius]   | <code>number</code> | <code>radius \* 0.5</code> |
+| [innerSegments] | <code>number</code> | <code>1</code>             |
 
 <a name="module_box"></a>
 
@@ -418,6 +455,37 @@ Re-export all geometries and utils.
 | [capApex]     | <code>boolean</code> | <code>true</code>   |
 | [capBase]     | <code>boolean</code> | <code>true</code>   |
 | [phi]         | <code>number</code>  | <code>TAU</code>    |
+
+<a name="module_disc"></a>
+
+## disc
+
+- [disc](#module_disc)
+  - [disc([options])](#exp_module_disc--disc) ⇒ [<code>BasicSimplicialComplex</code>](#BasicSimplicialComplex) ⏏
+    - [~DiscOptions](#module_disc--disc..DiscOptions) : <code>Object</code>
+
+<a name="exp_module_disc--disc"></a>
+
+### disc([options]) ⇒ [<code>BasicSimplicialComplex</code>](#BasicSimplicialComplex) ⏏
+
+**Kind**: Exported function
+
+| Param     | Type                                                        | Default         |
+| --------- | ----------------------------------------------------------- | --------------- |
+| [options] | [<code>DiscOptions</code>](#module_disc--disc..DiscOptions) | <code>{}</code> |
+
+<a name="module_disc--disc..DiscOptions"></a>
+
+#### disc~DiscOptions : <code>Object</code>
+
+**Kind**: inner typedef of [<code>disc</code>](#exp_module_disc--disc)
+**Properties**
+
+| Name       | Type                | Default          |
+| ---------- | ------------------- | ---------------- |
+| [radius]   | <code>number</code> | <code>0.5</code> |
+| [segments] | <code>number</code> | <code>32</code>  |
+| [theta]    | <code>number</code> | <code>TAU</code> |
 
 <a name="module_ellipsoid"></a>
 
@@ -708,10 +776,10 @@ Default to an oblate spheroid.
 
 | Name            | Type                | Default          |
 | --------------- | ------------------- | ---------------- |
-| [radius]        | <code>number</code> | <code>0.5</code> |
+| [radius]        | <code>number</code> | <code>0.4</code> |
 | [segments]      | <code>number</code> | <code>64</code>  |
 | [minorRadius]   | <code>number</code> | <code>0.1</code> |
-| [minorSegments] | <code>number</code> | <code>16</code>  |
+| [minorSegments] | <code>number</code> | <code>32</code>  |
 | [theta]         | <code>number</code> | <code>TAU</code> |
 | [phi]           | <code>number</code> | <code>TAU</code> |
 

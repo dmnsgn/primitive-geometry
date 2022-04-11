@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [2.5.0](https://github.com/dmnsgn/primitive-geometry/compare/v2.4.0...v2.5.0) (2022-04-11)
+
+
+### Bug Fixes
+
+* **plane:** hardcode normals from direction ([18e2423](https://github.com/dmnsgn/primitive-geometry/commit/18e2423beb133c84ab35372dfc50388477bb5d49))
+* **torus:** default radius and minorSegments ([14c5256](https://github.com/dmnsgn/primitive-geometry/commit/14c5256d36b125bc116b2f8e7c91de93723e3d23))
+
+
+### Features
+
+* add disc and annulus ([6328e9f](https://github.com/dmnsgn/primitive-geometry/commit/6328e9ffbe82955f8302e49b7d1ba67769f21f08))
+* **quad:** make normal face z ([246f7de](https://github.com/dmnsgn/primitive-geometry/commit/246f7de131db1463c829c4bbbcb901b2ea892c82))
+
+
+### Performance Improvements
+
+* move iterator in increment expression + remove assignment to 0 (default with TypedArrays) ([d0dbfbc](https://github.com/dmnsgn/primitive-geometry/commit/d0dbfbc7c8acd19b1c1b032e7f7dfa3412ea78fd))
+* **circle:** extract t value for cos/sin ([5d1c7dd](https://github.com/dmnsgn/primitive-geometry/commit/5d1c7dd8f6e55ec76b7c5b02ec6f938924120045))
+
+
+
 # [2.4.0](https://github.com/dmnsgn/primitive-geometry/compare/v2.3.0...v2.4.0) (2022-04-06)
 
 
