@@ -836,6 +836,7 @@ Differences with v1:
 
 - [x] fix cylinder orientation and uvs
 - [x] fix icosphere uvs (based on: https://github.com/mourner/icomesh)
+- [x] fix quad normal to +z
 - [x] uniformise api and internal names
 - [x] use options object
 - [x] remove gl-matrix/pex-math and icosphere dependencies
@@ -843,6 +844,7 @@ Differences with v1:
 - [x] base sphere on ellispsoid
 - [x] add cone based on cylinder
 - [x] use flat typed arrays
+- [x] defaults produce geometries contained in a unit bbox
 - [x] add jsdoc, prettier, eslint via [snowdev](https://github.com/dmnsgn/snowdev/)
 
 MIT. See [license file](https://github.com/dmnsgn/primitive-geometry/blob/main/LICENSE.md).

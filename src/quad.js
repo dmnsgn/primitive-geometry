@@ -27,10 +27,10 @@ function quad({ scale = 0.5 } = {}) {
     ),
     // prettier-ignore
     normals: Int8Array.of(
-      0, 0, -1,
-      0, 0, -1,
-      0, 0, -1,
-      0, 0, -1,
+      0, 0, 1,
+      0, 0, 1,
+      0, 0, 1,
+      0, 0, 1,
     ),
     // prettier-ignore
     uvs: Uint8Array.of(
