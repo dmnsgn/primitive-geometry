@@ -65,12 +65,12 @@ export const TMP = [0, 0, 0];
  * @private
  */
 const PLANE_DIRECTIONS = {
-  z: [0, 1, 2, 1, -1],
-  "-z": [0, 1, 2, -1, -1],
-  "-x": [2, 1, 0, 1, -1],
-  x: [2, 1, 0, -1, -1],
-  y: [0, 2, 1, 1, 1],
-  "-y": [0, 2, 1, 1, -1],
+  z: [0, 1, 2, 1, -1, 1],
+  "-z": [0, 1, 2, -1, -1, -1],
+  "-x": [2, 1, 0, 1, -1, -1],
+  x: [2, 1, 0, -1, -1, 1],
+  y: [0, 2, 1, 1, 1, 1],
+  "-y": [0, 2, 1, 1, -1, -1],
 };
 
 /**
@@ -87,7 +87,7 @@ export function computePlane(
   pw = 0
 ) {
   const { positions, normals, uvs, cells } = geometry;
-  const [u, v, w, flipU, flipV] = PLANE_DIRECTIONS[direction];
+  const [u, v, w, flipU, flipV, normal] = PLANE_DIRECTIONS[direction];
 
   const vertexOffset = indices.vertex;
 
@@ -97,9 +97,7 @@ export function computePlane(
       positions[indices.vertex * 3 + v] = (-sv / 2 + (j * sv) / nv) * flipV;
       positions[indices.vertex * 3 + w] = pw;
 
-      normals[indices.vertex * 3 + u] = 0;
-      normals[indices.vertex * 3 + v] = 0;
-      normals[indices.vertex * 3 + w] = pw / Math.abs(pw);
+      normals[indices.vertex * 3 + w] = normal;
 
       uvs[indices.vertex * 2] = i / nu;
       uvs[indices.vertex * 2 + 1] = 1 - j / nv;
