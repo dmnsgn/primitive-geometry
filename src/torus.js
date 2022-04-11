@@ -11,10 +11,10 @@ import {
 
 /**
  * @typedef {Object} TorusOptions
- * @property {number} [radius=0.5]
+ * @property {number} [radius=0.4]
  * @property {number} [segments=64]
  * @property {number} [minorRadius=0.1]
- * @property {number} [minorSegments=16]
+ * @property {number} [minorSegments=32]
  * @property {number} [theta=TAU]
  * @property {number} [phi=TAU]
  */
@@ -25,7 +25,7 @@ import {
  * @returns {import("../types.js").SimplicialComplex}
  */
 function torus({
-  radius = 0.3,
+  radius = 0.4,
   segments = 64,
 
   minorRadius = 0.1,
