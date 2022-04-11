@@ -30,8 +30,9 @@ function circle({
   );
 
   for (let i = 0; i < segments; i++) {
-    positions[i * 2] = radius * Math.cos((i / segments) * theta);
-    positions[i * 2 + 1] = radius * Math.sin((i / segments) * theta);
+    const t = (i / segments) * theta;
+    positions[i * 2] = radius * Math.cos(t);
+    positions[i * 2 + 1] = radius * Math.sin(t);
 
     if (i > 0) {
       cells[(i - 1) * 2] = i - 1;
