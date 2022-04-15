@@ -5,10 +5,11 @@ import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
 
 /**
  * @typedef {Object} CapsuleOptions
- * @property {number} [height=1]
+ * @property {number} [height=0.5]
  * @property {number} [radius=0.25]
  * @property {number} [nx=16]
- * @property {number} [ny=32]
+ * @property {number} [ny=1]
+ * @property {number} [roundSegments=32]
  * @property {number} [phi=TAU]
  */
 
@@ -22,13 +23,15 @@ function capsule({
   height = 0.5,
   radius = 0.25,
   nx = 16,
-  ny = 32,
+  ny = 1,
+  roundSegments = 16,
   phi = TAU,
 } = {}) {
   checkArguments(arguments);
 
   const ringsBody = ny + 1;
-  const ringsTotal = ny + ringsBody;
+  const ringsCap = roundSegments * 2;
+  const ringsTotal = ringsCap + ringsBody;
 
   const size = ringsTotal * nx;
 
@@ -41,7 +44,7 @@ function capsule({
   let cellIndex = 0;
 
   const segmentIncrement = 1 / (nx - 1);
-  const ringIncrement = 1 / (ny - 1);
+  const ringIncrement = 1 / (ringsCap - 1);
   const bodyIncrement = 1 / (ringsBody - 1);
 
   function computeRing(r, y, dy) {
@@ -64,7 +67,7 @@ function capsule({
     }
   }
 
-  for (let r = 0; r < ny / 2; r++) {
+  for (let r = 0; r < roundSegments; r++) {
     computeRing(
       Math.sin(Math.PI * r * ringIncrement),
       Math.sin(Math.PI * (r * ringIncrement - 0.5)),
@@ -76,7 +79,7 @@ function capsule({
     computeRing(1, 0, r * bodyIncrement - 0.5);
   }
 
-  for (let r = ny / 2; r < ny; r++) {
+  for (let r = roundSegments; r < ringsCap; r++) {
     computeRing(
       Math.sin(Math.PI * r * ringIncrement),
       Math.sin(Math.PI * (r * ringIncrement - 0.5)),
