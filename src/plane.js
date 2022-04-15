@@ -14,7 +14,7 @@ import { checkArguments, computePlane, getCellsTypedArray } from "./utils.js";
  * @property {number} [sy=sx]
  * @property {number} [nx=1]
  * @property {number} [ny=nx]
- * @property {string} [direction="z"]
+ * @property {PlaneDirection} [direction="z"]
  */
 
 /**
