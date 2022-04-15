@@ -71,31 +71,6 @@ const clearCmd = {
 const drawCmd = {
   pipeline: ctx.pipeline({
     depthTest: true,
-    frag: /* glsl */ `
-#extension GL_OES_standard_derivatives : enable
-
-precision mediump float;
-
-uniform sampler2D uColorMap;
-uniform float uMode;
-
-varying vec3 vPositionWorld;
-varying vec3 vPositionView;
-varying vec3 vNormal;
-varying vec2 vUv;
-
-void main () {
-  if (uMode == 0.0) gl_FragColor = texture2D(uColorMap, vUv);
-  if (uMode == 1.0) gl_FragColor = vec4(vNormal * 0.5 + 0.5, 1.0);
-  if (uMode == 2.0) {
-    vec3 fdx = vec3(dFdx(vPositionWorld.x), dFdx(vPositionWorld.y), dFdx(vPositionWorld.z));
-    vec3 fdy = vec3(dFdy(vPositionWorld.x), dFdy(vPositionWorld.y), dFdy(vPositionWorld.z));
-    vec3 normal = normalize(cross(fdx, fdy));
-    gl_FragColor = vec4(normal * 0.5 + 0.5, 1.0);
-  }
-  if (uMode == 3.0) gl_FragColor = vec4(vUv.xy, 0.0, 1.0);
-  // if (vUv.x > 1.0 || vUv.x < 0.0 || vUv.y > 1.0 || vUv.y < 0.0) gl_FragColor = vec4(0.0,0.0,0.0,1.0);
-}`,
     vert: /* glsl */ `
 precision mediump float;
 
@@ -128,6 +103,31 @@ void main() {
 
   gl_Position = uProjectionMatrix * vec4(vPositionView, 1.0);
 }`,
+    frag: /* glsl */ `
+#extension GL_OES_standard_derivatives : enable
+
+precision mediump float;
+
+uniform sampler2D uColorMap;
+uniform float uMode;
+
+varying vec3 vPositionWorld;
+varying vec3 vPositionView;
+varying vec3 vNormal;
+varying vec2 vUv;
+
+void main () {
+  if (uMode == 0.0) gl_FragColor = texture2D(uColorMap, vUv);
+  if (uMode == 1.0) gl_FragColor = vec4(vNormal * 0.5 + 0.5, 1.0);
+  if (uMode == 2.0) {
+    vec3 fdx = vec3(dFdx(vPositionWorld.x), dFdx(vPositionWorld.y), dFdx(vPositionWorld.z));
+    vec3 fdy = vec3(dFdy(vPositionWorld.x), dFdy(vPositionWorld.y), dFdy(vPositionWorld.z));
+    vec3 normal = normalize(cross(fdx, fdy));
+    gl_FragColor = vec4(normal * 0.5 + 0.5, 1.0);
+  }
+  if (uMode == 3.0) gl_FragColor = vec4(vUv.xy, 0.0, 1.0);
+  if (vUv.x > 1.0 || vUv.x < 0.0 || vUv.y > 1.0 || vUv.y < 0.0) gl_FragColor.a = 0.1;
+}`,
   }),
   uniforms: {
     uColorMap: colorMap,
@@ -137,18 +137,11 @@ const drawLinesCmd = {
   pipeline: ctx.pipeline({
     depthTest: true,
     primitive: ctx.Primitive.Lines,
-    frag: /* glsl */ `
-precision mediump float;
-
-uniform vec4 uColor;
-
-void main () {
-  gl_FragColor = uColor;
-}`,
     vert: /* glsl */ `
   precision mediump float;
 
 attribute vec3 aPosition;
+attribute vec3 aColor;
 
 uniform mat4 uProjectionMatrix;
 uniform mat4 uModelMatrix;
@@ -156,17 +149,27 @@ uniform mat4 uViewMatrix;
 
 varying vec3 vPositionWorld;
 varying vec3 vPositionView;
+varying vec3 vColor;
 
 void main() {
   vPositionWorld = (uModelMatrix * vec4(aPosition, 1.0)).xyz;
   vPositionView = (uViewMatrix * vec4(vPositionWorld, 1.0)).xyz;
+  vColor = aColor;
 
   gl_Position = uProjectionMatrix * vec4(vPositionView, 1.0);
 }`,
+    frag: /* glsl */ `
+precision mediump float;
+
+uniform vec4 uColor;
+
+varying vec3 vColor;
+
+void main () {
+  gl_FragColor = vec4(vColor, 1.0);
+}`,
   }),
-  uniforms: {
-    uColor: [0.8, 0.8, 0.8, 1],
-  },
+  uniforms: { uColor: [0.8, 0.8, 0.8, 1] },
 };
 
 // Utils
@@ -239,13 +242,15 @@ const meshes = geometries.map((geometry) => ({
   translation: [0, 0, 0],
   scale: [1, 1, 1],
   geometry,
-  bbox: aabb.getPoints(
-    aabb.fromPoints(
-      Array.from({ length: geometry.positions.length / 3 }, (_, index) =>
-        geometry.positions.slice(index * 3, index * 3 + 3)
+  bbox: aabb
+    .getPoints(
+      aabb.fromPoints(
+        Array.from({ length: geometry.positions.length / 3 }, (_, index) =>
+          geometry.positions.slice(index * 3, index * 3 + 3)
+        )
       )
     )
-  ),
+    .flat(),
   edges: ctx.indexBuffer(
     geometry.edges || computeEdges(geometry.positions, geometry.cells)
   ),
@@ -254,8 +259,12 @@ const meshes = geometries.map((geometry) => ({
         aPosition: ctx.vertexBuffer(geometry.positions),
         aNormal: ctx.vertexBuffer(geometry.normals),
         aUv: ctx.vertexBuffer(geometry.uvs),
+        aColor: ctx.vertexBuffer(geometry.normals.map((p) => p * 0.5 + 0.5)),
       }
-    : { aPosition: ctx.vertexBuffer(geometry.positions) },
+    : {
+        aPosition: ctx.vertexBuffer(geometry.positions),
+        aColor: ctx.vertexBuffer(geometry.positions.map((p) => p * 0.5 + 0.5)),
+      },
   indices: ctx.indexBuffer(geometry.cells),
 }));
 console.log(meshes);
@@ -283,6 +292,36 @@ meshes.forEach(
     ])
 );
 
+const drawAxisCmd = {
+  ...drawLinesCmd,
+  attributes: {
+    aPosition: ctx.vertexBuffer(
+      // prettier-ignore
+      Float32Array.of(
+        0, 0, 0,
+        1, 0, 0,
+        0, 0, 0,
+        0, 1, 0,
+        0, 0, 0,
+        0, 0, 1,
+      )
+    ),
+    aColor: ctx.vertexBuffer(
+      // prettier-ignore
+      Float32Array.of(
+        1, 0, 0,
+        1, 0.5, 0.5,
+        0, 1, 0,
+        0.5, 1, 0.5,
+        0, 0, 1,
+        0.5, 0.5, 1,
+      )
+    ),
+  },
+  indices: ctx.indexBuffer(Uint8Array.of(0, 1, 2, 3, 4, 5)),
+  uniforms: { uColor: [0.8, 0.8, 0.8, 1], uModelMatrix: mat4.create() },
+};
+
 // Events
 const onResize = () => {
   const width = window.innerWidth;
@@ -308,6 +347,12 @@ ctx.frame(() => {
   camera.update();
 
   ctx.submit(clearCmd);
+  ctx.submit(drawAxisCmd, {
+    uniforms: {
+      uProjectionMatrix: camera.projectionMatrix,
+      uViewMatrix: camera.viewMatrix,
+    },
+  });
 
   meshes.forEach((mesh) => {
     mat4.fromRotationTranslationScale(
@@ -339,9 +384,13 @@ ctx.frame(() => {
 
     if (CONFIG.bbox) {
       mesh.bboxPositions ||= ctx.vertexBuffer(mesh.bbox);
+      mesh.bboxColors ||= ctx.vertexBuffer(mesh.bbox.map((p) => p * 0.5 + 0.5));
 
       ctx.submit(drawLinesCmd, {
-        attributes: { aPosition: mesh.bboxPositions },
+        attributes: {
+          aPosition: mesh.bboxPositions,
+          aColor: mesh.bboxColors,
+        },
         indices: bboxCells,
         uniforms: {
           uColor: [1, 0, 0, 1],
