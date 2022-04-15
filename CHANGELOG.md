@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [2.6.0](https://github.com/dmnsgn/primitive-geometry/compare/v2.5.0...v2.6.0) (2022-04-15)
+
+
+### Features
+
+* **capsule:** add roundSegments ([4a0ca75](https://github.com/dmnsgn/primitive-geometry/commit/4a0ca7586c1426169d63bec62f466647df424e9c))
+* **rounded-cube:** add roundSegments and edgeSegments ([98741b9](https://github.com/dmnsgn/primitive-geometry/commit/98741b90e5660e1555e7c998265f5b88badda19f))
+
+
+
 # [2.5.0](https://github.com/dmnsgn/primitive-geometry/compare/v2.4.0...v2.5.0) (2022-04-11)
 
 

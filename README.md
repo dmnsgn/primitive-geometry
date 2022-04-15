@@ -326,13 +326,14 @@ Re-export all geometries and utils.
 **Kind**: inner typedef of [<code>capsule</code>](#exp_module_capsule--capsule)
 **Properties**
 
-| Name     | Type                | Default           |
-| -------- | ------------------- | ----------------- |
-| [height] | <code>number</code> | <code>1</code>    |
-| [radius] | <code>number</code> | <code>0.25</code> |
-| [nx]     | <code>number</code> | <code>16</code>   |
-| [ny]     | <code>number</code> | <code>32</code>   |
-| [phi]    | <code>number</code> | <code>TAU</code>  |
+| Name            | Type                | Default           |
+| --------------- | ------------------- | ----------------- |
+| [height]        | <code>number</code> | <code>0.5</code>  |
+| [radius]        | <code>number</code> | <code>0.25</code> |
+| [nx]            | <code>number</code> | <code>16</code>   |
+| [ny]            | <code>number</code> | <code>1</code>    |
+| [roundSegments] | <code>number</code> | <code>32</code>   |
+| [phi]           | <code>number</code> | <code>TAU</code>  |
 
 <a name="module_circle"></a>
 
@@ -631,13 +632,13 @@ Default to an oblate spheroid.
 **Kind**: inner typedef of [<code>plane</code>](#exp_module_plane--plane)
 **Properties**
 
-| Name        | Type                | Default                                  |
-| ----------- | ------------------- | ---------------------------------------- |
-| [sx]        | <code>number</code> | <code>1</code>                           |
-| [sy]        | <code>number</code> | <code>sx</code>                          |
-| [nx]        | <code>number</code> | <code>1</code>                           |
-| [ny]        | <code>number</code> | <code>nx</code>                          |
-| [direction] | <code>string</code> | <code>&quot;\&quot;z\&quot;&quot;</code> |
+| Name        | Type                                                                | Default                    |
+| ----------- | ------------------------------------------------------------------- | -------------------------- |
+| [sx]        | <code>number</code>                                                 | <code>1</code>             |
+| [sy]        | <code>number</code>                                                 | <code>sx</code>            |
+| [nx]        | <code>number</code>                                                 | <code>1</code>             |
+| [ny]        | <code>number</code>                                                 | <code>nx</code>            |
+| [direction] | [<code>PlaneDirection</code>](#module_plane--plane..PlaneDirection) | <code>&quot;z&quot;</code> |
 
 <a name="module_quad"></a>
 
@@ -693,15 +694,17 @@ Default to an oblate spheroid.
 **Kind**: inner typedef of [<code>roundedCube</code>](#exp_module_rounded-cube--roundedCube)
 **Properties**
 
-| Name     | Type                | Default                 |
-| -------- | ------------------- | ----------------------- |
-| [sx]     | <code>number</code> | <code>1</code>          |
-| [sy]     | <code>number</code> | <code>sx</code>         |
-| [sz]     | <code>number</code> | <code>sx</code>         |
-| [nx]     | <code>number</code> | <code>16</code>         |
-| [ny]     | <code>number</code> | <code>nx</code>         |
-| [nz]     | <code>number</code> | <code>nx</code>         |
-| [radius] | <code>number</code> | <code>sx \* 0.25</code> |
+| Name            | Type                | Default                 |
+| --------------- | ------------------- | ----------------------- |
+| [sx]            | <code>number</code> | <code>1</code>          |
+| [sy]            | <code>number</code> | <code>sx</code>         |
+| [sz]            | <code>number</code> | <code>sx</code>         |
+| [nx]            | <code>number</code> | <code>1</code>          |
+| [ny]            | <code>number</code> | <code>nx</code>         |
+| [nz]            | <code>number</code> | <code>nx</code>         |
+| [radius]        | <code>number</code> | <code>sx \* 0.25</code> |
+| [roundSegments] | <code>number</code> | <code>8</code>          |
+| [edgeSegments]  | <code>number</code> | <code>1</code>          |
 
 <a name="module_sphere"></a>
 
