@@ -62,10 +62,12 @@ const roundedCubeGeometry = Primitives.roundedCube({
   sx: 1,
   sy: 1,
   sz: 1,
-  nx: 16,
-  ny: 16,
-  nz: 16,
+  nx: 1,
+  ny: 1,
+  nz: 1,
   radius: 0.25,
+  roundSegments: 8,
+  edgeSegments: 1,
 });
 
 const cylinderGeometry = Primitives.cylinder({
@@ -93,7 +95,8 @@ const capsuleGeometry = Primitives.capsule({
   height: 0.5,
   radius: 0.25,
   nx: 16,
-  ny: 32,
+  ny: 1,
+  roundedSegments: 16,
   theta: Math.PI * 2,
 });
 
@@ -119,7 +122,7 @@ const ellipsoidGeometry = Primitives.ellipsoid({
   phi: Math.PI * 2,
 });
 const torusGeometry = Primitives.torus({
-  radius: 0.3,
+  radius: 0.4,
   segments: 64,
   minorRadius: 0.1,
   minorSegments: 32,
@@ -132,6 +135,19 @@ const tetrahedron = Primitives.tetrahedron({
 });
 const icosahedron = Primitives.icosahedron({
   radius: 0.5,
+});
+
+const disc = Primitives.disc({
+  radius: 0.5,
+  segments: 32,
+  theta: Math.PI * 2,
+});
+const annulus = Primitives.annulus({
+  radius: 0.5,
+  segments: 32,
+  theta: Math.PI * 2,
+  innerRadius: radius * 0.5,
+  innerSegments: 1,
 });
 
 // without normals/uvs
@@ -905,6 +921,7 @@ Differences with v1:
 - [x] fix cylinder orientation and uvs
 - [x] fix icosphere uvs (based on: https://github.com/mourner/icomesh)
 - [x] fix quad normal to +z
+- [x] fix subdivision for rounded geometries (rounded-cube and capsule)
 - [x] uniformise api and internal names
 - [x] use options object
 - [x] remove gl-matrix/pex-math and icosphere dependencies
