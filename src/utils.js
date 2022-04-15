@@ -84,7 +84,10 @@ export function computePlane(
   nu,
   nv,
   direction = "z",
-  pw = 0
+  pw = 0,
+  uvScale = [1, 1],
+  uvOffset = [0, 0],
+  center = [0, 0, 0],
 ) {
   const { positions, normals, uvs, cells } = geometry;
   const [u, v, w, flipU, flipV, normal] = PLANE_DIRECTIONS[direction];
@@ -93,14 +96,16 @@ export function computePlane(
 
   for (let j = 0; j <= nv; j++) {
     for (let i = 0; i <= nu; i++) {
-      positions[indices.vertex * 3 + u] = (-su / 2 + (i * su) / nu) * flipU;
-      positions[indices.vertex * 3 + v] = (-sv / 2 + (j * sv) / nv) * flipV;
-      positions[indices.vertex * 3 + w] = pw;
+      positions[indices.vertex * 3 + u] =
+        (-su / 2 + (i * su) / nu) * flipU + center[u];
+      positions[indices.vertex * 3 + v] =
+        (-sv / 2 + (j * sv) / nv) * flipV + center[v];
+      positions[indices.vertex * 3 + w] = pw + center[w];
 
       normals[indices.vertex * 3 + w] = normal;
 
-      uvs[indices.vertex * 2] = i / nu;
-      uvs[indices.vertex * 2 + 1] = 1 - j / nv;
+      uvs[indices.vertex * 2] = (i / nu) * uvScale[0] + uvOffset[0];
+      uvs[indices.vertex * 2 + 1] = (1 - j / nv) * uvScale[1] + uvOffset[1];
 
       indices.vertex++;
 
