@@ -607,8 +607,8 @@ Default to an oblate spheroid.
 
 - [plane](#module_plane)
   - [plane([options])](#exp_module_plane--plane) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~PlaneDirection](#module_plane--plane..PlaneDirection) : <code>&quot;x&quot;</code> \| <code>&quot;-x&quot;</code> \| <code>&quot;y&quot;</code> \| <code>&quot;-y&quot;</code> \| <code>&quot;z&quot;</code> \| <code>&quot;-z&quot;</code>
     - [~PlaneOptions](#module_plane--plane..PlaneOptions) : <code>Object</code>
+    - [~PlaneDirection](#module_plane--plane..PlaneDirection) : <code>&quot;x&quot;</code> \| <code>&quot;-x&quot;</code> \| <code>&quot;y&quot;</code> \| <code>&quot;-y&quot;</code> \| <code>&quot;z&quot;</code> \| <code>&quot;-z&quot;</code>
 
 <a name="exp_module_plane--plane"></a>
 
@@ -620,11 +620,6 @@ Default to an oblate spheroid.
 | --------- | --------------------------------------------------------------- | --------------- |
 | [options] | [<code>PlaneOptions</code>](#module_plane--plane..PlaneOptions) | <code>{}</code> |
 
-<a name="module_plane--plane..PlaneDirection"></a>
-
-#### plane~PlaneDirection : <code>&quot;x&quot;</code> \| <code>&quot;-x&quot;</code> \| <code>&quot;y&quot;</code> \| <code>&quot;-y&quot;</code> \| <code>&quot;z&quot;</code> \| <code>&quot;-z&quot;</code>
-
-**Kind**: inner typedef of [<code>plane</code>](#exp_module_plane--plane)
 <a name="module_plane--plane..PlaneOptions"></a>
 
 #### plane~PlaneOptions : <code>Object</code>
@@ -639,7 +634,13 @@ Default to an oblate spheroid.
 | [nx]        | <code>number</code>                                                 | <code>1</code>             |
 | [ny]        | <code>number</code>                                                 | <code>nx</code>            |
 | [direction] | [<code>PlaneDirection</code>](#module_plane--plane..PlaneDirection) | <code>&quot;z&quot;</code> |
+| [quads]     | <code>boolean</code>                                                | <code>false</code>         |
 
+<a name="module_plane--plane..PlaneDirection"></a>
+
+#### plane~PlaneDirection : <code>&quot;x&quot;</code> \| <code>&quot;-x&quot;</code> \| <code>&quot;y&quot;</code> \| <code>&quot;-y&quot;</code> \| <code>&quot;z&quot;</code> \| <code>&quot;-z&quot;</code>
+
+**Kind**: inner typedef of [<code>plane</code>](#exp_module_plane--plane)
 <a name="module_quad"></a>
 
 ## quad

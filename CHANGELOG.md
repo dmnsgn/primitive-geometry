@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [2.7.0](https://github.com/dmnsgn/primitive-geometry/compare/v2.6.0...v2.7.0) (2022-06-15)
+
+
+### Features
+
+* **plane:** add quads option ([3b9cb02](https://github.com/dmnsgn/primitive-geometry/commit/3b9cb02db95882faceb20049a3edbd9ceeec776a)), closes [#11](https://github.com/dmnsgn/primitive-geometry/issues/11)
+
+
+
 # [2.6.0](https://github.com/dmnsgn/primitive-geometry/compare/v2.5.0...v2.6.0) (2022-04-15)
 
 
