@@ -198,6 +198,10 @@ function computeEdges(positions, cells, stride = 3) {
 const box = Primitives.box();
 box.edges = computeEdges(box.positions, box.cells, 4);
 
+const quadsPlane = Primitives.plane({ nx: 10, quads: true });
+quadsPlane.edges = computeEdges(quadsPlane.positions, quadsPlane.cells, 4);
+quadsPlane.quads = true;
+
 const circle = Primitives.circle({ closed: true });
 circle.positions = new Float32Array((circle.positions.length / 2) * 3).map(
   (_, index) =>
@@ -209,6 +213,7 @@ circle.edges = circle.cells;
 const geometries = [
   Primitives.quad(),
   Primitives.plane(),
+  quadsPlane,
   Primitives.cube(),
   Primitives.roundedCube(),
 
@@ -242,6 +247,7 @@ const meshes = geometries.map((geometry) => ({
   translation: [0, 0, 0],
   scale: [1, 1, 1],
   geometry,
+  quads: geometry.quads,
   bbox: aabb
     .getPoints(
       aabb.fromPoints(
@@ -368,7 +374,8 @@ ctx.frame(() => {
     mat3.fromMat4(mesh.normalMatrix, inverseModelViewMatrix);
     mat3.transpose(mesh.normalMatrix, mesh.normalMatrix);
 
-    const isLine = !mesh.geometry.normals || CONFIG.mode === "wireframe";
+    const isLine =
+      !mesh.geometry.normals || mesh.quads || CONFIG.mode === "wireframe";
     ctx.submit(!isLine ? drawCmd : drawLinesCmd, {
       attributes: mesh.attributes,
       indices: isLine ? mesh.edges : mesh.indices,

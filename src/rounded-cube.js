@@ -172,6 +172,7 @@ function roundedCube({
       nv,
       direction,
       pw,
+      false,
       uvScale,
       uvOffset
     );
@@ -197,6 +198,7 @@ function roundedCube({
         roundSegments,
         direction,
         pw,
+        false,
         [radius / (su + r2), radius / (sv + r2)],
         uvOffsetCorner(su, sv)[i],
         center(x, y)
@@ -214,6 +216,7 @@ function roundedCube({
           edgeSegments,
           direction,
           pw,
+          false,
           [uvOffset[0], uvScale[1]],
           ceil === 0 ? uvOffsetStart(su, sv) : uvOffsetEnd(su, sv),
           center(x, 0)
@@ -228,6 +231,7 @@ function roundedCube({
           roundSegments,
           direction,
           pw,
+          false,
           [uvScale[0], uvOffset[1]],
           floor === 0
             ? [...uvOffsetStart(sv, su)].reverse()

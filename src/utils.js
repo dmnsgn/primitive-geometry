@@ -85,6 +85,7 @@ export function computePlane(
   nv,
   direction = "z",
   pw = 0,
+  quads = false,
   uvScale = [1, 1],
   uvOffset = [0, 0],
   center = [0, 0, 0]
@@ -111,14 +112,22 @@ export function computePlane(
 
       if (j < nv && i < nu) {
         const n = vertexOffset + j * (nu + 1) + i;
-        cells[indices.cell] = n;
-        cells[indices.cell + 1] = n + nu + 1;
-        cells[indices.cell + 2] = n + nu + 2;
+        if (quads) {
+          const o = vertexOffset + (j + 1) * (nu + 1) + i;
+          cells[indices.cell] = n;
+          cells[indices.cell + 1] = o;
+          cells[indices.cell + 2] = o + 1;
+          cells[indices.cell + 3] = n + 1;
+        } else {
+          cells[indices.cell] = n;
+          cells[indices.cell + 1] = n + nu + 1;
+          cells[indices.cell + 2] = n + nu + 2;
 
-        cells[indices.cell + 3] = n;
-        cells[indices.cell + 4] = n + nu + 2;
-        cells[indices.cell + 5] = n + 1;
-        indices.cell += 6;
+          cells[indices.cell + 3] = n;
+          cells[indices.cell + 4] = n + nu + 2;
+          cells[indices.cell + 5] = n + 1;
+        }
+        indices.cell += quads ? 4 : 6;
       }
     }
   }
