@@ -1,6 +1,4 @@
-/**
- * @module quad
- */
+/** @module quad */
 
 import { checkArguments, getCellsTypedArray } from "./utils.js";
 

@@ -1,6 +1,4 @@
-/**
- * @module sphere
- */
+/** @module sphere */
 import ellipsoid from "./ellipsoid.js";
 import { checkArguments } from "./utils.js";
 

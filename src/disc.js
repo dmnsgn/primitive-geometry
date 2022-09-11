@@ -1,7 +1,5 @@
-/**
- * @module disc
- */
 import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
+/** @module disc */
 
 /**
  * @typedef {Object} DiscOptions

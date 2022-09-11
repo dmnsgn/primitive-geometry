@@ -1,6 +1,4 @@
-/**
- * @module rounded-cube
- */
+/** @module roundedCube */
 import {
   checkArguments,
   computePlane,
@@ -23,7 +21,7 @@ import {
  */
 
 /**
- * @alias module:rounded-cube
+ * @alias module:roundedCube
  * @param {RoundedCubeOptions} [options={}]
  * @returns {import("../types.js").SimplicialComplex}
  */

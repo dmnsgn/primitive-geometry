@@ -1,6 +1,4 @@
-/**
- * @module ellipsoid
- */
+/** @module ellipsoid */
 import {
   checkArguments,
   getCellsTypedArray,

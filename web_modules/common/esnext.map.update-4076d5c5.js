@@ -1,27 +1,6 @@
-import { _ as _export, l as anObject, D as aCallable, p as functionCall, h as getBuiltIn, g as global_1 } from './set-to-string-tag-f46d73c4.js';
-import { b as asyncIteratorIteration, a as iterate } from './esnext.iterator.map-e455ac63.js';
-import { f as functionBindContext, s as speciesConstructor } from './species-constructor-1e061cc5.js';
-
-// https://github.com/tc39/proposal-iterator-helpers
-
-var $forEach = asyncIteratorIteration.forEach;
-
-_export({ target: 'AsyncIterator', proto: true, real: true, forced: true }, {
-  forEach: function forEach(fn) {
-    return $forEach(this, fn);
-  }
-});
-
-// https://github.com/tc39/proposal-iterator-helpers
-
-
-
-
-_export({ target: 'Iterator', proto: true, real: true, forced: true }, {
-  forEach: function forEach(fn) {
-    iterate(anObject(this), fn, { IS_ITERATOR: true });
-  }
-});
+import { a as anObject, b as aCallable, f as functionCall, _ as _export, g as getBuiltIn } from './object-set-prototype-of-c6b82070.js';
+import { f as functionBindContext, s as speciesConstructor } from './inherit-if-required-718dc9f8.js';
+import { i as iterate } from './es.error.cause-0cbcfba0.js';
 
 // https://github.com/tc39/collection-methods
 var collectionDeleteAll = function deleteAll(/* ...elements */) {
@@ -49,11 +28,17 @@ var mapEmplace = function emplace(key, handler) {
   var get = aCallable(map.get);
   var has = aCallable(map.has);
   var set = aCallable(map.set);
-  var value = (functionCall(has, map, key) && 'update' in handler)
-    ? handler.update(functionCall(get, map, key), key, map)
-    : handler.insert(key, map);
-  functionCall(set, map, key, value);
-  return value;
+  var value, inserted;
+  if (functionCall(has, map, key)) {
+    value = functionCall(get, map, key);
+    if ('update' in handler) {
+      value = handler.update(value, key, map);
+      functionCall(set, map, key, value);
+    } return value;
+  }
+  inserted = handler.insert(key, map);
+  functionCall(set, map, key, inserted);
+  return inserted;
 };
 
 // `Map.prototype.emplace` method
@@ -63,7 +48,7 @@ _export({ target: 'Map', proto: true, real: true, forced: true }, {
 });
 
 var getMapIterator = function (it) {
-  // eslint-disable-next-line es/no-map -- safe
+  // eslint-disable-next-line es-x/no-map -- safe
   return functionCall(Map.prototype.entries, it);
 };
 
@@ -183,7 +168,7 @@ _export({ target: 'Map', proto: true, real: true, forced: true }, {
 
 // `Map.prototype.merge` method
 // https://github.com/tc39/proposal-collection-methods
-_export({ target: 'Map', proto: true, real: true, forced: true }, {
+_export({ target: 'Map', proto: true, real: true, arity: 1, forced: true }, {
   // eslint-disable-next-line no-unused-vars -- required for `.length`
   merge: function merge(iterable /* ...iterables */) {
     var map = anObject(this);
@@ -197,7 +182,7 @@ _export({ target: 'Map', proto: true, real: true, forced: true }, {
   }
 });
 
-var TypeError = global_1.TypeError;
+var $TypeError = TypeError;
 
 // `Map.prototype.reduce` method
 // https://github.com/tc39/proposal-collection-methods
@@ -216,7 +201,7 @@ _export({ target: 'Map', proto: true, real: true, forced: true }, {
         accumulator = callbackfn(accumulator, value, key, map);
       }
     }, { AS_ENTRIES: true, IS_ITERATOR: true });
-    if (noInitial) throw TypeError('Reduce of empty map with no initial value');
+    if (noInitial) throw $TypeError('Reduce of empty map with no initial value');
     return accumulator;
   }
 });
@@ -234,7 +219,7 @@ _export({ target: 'Map', proto: true, real: true, forced: true }, {
   }
 });
 
-var TypeError$1 = global_1.TypeError;
+var $TypeError$1 = TypeError;
 
 // `Set.prototype.update` method
 // https://github.com/tc39/proposal-collection-methods
@@ -248,7 +233,7 @@ _export({ target: 'Map', proto: true, real: true, forced: true }, {
     aCallable(callback);
     var isPresentInMap = functionCall(has, map, key);
     if (!isPresentInMap && length < 3) {
-      throw TypeError$1('Updating absent value');
+      throw $TypeError$1('Updating absent value');
     }
     var value = isPresentInMap ? functionCall(get, map, key) : aCallable(length > 2 ? arguments[2] : undefined)(key, map);
     functionCall(set, map, key, callback(value, key, map));
@@ -256,4 +241,4 @@ _export({ target: 'Map', proto: true, real: true, forced: true }, {
   }
 });
 
-export { collectionDeleteAll as c, mapEmplace as m };
+export { collectionDeleteAll as c };

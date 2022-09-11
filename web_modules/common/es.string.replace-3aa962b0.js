@@ -1,16 +1,19 @@
-import { t as toString_1, s as stringMultibyte, f as functionApply } from './string-multibyte-037a230c.js';
-import { l as anObject, g as global_1, i as fails, m as shared, n as functionUncurryThis, p as functionCall, a as objectCreate, q as internalState, _ as _export, w as wellKnownSymbol, r as redefine, f as createNonEnumerableProperty, t as toObject, u as isCallable, v as classofRaw, x as requireObjectCoercible, y as getMethod, z as toLength, A as toIntegerOrInfinity } from './set-to-string-tag-f46d73c4.js';
+import { t as toString_1, f as functionApply } from './function-apply-6538ee25.js';
+import { a as anObject, u as global_1, h as fails, a1 as shared, E as functionUncurryThis, f as functionCall, o as objectCreate, q as internalState, _ as _export, w as wellKnownSymbol, j as defineBuiltIn, n as createNonEnumerableProperty, H as toObject, i as isCallable, N as classofRaw, R as requireObjectCoercible, v as getMethod, U as toLength, S as toIntegerOrInfinity } from './object-set-prototype-of-c6b82070.js';
+import { s as stringMultibyte } from './string-multibyte-e0d8bd77.js';
 
 // `RegExp.prototype.flags` getter implementation
 // https://tc39.es/ecma262/#sec-get-regexp.prototype.flags
 var regexpFlags = function () {
   var that = anObject(this);
   var result = '';
+  if (that.hasIndices) result += 'd';
   if (that.global) result += 'g';
   if (that.ignoreCase) result += 'i';
   if (that.multiline) result += 'm';
   if (that.dotAll) result += 's';
   if (that.unicode) result += 'u';
+  if (that.unicodeSets) result += 'v';
   if (that.sticky) result += 'y';
   return result;
 };
@@ -155,7 +158,7 @@ if (PATCH) {
     }
     if (NPCG_INCLUDED && match && match.length > 1) {
       // Fix browsers whose `exec` methods don't consistently return `undefined`
-      // for NPCG, like IE8. NOTE: This doesn' work for /(.?)?/
+      // for NPCG, like IE8. NOTE: This doesn't work for /(.?)?/
       functionCall(nativeReplace, match[0], reCopy, function () {
         for (i = 1; i < arguments.length - 2; i++) {
           if (arguments[i] === undefined) match[i] = undefined;
@@ -250,8 +253,8 @@ var fixRegexpWellKnownSymbolLogic = function (KEY, exec, FORCED, SHAM) {
       return { done: false };
     });
 
-    redefine(String.prototype, KEY, methods[0]);
-    redefine(RegExpPrototype, SYMBOL, methods[1]);
+    defineBuiltIn(String.prototype, KEY, methods[0]);
+    defineBuiltIn(RegExpPrototype, SYMBOL, methods[1]);
   }
 
   if (SHAM) createNonEnumerableProperty(RegExpPrototype[SYMBOL], 'sham', true);
@@ -307,7 +310,7 @@ var getSubstitution = function (matched, str, position, captures, namedCaptures,
   });
 };
 
-var TypeError = global_1.TypeError;
+var $TypeError = TypeError;
 
 // `RegExpExec` abstract operation
 // https://tc39.es/ecma262/#sec-regexpexec
@@ -319,7 +322,7 @@ var regexpExecAbstract = function (R, S) {
     return result;
   }
   if (classofRaw(R) === 'RegExp') return functionCall(regexpExec, R, S);
-  throw TypeError('RegExp#exec called on incompatible receiver');
+  throw $TypeError('RegExp#exec called on incompatible receiver');
 };
 
 var REPLACE = wellKnownSymbol('replace');

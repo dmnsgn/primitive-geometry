@@ -1,6 +1,4 @@
-/**
- * @module box
- */
+/** @module box */
 import { checkArguments } from "./utils.js";
 
 /**

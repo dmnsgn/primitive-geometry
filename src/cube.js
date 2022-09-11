@@ -1,6 +1,4 @@
-/**
- * @module cube
- */
+/** @module cube */
 
 import { checkArguments, computePlane, getCellsTypedArray } from "./utils.js";
 

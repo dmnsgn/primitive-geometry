@@ -1,4 +1,4 @@
-import { T as toPropertyKey, L as objectDefineProperty, b as createPropertyDescriptor, g as global_1, F as lengthOfArrayLike, Q as toAbsoluteIndex } from './set-to-string-tag-f46d73c4.js';
+import { P as toPropertyKey, c as objectDefineProperty, k as createPropertyDescriptor, y as lengthOfArrayLike, Q as toAbsoluteIndex } from './object-set-prototype-of-c6b82070.js';
 
 var createProperty = function (object, key, value) {
   var propertyKey = toPropertyKey(key);
@@ -6,14 +6,14 @@ var createProperty = function (object, key, value) {
   else object[propertyKey] = value;
 };
 
-var Array = global_1.Array;
+var $Array = Array;
 var max = Math.max;
 
 var arraySliceSimple = function (O, start, end) {
   var length = lengthOfArrayLike(O);
   var k = toAbsoluteIndex(start, length);
   var fin = toAbsoluteIndex(end === undefined ? length : end, length);
-  var result = Array(max(fin - k, 0));
+  var result = $Array(max(fin - k, 0));
   for (var n = 0; k < fin; k++, n++) createProperty(result, n, O[k]);
   result.length = n;
   return result;
@@ -62,4 +62,4 @@ var merge = function (array, left, right, comparefn) {
 
 var arraySort = mergeSort;
 
-export { arraySliceSimple as a, arraySort as b, createProperty as c };
+export { arraySort as a, arraySliceSimple as b, createProperty as c };

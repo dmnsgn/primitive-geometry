@@ -1,6 +1,4 @@
-/**
- * @module icosphere
- */
+/** @module icosphere */
 import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
 
 const f = 0.5 + Math.sqrt(5) / 2;

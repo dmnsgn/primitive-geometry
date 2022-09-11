@@ -1,13 +1,13 @@
-import './common/esnext.map.update-7353e721.js';
-import './common/web.dom-collections.iterator-6ff37229.js';
-import './common/esnext.iterator.map-e455ac63.js';
-import './common/web.url-a0a7d893.js';
-import './common/esnext.iterator.filter-6eaab0d3.js';
-import './common/esnext.iterator.find-ab3af766.js';
-import './common/set-to-string-tag-f46d73c4.js';
-import './common/species-constructor-1e061cc5.js';
-import './common/string-multibyte-037a230c.js';
-import './common/array-sort-c6e1ac34.js';
+import './common/esnext.map.update-4076d5c5.js';
+import './common/web.dom-collections.iterator-4d9c3279.js';
+import './common/es.error.cause-0cbcfba0.js';
+import './common/web.url.constructor-f0ca465f.js';
+import './common/esnext.iterator.for-each-4afc5818.js';
+import './common/object-set-prototype-of-c6b82070.js';
+import './common/inherit-if-required-718dc9f8.js';
+import './common/function-apply-6538ee25.js';
+import './common/string-multibyte-e0d8bd77.js';
+import './common/array-sort-42b2ed4a.js';
 
 /* Font Face Observer v3.3.1 - © Bram Stein - Damien Seguin. License: BSD-3-Clause */
 function _classCallCheck(instance, Constructor) {
@@ -603,7 +603,7 @@ var LoaderKey;
   LoaderKey["Font"] = "Font";
 })(LoaderKey || (LoaderKey = {}));
 
-const isSafari = typeof navigator !== "undefined" && navigator && navigator.userAgent.indexOf("Safari") > -1;
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent) === true;
 /**
  * AsyncPreloader: assets preloader using ES2017 async/await and fetch.
  *

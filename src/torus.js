@@ -1,6 +1,4 @@
-/**
- * @module torus
- */
+/** @module torus */
 import {
   checkArguments,
   getCellsTypedArray,

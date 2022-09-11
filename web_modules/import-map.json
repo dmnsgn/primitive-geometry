@@ -1,6 +1,5 @@
 {
   "imports": {
-    "assert": "./assert.js",
     "async-preloader": "./async-preloader.js",
     "cameras": "./cameras.js",
     "es-module-shims": "./es-module-shims.js",

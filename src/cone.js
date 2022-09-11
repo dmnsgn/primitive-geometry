@@ -1,6 +1,4 @@
-/**
- * @module cone
- */
+/** @module cone */
 import cylinder from "./cylinder.js";
 import { checkArguments } from "./utils.js";
 

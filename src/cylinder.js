@@ -1,6 +1,4 @@
-/**
- * @module cylinder
- */
+/** @module cylinder */
 import {
   checkArguments,
   getCellsTypedArray,

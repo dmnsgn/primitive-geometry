@@ -1,6 +1,4 @@
-/**
- * @module plane
- */
+/** @module plane */
 
 import { checkArguments, computePlane, getCellsTypedArray } from "./utils.js";
 

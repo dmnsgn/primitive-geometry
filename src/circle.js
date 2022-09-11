@@ -1,6 +1,4 @@
-/**
- * @module circle
- */
+/** @module circle */
 import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
 
 /**

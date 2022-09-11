@@ -1,58 +1,4 @@
-import { w as wellKnownSymbol, g as global_1, v as classofRaw, u as isCallable, o as objectSetPrototypeOf, B as isObject, d as objectIsPrototypeOf, n as functionUncurryThis, H as functionBindNative, D as aCallable, I as iterators, y as getMethod, l as anObject, p as functionCall, E as tryToString, r as redefine, h as getBuiltIn, i as fails, J as inspectSource } from './set-to-string-tag-f46d73c4.js';
-
-var TO_STRING_TAG = wellKnownSymbol('toStringTag');
-var test = {};
-
-test[TO_STRING_TAG] = 'z';
-
-var toStringTagSupport = String(test) === '[object z]';
-
-var TO_STRING_TAG$1 = wellKnownSymbol('toStringTag');
-var Object$1 = global_1.Object;
-
-// ES3 wrong here
-var CORRECT_ARGUMENTS = classofRaw(function () { return arguments; }()) == 'Arguments';
-
-// fallback for IE11 Script Access Denied error
-var tryGet = function (it, key) {
-  try {
-    return it[key];
-  } catch (error) { /* empty */ }
-};
-
-// getting tag from ES6+ `Object.prototype.toString`
-var classof = toStringTagSupport ? classofRaw : function (it) {
-  var O, tag, result;
-  return it === undefined ? 'Undefined' : it === null ? 'Null'
-    // @@toStringTag case
-    : typeof (tag = tryGet(O = Object$1(it), TO_STRING_TAG$1)) == 'string' ? tag
-    // builtinTag case
-    : CORRECT_ARGUMENTS ? classofRaw(O)
-    // ES3 arguments fallback
-    : (result = classofRaw(O)) == 'Object' && isCallable(O.callee) ? 'Arguments' : result;
-};
-
-// makes subclassing work correct for wrapped built-ins
-var inheritIfRequired = function ($this, dummy, Wrapper) {
-  var NewTarget, NewTargetPrototype;
-  if (
-    // it can work only with native `setPrototypeOf`
-    objectSetPrototypeOf &&
-    // we haven't completely correct pre-ES6 way for getting `new.target`, so use this
-    isCallable(NewTarget = dummy.constructor) &&
-    NewTarget !== Wrapper &&
-    isObject(NewTargetPrototype = NewTarget.prototype) &&
-    NewTargetPrototype !== Wrapper.prototype
-  ) objectSetPrototypeOf($this, NewTargetPrototype);
-  return $this;
-};
-
-var TypeError = global_1.TypeError;
-
-var anInstance = function (it, Prototype) {
-  if (objectIsPrototypeOf(Prototype, it)) return it;
-  throw TypeError('Incorrect invocation');
-};
+import { E as functionUncurryThis, M as functionBindNative, b as aCallable, w as wellKnownSymbol, l as iterators, N as classofRaw, i as isCallable, v as getMethod, a as anObject, f as functionCall, x as tryToString, g as getBuiltIn, h as fails, O as inspectSource, j as defineBuiltIn, z as objectIsPrototypeOf, m as objectSetPrototypeOf, D as isObject } from './object-set-prototype-of-c6b82070.js';
 
 var bind = functionUncurryThis(functionUncurryThis.bind);
 
@@ -72,6 +18,38 @@ var isArrayIteratorMethod = function (it) {
   return it !== undefined && (iterators.Array === it || ArrayPrototype[ITERATOR] === it);
 };
 
+var TO_STRING_TAG = wellKnownSymbol('toStringTag');
+var test = {};
+
+test[TO_STRING_TAG] = 'z';
+
+var toStringTagSupport = String(test) === '[object z]';
+
+var TO_STRING_TAG$1 = wellKnownSymbol('toStringTag');
+var $Object = Object;
+
+// ES3 wrong here
+var CORRECT_ARGUMENTS = classofRaw(function () { return arguments; }()) == 'Arguments';
+
+// fallback for IE11 Script Access Denied error
+var tryGet = function (it, key) {
+  try {
+    return it[key];
+  } catch (error) { /* empty */ }
+};
+
+// getting tag from ES6+ `Object.prototype.toString`
+var classof = toStringTagSupport ? classofRaw : function (it) {
+  var O, tag, result;
+  return it === undefined ? 'Undefined' : it === null ? 'Null'
+    // @@toStringTag case
+    : typeof (tag = tryGet(O = $Object(it), TO_STRING_TAG$1)) == 'string' ? tag
+    // builtinTag case
+    : CORRECT_ARGUMENTS ? classofRaw(O)
+    // ES3 arguments fallback
+    : (result = classofRaw(O)) == 'Object' && isCallable(O.callee) ? 'Arguments' : result;
+};
+
 var ITERATOR$1 = wellKnownSymbol('iterator');
 
 var getIteratorMethod = function (it) {
@@ -80,17 +58,12 @@ var getIteratorMethod = function (it) {
     || iterators[classof(it)];
 };
 
-var TypeError$1 = global_1.TypeError;
+var $TypeError = TypeError;
 
 var getIterator = function (argument, usingIterator) {
   var iteratorMethod = arguments.length < 2 ? getIteratorMethod(argument) : usingIterator;
   if (aCallable(iteratorMethod)) return anObject(functionCall(iteratorMethod, argument));
-  throw TypeError$1(tryToString(argument) + ' is not iterable');
-};
-
-var redefineAll = function (target, src, options) {
-  for (var key in src) redefine(target, key, src[key], options);
-  return target;
+  throw $TypeError(tryToString(argument) + ' is not iterable');
 };
 
 var noop = function () { /* empty */ };
@@ -139,12 +112,12 @@ var isConstructor = !construct || fails(function () {
     || called;
 }) ? isConstructorLegacy : isConstructorModern;
 
-var TypeError$2 = global_1.TypeError;
+var $TypeError$1 = TypeError;
 
 // `Assert: IsConstructor(argument) is true`
 var aConstructor = function (argument) {
   if (isConstructor(argument)) return argument;
-  throw TypeError$2(tryToString(argument) + ' is not a constructor');
+  throw $TypeError$1(tryToString(argument) + ' is not a constructor');
 };
 
 var SPECIES = wellKnownSymbol('species');
@@ -157,4 +130,31 @@ var speciesConstructor = function (O, defaultConstructor) {
   return C === undefined || (S = anObject(C)[SPECIES]) == undefined ? defaultConstructor : aConstructor(S);
 };
 
-export { anInstance as a, isArrayIteratorMethod as b, getIterator as c, classof as d, aConstructor as e, functionBindContext as f, getIteratorMethod as g, isConstructor as h, inheritIfRequired as i, redefineAll as r, speciesConstructor as s };
+var defineBuiltIns = function (target, src, options) {
+  for (var key in src) defineBuiltIn(target, key, src[key], options);
+  return target;
+};
+
+var $TypeError$2 = TypeError;
+
+var anInstance = function (it, Prototype) {
+  if (objectIsPrototypeOf(Prototype, it)) return it;
+  throw $TypeError$2('Incorrect invocation');
+};
+
+// makes subclassing work correct for wrapped built-ins
+var inheritIfRequired = function ($this, dummy, Wrapper) {
+  var NewTarget, NewTargetPrototype;
+  if (
+    // it can work only with native `setPrototypeOf`
+    objectSetPrototypeOf &&
+    // we haven't completely correct pre-ES6 way for getting `new.target`, so use this
+    isCallable(NewTarget = dummy.constructor) &&
+    NewTarget !== Wrapper &&
+    isObject(NewTargetPrototype = NewTarget.prototype) &&
+    NewTargetPrototype !== Wrapper.prototype
+  ) objectSetPrototypeOf($this, NewTargetPrototype);
+  return $this;
+};
+
+export { getIterator as a, anInstance as b, inheritIfRequired as c, defineBuiltIns as d, isConstructor as e, functionBindContext as f, getIteratorMethod as g, classof as h, isArrayIteratorMethod as i, aConstructor as j, speciesConstructor as s };

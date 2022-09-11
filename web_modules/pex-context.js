@@ -1,760 +1,279 @@
-import './common/es.typed-array.float32-array-67891ee9.js';
-import './common/esnext.typed-array.with-7d2b4bc8.js';
-import { a as assert_1, p as process } from './common/assert-921e1e37.js';
-import './common/es.typed-array.uint16-array-922fcfb3.js';
-import './common/esnext.iterator.map-e455ac63.js';
-import './common/esnext.iterator.filter-6eaab0d3.js';
-import { j as createCommonjsModule, k as commonjsGlobal } from './common/set-to-string-tag-f46d73c4.js';
-import './common/es.string.replace-4768289e.js';
-import './common/esnext.iterator.some-81ee7e39.js';
-import './common/web.dom-collections.iterator-6ff37229.js';
-import './common/esnext.iterator.find-ab3af766.js';
-import './common/esnext.map.update-7353e721.js';
-import './common/species-constructor-1e061cc5.js';
-import './common/array-sort-c6e1ac34.js';
-import './common/esnext.set.union-3c32e317.js';
-import './common/string-multibyte-037a230c.js';
+import './common/es.error.cause-0cbcfba0.js';
+import './common/web.dom-collections.iterator-4d9c3279.js';
+import './common/esnext.iterator.some-0bc23f11.js';
+import { t as typedArrayConstructor } from './common/esnext.typed-array.with-777216a9.js';
+import './common/esnext.iterator.for-each-4afc5818.js';
+import './common/es.typed-array.float32-array-e4183841.js';
+import './common/inherit-if-required-718dc9f8.js';
+import './common/object-set-prototype-of-c6b82070.js';
+import './common/function-apply-6538ee25.js';
+import './common/array-sort-42b2ed4a.js';
 
-function createGL(opts) {
-  assert_1(!opts || typeof opts === 'object', 'pex-gl: createGL requires opts argument to be null or an object');
-  if (!opts) opts = {};
-  let canvas = opts.canvas;
-  const pixelRatio = opts.pixelRatio || 1;
-  const fullscreen = !opts.width && !opts.height;
+/**
+ * Context fallbacks map
+ * @constant
+ */
+const FALLBACKS = {
+  "2d": [],
+  bitmaprenderer: [],
+  webgl: ["experimental-webgl"],
+  webgl2: ["webgl", "experimental-webgl"],
+  webgpu: []
+};
+/**
+ * @typedef {Object} Options Options for context creation. All optional.
+ * @property {number} [width=window.innerWidth] Request an initial canvas width.
+ * @property {number} [height=window.innerHeight] Request an initial canvas height.
+ * @property {boolean} [pixelRatio=1] Multiply canvas dimensions with a given ratio.
+ * @property {boolean} [fullscreen=!opts.width && !opts.height] Make the canvas fullscreen.
+ * @property {"2d" | "bitmaprenderer" | "webgl" | "webgl2" | "webgpu"} [type="webgl"] A "contextType" for getContext.
+ * @property {HTMLElement} [element=document.body] Element to append the canvas to.
+ * @property {...(CanvasRenderingContext2DSettings | WebGLContextAttributes)} [contextAttributes={}] Attributes to be passed to getContext.
+ */
 
-  if (!canvas) {
-    canvas = document.createElement('canvas');
+/**
+ * Creates a rendering context.
+ * @param {Options} [opts={}]
+ * @returns {RenderingContext}
+ */
 
+function createRenderingContext(opts = {}) {
+  // Get options and set defaults
+  const {
+    width = window.innerWidth,
+    height = window.innerHeight,
+    pixelRatio = 1,
+    fullscreen = !opts.width && !opts.height,
+    type = "webgl",
+    element = document.body,
+    ...contextAttributes
+  } = { ...opts
+  };
+  const canvas = opts.canvas || document.createElement("canvas");
+
+  if (!opts.canvas) {
     if (fullscreen) {
-      const meta = document.createElement('meta');
-      meta.setAttribute('name', 'viewport');
-      meta.setAttribute('content', 'width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=0.0');
+      const meta = document.createElement("meta");
+      meta.setAttribute("name", "viewport");
+      meta.setAttribute("content", "width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=0.0");
       document.head.appendChild(meta);
     }
 
     const appendCanvas = () => {
       if (fullscreen) {
-        document.body.style.margin = '0px';
-        document.body.style.overflow = 'hidden';
-        document.body.style.background = '#000';
+        Object.assign(document.body.style, {
+          margin: 0,
+          overflow: "hidden",
+          backgroundColor: "#000"
+        });
       }
 
-      document.body.appendChild(canvas);
+      element.appendChild(canvas);
     };
 
-    const W = opts.width || window.innerWidth;
-    const H = opts.height || window.innerHeight;
-
     if (pixelRatio !== 1) {
-      canvas.style.width = W + 'px';
-      canvas.style.height = H + 'px';
-      canvas.width = W * pixelRatio;
-      canvas.height = H * pixelRatio;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      canvas.width = width * pixelRatio;
+      canvas.height = height * pixelRatio;
     } else {
-      canvas.width = W * pixelRatio;
-      canvas.height = H * pixelRatio;
+      canvas.width = width * pixelRatio;
+      canvas.height = height * pixelRatio;
     }
 
     if (document.body) {
       appendCanvas();
     } else {
-      // just in case our script is included above <body>
-      document.addEventListener('DOMContentLoaded', appendCanvas);
+      document.addEventListener("DOMContentLoaded", appendCanvas);
     }
   }
 
-  const contexts = ['webgl', 'experimental-webgl'];
+  const contexts = [type, ...(FALLBACKS[type] || [])];
 
-  for (var i = 0; i < contexts.length; i++) {
+  for (let i = 0; i < contexts.length; i++) {
     try {
-      const gl = canvas.getContext(contexts[i], opts);
-
-      if (!gl) {
-        throw new Error('Canvas.getContext returned null');
-      }
-
-      console.info('pex-gl', 'Creating', contexts[i], 'succeeded');
-      return gl;
-    } catch (e) {
-      console.warn('pex-gl', 'Creating', contexts[i], 'failed', e);
+      const context = canvas.getContext(contexts[i], contextAttributes);
+      if (!context) throw `canvas.getContext() returned "null".`;
+      console.info(`pex-gl: ${contexts[i]} ✔`);
+      return context;
+    } catch (error) {
+      console.warn(`pex-gl: ${contexts[i]} failed ⚠`, error);
     }
   }
+
+  console.error(`pex-gl: ${type} failed ✖`);
+  return null;
 }
 
-var indexBrowser = createGL;
+// Debug
+const NAMESPACE = "pex-context";
 
-var client = true;
+const checkProps = (allowedProps, obj) => Object.keys(obj).forEach(prop => {
+  if (!allowedProps.includes(prop)) throw new Error(`Unknown prop "${prop}"`);
+});
 
-var performanceNow = createCommonjsModule(function (module) {
-  // Generated by CoffeeScript 1.12.2
-  (function () {
-    var getNanoSeconds, hrtime, loadTime, moduleLoadTime, nodeLoadTime, upTime;
+const isWebGL2 = gl => typeof WebGL2RenderingContext !== "undefined" && gl instanceof WebGL2RenderingContext; // State and gl
 
-    if (typeof performance !== "undefined" && performance !== null && performance.now) {
-      module.exports = function () {
-        return performance.now();
-      };
-    } else if (typeof process !== "undefined" && process !== null && process.hrtime) {
-      module.exports = function () {
-        return (getNanoSeconds() - nodeLoadTime) / 1e6;
-      };
 
-      hrtime = process.hrtime;
+function compareFBOAttachments(framebuffer, passOpts) {
+  var _framebuffer$depth, _passOpts$depth;
 
-      getNanoSeconds = function () {
-        var hr;
-        hr = hrtime();
-        return hr[0] * 1e9 + hr[1];
-      };
+  const fboDepthAttachment = (_framebuffer$depth = framebuffer.depth) === null || _framebuffer$depth === void 0 ? void 0 : _framebuffer$depth.texture;
+  const passDepthAttachment = ((_passOpts$depth = passOpts.depth) === null || _passOpts$depth === void 0 ? void 0 : _passOpts$depth.texture) || passOpts.depth;
+  if (fboDepthAttachment != passDepthAttachment) return false;
+  if (framebuffer.color.length != passOpts.color.length) return false;
 
-      moduleLoadTime = getNanoSeconds();
-      upTime = process.uptime() * 1e9;
-      nodeLoadTime = moduleLoadTime - upTime;
-    } else if (Date.now) {
-      module.exports = function () {
-        return Date.now() - loadTime;
-      };
+  for (let i = 0; i < framebuffer.color.length; i++) {
+    var _framebuffer$color$i, _passOpts$color$i;
 
-      loadTime = Date.now();
+    const fboColorAttachment = (_framebuffer$color$i = framebuffer.color[i]) === null || _framebuffer$color$i === void 0 ? void 0 : _framebuffer$color$i.texture;
+    const passColorAttachment = ((_passOpts$color$i = passOpts.color[i]) === null || _passOpts$color$i === void 0 ? void 0 : _passOpts$color$i.texture) || passOpts.color[i];
+    if (fboColorAttachment != passColorAttachment) return false;
+  }
+
+  return true;
+}
+
+function enableVertexData(ctx, vertexLayout, cmd, updateState) {
+  const gl = ctx.gl;
+  const {
+    attributes = {},
+    indices
+  } = cmd;
+
+  for (let i = 0; i < ctx.capabilities.maxVertexAttribs; i++) {
+    ctx.state.activeAttributes[i] = null;
+    gl.disableVertexAttribArray(i);
+  }
+
+  for (let i = 0; i < vertexLayout.length; i++) {
+    const [name, location, size] = vertexLayout[i]; // TODO: is attributes array valid?
+
+    const attrib = attributes[i] || attributes[name];
+
+    if (!attrib) {
+      console.debug(NAMESPACE, "invalid command", cmd, "doesn't satisfy vertex layout", vertexLayout);
+      throw new Error(`Command is missing attribute "${name}" at location ${location} with ${attrib}`);
+    }
+
+    let buffer = attrib.buffer;
+
+    if (!buffer && attrib.class === "vertexBuffer") {
+      buffer = attrib;
+    }
+
+    if (!buffer || !buffer.target) {
+      throw new Error(`Trying to draw arrays with invalid buffer for attribute : ${name}`);
+    }
+
+    gl.bindBuffer(buffer.target, buffer.handle);
+
+    if (size === 16) {
+      gl.enableVertexAttribArray(location + 0);
+      gl.enableVertexAttribArray(location + 1);
+      gl.enableVertexAttribArray(location + 2);
+      gl.enableVertexAttribArray(location + 3);
+
+      if (updateState) {
+        ctx.state.activeAttributes[location + 0] = buffer;
+        ctx.state.activeAttributes[location + 1] = buffer;
+        ctx.state.activeAttributes[location + 2] = buffer;
+        ctx.state.activeAttributes[location + 3] = buffer;
+      } // TODO: is this still valid?
+      // we still check for buffer type because while e.g. pex-renderer would copy buffer type to attrib, a raw pex-context example probably would not
+
+
+      gl.vertexAttribPointer(location, 4, attrib.type || buffer.type, attrib.normalized || false, attrib.stride || 64, attrib.offset || 0);
+      gl.vertexAttribPointer(location + 1, 4, attrib.type || buffer.type, attrib.normalized || false, attrib.stride || 64, attrib.offset || 16);
+      gl.vertexAttribPointer(location + 2, 4, attrib.type || buffer.type, attrib.normalized || false, attrib.stride || 64, attrib.offset || 32);
+      gl.vertexAttribPointer(location + 3, 4, attrib.type || buffer.type, attrib.normalized || false, attrib.stride || 64, attrib.offset || 48);
+      const divisor = attrib.divisor || 0;
+      gl.vertexAttribDivisor(location + 0, divisor);
+      gl.vertexAttribDivisor(location + 1, divisor);
+      gl.vertexAttribDivisor(location + 2, divisor);
+      gl.vertexAttribDivisor(location + 3, divisor);
     } else {
-      module.exports = function () {
-        return new Date().getTime() - loadTime;
-      };
+      gl.enableVertexAttribArray(location);
+      if (updateState) ctx.state.activeAttributes[location] = buffer;
+      gl.vertexAttribPointer(location, size, attrib.type || buffer.type, attrib.normalized || false, attrib.stride || 0, attrib.offset || 0);
+      gl.vertexAttribDivisor(location, attrib.divisor || 0);
+    } // TODO: how to match index with vertexLayout location?
 
-      loadTime = new Date().getTime();
-    }
-  }).call(commonjsGlobal);
-});
+  }
 
-var root = typeof window === 'undefined' ? commonjsGlobal : window,
-    vendors = ['moz', 'webkit'],
-    suffix = 'AnimationFrame',
-    raf = root['request' + suffix],
-    caf = root['cancel' + suffix] || root['cancelRequest' + suffix];
+  if (indices) {
+    let indexBuffer = indices.buffer;
 
-for (var i = 0; !raf && i < vendors.length; i++) {
-  raf = root[vendors[i] + 'Request' + suffix];
-  caf = root[vendors[i] + 'Cancel' + suffix] || root[vendors[i] + 'CancelRequest' + suffix];
-} // Some versions of FF have rAF but not cAF
-
-
-if (!raf || !caf) {
-  var last = 0,
-      id = 0,
-      queue = [],
-      frameDuration = 1000 / 60;
-
-  raf = function (callback) {
-    if (queue.length === 0) {
-      var _now = performanceNow(),
-          next = Math.max(0, frameDuration - (_now - last));
-
-      last = next + _now;
-      setTimeout(function () {
-        var cp = queue.slice(0); // Clear queue here to prevent
-        // callbacks from appending listeners
-        // to the current frame's queue
-
-        queue.length = 0;
-
-        for (var i = 0; i < cp.length; i++) {
-          if (!cp[i].cancelled) {
-            try {
-              cp[i].callback(last);
-            } catch (e) {
-              setTimeout(function () {
-                throw e;
-              }, 0);
-            }
-          }
-        }
-      }, Math.round(next));
+    if (!indexBuffer && indices.class === "indexBuffer") {
+      indexBuffer = indices;
     }
 
-    queue.push({
-      handle: ++id,
-      callback: callback,
-      cancelled: false
-    });
-    return id;
-  };
-
-  caf = function (handle) {
-    for (var i = 0; i < queue.length; i++) {
-      if (queue[i].handle === handle) {
-        queue[i].cancelled = true;
-      }
+    if (!indexBuffer || !indexBuffer.target) {
+      console.debug(NAMESPACE, "invalid command", cmd, "buffer", indexBuffer);
+      throw new Error(`Trying to draw arrays with invalid buffer for elements`);
     }
-  };
+
+    if (updateState) ctx.state.indexBuffer = indexBuffer;
+    gl.bindBuffer(indexBuffer.target, indexBuffer.handle);
+  }
 }
 
-var raf_1 = function (fn) {
-  // Wrap in a new function to prevent
-  // `cancel` potentially being assigned
-  // to the native rAF function
-  return raf.call(root, fn);
-};
-
-var cancel = function () {
-  caf.apply(root, arguments);
-};
-
-var polyfill = function (object) {
-  if (!object) {
-    object = root;
-  }
-
-  object.requestAnimationFrame = raf;
-  object.cancelAnimationFrame = caf;
-};
-raf_1.cancel = cancel;
-raf_1.polyfill = polyfill;
-
 /**
- * Helpers.
- */
-var s = 1000;
-var m = s * 60;
-var h = m * 60;
-var d = h * 24;
-var y = d * 365.25;
-/**
- * Parse or format the given `val`.
- *
- * Options:
- *
- *  - `long` verbose formatting [false]
- *
- * @param {String|Number} val
- * @param {Object} [options]
- * @throws {Error} throw an error if val is not a non-empty string or a number
- * @return {String|Number}
- * @api public
+ * @typedef {HTMLImageElement | HTMLVideoElement | HTMLCanvasElement} TextureOptionsData
+ * @property {Array|TypedArray} data
+ * @property {number} width
+ * @property {number} height
  */
 
-var ms = function (val, options) {
-  options = options || {};
-  var type = typeof val;
-
-  if (type === 'string' && val.length > 0) {
-    return parse(val);
-  } else if (type === 'number' && isNaN(val) === false) {
-    return options.long ? fmtLong(val) : fmtShort(val);
-  }
-
-  throw new Error('val is not a non-empty string or a valid number. val=' + JSON.stringify(val));
-};
 /**
- * Parse the given `str` and return milliseconds.
- *
- * @param {String} str
- * @return {Number}
- * @api private
+ * @typedef {WebGLRenderingContext.TEXTURE_2D | WebGLRenderingContext.TEXTURE_CUBE_MAP} TextureTarget
  */
 
-
-function parse(str) {
-  str = String(str);
-
-  if (str.length > 100) {
-    return;
-  }
-
-  var match = /^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(str);
-
-  if (!match) {
-    return;
-  }
-
-  var n = parseFloat(match[1]);
-  var type = (match[2] || 'ms').toLowerCase();
-
-  switch (type) {
-    case 'years':
-    case 'year':
-    case 'yrs':
-    case 'yr':
-    case 'y':
-      return n * y;
-
-    case 'days':
-    case 'day':
-    case 'd':
-      return n * d;
-
-    case 'hours':
-    case 'hour':
-    case 'hrs':
-    case 'hr':
-    case 'h':
-      return n * h;
-
-    case 'minutes':
-    case 'minute':
-    case 'mins':
-    case 'min':
-    case 'm':
-      return n * m;
-
-    case 'seconds':
-    case 'second':
-    case 'secs':
-    case 'sec':
-    case 's':
-      return n * s;
-
-    case 'milliseconds':
-    case 'millisecond':
-    case 'msecs':
-    case 'msec':
-    case 'ms':
-      return n;
-
-    default:
-      return undefined;
-  }
-}
 /**
- * Short format for `ms`.
- *
- * @param {Number} ms
- * @return {String}
- * @api private
+ * @typedef {import("./types.js").PexResource} TextureOptions
+ * @property {HTMLImageElement | HTMLVideoElement | HTMLCanvasElement | Array | TypedArray |TextureOptionsData | HTMLImageElement[] | TextureOptionsData[]} [data]
+ * @property {number} [width]
+ * @property {number} [height]
+ * @property {ctx.PixelFormat} [pixelFormat=ctx.PixelFormat.RGB8]
+ * @property {ctx.TextureFormat} [internalFormat=ctx.TextureFormat.RGBA]
+ * @property {ctx.DataType} [type=ctx.TextureFormat[opts.pixelFormat]]
+ * @property {ctx.Encoding} [encoding=ctx.Encoding.Linear]
+ * @property {ctx.Wrap} [wrapS=ctx.Wrap.ClampToEdge]
+ * @property {ctx.Wrap} [wrapT=ctx.Wrap.ClampToEdge]
+ * @property {ctx.Wrap} [wrap=ctx.Wrap.ClampToEdge]
+ * @property {ctx.Filter} [min=ctx.Filter.Nearest]
+ * @property {ctx.Filter} [mag=ctx.Filter.Nearest]
+ * @property {number} [aniso=0] requires [EXT_texture_filter_anisotropic](https://www.khronos.org/registry/webgl/extensions/EXT_texture_filter_anisotropic/)
+ * @property {boolean} [mipmap=true] requires `min` to be set to `ctx.Filter.LinearMipmapLinear` or similar
+ * @property {boolean} [premultiplyAlpha=false]
+ * @property {boolean} [flipY=false]
+ * @property {boolean} [compressed=false]
+ * @property {TextureTarget} [target]
  */
 
-
-function fmtShort(ms) {
-  if (ms >= d) {
-    return Math.round(ms / d) + 'd';
-  }
-
-  if (ms >= h) {
-    return Math.round(ms / h) + 'h';
-  }
-
-  if (ms >= m) {
-    return Math.round(ms / m) + 'm';
-  }
-
-  if (ms >= s) {
-    return Math.round(ms / s) + 's';
-  }
-
-  return ms + 'ms';
-}
 /**
- * Long format for `ms`.
- *
- * @param {Number} ms
- * @return {String}
- * @api private
+ * @typedef {TextureCube} TextureCubeOptions
+ * @property {HTMLImage[]|TypedArray[]} [data] 6 images, one for each face +X, -X, +Y, -Y, +Z, -Z
  */
 
-
-function fmtLong(ms) {
-  return plural(ms, d, 'day') || plural(ms, h, 'hour') || plural(ms, m, 'minute') || plural(ms, s, 'second') || ms + ' ms';
-}
-/**
- * Pluralization helper.
- */
-
-
-function plural(ms, n, name) {
-  if (ms < n) {
-    return;
-  }
-
-  if (ms < n * 1.5) {
-    return Math.floor(ms / n) + ' ' + name;
-  }
-
-  return Math.ceil(ms / n) + ' ' + name + 's';
-}
-
-var debug = createCommonjsModule(function (module, exports) {
-  /**
-   * This is the common logic for both the Node.js and web browser
-   * implementations of `debug()`.
-   *
-   * Expose `debug()` as the module.
-   */
-  exports = module.exports = createDebug.debug = createDebug['default'] = createDebug;
-  exports.coerce = coerce;
-  exports.disable = disable;
-  exports.enable = enable;
-  exports.enabled = enabled;
-  exports.humanize = ms;
-  /**
-   * The currently active debug mode names, and names to skip.
-   */
-
-  exports.names = [];
-  exports.skips = [];
-  /**
-   * Map of special "%n" handling functions, for the debug "format" argument.
-   *
-   * Valid key names are a single, lower or upper-case letter, i.e. "n" and "N".
-   */
-
-  exports.formatters = {};
-  /**
-   * Previous log timestamp.
-   */
-
-  var prevTime;
-  /**
-   * Select a color.
-   * @param {String} namespace
-   * @return {Number}
-   * @api private
-   */
-
-  function selectColor(namespace) {
-    var hash = 0,
-        i;
-
-    for (i in namespace) {
-      hash = (hash << 5) - hash + namespace.charCodeAt(i);
-      hash |= 0; // Convert to 32bit integer
-    }
-
-    return exports.colors[Math.abs(hash) % exports.colors.length];
-  }
-  /**
-   * Create a debugger with the given `namespace`.
-   *
-   * @param {String} namespace
-   * @return {Function}
-   * @api public
-   */
-
-
-  function createDebug(namespace) {
-    function debug() {
-      // disabled?
-      if (!debug.enabled) return;
-      var self = debug; // set `diff` timestamp
-
-      var curr = +new Date();
-      var ms = curr - (prevTime || curr);
-      self.diff = ms;
-      self.prev = prevTime;
-      self.curr = curr;
-      prevTime = curr; // turn the `arguments` into a proper Array
-
-      var args = new Array(arguments.length);
-
-      for (var i = 0; i < args.length; i++) {
-        args[i] = arguments[i];
-      }
-
-      args[0] = exports.coerce(args[0]);
-
-      if ('string' !== typeof args[0]) {
-        // anything else let's inspect with %O
-        args.unshift('%O');
-      } // apply any `formatters` transformations
-
-
-      var index = 0;
-      args[0] = args[0].replace(/%([a-zA-Z%])/g, function (match, format) {
-        // if we encounter an escaped % then don't increase the array index
-        if (match === '%%') return match;
-        index++;
-        var formatter = exports.formatters[format];
-
-        if ('function' === typeof formatter) {
-          var val = args[index];
-          match = formatter.call(self, val); // now we need to remove `args[index]` since it's inlined in the `format`
-
-          args.splice(index, 1);
-          index--;
-        }
-
-        return match;
-      }); // apply env-specific formatting (colors, etc.)
-
-      exports.formatArgs.call(self, args);
-      var logFn = debug.log || exports.log || console.log.bind(console);
-      logFn.apply(self, args);
-    }
-
-    debug.namespace = namespace;
-    debug.enabled = exports.enabled(namespace);
-    debug.useColors = exports.useColors();
-    debug.color = selectColor(namespace); // env-specific initialization logic for debug instances
-
-    if ('function' === typeof exports.init) {
-      exports.init(debug);
-    }
-
-    return debug;
-  }
-  /**
-   * Enables a debug mode by namespaces. This can include modes
-   * separated by a colon and wildcards.
-   *
-   * @param {String} namespaces
-   * @api public
-   */
-
-
-  function enable(namespaces) {
-    exports.save(namespaces);
-    exports.names = [];
-    exports.skips = [];
-    var split = (typeof namespaces === 'string' ? namespaces : '').split(/[\s,]+/);
-    var len = split.length;
-
-    for (var i = 0; i < len; i++) {
-      if (!split[i]) continue; // ignore empty strings
-
-      namespaces = split[i].replace(/\*/g, '.*?');
-
-      if (namespaces[0] === '-') {
-        exports.skips.push(new RegExp('^' + namespaces.substr(1) + '$'));
-      } else {
-        exports.names.push(new RegExp('^' + namespaces + '$'));
-      }
-    }
-  }
-  /**
-   * Disable debug output.
-   *
-   * @api public
-   */
-
-
-  function disable() {
-    exports.enable('');
-  }
-  /**
-   * Returns true if the given mode name is enabled, false otherwise.
-   *
-   * @param {String} name
-   * @return {Boolean}
-   * @api public
-   */
-
-
-  function enabled(name) {
-    var i, len;
-
-    for (i = 0, len = exports.skips.length; i < len; i++) {
-      if (exports.skips[i].test(name)) {
-        return false;
-      }
-    }
-
-    for (i = 0, len = exports.names.length; i < len; i++) {
-      if (exports.names[i].test(name)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-  /**
-   * Coerce `val`.
-   *
-   * @param {Mixed} val
-   * @return {Mixed}
-   * @api private
-   */
-
-
-  function coerce(val) {
-    if (val instanceof Error) return val.stack || val.message;
-    return val;
-  }
-});
-
-var browser = createCommonjsModule(function (module, exports) {
-  /**
-   * This is the web browser implementation of `debug()`.
-   *
-   * Expose `debug()` as the module.
-   */
-  exports = module.exports = debug;
-  exports.log = log;
-  exports.formatArgs = formatArgs;
-  exports.save = save;
-  exports.load = load;
-  exports.useColors = useColors;
-  exports.storage = 'undefined' != typeof chrome && 'undefined' != typeof chrome.storage ? chrome.storage.local : localstorage();
-  /**
-   * Colors.
-   */
-
-  exports.colors = ['lightseagreen', 'forestgreen', 'goldenrod', 'dodgerblue', 'darkorchid', 'crimson'];
-  /**
-   * Currently only WebKit-based Web Inspectors, Firefox >= v31,
-   * and the Firebug extension (any Firefox version) are known
-   * to support "%c" CSS customizations.
-   *
-   * TODO: add a `localStorage` variable to explicitly enable/disable colors
-   */
-
-  function useColors() {
-    // NB: In an Electron preload script, document will be defined but not fully
-    // initialized. Since we know we're in Chrome, we'll just detect this case
-    // explicitly
-    if (typeof window !== 'undefined' && window.process && window.process.type === 'renderer') {
-      return true;
-    } // is webkit? http://stackoverflow.com/a/16459606/376773
-    // document is undefined in react-native: https://github.com/facebook/react-native/pull/1632
-
-
-    return typeof document !== 'undefined' && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance || // is firebug? http://stackoverflow.com/a/398120/376773
-    typeof window !== 'undefined' && window.console && (window.console.firebug || window.console.exception && window.console.table) || // is firefox >= v31?
-    // https://developer.mozilla.org/en-US/docs/Tools/Web_Console#Styling_messages
-    typeof navigator !== 'undefined' && navigator.userAgent && navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/) && parseInt(RegExp.$1, 10) >= 31 || // double check webkit in userAgent just in case we are in a worker
-    typeof navigator !== 'undefined' && navigator.userAgent && navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/);
-  }
-  /**
-   * Map %j to `JSON.stringify()`, since no Web Inspectors do that by default.
-   */
-
-
-  exports.formatters.j = function (v) {
-    try {
-      return JSON.stringify(v);
-    } catch (err) {
-      return '[UnexpectedJSONParseError]: ' + err.message;
-    }
-  };
-  /**
-   * Colorize log arguments if enabled.
-   *
-   * @api public
-   */
-
-
-  function formatArgs(args) {
-    var useColors = this.useColors;
-    args[0] = (useColors ? '%c' : '') + this.namespace + (useColors ? ' %c' : ' ') + args[0] + (useColors ? '%c ' : ' ') + '+' + exports.humanize(this.diff);
-    if (!useColors) return;
-    var c = 'color: ' + this.color;
-    args.splice(1, 0, c, 'color: inherit'); // the final "%c" is somewhat tricky, because there could be other
-    // arguments passed either before or after the %c, so we need to
-    // figure out the correct index to insert the CSS into
-
-    var index = 0;
-    var lastC = 0;
-    args[0].replace(/%[a-zA-Z%]/g, function (match) {
-      if ('%%' === match) return;
-      index++;
-
-      if ('%c' === match) {
-        // we only are interested in the *last* %c
-        // (the user may have provided their own)
-        lastC = index;
-      }
-    });
-    args.splice(lastC, 0, c);
-  }
-  /**
-   * Invokes `console.log()` when available.
-   * No-op when `console.log` is not a "function".
-   *
-   * @api public
-   */
-
-
-  function log() {
-    // this hackery is required for IE8/9, where
-    // the `console.log` function doesn't have 'apply'
-    return 'object' === typeof console && console.log && Function.prototype.apply.call(console.log, console, arguments);
-  }
-  /**
-   * Save `namespaces`.
-   *
-   * @param {String} namespaces
-   * @api private
-   */
-
-
-  function save(namespaces) {
-    try {
-      if (null == namespaces) {
-        exports.storage.removeItem('debug');
-      } else {
-        exports.storage.debug = namespaces;
-      }
-    } catch (e) {}
-  }
-  /**
-   * Load `namespaces`.
-   *
-   * @return {String} returns the previously persisted debug modes
-   * @api private
-   */
-
-
-  function load() {
-    var r;
-
-    try {
-      r = exports.storage.debug;
-    } catch (e) {} // If debug isn't set in LS, and we're in Electron, try to load $DEBUG
-
-
-    if (!r && typeof process !== 'undefined' && 'env' in process) {
-      r = process.env.DEBUG;
-    }
-
-    return r;
-  }
-  /**
-   * Enable namespaces listed in `localStorage.debug` initially.
-   */
-
-
-  exports.enable(load());
-  /**
-   * Localstorage attempts to return the localstorage.
-   *
-   * This is necessary because safari throws
-   * when a user disables cookies/localstorage
-   * and you attempt to access it.
-   *
-   * @return {LocalStorage}
-   * @api private
-   */
-
-  function localstorage() {
-    try {
-      return window.localStorage;
-    } catch (e) {}
-  }
-});
-
-function checkProps(allowedProps, obj) {
-  Object.keys(obj).forEach(prop => {
-    if (allowedProps.indexOf(prop) === -1) {
-      throw new Error(`Unknown prop "${prop}"`);
-    }
-  });
-}
-
-var checkProps_1 = checkProps;
-
-const allowedProps = ['name', 'data', 'width', 'height', 'pixelFormat', 'internalFormat', 'type', 'encoding', 'flipY', 'mipmap', 'target', 'min', 'mag', 'wrap', 'wrapS', 'wrapT', 'aniso', 'premultiplyAlpha', 'compressed'];
+const allowedProps = ["name", "data", "width", "height", "pixelFormat", "internalFormat", "type", "encoding", "flipY", "mipmap", "target", "min", "mag", "wrap", "wrapS", "wrapT", "aniso", "premultiplyAlpha", "compressed"];
 
 function createTexture(ctx, opts) {
-  checkProps_1(allowedProps, opts);
+  checkProps(allowedProps, opts);
   const gl = ctx.gl;
   const texture = {
-    class: 'texture',
+    class: "texture",
     handle: gl.createTexture(),
     target: opts.target,
     width: 0,
     height: 0,
     _update: updateTexture2D,
-    _dispose: function () {
+
+    _dispose() {
       gl.deleteTexture(this.handle);
       this.handle = null;
     }
+
   };
   updateTexture2D(ctx, texture, opts);
   return texture;
@@ -762,19 +281,7 @@ function createTexture(ctx, opts) {
 
 function orValue(a, b) {
   return a !== undefined ? a : b;
-} // just an image
-// opts = HTMLImage
-// image with flags
-// opts = { data: HTMLImage, flipY: Boolean }
-// pixel data
-// opts = { data: Array|TypedArray, width: Number, height: Number, flipY: Boolean }
-// pixel data with flags
-// opts = { data: { data: Array|TypedArray, width: Number, height: Number }, flipY: Boolean },
-// array of images for cubemaps (and array textures in webgl2)
-// opts = { data: [ HTMLImage, ... ], width: Number, height: Number, flipY: Boolean }
-// array of pixel data for cubemaps and manual mipmaps (and array texture in webgl2)
-// opts = { data: [ { data: Array|TypedArray, width: Number, height: Number }, ..], flipY: Boolean }
-
+}
 
 function updateTexture2D(ctx, texture, opts) {
   // checkProps(allowedProps, opts)
@@ -808,14 +315,14 @@ function updateTexture2D(ctx, texture, opts) {
   gl.texParameteri(target, gl.TEXTURE_WRAP_T, wrapT);
 
   if (ctx.capabilities.textureFilterAnisotropic && aniso > 0) {
-    const anisoExt = gl.getExtension('EXT_texture_filter_anisotropic');
+    const anisoExt = gl.getExtension("EXT_texture_filter_anisotropic");
     gl.texParameterf(target, anisoExt.TEXTURE_MAX_ANISOTROPY_EXT, aniso);
   }
 
   const img = opts.data ? opts.data : opts;
 
-  if (img && img.nodeName) {
-    assert_1(img instanceof window.HTMLImageElement || img instanceof window.HTMLVideoElement || img instanceof window.HTMLCanvasElement, 'Texture2D.update opts has to be Image, Canvas or Video element');
+  if (img && img.nodeName || !ctx.capabilities.isWebGL2 && img instanceof ImageBitmap) {
+    console.assert(img instanceof HTMLImageElement || img instanceof HTMLVideoElement || img instanceof HTMLCanvasElement || img instanceof ImageBitmap, "Texture2D.update opts has to be HTMLImageElement, HTMLVideoElement, HTMLCanvasElement or ImageBitmap");
     width = img.width || img.videoHeight;
     height = img.height || img.videoHeight;
     internalFormat = gl.RGBA;
@@ -825,31 +332,31 @@ function updateTexture2D(ctx, texture, opts) {
     gl.texImage2D(target, 0, internalFormat, format, type, img);
     texture.width = width;
     texture.height = height;
-  } else if (typeof opts === 'object') {
+  } else if (typeof opts === "object") {
     // Check data type
-    assert_1(!data || Array.isArray(opts.data) || Object.values(ctx.DataTypeConstructor).some(TypedArray => opts.data instanceof TypedArray), 'Texture2D.update opts.data has to be null, an Array or a TypedArray'); // Handle pixel data with flags
+    console.assert(!data || Array.isArray(opts.data) || Object.values(ctx.DataTypeConstructor).some(TypedArray => opts.data instanceof TypedArray), "Texture2D.update opts.data has to be null, an Array or a TypedArray"); // Handle pixel data with flags
 
     data = opts.data ? opts.data.data || opts.data : null;
     if (!opts.width && data && data.width) width = data.width;
     if (!opts.height && data && data.height) height = data.height;
-    assert_1(!data || width !== undefined && height !== undefined, 'Texture2D.update opts.width and opts.height are required when providing opts.data'); // Get internalFormat (format the GPU use internally) from opts.internalFormat (mainly for compressed texture) or pixelFormat
+    console.assert(!data || width !== undefined && height !== undefined, "Texture2D.update opts.width and opts.height are required when providing opts.data"); // Get internalFormat (format the GPU use internally) from opts.internalFormat (mainly for compressed texture) or pixelFormat
 
     if (!internalFormat || opts.internalFormat) {
       internalFormat = opts.internalFormat || gl[pixelFormat]; // WebGL1
 
       if (ctx.gl instanceof WebGLRenderingContext) {
         // WEBGL_depth_texture (WebGL1 only) just adds DEPTH_COMPONENT and DEPTH_STENCIL
-        if (ctx.capabilities.depthTexture && ['DEPTH_COMPONENT16', 'DEPTH_COMPONENT24'].includes(pixelFormat)) {
-          internalFormat = gl['DEPTH_COMPONENT'];
+        if (ctx.capabilities.depthTexture && ["DEPTH_COMPONENT16", "DEPTH_COMPONENT24"].includes(pixelFormat)) {
+          internalFormat = gl["DEPTH_COMPONENT"];
         } // Handle legacy types
 
 
         if (!internalFormat) {
           if (pixelFormat === ctx.PixelFormat.R16F) {
-            pixelFormat = 'R16FLegacy';
+            pixelFormat = "R16FLegacy";
             internalFormat = gl.ALPHA;
           } else if (pixelFormat === ctx.PixelFormat.R32F) {
-            pixelFormat = 'R32FLegacy';
+            pixelFormat = "R32FLegacy";
             internalFormat = gl.ALPHA;
           } else if (pixelFormat === ctx.PixelFormat.RGBA8) {
             pixelFormat = ctx.PixelFormat.RGBA;
@@ -860,11 +367,13 @@ function updateTexture2D(ctx, texture, opts) {
         }
       }
 
-      assert_1(internalFormat, `Texture2D.update Unknown internalFormat "${internalFormat}" for pixelFormat "${pixelFormat}".`);
+      console.assert(internalFormat, `Texture2D.update Unknown internalFormat "${internalFormat}" for pixelFormat "${pixelFormat}".`);
     } // Get actual format and type (data supplied), allowing type override
+
+
     [format, type] = ctx.TextureFormat[pixelFormat];
     type = opts.type || type;
-    assert_1(type, `Texture2D.update Unknown type ${type}.`);
+    console.assert(type, `Texture2D.update Unknown type ${type}.`);
 
     if (target === gl.TEXTURE_2D) {
       // Prepare data for mipmaps
@@ -883,7 +392,7 @@ function updateTexture2D(ctx, texture, opts) {
 
         if (Array.isArray(levelData)) {
           const TypedArray = ctx.DataTypeConstructor[type];
-          assert_1(TypedArray, `Unknown texture data type: ${type}`);
+          console.assert(TypedArray, `Unknown texture data type: ${type}`);
           levelData = new TypedArray(levelData);
         }
 
@@ -897,7 +406,7 @@ function updateTexture2D(ctx, texture, opts) {
       if (data[0].width) texture.width = data[0].width;
       if (data[0].height) texture.height = data[0].height;
     } else if (target === gl.TEXTURE_CUBE_MAP) {
-      assert_1(!data || Array.isArray(data) && data.length === 6, 'TextureCube requires data for 6 faces'); // TODO: gl.compressedTexImage2D, manual mimaps
+      console.assert(!data || Array.isArray(data) && data.length === 6, "TextureCube requires data for 6 faces"); // TODO: gl.compressedTexImage2D, manual mimaps
 
       let lod = 0;
 
@@ -908,7 +417,7 @@ function updateTexture2D(ctx, texture, opts) {
         if (Array.isArray(faceData)) {
           // Convert array of numbers to typed array
           const TypedArray = ctx.DataTypeConstructor[type];
-          assert_1(TypedArray, `Unknown texture data type: ${type}`);
+          console.assert(TypedArray, `Unknown texture data type: ${type}`);
           faceData = new TypedArray(faceData);
           gl.texImage2D(faceTarget, lod, internalFormat, width, height, 0, format, type, faceData);
         } else if (faceData && faceData.nodeName) {
@@ -923,7 +432,7 @@ function updateTexture2D(ctx, texture, opts) {
     }
   } else {
     // TODO: should i assert of throw new Error(msg)?
-    assert_1.fail('Texture2D.update opts has to be a HTMLElement or Object');
+    throw new Error("Texture2D.update opts has to be a HTMLElement, ImageBitmap or Object");
   }
 
   if (opts.mipmap) {
@@ -942,21 +451,23 @@ function updateTexture2D(ctx, texture, opts) {
   texture.flipY = flipY;
   texture.internalFormat = internalFormat;
   texture.type = type;
-  texture.info = '';
+  texture.info = "";
   texture.info += Object.keys(ctx.PixelFormat).find(key => ctx.PixelFormat[key] === pixelFormat);
-  texture.info += '_';
+  texture.info += "_";
   texture.info += Object.keys(ctx.Encoding).find(key => ctx.Encoding[key] === encoding);
   return texture;
 }
 
-var texture = createTexture;
-
-const log = browser('context/framebuffer');
+/**
+ * @typedef {Object} Attachment
+ * @property {import("./types.js").PexResource} texture
+ * @property {WebGLRenderingContext.FRAMEBUFFER} target
+ */
 
 function createFramebuffer(ctx, opts) {
   const gl = ctx.gl;
   const framebuffer = {
-    class: 'framebuffer',
+    class: "framebuffer",
     handle: gl.createFramebuffer(),
     target: gl.FRAMEBUFFER,
     drawBuffers: [],
@@ -966,11 +477,13 @@ function createFramebuffer(ctx, opts) {
     height: 0,
     refCount: 0,
     _update: updateFramebuffer,
-    _dispose: function () {
+
+    _dispose() {
       gl.deleteFramebuffer(this.handle);
       this.color = null;
       this.depth = null;
     }
+
   };
 
   if (opts.color || opts.depth) {
@@ -1006,19 +519,20 @@ function updateFramebuffer(ctx, framebuffer, opts) {
 
   gl.bindFramebuffer(framebuffer.target, framebuffer.handle);
   framebuffer.drawBuffers.length = 0;
-
-  for (let i = 0; i < framebuffer.color.length; i++) {
-    const colorAttachment = framebuffer.color[i];
+  framebuffer.color.forEach((colorAttachment, i) => {
     framebuffer.drawBuffers.push(gl.COLOR_ATTACHMENT0 + i);
     gl.framebufferTexture2D(framebuffer.target, gl.COLOR_ATTACHMENT0 + i, colorAttachment.target, colorAttachment.texture.handle, colorAttachment.level);
-  }
+  });
 
   for (let i = framebuffer.color.length; i < ctx.capabilities.maxColorAttachments; i++) {
     gl.framebufferTexture2D(framebuffer.target, gl.COLOR_ATTACHMENT0 + i, gl.TEXTURE_2D, null, 0);
   }
 
   if (framebuffer.depth) {
-    if (ctx.debugMode) log('fbo attaching depth', framebuffer.depth);
+    if (ctx.debugMode) {
+      console.debug(NAMESPACE, "fbo attaching depth", framebuffer.depth);
+    }
+
     const depthAttachment = framebuffer.depth;
 
     if (depthAttachment.texture.target === gl.RENDERBUFFER) {
@@ -1027,71 +541,76 @@ function updateFramebuffer(ctx, framebuffer, opts) {
       gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, depthAttachment.texture.target, depthAttachment.texture.handle, depthAttachment.level);
     }
   } else {
-    if (ctx.debugMode) log('fbo deattaching depth');
+    if (ctx.debugMode) console.debug(NAMESPACE, "fbo deattaching depth");
     gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, null);
     gl.framebufferTexture2D(framebuffer.target, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, null, 0);
   }
 
-  var statusStr = [];
-  statusStr[gl.FRAMEBUFFER_COMPLETE] = 'FRAMEBUFFER_COMPLETE';
-  statusStr[gl.FRAMEBUFFER_INCOMPLETE_ATTACHMENT] = 'FRAMEBUFFER_INCOMPLETE_ATTACHMENT';
-  statusStr[gl.FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT] = 'FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT';
-  statusStr[gl.FRAMEBUFFER_INCOMPLETE_DIMENSIONS] = 'FRAMEBUFFER_INCOMPLETE_DIMENSIONS';
-  statusStr[gl.FRAMEBUFFER_UNSUPPORTED] = 'FRAMEBUFFER_UNSUPPORTED';
-
   if (ctx.debugMode) {
-    var fboStatus = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
-    assert_1(fboStatus === gl.FRAMEBUFFER_COMPLETE, `FBO incomplete ${statusStr[fboStatus]}`);
+    const fboStatus = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+    console.assert(fboStatus === gl.FRAMEBUFFER_COMPLETE, `FBO incomplete ${ctx.getGLString(fboStatus)}`);
   } // TODO: ctx. pop framebuffer
 
 
   gl.bindFramebuffer(framebuffer.target, null);
 }
 
-var framebuffer = createFramebuffer;
-
+/**
+ * @typedef {import("./types.js").PexResource} RenderbufferOptions
+ * @property {number} width
+ * @property {number} height
+ * @property {ctx.PixelFormat} [pixelFormat=ctx.PixelFormat.DEPTH_COMPONENT16] only `PixelFormat.DEPTH_COMPONENT16` is currently supported for use as render pass depth storage (e.g. `ctx.pass({ depth: renderbuffer })`) for platforms with no `WEBGL_depth_texture` support.
+ */
 function createRenderbuffer(ctx, opts) {
   const gl = ctx.gl;
   const renderbuffer = {
-    class: 'renderbuffer',
+    class: "renderbuffer",
     handle: gl.createRenderbuffer(),
     target: gl.RENDERBUFFER,
     width: 0,
     height: 0,
     _update: updateRenderbuffer,
-    _dispose: function () {
+
+    _dispose() {
       gl.deleteRenderbuffer(this.handle);
       this.color = null;
       this.depth = null;
     }
+
   };
   updateRenderbuffer(ctx, renderbuffer, opts);
   return renderbuffer;
-} // opts = { width: int, height: int, pixelFormat: PixelFormat }
-
+}
 
 function updateRenderbuffer(ctx, renderbuffer, opts) {
   Object.assign(renderbuffer, opts);
   const gl = ctx.gl;
-  assert_1(renderbuffer.pixelFormat === ctx.PixelFormat.DEPTH_COMPONENT16, 'Only PixelFormat.DEPTH_COMPONENT16 is supported for renderbuffers');
+  console.assert(renderbuffer.pixelFormat === ctx.PixelFormat.DEPTH_COMPONENT16, "Only PixelFormat.DEPTH_COMPONENT16 is supported for renderbuffers");
   renderbuffer.format = gl[renderbuffer.pixelFormat];
   gl.bindRenderbuffer(renderbuffer.target, renderbuffer.handle);
   gl.renderbufferStorage(renderbuffer.target, renderbuffer.format, renderbuffer.width, renderbuffer.height);
   gl.bindRenderbuffer(renderbuffer.target, null);
 }
 
-var renderbuffer = createRenderbuffer;
+/**
+ * @typedef {import("./types.js").PexResource} PassOptions
+ * @property {Texture2D[]|import("./framebuffer.js").Attachment[]} [color] render target
+ * @property {Texture2D} [depth] render target
+ * @property {import("./types.js").Color} [clearColor]
+ * @property {number} [clearDepth]
+ */
 
-const allowedProps$1 = ['name', 'framebuffer', 'color', 'depth', 'clearColor', 'clearDepth'];
+const allowedProps$1 = ["name", "framebuffer", "color", "depth", "clearColor", "clearDepth"];
 
 function createPass(ctx, opts) {
-  checkProps_1(allowedProps$1, opts);
+  checkProps(allowedProps$1, opts);
   const pass = {
-    class: 'pass',
-    opts: opts,
+    class: "pass",
+    opts,
     clearColor: opts.clearColor,
     clearDepth: opts.clearDepth,
-    _dispose: function () {
+
+    _dispose() {
       this.opts = null;
       this.clearColor = null;
       this.clearDepth = null;
@@ -1101,24 +620,37 @@ function createPass(ctx, opts) {
         this.framebuffer = null;
       }
     }
-  }; // if color or depth targets are present create new framebuffer
-  // otherwise we will inherit framebuffer from parent command or screen
 
-  if (opts.color || opts.depth) {
-    pass.framebuffer = ctx.framebuffer(opts);
-  }
+  }; // Inherits framebuffer from parent command or screen, if no target specified
 
+  if (opts.color || opts.depth) pass.framebuffer = ctx.framebuffer(opts);
   return pass;
 }
 
-var pass = createPass;
+/**
+ * @typedef {import("./types.js").PexResource} PipelineOptions
+ * @property {string} [vert=null] Vertex shader code
+ * @property {string} [frag=null] Fragment shader code
+ * @property {boolean} [depthWrite=true] Depth write mask
+ * @property {boolean} [depthTest=false] Depth test on/off
+ * @property {ctx.DepthFunc} [depthFunc=ctx.DepthFunc.LessEqual] Depth test function
+ * @property {boolean} [blend=false] Blending on/off
+ * @property {ctx.BlendFactor} [blendSrcRGBFactor=ctx.BlendFactor.One] Blending source color factor
+ * @property {ctx.BlendFactor} [blendSrcAlphaFactor=ctx.BlendFactor.One] Blending source alpha factor
+ * @property {ctx.BlendFactor} [blendDstRGBFactor=ctx.BlendFactor.One] Blending destination color factor
+ * @property {ctx.BlendFactor} [blendDstAlphaFactor=ctx.BlendFactor.One] Blending destination alpha factor
+ * @property {boolean} [cullFace=false] Face culling on/off
+ * @property {ctx.Face} [cullFaceMode=ctx.Face.Back] Face culling mode
+ * @property {boolean[]} [colorMask=[true, true, true, true]] Color write mask for [r, g, b, a]
+ * @property {ctx.Primitive} [primitive=ctx.Primitive.Triangles] Geometry primitive
+ */
 
-const allowedProps$2 = ['vert', 'frag', 'program', 'depthWrite', 'depthTest', 'depthFunc', 'blend', 'blendSrcRGBFactor', 'blendSrcAlphaFactor', 'blendDstRGBFactor', 'blendDstAlphaFactor', 'cullFace', 'cullFaceMode', 'colorMask', 'primitive'];
+const allowedProps$2 = ["vert", "frag", "program", "depthWrite", "depthTest", "depthFunc", "blend", "blendSrcRGBFactor", "blendSrcAlphaFactor", "blendDstRGBFactor", "blendDstAlphaFactor", "cullFace", "cullFaceMode", "colorMask", "primitive", "vertexLayout"];
 
 function createPipeline(ctx, opts) {
-  checkProps_1(allowedProps$2, opts);
+  checkProps(allowedProps$2, opts);
   const pipeline = Object.assign({
-    class: 'pipeline',
+    class: "pipeline",
     vert: null,
     frag: null,
     program: null,
@@ -1134,7 +666,8 @@ function createPipeline(ctx, opts) {
     cullFaceMode: ctx.Face.Back,
     colorMask: [true, true, true, true],
     primitive: ctx.Primitive.Triangles,
-    _dispose: function () {
+
+    _dispose() {
       this.vert = null;
       this.frag = null;
 
@@ -1144,12 +677,14 @@ function createPipeline(ctx, opts) {
 
       this.program = null;
     }
+
   }, opts);
 
   if (opts.vert && opts.frag) {
     pipeline.program = ctx.program({
       vert: opts.vert,
-      frag: opts.frag
+      frag: opts.frag,
+      vertexLayout: opts.vertexLayout
     });
   }
 
@@ -1165,28 +700,67 @@ function createPipeline(ctx, opts) {
   return pipeline;
 }
 
-var pipeline = createPipeline;
+/**
+ * @typedef {import("./types.js").PexResource} VertexArrayOptions
+ * @property {Object} vertexLayout
+ * @property {Object} [attributes]
+ * @property {Object} [indices]
+ */
 
-const log$1 = browser('context/program');
+function createVertexArray(ctx, opts) {
+  const gl = ctx.gl;
+  const vertexArray = {
+    class: "vertexArray",
+    handle: gl.createVertexArray(),
+    _update: updateVertexArray,
+    ...opts
+  };
+  updateVertexArray(ctx, vertexArray, opts);
+  return vertexArray;
+}
+
+const TYPE_TO_SIZE = {
+  float: 1,
+  vec2: 2,
+  vec3: 3,
+  vec4: 4,
+  mat3: 12,
+  mat4: 16
+}; // TODO: can't update attributes/indices as they're in vertexArray
+
+function updateVertexArray(ctx, vertexArray, {
+  vertexLayout
+}) {
+  const gl = ctx.gl;
+  gl.bindVertexArray(vertexArray.handle);
+  enableVertexData(ctx, Object.entries(vertexLayout).map(([name, {
+    location,
+    type,
+    size
+  }]) => [name, location, size !== null && size !== void 0 ? size : TYPE_TO_SIZE[type]]), vertexArray);
+  gl.bindVertexArray(null);
+}
 
 function createProgram(ctx, opts) {
   const gl = ctx.gl;
   const program = {
-    class: 'program',
+    class: "program",
     handle: gl.createProgram(),
     attributes: [],
     attributesPerLocation: {},
     uniforms: {},
     refCount: 0,
     _update: updateProgram,
-    _dispose: function () {
+
+    _dispose() {
       gl.deleteProgram(this.handle);
       this.handle = null;
       this.attributes = null;
       this.attributesPerLocation = null;
       this.uniforms = null;
     },
-    setUniform: function (name, value) {
+
+    setUniform(name, value) {
       const uniform = this.uniforms[name];
 
       if (uniform === undefined) {
@@ -1196,75 +770,46 @@ function createProgram(ctx, opts) {
       const gl = ctx.gl;
       const type = uniform.type;
       const location = uniform.location;
+      const uniformMethod = ctx.UniformMethod[uniform.type];
 
-      switch (uniform.type) {
-        case gl.INT:
-          gl.uniform1i(location, value);
-          break;
-
-        case gl.BOOL:
-          gl.uniform1i(location, value);
-          break;
-
-        case gl.FLOAT:
-          gl.uniform1f(location, value);
-          break;
-
-        case gl.FLOAT_VEC2:
-          gl.uniform2fv(location, value);
-          break;
-
-        case gl.FLOAT_VEC3:
-          gl.uniform3fv(location, value);
-          break;
-
-        case gl.FLOAT_VEC4:
-          gl.uniform4fv(location, value);
-          break;
-
-        case gl.FLOAT_MAT2:
-          gl.uniformMatrix2fv(location, false, value);
-          break;
-
-        case gl.FLOAT_MAT3:
-          gl.uniformMatrix3fv(location, false, value);
-          break;
-
-        case gl.FLOAT_MAT4:
-          gl.uniformMatrix4fv(location, false, value);
-          break;
-
-        case gl.SAMPLER_2D:
-          gl.uniform1i(location, value);
-          break;
-
-        case gl.SAMPLER_CUBE:
-          gl.uniform1i(location, value);
-          break;
-
-        default:
-          throw new Error(`Invalid uniform type ${type} : ${ctx.getGLString(type)}`);
+      if (!uniformMethod) {
+        throw new Error(`Invalid uniform type ${type} : ${ctx.getGLString(type)}`);
+      } else if (uniformMethod.includes("Matrix")) {
+        gl[uniformMethod](location, false, value);
+      } else {
+        gl[uniformMethod](location, value);
       }
     }
+
   };
   updateProgram(ctx, program, opts);
   return program;
 }
 
-function updateProgram(ctx, program, opts) {
-  assert_1(typeof opts.vert === 'string', 'Vertex shader source must be a string');
-  assert_1(typeof opts.frag === 'string', 'Fragment shader source must be a string');
+function updateProgram(ctx, program, {
+  vert,
+  frag,
+  vertexLayout
+}) {
+  console.assert(typeof vert === "string", "Vertex shader source must be a string");
+  console.assert(typeof frag === "string", "Fragment shader source must be a string");
   const gl = ctx.gl;
-  const vertShader = compileSource(ctx, program, gl.VERTEX_SHADER, opts.vert);
-  const fragShader = compileSource(ctx, program, gl.FRAGMENT_SHADER, opts.frag); // TODO: implement custom vertex layouts
+  const vertShader = compileSource(ctx, gl.VERTEX_SHADER, vert);
+  const fragShader = compileSource(ctx, gl.FRAGMENT_SHADER, frag); // TODO: implement custom vertex layouts
   // gl.bindAttribLocation(program, location, attributeName)
+
+  if (vertexLayout) {
+    for (let [name, attribute] of Object.entries(vertexLayout)) {
+      gl.bindAttribLocation(program.handle, attribute.location, name);
+    }
+  }
 
   gl.attachShader(program.handle, vertShader);
   gl.attachShader(program.handle, fragShader);
   gl.linkProgram(program.handle);
 
   if (!gl.getProgramParameter(program.handle, gl.LINK_STATUS)) {
-    throw new Error('Program: ' + gl.getProgramInfoLog(program.handle));
+    throw new Error(`Program: ${gl.getProgramInfoLog(program.handle)}`);
   }
 
   gl.deleteShader(vertShader);
@@ -1273,17 +818,20 @@ function updateProgram(ctx, program, opts) {
   updateAttributes(ctx, program);
 }
 
-function compileSource(ctx, program, type, src) {
+function compileSource(ctx, type, src) {
   const gl = ctx.gl;
   const shader = gl.createShader(type);
-  gl.shaderSource(shader, src + '\n');
+  gl.shaderSource(shader, `${src}\n`);
   gl.compileShader(shader);
 
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    const shaderType = type === gl.VERTEX_SHADER ? 'Vertex' : 'Fragment';
-    log$1(shaderType + ' shader compilation failed');
-    log$1(src);
-    throw new Error(shaderType + ' shader error: ' + gl.getShaderInfoLog(shader));
+    const shaderType = type === gl.VERTEX_SHADER ? "Vertex" : "Fragment";
+
+    if (ctx.debugMode) {
+      console.debug(NAMESPACE, `${shaderType} shader compilation failed`, src);
+    }
+
+    throw new Error(`${shaderType} shader error: ${gl.getShaderInfoLog(shader)}`);
   }
 
   return shader;
@@ -1297,67 +845,22 @@ function updateUniforms(ctx, program) {
   for (let i = 0; i < numUniforms; ++i) {
     const info = gl.getActiveUniform(program.handle, i);
     const name = info.name;
-    let size = 0;
+    const size = ctx.UniformSize[info.type];
 
-    switch (info.type) {
-      case gl.INT:
-        size = 1;
-        break;
-
-      case gl.BOOL:
-        size = 1;
-        break;
-
-      case gl.FLOAT:
-        size = 1;
-        break;
-
-      case gl.FLOAT_VEC2:
-        size = 2;
-        break;
-
-      case gl.FLOAT_VEC3:
-        size = 3;
-        break;
-
-      case gl.FLOAT_VEC4:
-        size = 4;
-        break;
-
-      case gl.FLOAT_MAT2:
-        size = 4;
-        break;
-
-      case gl.FLOAT_MAT3:
-        size = 9;
-        break;
-
-      case gl.FLOAT_MAT4:
-        size = 16;
-        break;
-
-      case gl.SAMPLER_2D:
-        size = 0;
-        break;
-
-      case gl.SAMPLER_CUBE:
-        size = 0;
-        break;
-
-      default:
-        throw new Error(`Unknwon attribute type ${info.type} : ${ctx.getGLString(info.type)}`);
+    if (size === undefined) {
+      throw new Error(`Unknwon uniform type ${info.type} : ${ctx.getGLString(info.type)}`);
     }
 
     program.uniforms[name] = {
-      name: name,
+      name,
       type: info.type,
-      size: size,
+      size,
       location: gl.getUniformLocation(program.handle, name)
     };
 
     if (info.size > 1) {
       for (let j = 1; j < info.size; j++) {
-        const indexedName = info.name.substr(0, info.name.indexOf('[') + 1) + j + ']';
+        const indexedName = `${info.name.substr(0, info.name.indexOf("[") + 1) + j}]`;
         program.uniforms[indexedName] = {
           type: info.type,
           location: gl.getUniformLocation(program.handle, indexedName)
@@ -1376,37 +879,16 @@ function updateAttributes(ctx, program) {
   for (let i = 0; i < numAttributes; ++i) {
     const info = gl.getActiveAttrib(program.handle, i);
     const name = info.name;
-    let size = 0;
+    const size = ctx.AttributeSize[info.type];
 
-    switch (info.type) {
-      case gl.FLOAT:
-        size = 1;
-        break;
-
-      case gl.FLOAT_VEC2:
-        size = 2;
-        break;
-
-      case gl.FLOAT_VEC3:
-        size = 3;
-        break;
-
-      case gl.FLOAT_VEC4:
-        size = 4;
-        break;
-
-      case gl.FLOAT_MAT4:
-        size = 16;
-        break;
-
-      default:
-        throw new Error(`Unknwon attribute type ${info.type} : ${ctx.getGLString(info.type)}`);
+    if (size === undefined) {
+      throw new Error(`Unknwon uniform type ${info.type} : ${ctx.getGLString(info.type)}`);
     }
 
     const attrib = {
-      name: name,
+      name,
       type: info.type,
-      size: size,
+      size,
       location: gl.getAttribLocation(program.handle, name)
     };
     program.attributes[name] = attrib;
@@ -1414,32 +896,58 @@ function updateAttributes(ctx, program) {
   }
 }
 
-var program = createProgram;
+// `Uint32Array` constructor
+// https://tc39.es/ecma262/#sec-typedarray-objects
+typedArrayConstructor('Uint32', function (init) {
+  return function Uint32Array(data, byteOffset, length) {
+    return init(this, data, byteOffset, length);
+  };
+});
 
-const allowedProps$3 = ['target', 'data', 'usage', 'type', 'normalized', 'offset'];
+// `Int8Array` constructor
+// https://tc39.es/ecma262/#sec-typedarray-objects
+typedArrayConstructor('Int8', function (init) {
+  return function Int8Array(data, byteOffset, length) {
+    return init(this, data, byteOffset, length);
+  };
+});
+
+/**
+ * @typedef {import("./types.js").PexResource} BufferOptions
+ * @property {Array|TypedArray|ArrayBuffer} data
+ * @property {ctx.DataType} [type]
+ * @property {ctx.Usage} [usage=ctx.Usage.StaticDraw]
+ * @property {number} offset
+ * @property {boolean} normalized
+ */
+
+const allowedProps$3 = ["target", "data", "usage", "type", "offset", "normalized"];
 
 function createBuffer(ctx, opts) {
+  checkProps(allowedProps$3, opts);
   const gl = ctx.gl;
-  checkProps_1(allowedProps$3, opts);
-  assert_1(opts.target === gl.ARRAY_BUFFER || opts.target === gl.ELEMENT_ARRAY_BUFFER, 'Invalid buffer target');
-  let className = opts.target === gl.ARRAY_BUFFER ? 'vertexBuffer' : 'indexBuffer';
+  console.assert(opts.target === gl.ARRAY_BUFFER || opts.target === gl.ELEMENT_ARRAY_BUFFER, "Invalid buffer target");
   const buffer = {
-    class: className,
+    class: opts.target === gl.ARRAY_BUFFER ? "vertexBuffer" : "indexBuffer",
     handle: gl.createBuffer(),
     target: opts.target,
     usage: opts.usage || gl.STATIC_DRAW,
     _update: updateBuffer,
-    _dispose: function () {
+
+    _dispose() {
       gl.deleteBuffer(this.handle);
       this.handle = null;
     }
+
   };
   updateBuffer(ctx, buffer, opts);
   return buffer;
 }
 
 function updateBuffer(ctx, buffer, opts) {
-  checkProps_1(allowedProps$3, opts);
+  var _data$length;
+
+  checkProps(allowedProps$3, opts);
   const gl = ctx.gl;
   let data = opts.data || opts;
   let type = opts.type || buffer.type;
@@ -1456,9 +964,9 @@ function updateBuffer(ctx, buffer, opts) {
       }
     }
 
-    var sourceData = data;
-    var elemSize = Array.isArray(sourceData[0]) ? sourceData[0].length : 1;
-    var size = elemSize * sourceData.length;
+    const sourceData = data;
+    const elemSize = Array.isArray(sourceData[0]) ? sourceData[0].length : 1;
+    const size = elemSize * sourceData.length;
 
     if (type === ctx.DataType.Float32) {
       data = new Float32Array(elemSize === 1 ? sourceData : size);
@@ -1473,9 +981,9 @@ function updateBuffer(ctx, buffer, opts) {
     }
 
     if (elemSize > 1) {
-      for (var i = 0; i < sourceData.length; i++) {
-        for (var j = 0; j < elemSize; j++) {
-          var index = i * elemSize + j;
+      for (let i = 0; i < sourceData.length; i++) {
+        for (let j = 0; j < elemSize; j++) {
+          const index = i * elemSize + j;
           data[index] = sourceData[i][j];
         }
       }
@@ -1490,13 +998,30 @@ function updateBuffer(ctx, buffer, opts) {
     type = ctx.DataType.Uint32;
   } else if (data instanceof Int8Array) {
     type = ctx.DataType.Int8;
-  } else if (data instanceof ArrayBuffer) ; else {
+  } else if (data instanceof ArrayBuffer) {
+    // assuming type was provided
+    if (!type) {
+      if (opts.target === gl.ARRAY_BUFFER) {
+        type = ctx.DataType.Float32;
+      }
+
+      if (opts.target === gl.ELEMENT_ARRAY_BUFFER) {
+        type = ctx.DataType.Uint16;
+      }
+    }
+  } else {
     throw new Error(`Unknown buffer data type: ${data.constructor}`);
   }
 
   buffer.type = type; // TODO: is this a valid guess?
 
-  buffer.length = data.length; // TODO: push state, and pop as this can modify existing VBO?
+  buffer.length = (_data$length = data.length) !== null && _data$length !== void 0 ? _data$length : data.byteLength / ctx.DataTypeConstructor[type].BYTES_PER_ELEMENT;
+
+  if (ctx.state.vertexArray) {
+    ctx.state.vertexArray = undefined;
+    gl.bindVertexArray(null);
+  } // TODO: push state, and pop as this can modify existing VBO?
+
 
   gl.bindBuffer(buffer.target, buffer.handle);
 
@@ -1507,16 +1032,24 @@ function updateBuffer(ctx, buffer, opts) {
   }
 }
 
-var buffer = createBuffer;
+/**
+ * @typedef {import("./types.js").PexResource} QueryOptions
+ * @property {ctx.QueryTarget} [target=ctx.QueryTarget.TimeElapsed] query type
+ */
 
-const allowedProps$4 = ['target'];
+/**
+ * @typedef {QueryOptions} PexQuery
+ * @property {ctx.QueryState} [state=ctx.QueryState.Ready]
+ * @property {number} [result] result of the measurement
+ */
 
-function createQuery(ctx, opts) {
+const allowedProps$4 = ["target"];
+
+function createQuery(ctx, opts = {}) {
+  checkProps(allowedProps$4, opts);
   const gl = ctx.gl;
-  opts = opts || {};
-  checkProps_1(allowedProps$4, opts);
   const query = Object.assign({
-    class: 'query',
+    class: "query",
     handle: gl.createQuery(),
     target: null,
     state: ctx.QueryState.Ready,
@@ -1524,134 +1057,200 @@ function createQuery(ctx, opts) {
     _begin: begin,
     _end: end,
     _available: available,
-    _dispose: function () {
+
+    _dispose() {
       gl.deleteQuery(this.handle);
       this.handle = null;
     }
+
   }, opts);
 
   if (!query.target) {
-    query.target = ctx.QueryTarget.TimeElapsed;
+    query.target = ctx.capabilities.disjointTimerQuery ? ctx.QueryTarget.TimeElapsed : ctx.QueryTarget.AnySamplesPassed;
   }
 
   return query;
 }
 
-function begin(ctx, q) {
-  if (q.state !== ctx.QueryState.Ready) return false;
-  ctx.gl.beginQuery(q.target, q.handle);
-  q.state = ctx.QueryState.Active;
+function begin({
+  QueryState,
+  gl
+}, q) {
+  if (q.state !== QueryState.Ready) return false;
+  gl.beginQuery(q.target, q.handle);
+  q.state = QueryState.Active;
   q.result = null;
   return true;
 }
 
-function end(ctx, q) {
-  if (q.state !== ctx.QueryState.Active) return false;
-  ctx.gl.endQuery(q.target);
-  q.state = ctx.QueryState.Pending;
+function end({
+  QueryState,
+  gl
+}, q) {
+  if (q.state !== QueryState.Active) return false;
+  gl.endQuery(q.target);
+  q.state = QueryState.Pending;
   return true;
 }
 
-function available(ctx, q) {
-  var available = ctx.gl.getQueryObject(q.handle, ctx.gl.QUERY_RESULT_AVAILABLE);
+function available({
+  gl,
+  QueryState
+}, q) {
+  const available = gl.getQueryParameter(q.handle, gl.QUERY_RESULT_AVAILABLE);
 
   if (available) {
-    q.result = ctx.gl.getQueryObject(q.handle, ctx.gl.QUERY_RESULT);
-    q.state = ctx.QueryState.Ready;
+    q.result = gl.getQueryParameter(q.handle, gl.QUERY_RESULT);
+    q.state = QueryState.Ready;
     return true;
   } else {
     return false;
   }
 }
 
-var query = createQuery;
-
-const log$2 = browser('context');
-let ID = 0;
-const allowedCommandProps = ['name', 'pass', 'pipeline', 'uniforms', 'attributes', 'indices', 'count', 'instances', 'viewport', 'scissor'];
-
-function createContext(opts) {
-  assert_1(!opts || typeof opts === 'object', 'pex-context: createContext requires opts argument to be null or an object');
-  let gl = null;
-  const defaultOpts = {
-    pixelRatio: 1
-  };
-  opts = Object.assign({}, defaultOpts, opts);
-
-  if (opts.pixelRatio) {
-    opts = Object.assign(opts, {
-      pixelRatio: Math.min(opts.pixelRatio, window.devicePixelRatio)
-    });
-  }
-
-  if (!opts || !opts.gl) gl = indexBrowser(opts);else if (opts && opts.gl) gl = opts.gl;
-  assert_1(gl, 'pex-context: createContext failed');
-  const capabilities = {
-    maxColorAttachments: 1,
-    maxTextureImageUnits: gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS),
-    maxVertexTextureImageUnits: gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS),
-    maxTextureSize: gl.getParameter(gl.MAX_TEXTURE_SIZE),
-    maxCubeMapTextureSize: gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE),
-    instancedArrays: false,
-    instancing: false,
-    // TODO: deprecate
-    elementIndexUint32: !!gl.getExtension('OES_element_index_uint'),
-    standardDerivatives: !!gl.getExtension('OES_standard_derivatives'),
-    depthTexture: !!gl.getExtension('WEBGL_depth_texture'),
-    shaderTextureLod: !!gl.getExtension('EXT_shader_texture_lod'),
-    textureFloat: !!gl.getExtension('OES_texture_float'),
-    textureFloatLinear: !!gl.getExtension('OES_texture_float_linear'),
-    textureHalfFloat: !!gl.getExtension('OES_texture_half_float'),
-    textureHalfFloatLinear: !!gl.getExtension('OES_texture_half_float_linear'),
-    textureFilterAnisotropic: !!gl.getExtension('EXT_texture_filter_anisotropic')
-  };
+function polyfill(ctx) {
+  const {
+    gl,
+    capabilities
+  } = ctx;
 
   if (!gl.HALF_FLOAT) {
-    const ext = gl.getExtension('OES_texture_half_float');
-
-    if (ext) {
-      gl.HALF_FLOAT = ext.HALF_FLOAT_OES;
-    }
+    const ext = gl.getExtension("OES_texture_half_float");
+    if (ext) gl.HALF_FLOAT = ext.HALF_FLOAT_OES;
   }
 
-  if (!gl.createQuery) {
-    const ext = gl.getExtension('EXT_disjoint_timer_query');
+  if (!gl.createVertexArray) {
+    const ext = gl.getExtension("OES_vertex_array_object");
+    gl.createVertexArray = ext.createVertexArrayOES.bind(ext);
+    gl.bindVertexArray = ext.bindVertexArrayOES.bind(ext);
+  }
+
+  if (!gl.drawElementsInstanced) {
+    const ext = gl.getExtension("ANGLE_instanced_arrays");
+    gl.drawElementsInstanced = ext.drawElementsInstancedANGLE.bind(ext);
+    gl.drawArraysInstanced = ext.drawArraysInstancedANGLE.bind(ext);
+    gl.vertexAttribDivisor = ext.vertexAttribDivisorANGLE.bind(ext);
+  }
+
+  if (!gl.drawBuffers) {
+    const ext = gl.getExtension("WEBGL_draw_buffers");
 
     if (!ext) {
-      gl.TIME_ELAPSED = 'TIME_ELAPSED';
-      gl.QUERY_RESULT_AVAILABLE = 'QUERY_RESULT_AVAILABLE';
-      gl.GPU_DISJOINT = 'GPU_DISJOINT';
-      gl.QUERY_RESULT = 'QUERY_RESULT';
-
-      gl.createQuery = function () {
-        return {};
-      };
-
-      gl.deleteQuery = function () {};
-
-      gl.beginQuery = function () {};
-
-      gl.endQuery = function () {};
-
-      gl.getQueryObject = function (q, param) {
-        if (param === gl.QUERY_RESULT_AVAILABLE) return true;
-        if (param === gl.QUERY_RESULT) return 0;
-        return undefined;
+      gl.drawBuffers = () => {
+        throw new Error("WEBGL_draw_buffers not supported");
       };
     } else {
-      gl.TIME_ELAPSED = ext.TIME_ELAPSED_EXT;
-      gl.QUERY_RESULT_AVAILABLE = ext.QUERY_RESULT_AVAILABLE_EXT;
-      gl.GPU_DISJOINT = ext.GPU_DISJOINT_EXT;
-      gl.QUERY_RESULT = ext.QUERY_RESULT_EXT;
-      gl.createQuery = ext.createQueryEXT.bind(ext);
-      gl.deleteQuery = ext.deleteQueryEXT.bind(ext);
-      gl.beginQuery = ext.beginQueryEXT.bind(ext);
-      gl.endQuery = ext.endQueryEXT.bind(ext);
-      gl.getQueryObject = ext.getQueryObjectEXT.bind(ext);
+      gl.drawBuffers = ext.drawBuffersWEBGL.bind(ext);
+      capabilities.maxColorAttachments = gl.getParameter(ext.MAX_COLOR_ATTACHMENTS_WEBGL);
     }
+  } else {
+    capabilities.maxColorAttachments = gl.getParameter(gl.MAX_COLOR_ATTACHMENTS);
   }
 
-  const BlendFactor = {
+  if (!capabilities.disjointTimerQuery) {
+    gl.TIME_ELAPSED || (gl.TIME_ELAPSED = "TIME_ELAPSED");
+    gl.GPU_DISJOINT || (gl.GPU_DISJOINT = "GPU_DISJOINT");
+    gl.QUERY_RESULT || (gl.QUERY_RESULT = "QUERY_RESULT");
+    gl.QUERY_RESULT_AVAILABLE || (gl.QUERY_RESULT_AVAILABLE = "QUERY_RESULT_AVAILABLE");
+    gl.createQuery || (gl.createQuery = () => ({}));
+    gl.deleteQuery || (gl.deleteQuery = () => {});
+    gl.beginQuery || (gl.beginQuery = () => {});
+    gl.endQuery || (gl.endQuery = () => {});
+
+    gl.getQueryParameter = (q, param) => {
+      if (param === gl.QUERY_RESULT_AVAILABLE) return true;
+      if (param === gl.QUERY_RESULT) return 0;
+      return undefined;
+    };
+
+    gl.getQueryObject = gl.getQueryParameter;
+  } else {
+    const extDTQ = capabilities.isWebGL2 ? gl.getExtension("EXT_disjoint_timer_query_webgl2") : gl.getExtension("EXT_disjoint_timer_query");
+    gl.TIME_ELAPSED = extDTQ.TIME_ELAPSED_EXT;
+    gl.GPU_DISJOINT = extDTQ.GPU_DISJOINT_EXT;
+    gl.QUERY_RESULT || (gl.QUERY_RESULT = extDTQ.QUERY_RESULT_EXT);
+    gl.QUERY_RESULT_AVAILABLE || (gl.QUERY_RESULT_AVAILABLE = extDTQ.QUERY_RESULT_AVAILABLE_EXT);
+    gl.createQuery || (gl.createQuery = extDTQ.createQueryEXT.bind(extDTQ));
+    gl.deleteQuery || (gl.deleteQuery = extDTQ.deleteQueryEXT.bind(extDTQ));
+    gl.beginQuery || (gl.beginQuery = extDTQ.beginQueryEXT.bind(extDTQ));
+    gl.endQuery || (gl.endQuery = extDTQ.endQueryEXT.bind(extDTQ));
+    gl.getQueryParameter || (gl.getQueryParameter = extDTQ.getQueryObjectEXT.bind(extDTQ));
+  }
+
+  if (!capabilities.isWebGL2) {
+    gl.getExtension("OES_element_index_uint");
+    gl.getExtension("OES_standard_derivatives");
+  }
+}
+
+// `Int16Array` constructor
+// https://tc39.es/ecma262/#sec-typedarray-objects
+typedArrayConstructor('Int16', function (init) {
+  return function Int16Array(data, byteOffset, length) {
+    return init(this, data, byteOffset, length);
+  };
+});
+
+// `Int32Array` constructor
+// https://tc39.es/ecma262/#sec-typedarray-objects
+typedArrayConstructor('Int32', function (init) {
+  return function Int32Array(data, byteOffset, length) {
+    return init(this, data, byteOffset, length);
+  };
+});
+
+/**
+ * @typedef {Object} PexContextOptions
+ * @property {WebGLRenderingContext | WebGL2RenderingContext} [gl=WebGL2RenderingContext]
+ * @property {number} [width=window.innerWidth]
+ * @property {number} [height=window.innerHeight]
+ * @property {number} [pixelRatio=1]
+ * @property {"webgl" | "webgl2"} [type="webgl2"]
+ * @property {boolean} [debug=false]
+ */
+
+/**
+ * @typedef {Object} PexResource
+ * All resources are plain js object and once constructed their properties can be accessed directly.
+ * Please note those props are read only. To set new values or upload new data to GPU see [updating resources]{@link context~update}.
+ * @property {string} name
+ */
+
+/**
+ * @typedef {Object} PexCommand
+ * @property {import("./pass.js").PassOptions} pass
+ * @property {import("./pipeline.js").PipelineOptions} pipeline
+ * @property {Object} attributes vertex attributes, map of `attibuteName: ctx.VertexBuffer`   or `attributeName: { buffer: VertexBuffer, offset: number, stride: number, divisor: number }`
+ * @property {Object} indices indices, `ctx.IndexBuffer` or `{ buffer: IndexBuffer, offset: number, stride: number }`
+ * @property {number} count number of vertices to draw
+ * @property {number} instances number instances to draw
+ * @property {Object} uniforms shader uniforms, map of `name: value`
+ * @property {Viewport} viewport drawing viewport bounds
+ * @property {Viewport} scissor scissor test bounds
+ */
+
+/**
+ * @typedef {Object} PexContextSetOptions
+ * @property {number} [width]
+ * @property {number} [height]
+ * @property {number} [pixelRatio]
+ */
+
+/**
+ * @typedef {number[]} Viewport [x, y, w, h]
+ */
+
+/**
+ * @typedef {number[]} Color [r, g, b, a]
+ */
+const addEnums = ctx => {
+  const {
+    gl,
+    capabilities
+  } = ctx;
+  /** @enum */
+
+  ctx.BlendFactor = {
     One: gl.ONE,
     Zero: gl.ZERO,
     SrcAlpha: gl.SRC_ALPHA,
@@ -1663,7 +1262,9 @@ function createContext(opts) {
     DstColor: gl.DST_COLOR,
     OneMinusDstColor: gl.ONE_MINUS_DST_COLOR
   };
-  const CubemapFace = {
+  /** @enum */
+
+  ctx.CubemapFace = {
     PositiveX: gl.TEXTURE_CUBE_MAP_POSITIVE_X,
     NegativeX: gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
     PositiveY: gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
@@ -1671,7 +1272,9 @@ function createContext(opts) {
     PositiveZ: gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
     NegativeZ: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z
   };
-  const DepthFunc = {
+  /** @enum */
+
+  ctx.DepthFunc = {
     Never: gl.NEVER,
     Less: gl.LESS,
     Equal: gl.EQUAL,
@@ -1681,7 +1284,12 @@ function createContext(opts) {
     GreaterEqual: gl.GEQUAL,
     Always: gl.ALWAYS
   };
-  const DataType = {
+  /**
+   * @enum
+   * @private
+   */
+
+  ctx.DataType = {
     Float16: gl.HALF_FLOAT,
     Float32: gl.FLOAT,
     Int8: gl.BYTE,
@@ -1691,175 +1299,385 @@ function createContext(opts) {
     Uint16: gl.UNSIGNED_SHORT,
     Uint32: gl.UNSIGNED_INT
   };
-  const DataTypeConstructor = {
-    [DataType.Float16]: Float32Array,
-    [DataType.Float32]: Float32Array,
-    [DataType.Int8]: Int8Array,
-    [DataType.Int16]: Int16Array,
-    [DataType.Int32]: Int32Array,
-    [DataType.Uint8]: Uint8Array,
-    [DataType.Uint16]: Uint16Array,
-    [DataType.Uint32]: Uint32Array
+  /**
+   * @enum
+   * @private
+   */
+
+  ctx.DataTypeConstructor = {
+    [ctx.DataType.Float16]: Float32Array,
+    [ctx.DataType.Float32]: Float32Array,
+    [ctx.DataType.Int8]: Int8Array,
+    [ctx.DataType.Int16]: Int16Array,
+    [ctx.DataType.Int32]: Int32Array,
+    [ctx.DataType.Uint8]: Uint8Array,
+    [ctx.DataType.Uint16]: Uint16Array,
+    [ctx.DataType.Uint32]: Uint32Array
   };
-  const Face = {
+  /**
+   * @enum
+   * @private
+   */
+
+  ctx.UniformMethod = {
+    [gl.BOOL]: "uniform1i",
+    [gl.INT]: "uniform1i",
+    [gl.SAMPLER_2D]: "uniform1i",
+    [gl.INT_SAMPLER_2D]: "uniform1i",
+    [gl.UNSIGNED_INT_SAMPLER_2D]: "uniform1i",
+    [gl.SAMPLER_2D_SHADOW]: "uniform1i",
+    [gl.SAMPLER_2D_ARRAY]: "uniform1i",
+    [gl.INT_SAMPLER_2D_ARRAY]: "uniform1i",
+    [gl.UNSIGNED_INT_SAMPLER_2D_ARRAY]: "uniform1i",
+    [gl.SAMPLER_2D_ARRAY_SHADOW]: "uniform1i",
+    [gl.SAMPLER_CUBE]: "uniform1i",
+    [gl.INT_SAMPLER_CUBE]: "uniform1i",
+    [gl.UNSIGNED_INT_SAMPLER_CUBE]: "uniform1i",
+    [gl.SAMPLER_CUBE_SHADOW]: "uniform1i",
+    [gl.SAMPLER_3D]: "uniform1i",
+    [gl.INT_SAMPLER_3D]: "uniform1i",
+    [gl.UNSIGNED_INT_SAMPLER_3D]: "uniform1i",
+    [gl.UNSIGNED_INT]: "uniform1ui",
+    [gl.FLOAT]: "uniform1f",
+    [gl.FLOAT_VEC2]: "uniform2fv",
+    [gl.FLOAT_VEC3]: "uniform3fv",
+    [gl.FLOAT_VEC4]: "uniform4fv",
+    [gl.INT_VEC2]: "uniform2iv",
+    [gl.INT_VEC3]: "uniform3iv",
+    [gl.INT_VEC4]: "uniform4iv",
+    [gl.UNSIGNED_INT_VEC2]: "uniform2uiv",
+    [gl.UNSIGNED_INT_VEC3]: "uniform3uiv",
+    [gl.UNSIGNED_INT_VEC4]: "uniform4uiv",
+    [gl.BOOL_VEC2]: "uniform2iv",
+    [gl.BOOL_VEC3]: "uniform3iv",
+    [gl.BOOL_VEC4]: "uniform4iv",
+    [gl.FLOAT_MAT2]: "uniformMatrix2fv",
+    [gl.FLOAT_MAT3]: "uniformMatrix3fv",
+    [gl.FLOAT_MAT4]: "uniformMatrix4fv",
+    [gl.FLOAT_MAT2x3]: "uniformMatrix2x3fv",
+    [gl.FLOAT_MAT2x4]: "uniformMatrix2x4fv",
+    [gl.FLOAT_MAT3x2]: "uniformMatrix3x2fv",
+    [gl.FLOAT_MAT3x4]: "uniformMatrix3x4fv",
+    [gl.FLOAT_MAT4x2]: "uniformMatrix4x2fv",
+    [gl.FLOAT_MAT4x3]: "uniformMatrix4x3fv"
+  };
+  /**
+   * @enum
+   * @private
+   */
+
+  ctx.UniformSize = {
+    [gl.BOOL]: 1,
+    [gl.INT]: 1,
+    [gl.SAMPLER_2D]: 1,
+    [gl.INT_SAMPLER_2D]: 1,
+    [gl.UNSIGNED_INT_SAMPLER_2D]: 1,
+    [gl.SAMPLER_2D_SHADOW]: 1,
+    [gl.SAMPLER_2D_ARRAY]: 1,
+    [gl.INT_SAMPLER_2D_ARRAY]: 1,
+    [gl.UNSIGNED_INT_SAMPLER_2D_ARRAY]: 1,
+    [gl.SAMPLER_2D_ARRAY_SHADOW]: 1,
+    [gl.SAMPLER_CUBE]: 1,
+    [gl.INT_SAMPLER_CUBE]: 1,
+    [gl.UNSIGNED_INT_SAMPLER_CUBE]: 1,
+    [gl.SAMPLER_CUBE_SHADOW]: 1,
+    [gl.SAMPLER_3D]: 1,
+    [gl.INT_SAMPLER_3D]: 1,
+    [gl.UNSIGNED_INT_SAMPLER_3D]: 1,
+    [gl.UNSIGNED_INT]: 1,
+    [gl.FLOAT]: 1,
+    [gl.FLOAT_VEC2]: 2,
+    [gl.FLOAT_VEC3]: 3,
+    [gl.FLOAT_VEC4]: 4,
+    [gl.INT_VEC2]: 2,
+    [gl.INT_VEC3]: 3,
+    [gl.INT_VEC4]: 4,
+    [gl.UNSIGNED_INT_VEC2]: 2,
+    [gl.UNSIGNED_INT_VEC3]: 3,
+    [gl.UNSIGNED_INT_VEC4]: 4,
+    [gl.BOOL_VEC2]: 2,
+    [gl.BOOL_VEC3]: 3,
+    [gl.BOOL_VEC4]: 4,
+    [gl.FLOAT_MAT2]: 4,
+    [gl.FLOAT_MAT3]: 9,
+    [gl.FLOAT_MAT4]: 16,
+    [gl.FLOAT_MAT2x3]: 6,
+    [gl.FLOAT_MAT2x4]: 8,
+    [gl.FLOAT_MAT3x2]: 6,
+    [gl.FLOAT_MAT3x4]: 12,
+    [gl.FLOAT_MAT4x2]: 8,
+    [gl.FLOAT_MAT4x3]: 12
+  };
+  /**
+   * @enum
+   * @private
+   */
+
+  ctx.AttributeSize = {
+    [gl.INT]: 1,
+    [gl.UNSIGNED_INT]: 1,
+    [gl.FLOAT]: 1,
+    [gl.FLOAT_VEC2]: 2,
+    [gl.FLOAT_VEC3]: 3,
+    [gl.FLOAT_VEC4]: 4,
+    [gl.INT_VEC2]: 2,
+    [gl.INT_VEC3]: 3,
+    [gl.INT_VEC4]: 4,
+    [gl.UNSIGNED_INT_VEC2]: 2,
+    [gl.UNSIGNED_INT_VEC3]: 3,
+    [gl.UNSIGNED_INT_VEC4]: 4,
+    [gl.FLOAT_MAT2]: 4,
+    [gl.FLOAT_MAT3]: 9,
+    [gl.FLOAT_MAT4]: 16
+  };
+  /** @enum */
+
+  ctx.Face = {
     Front: gl.FRONT,
     Back: gl.BACK,
     FrontAndBack: gl.FRONT_AND_BACK
   };
-  const Filter = {
+  /** @enum */
+
+  ctx.Filter = {
     Nearest: gl.NEAREST,
     Linear: gl.LINEAR,
     NearestMipmapNearest: gl.NEAREST_MIPMAP_NEAREST,
     NearestMipmapLinear: gl.NEAREST_MIPMAP_LINEAR,
     LinearMipmapNearest: gl.LINEAR_MIPMAP_NEAREST,
     LinearMipmapLinear: gl.LINEAR_MIPMAP_LINEAR
-  }; // Mapping of format and type (with alternative types)
+  };
+  /**
+   * @enum
+   *
+   * @description
+   * Mapping of format and type (with alternative types).
+   */
 
-  const TextureFormat = {
+  ctx.TextureFormat = {
     // Unsized Internal Formats
-    RGB: [gl.RGB, DataType.Uint8],
+    RGB: [gl.RGB, ctx.DataType.Uint8],
     // gl.UNSIGNED_SHORT_5_6_5
-    RGBA: [gl.RGBA, DataType.Uint8],
+    RGBA: [gl.RGBA, ctx.DataType.Uint8],
     // gl.UNSIGNED_SHORT_4_4_4_4, gl.UNSIGNED_SHORT_5_5_5_1
-    LUMINANCE_ALPHA: [gl.LUMINANCE_ALPHA, DataType.Uint8],
-    LUMINANCE: [gl.LUMINANCE, DataType.Uint8],
-    ALPHA: [gl.ALPHA, DataType.Uint8],
+    LUMINANCE_ALPHA: [gl.LUMINANCE_ALPHA, ctx.DataType.Uint8],
+    LUMINANCE: [gl.LUMINANCE, ctx.DataType.Uint8],
+    ALPHA: [gl.ALPHA, ctx.DataType.Uint8],
     // Sized internal formats
-    R8: [gl.RED, DataType.Uint8],
-    R8_SNORM: [gl.RED, DataType.Int8],
-    R16F: [gl.RED, DataType.Float16],
-    // DataType.Float32
-    R32F: [gl.RED, DataType.Float32],
-    R8UI: [gl.RED_INTEGER, DataType.Uint8],
-    R8I: [gl.RED_INTEGER, DataType.Int8],
-    R16UI: [gl.RED_INTEGER, DataType.Uint16],
-    R16I: [gl.RED_INTEGER, DataType.Int16],
-    R32UI: [gl.RED_INTEGER, DataType.Uint32],
-    R32I: [gl.RED_INTEGER, DataType.Int32],
-    RG8: [gl.RG, DataType.Uint8],
-    RG8_SNORM: [gl.RG, DataType.Int8],
-    RG16F: [gl.RG, DataType.Float16],
-    // DataType.Float32
-    RG32F: [gl.RG, DataType.Float32],
-    RG8UI: [gl.RG_INTEGER, DataType.Uint8],
-    RG8I: [gl.RG_INTEGER, DataType.Int8],
-    RG16UI: [gl.RG_INTEGER, DataType.Uint16],
-    RG16I: [gl.RG_INTEGER, DataType.Int16],
-    RG32UI: [gl.RG_INTEGER, DataType.Uint32],
-    RG32I: [gl.RG_INTEGER, DataType.Int32],
-    RGB8: [gl.RGB, DataType.Uint8],
-    SRGB8: [gl.RGB, DataType.Uint8],
+    R8: [gl.RED, ctx.DataType.Uint8],
+    R8_SNORM: [gl.RED, ctx.DataType.Int8],
+    R16F: [gl.RED, ctx.DataType.Float16],
+    // ctx.DataType.Float32
+    R32F: [gl.RED, ctx.DataType.Float32],
+    R8UI: [gl.RED_INTEGER, ctx.DataType.Uint8],
+    R8I: [gl.RED_INTEGER, ctx.DataType.Int8],
+    R16UI: [gl.RED_INTEGER, ctx.DataType.Uint16],
+    R16I: [gl.RED_INTEGER, ctx.DataType.Int16],
+    R32UI: [gl.RED_INTEGER, ctx.DataType.Uint32],
+    R32I: [gl.RED_INTEGER, ctx.DataType.Int32],
+    RG8: [gl.RG, ctx.DataType.Uint8],
+    RG8_SNORM: [gl.RG, ctx.DataType.Int8],
+    RG16F: [gl.RG, ctx.DataType.Float16],
+    // ctx.DataType.Float32
+    RG32F: [gl.RG, ctx.DataType.Float32],
+    RG8UI: [gl.RG_INTEGER, ctx.DataType.Uint8],
+    RG8I: [gl.RG_INTEGER, ctx.DataType.Int8],
+    RG16UI: [gl.RG_INTEGER, ctx.DataType.Uint16],
+    RG16I: [gl.RG_INTEGER, ctx.DataType.Int16],
+    RG32UI: [gl.RG_INTEGER, ctx.DataType.Uint32],
+    RG32I: [gl.RG_INTEGER, ctx.DataType.Int32],
+    RGB8: [gl.RGB, ctx.DataType.Uint8],
+    SRGB8: [gl.RGB, ctx.DataType.Uint8],
     RGB565: [gl.RGB, gl.UNSIGNED_SHORT_5_6_5],
-    // DataType.Uint8
-    RGB8_SNORM: [gl.RGB, DataType.Int8],
+    // ctx.DataType.Uint8
+    RGB8_SNORM: [gl.RGB, ctx.DataType.Int8],
     R11F_G11F_B10F: [gl.RGB, gl.UNSIGNED_INT_10F_11F_11F_REV],
-    // DataType.Float16, DataType.Float32
+    // ctx.DataType.Float16, ctx.DataType.Float32
     RGB9_E5: [gl.RGB, gl.UNSIGNED_INT_5_9_9_9_REV],
-    // DataType.Float16, DataType.Float32
-    RGB16F: [gl.RGB, DataType.Float16],
-    // DataType.Float32
-    RGB32F: [gl.RGB, DataType.Float32],
-    RGB8UI: [gl.RGB_INTEGER, DataType.Uint8],
-    RGB8I: [gl.RGB_INTEGER, DataType.Int8],
-    RGB16UI: [gl.RGB_INTEGER, DataType.Uint16],
-    RGB16I: [gl.RGB_INTEGER, DataType.Int16],
-    RGB32UI: [gl.RGB_INTEGER, DataType.Uint32],
-    RGB32I: [gl.RGB_INTEGER, DataType.Int32],
-    RGBA8: [gl.RGBA, DataType.Uint8],
-    SRGB8_ALPHA8: [gl.RGBA, DataType.Uint8],
-    RGBA8_SNORM: [gl.RGBA, DataType.Int8],
+    // ctx.DataType.Float16, ctx.DataType.Float32
+    RGB16F: [gl.RGB, ctx.DataType.Float16],
+    // ctx.DataType.Float32
+    RGB32F: [gl.RGB, ctx.DataType.Float32],
+    RGB8UI: [gl.RGB_INTEGER, ctx.DataType.Uint8],
+    RGB8I: [gl.RGB_INTEGER, ctx.DataType.Int8],
+    RGB16UI: [gl.RGB_INTEGER, ctx.DataType.Uint16],
+    RGB16I: [gl.RGB_INTEGER, ctx.DataType.Int16],
+    RGB32UI: [gl.RGB_INTEGER, ctx.DataType.Uint32],
+    RGB32I: [gl.RGB_INTEGER, ctx.DataType.Int32],
+    RGBA8: [gl.RGBA, ctx.DataType.Uint8],
+    SRGB8_ALPHA8: [gl.RGBA, ctx.DataType.Uint8],
+    RGBA8_SNORM: [gl.RGBA, ctx.DataType.Int8],
     RGB5_A1: [gl.RGBA, gl.UNSIGNED_SHORT_5_5_5_1],
-    // DataType.Uint8, gl.UNSIGNED_INT_2_10_10_10_REV
+    // ctx.DataType.Uint8, gl.UNSIGNED_INT_2_10_10_10_REV
     RGBA4: [gl.RGBA, gl.UNSIGNED_SHORT_4_4_4_4],
-    // DataType.Uint8
+    // ctx.DataType.Uint8
     RGB10_A2: [gl.RGBA, gl.UNSIGNED_INT_2_10_10_10_REV],
-    RGBA16F: [gl.RGBA, DataType.Float16],
-    // DataType.Float32
-    RGBA32F: [gl.RGBA, DataType.Float32],
-    RGBA8UI: [gl.RGBA_INTEGER, DataType.Uint8],
-    RGBA8I: [gl.RGBA_INTEGER, DataType.Int8],
+    RGBA16F: [gl.RGBA, ctx.DataType.Float16],
+    // ctx.DataType.Float32
+    RGBA32F: [gl.RGBA, ctx.DataType.Float32],
+    RGBA8UI: [gl.RGBA_INTEGER, ctx.DataType.Uint8],
+    RGBA8I: [gl.RGBA_INTEGER, ctx.DataType.Int8],
     RGB10_A2UI: [gl.RGBA_INTEGER, gl.UNSIGNED_INT_2_10_10_10_REV],
-    RGBA16UI: [gl.RGBA_INTEGER, DataType.Uint16],
-    RGBA16I: [gl.RGBA_INTEGER, DataType.Int16],
-    RGBA32I: [gl.RGBA_INTEGER, DataType.Int32],
-    RGBA32UI: [gl.RGBA_INTEGER, DataType.Uint32],
+    RGBA16UI: [gl.RGBA_INTEGER, ctx.DataType.Uint16],
+    RGBA16I: [gl.RGBA_INTEGER, ctx.DataType.Int16],
+    RGBA32I: [gl.RGBA_INTEGER, ctx.DataType.Int32],
+    RGBA32UI: [gl.RGBA_INTEGER, ctx.DataType.Uint32],
     // Depth and stencil
-    DEPTH_COMPONENT16: [gl.DEPTH_COMPONENT, DataType.Uint16],
-    // DataType.Uint32
-    DEPTH_COMPONENT24: [gl.DEPTH_COMPONENT, DataType.Uint32],
-    DEPTH_COMPONENT32F: [gl.DEPTH_COMPONENT, DataType.Float32],
+    DEPTH_COMPONENT16: [gl.DEPTH_COMPONENT, ctx.DataType.Uint16],
+    // ctx.DataType.Uint32
+    DEPTH_COMPONENT24: [gl.DEPTH_COMPONENT, ctx.DataType.Uint32],
+    DEPTH_COMPONENT32F: [gl.DEPTH_COMPONENT, ctx.DataType.Float32],
     DEPTH24_STENCIL8: [gl.DEPTH_STENCIL, gl.UNSIGNED_INT_24_8],
     DEPTH32F_STENCIL8: [gl.DEPTH_STENCIL, gl.FLOAT_32_UNSIGNED_INT_24_8_REV]
   };
 
   if (gl instanceof WebGLRenderingContext) {
     if (capabilities.depthTexture) {
-      TextureFormat.DEPTH_COMPONENT = [gl.DEPTH_COMPONENT, DataType.Uint16];
-      TextureFormat.DEPTH_STENCIL = [gl.DEPTH_STENCIL, DataType.Uint16];
+      ctx.TextureFormat.DEPTH_COMPONENT = [gl.DEPTH_COMPONENT, ctx.DataType.Uint16];
+      ctx.TextureFormat.DEPTH_STENCIL = [gl.DEPTH_STENCIL, ctx.DataType.Uint16];
     }
 
-    TextureFormat.R16FLegacy = [gl.ALPHA, DataType.Float16];
-    TextureFormat.R32FLegacy = [gl.ALPHA, DataType.Float32];
+    ctx.TextureFormat.R16FLegacy = [gl.ALPHA, ctx.DataType.Float16];
+    ctx.TextureFormat.R32FLegacy = [gl.ALPHA, ctx.DataType.Float32];
   }
+  /**
+   * @enum
+   * @description
+   * Mapping of {@link #ctx.TextureFormat|ctx.TextureFormat} keys to their string values and legacy depth formats
+   */
 
-  const PixelFormat = { ...Object.fromEntries(Object.keys(TextureFormat).map(internalFormat => [internalFormat, internalFormat])),
+
+  ctx.PixelFormat = { ...Object.fromEntries(Object.keys(ctx.TextureFormat).map(internalFormat => [internalFormat, internalFormat])),
     // Legacy
-    Depth: 'DEPTH_COMPONENT',
-    Depth16: 'DEPTH_COMPONENT16',
-    Depth24: 'DEPTH_COMPONENT24'
+    Depth: "DEPTH_COMPONENT16",
+    Depth16: "DEPTH_COMPONENT16",
+    Depth24: "DEPTH_COMPONENT24"
   };
-  const Encoding = {
+  /** @enum */
+
+  ctx.Encoding = {
     Linear: 1,
     Gamma: 2,
     SRGB: 3,
     RGBM: 4
   };
-  const Primitive = {
+  /** @enum */
+
+  ctx.Primitive = {
     Points: gl.POINTS,
     Lines: gl.LINES,
     LineStrip: gl.LINE_STRIP,
     Triangles: gl.TRIANGLES,
     TriangleStrip: gl.TRIANGLE_STRIP
   };
-  const Usage = {
+  /** @enum */
+
+  ctx.Usage = {
     StaticDraw: gl.STATIC_DRAW,
     DynamicDraw: gl.DYNAMIC_DRAW,
     StreamDraw: gl.STREAM_DRAW
   };
-  const Wrap = {
+  /** @enum */
+
+  ctx.Wrap = {
     ClampToEdge: gl.CLAMP_TO_EDGE,
     Repeat: gl.REPEAT
   };
-  const QueryTarget = {
-    TimeElapsed: gl.TIME_ELAPSED
+  /** @enum */
+
+  ctx.QueryTarget = {
+    TimeElapsed: gl.TIME_ELAPSED,
+    // webgl2
+    AnySamplesPassed: gl.ANY_SAMPLES_PASSED,
+    AnySamplesPassedConservative: gl.ANY_SAMPLES_PASSED_CONSERVATIVE,
+    TransformFeedbackPrimitivesWritten: gl.TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN
   };
-  const QueryState = {
-    Ready: 'ready',
-    Active: 'active',
-    Pending: 'pending'
+  /** @enum */
+
+  ctx.QueryState = {
+    Ready: "ready",
+    Active: "active",
+    Pending: "pending"
   };
+};
+
+let ID = 0;
+const allowedCommandProps = ["name", "pass", "pipeline", "uniforms", "attributes", "indices", "count", "instances", "vertexArray", "viewport", "scissor"];
+/**
+ * Create a context object
+ * @param {import("./types.js").PexContextOptions & import("pex-gl").Options} [options]
+ * @returns {ctx}
+ */
+
+function createContext(options = {}) {
+  const opts = {
+    pixelRatio: 1,
+    type: "webgl2",
+    ...options
+  };
+
+  if (options.pixelRatio) {
+    opts.pixelRatio = Math.min(opts.pixelRatio, window.devicePixelRatio);
+  }
+
+  const gl = opts.gl || createRenderingContext(opts);
+  console.assert(gl, "pex-context: createContext failed");
+  /**
+   * @namespace ctx
+   */
+
   const ctx = {
-    gl: gl,
-    BlendFactor: BlendFactor,
-    CubemapFace: CubemapFace,
-    DataType: DataType,
-    DataTypeConstructor: DataTypeConstructor,
-    DepthFunc: DepthFunc,
-    Face: Face,
-    Filter: Filter,
-    TextureFormat: TextureFormat,
-    PixelFormat: PixelFormat,
-    Encoding: Encoding,
-    Primitive: Primitive,
-    Usage: Usage,
-    Wrap: Wrap,
-    QueryTarget: QueryTarget,
-    QueryState: QueryState
+    /**
+     * The `RenderingContext` returned by `pex-gl`
+     * @memberof ctx
+     */
+    gl,
+
+    /**
+     * Max capabilities and extensions availability. See {@link #capabilitiesTable|Capabilities Table}.
+     * @memberof ctx
+     */
+    capabilities: {
+      isWebGL2: isWebGL2(gl),
+      maxColorAttachments: 1,
+      maxTextureImageUnits: gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS),
+      maxVertexTextureImageUnits: gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS),
+      maxVertexAttribs: gl.getParameter(gl.MAX_VERTEX_ATTRIBS),
+      maxTextureSize: gl.getParameter(gl.MAX_TEXTURE_SIZE),
+      maxCubeMapTextureSize: gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE),
+      depthTexture: !!gl.getExtension("WEBGL_depth_texture"),
+      shaderTextureLod: !!gl.getExtension("EXT_shader_texture_lod"),
+      textureFloat: !!gl.getExtension("OES_texture_float"),
+      textureFloatLinear: !!gl.getExtension("OES_texture_float_linear"),
+      textureHalfFloat: !!gl.getExtension("OES_texture_half_float"),
+      textureHalfFloatLinear: !!gl.getExtension("OES_texture_half_float_linear"),
+      textureFilterAnisotropic: !!gl.getExtension("EXT_texture_filter_anisotropic"),
+      disjointTimerQuery: !!(gl.getExtension("EXT_disjoint_timer_query_webgl2") || gl.getExtension("EXT_disjoint_timer_query"))
+    },
+
+    /**
+     * Getter for `gl.drawingBufferWidth`
+     * @memberof ctx
+     */
+    get width() {
+      return gl.drawingBufferWidth;
+    },
+
+    /**
+     * Getter for `gl.drawingBufferHeight`
+     * @memberof ctx
+     */
+    get height() {
+      return gl.drawingBufferHeight;
+    }
+
   };
+  polyfill(ctx);
+  addEnums(ctx);
   const defaultState = {
     pass: {
       framebuffer: {
-        id: 'framebuffer_' + ID++,
+        id: `framebuffer_${ID++}`,
         target: gl.FRAMEBUFFER,
         handle: null,
         width: gl.drawingBufferWidth,
@@ -1868,180 +1686,448 @@ function createContext(opts) {
       clearColor: [0, 0, 0, 1],
       clearDepth: 1
     },
-    pipeline: pipeline(ctx, {}),
+    pipeline: createPipeline(ctx, {}),
     viewport: [0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight],
     scissor: null,
     count: 0
-  }; // extensions
-
-  if (!gl.drawElementsInstanced) {
-    const ext = gl.getExtension('ANGLE_instanced_arrays');
-
-    if (!ext) {
-      // TODO: this._caps[CAPS_INSTANCED_ARRAYS] = false;
-      gl.drawElementsInstanced = function () {
-        throw new Error('gl.drawElementsInstanced not available. ANGLE_instanced_arrays not supported');
-      };
-
-      gl.drawArraysInstanced = function () {
-        throw new Error('gl.drawArraysInstanced not available. ANGLE_instanced_arrays not supported');
-      };
-
-      gl.vertexAttribDivisor = function () {
-        throw new Error('gl.vertexAttribDivisor not available. ANGLE_instanced_arrays not supported');
-      };
-    } else {
-      // TODO: this._caps[CAPS_INSTANCED_ARRAYS] = true;
-      gl.drawElementsInstanced = ext.drawElementsInstancedANGLE.bind(ext);
-      gl.drawArraysInstanced = ext.drawArraysInstancedANGLE.bind(ext);
-      gl.vertexAttribDivisor = ext.vertexAttribDivisorANGLE.bind(ext);
-      capabilities.instancedArrays = true;
-      capabilities.instancing = true; // TODO: deprecate
-    }
-  } else {
-    capabilities.instancedArrays = true;
-    capabilities.instancing = true; // TODO: deprecate
-  }
-
-  if (!gl.drawBuffers) {
-    const ext = gl.getExtension('WEBGL_draw_buffers');
-
-    if (!ext) {
-      gl.drawBuffers = function () {
-        throw new Error('WEBGL_draw_buffers not supported');
-      };
-    } else {
-      gl.drawBuffers = ext.drawBuffersWEBGL.bind(ext);
-      capabilities.maxColorAttachments = gl.getParameter(ext.MAX_COLOR_ATTACHMENTS_WEBGL);
-    }
-  } else {
-    capabilities.maxColorAttachments = gl.getParameter('MAX_COLOR_ATTACHMENTS');
-  }
-
-  log$2('capabilities', capabilities);
-
-  function compareFBOAttachments(framebuffer, passOpts) {
-    var _framebuffer$depth, _passOpts$depth;
-
-    const fboDepthAttachment = (_framebuffer$depth = framebuffer.depth) === null || _framebuffer$depth === void 0 ? void 0 : _framebuffer$depth.texture;
-    const passDepthAttachment = ((_passOpts$depth = passOpts.depth) === null || _passOpts$depth === void 0 ? void 0 : _passOpts$depth.texture) || passOpts.depth;
-    if (fboDepthAttachment != passDepthAttachment) return false;
-    if (framebuffer.color.length != passOpts.color.length) return false;
-
-    for (let i = 0; i < framebuffer.color.length; i++) {
-      var _framebuffer$color$i, _passOpts$color$i;
-
-      const fboColorAttachment = (_framebuffer$color$i = framebuffer.color[i]) === null || _framebuffer$color$i === void 0 ? void 0 : _framebuffer$color$i.texture;
-      const passColorAttachment = ((_passOpts$color$i = passOpts.color[i]) === null || _passOpts$color$i === void 0 ? void 0 : _passOpts$color$i.texture) || passOpts.color[i];
-      if (fboColorAttachment != passColorAttachment) return false;
-    }
-
-    return true;
-  }
-
+  };
   Object.assign(ctx, {
     debugMode: false,
-    capabilities: capabilities,
-    // debugGraph: '',
     debugCommands: [],
     resources: [],
     stats: {},
     queries: [],
     stack: [defaultState],
-    defaultState: defaultState,
-    pixelRatio: opts.pixelRatio || 1,
+    defaultState,
+    pixelRatio: opts.pixelRatio,
     state: {
       framebuffer: defaultState.pass.framebuffer,
-      pipeline: pipeline(ctx, {}),
+      pipeline: createPipeline(ctx, {}),
       activeTextures: [],
       activeAttributes: []
     },
-    getGLString: function (glEnum) {
-      let str = '';
+
+    getGLString(glEnum) {
+      let str = "UNDEFINED";
 
       for (let key in gl) {
-        if (gl[key] === glEnum) str = key;
-      }
-
-      if (!str) {
-        str = 'UNDEFINED';
+        if (gl[key] === glEnum) {
+          str = key;
+          break;
+        }
       }
 
       return str;
     },
-    set: function (opts) {
-      assert_1(client, 'changing resolution is not supported in Plask');
 
-      if (opts.pixelRatio) {
-        this.updatePixelRatio = Math.min(opts.pixelRatio, window.devicePixelRatio);
-      }
-
-      if (opts.width) {
-        this.updateWidth = opts.width;
-      }
-
-      if (opts.height) {
-        this.updateHeight = opts.height;
-      }
-    },
-    debug: function (enabled) {
-      this.debugMode = enabled;
-
-      if (enabled) {
-        this.debugCommands = [];
-      }
-    },
-    checkError: function () {
+    checkError() {
       if (this.debugMode) {
-        var error = gl.getError();
+        const error = gl.getError();
 
         if (error) {
           this.debugMode = false; // prevents rolling errors
 
-          log$2('State', this.state.state);
-          throw new Error(`GL error ${error} : ${this.getGLString(error)}`);
+          console.debug(NAMESPACE, "state", this.state);
+          throw new Error(`GL error ${error}: ${this.getGLString(error)}`);
         }
       }
     },
-    resource: function (res) {
-      res.id = res.class + '_' + ID++;
 
-      if (!this.stats[res.class]) {
-        this.stats[res.class] = {
-          alive: 0,
-          total: 0
-        };
-      }
+    resource(res) {
+      var _this$stats, _res$class;
 
+      res.id = `${res.class}_${ID++}`;
+      (_this$stats = this.stats)[_res$class = res.class] || (_this$stats[_res$class] = {
+        alive: 0,
+        total: 0
+      });
       this.stats[res.class].alive++;
       this.stats[res.class].total++;
       this.resources.push(res);
       this.checkError();
       return res;
     },
-    // texture2D({ data: TypedArray, width: Int, height: Int, format: PixelFormat, flipY: Boolean })
-    texture2D: function (opts) {
-      log$2('texture2D', opts);
+
+    // Public API
+
+    /**
+     * Set the context size and pixelRatio
+     * The new size and resolution will not be applied immediately but before drawing the next frame to avoid flickering.
+     * Context's canvas doesn't resize automatically, even if you don't pass width/height on init and the canvas is assigned the dimensions of the window. To handle resizing use the following code:
+     * ```js
+     * window.addEventListener('resize', () => {
+     *   ctx.set({ width: window.innerWidth, height: window.innerHeight });
+     * })
+     * ```
+     * @memberof ctx
+     * @param {import("./types.js").PexContextSetOptions} options
+     */
+    set({
+      pixelRatio,
+      width,
+      height
+    }) {
+      if (pixelRatio) {
+        this.updatePixelRatio = Math.min(pixelRatio, window.devicePixelRatio);
+      }
+
+      if (width) {
+        this.updateWidth = width;
+      }
+
+      if (height) {
+        this.updateHeight = height;
+      }
+    },
+
+    /**
+     * Enable debug mode
+     * @param {boolean} [enabled]
+     * @memberof ctx
+     */
+    debug(enabled) {
+      this.debugMode = enabled;
+      if (enabled) this.debugCommands = [];
+    },
+
+    /**
+     * Render Loop
+     * @memberof ctx
+     * @param {Function} cb Request Animation Frame callback
+     */
+    frame(cb) {
+      requestAnimationFrame(function frame() {
+        if (this.updatePixelRatio) {
+          this.pixelRatio = this.updatePixelRatio; // we need to reaply width/height and update styles
+
+          if (!this.updateWidth) {
+            this.updateWidth = parseInt(gl.canvas.style.width) || gl.canvas.width;
+          }
+
+          if (!this.updateHeight) {
+            this.updateHeight = parseInt(gl.canvas.style.height) || gl.canvas.height;
+          }
+
+          this.updatePixelRatio = 0;
+        }
+
+        if (this.updateWidth) {
+          gl.canvas.style.width = `${this.updateWidth}px`;
+          gl.canvas.width = this.updateWidth * this.pixelRatio;
+          this.updateWidth = 0;
+        }
+
+        if (this.updateHeight) {
+          gl.canvas.style.height = `${this.updateHeight}px`;
+          gl.canvas.height = this.updateHeight * this.pixelRatio;
+          this.updateHeight = 0;
+        }
+
+        if (this.defaultState.viewport[2] !== gl.drawingBufferWidth || this.defaultState.viewport[3] !== gl.drawingBufferHeight) {
+          this.defaultState.viewport[2] = gl.drawingBufferWidth;
+          this.defaultState.viewport[3] = gl.drawingBufferHeight;
+          this.defaultState.pass.framebuffer.width = gl.drawingBufferWidth;
+          this.defaultState.pass.framebuffer.height = gl.drawingBufferHeight;
+          gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+        }
+
+        if (cb() === false) return; // interrupt render loop
+
+        if (this.queries.length) {
+          this.queries = this.queries.filter(q => !q._available(this, q));
+        }
+
+        requestAnimationFrame(frame.bind(this));
+      }.bind(this));
+    },
+
+    /**
+     * Submit a command to the GPU.
+     * Commands are plain js objects with GPU resources needed to complete a draw call.
+     *
+     * ```js
+     * const cmd = {
+     *   pass: Pass
+     *   pipeline: Pipeline,
+     *   attributes: { name:  VertexBuffer | { buffer: VertexBuffer, offset: number, stride: number } },
+     *   indices: IndexBuffer | { buffer: IndexBuffer, offset: number, count: number },
+     *   // or
+     *   count: number,
+     *   instances: number,
+     *   uniforms: { name: number, name: Array, name: Texture2D },
+     *   viewport: [0, 0, 1920, 1080],
+     *   scissor: [0, 0, 1920, 1080]
+     * }
+     * ```
+     *
+     * _Note: Either indices or count need to be specified when drawing geometry._
+     * _Note: Scissor region is by default set to null and scissor test disabled._
+     *
+     * @example
+     *
+     * - `ctx.submit(cmd, opts)`: submit partially updated command without modifying the original one.
+     * ```js
+     * // Draw mesh with custom color
+     * ctx.submit(cmd, {
+     *   uniforms: {
+     *     uColor: [1, 0, 0, 0]
+     *   }
+     * })
+     * ```
+     *
+     * - `ctx.submit(cmd, [opts1, opts2, opts3...])`: submit a batch of commands differences in opts.
+     * ```js
+     * // Draw same mesh twice with different material and position
+     * ctx.submit(cmd, [
+     *   { pipeline: material1, uniforms: { uModelMatrix: position1 },
+     *   { pipeline: material2, uniforms: { uModelMatrix: position2 }
+     * ])
+     * ```
+     *
+     * - `ctx.submit(cmd, cb)`: submit command while preserving state from another command. This approach allows to simulate state stack with automatic cleanup at the end of callback.
+     * ```js
+     * // Render to texture
+     * ctx.submit(renderToFboCmd, () => {
+     *   ctx.submit(drawMeshCmd)
+     * })
+     * ```
+     *
+     * @memberof ctx
+     * @param {import("./types.js").PexCommand} cmd
+     * @param {import("./types.js").PexCommand | import("./types.js").PexCommand[]} [optsBatchesOrSubCommand]
+     * @param {import("./types.js").PexCommand} [subCommand]
+     */
+    submit(cmd, batches, subCommand) {
+      var _this$state$framebuff;
+
+      const prevFramebufferId = (_this$state$framebuff = this.state.framebuffer) === null || _this$state$framebuff === void 0 ? void 0 : _this$state$framebuff.id;
+
+      if (this.debugMode) {
+        checkProps(allowedCommandProps, cmd);
+        console.debug(NAMESPACE, "submit", cmd.name || cmd.id, {
+          depth: this.stack.length,
+          cmd,
+          batches,
+          subCommand,
+          state: this.state,
+          stack: this.stack
+        });
+      }
+
+      if (batches) {
+        if (Array.isArray(batches)) {
+          // TODO: quick hack
+          for (const batch of batches) {
+            this.submit(this.mergeCommands(cmd, batch, true), subCommand);
+          }
+
+          return;
+        } else if (typeof batches === "object") {
+          this.submit(this.mergeCommands(cmd, batches, true), subCommand);
+          return;
+        } else {
+          subCommand = batches; // shift argument
+        }
+      }
+
+      const parentState = this.stack[this.stack.length - 1];
+      const cmdState = this.mergeCommands(parentState, cmd, false);
+      this.apply(cmdState);
+
+      if (this.debugMode) {
+        var _this$state$framebuff2;
+
+        const currFramebufferId = (_this$state$framebuff2 = this.state.framebuffer) === null || _this$state$framebuff2 === void 0 ? void 0 : _this$state$framebuff2.id;
+        const framebufferCanged = prevFramebufferId != currFramebufferId;
+        console.debug(NAMESPACE, "fbo-state", "  ".repeat(this.stack.length), cmd.name, framebufferCanged ? `${prevFramebufferId} -> ${currFramebufferId}` : currFramebufferId, [...this.state.viewport], this.state.scissor ? [...this.state.scissor] : "[]");
+        cmdState.debugId = this.debugCommands.length;
+        this.debugCommands.push({
+          cmd,
+          cmdState,
+          parentState
+        });
+      }
+
+      if (subCommand) {
+        this.stack.push(cmdState);
+        subCommand();
+        this.stack.pop();
+      }
+
+      this.checkError();
+    },
+
+    program(opts) {
+      console.debug(NAMESPACE, "program", opts);
+      return this.resource(createProgram(this, opts));
+    },
+
+    /**
+     * Passes are responsible for setting render targets (textures) and their clearing values.
+     * FBOs are created internally and automatically.
+     * @memberof ctx
+     * @param {import("./pass.js").PassOptions} opts
+     * @returns {import("./types.js").PexResource}
+     *
+     * @example
+     * ```js
+     * const pass = ctx.pass({
+     *   color: [Texture2D, ...]
+     *   color: [{ texture: Texture2D | TextureCube, target: CubemapFace }, ...]
+     *   depth: Texture2D
+     *   clearColor: Array,
+     *   clearDepth: number,
+     * })
+     * ```
+     */
+    pass(opts) {
+      var _opts$color;
+
+      console.debug(NAMESPACE, "pass", opts, ((_opts$color = opts.color) === null || _opts$color === void 0 ? void 0 : _opts$color.map(({
+        texture,
+        info
+      }) => (texture === null || texture === void 0 ? void 0 : texture.info) || info)) || "");
+      return this.resource(createPass(this, opts));
+    },
+
+    /**
+     * Pipelines represent the state of the GPU rendering pipeline (shaders, blending, depth test etc).
+     * @memberof ctx
+     * @param {import("./pipeline.js").PipelineOptions} opts
+     * @returns {import("./types.js").PexResource}
+     *
+     *  @example
+     * ```js
+     * const pipeline = ctx.pipeline({
+     *   vert: String,
+     *   frag: String,
+     *   depthWrite: Boolean,
+     *   depthTest: Boolean,
+     *   depthFunc: DepthFunc,
+     *   blend: Boolean,
+     *   blendSrcRGBFactor: BlendFactor,
+     *   blendSrcAlphaFactor: BlendFactor,
+     *   blendDstRGBFactor: BlendFactor,
+     *   blendDstAlphaFactor: BlendFactor,
+     *   cullFace: Boolean,
+     *   cullFaceMode: Face,
+     *   colorMask: Array,
+     *   primitive: Primitive
+     * })
+     * ```
+     */
+    pipeline(opts) {
+      console.debug(NAMESPACE, "pipeline", opts);
+      return this.resource(createPipeline(this, opts));
+    },
+
+    /**
+     * Create a VAO resource.
+     * @memberof ctx
+     * @param {import("./vertex-array.js").VertexArrayOptions} opts
+     * @returns {import("./types.js").PexResource}
+     *
+     * @example
+     * ```js
+     * const vertexLayout = {
+     *   aPosition: { location: 0, type: "vec3" },
+     *   aNormal: { location: 1, type: "vec3" },
+     * };
+     *
+     * const drawCmd = {
+     *   pipeline: ctx.pipeline({
+     *     vertexLayout,
+     *     // ...
+     *   }),
+     *   vertexArray: ctx.vertexArray({
+     *     vertexLayout,
+     *     attributes: {
+     *       aPosition: ctx.vertexBuffer(geom.positions),
+     *       aNormal: { buffer: ctx.vertexBuffer(geom.normals) },
+     *     },
+     *     indices: ctx.indexBuffer(geom.cells),
+     *   }),
+     *   // ...
+     * };
+     * ```
+     */
+    vertexArray(opts) {
+      console.debug(NAMESPACE, "vertexArray", opts);
+      return this.resource(createVertexArray(this, opts));
+    },
+
+    /**
+     * Create a 2D Texture resource.
+     * @memberof ctx
+     * @param {HTMLImageElement | HTMLVideoElement | HTMLCanvasElement | import("./texture.js").TextureOptions} opts
+     * @returns {import("./types.js").PexResource}
+     *
+     * @example
+     * ```js
+     * const tex = ctx.texture2D({
+     *   data: [255, 255, 255, 255, 0, 0, 0, 255],
+     *   width: 2,
+     *   height: 1,
+     *   pixelFormat: ctx.PixelFormat.RGB8,
+     *   encoding: ctx.Encoding.Linear,
+     *   wrap: ctx.Wrap.Repeat
+     * })
+     * ```
+     */
+    texture2D(opts) {
+      console.debug(NAMESPACE, "texture2D", opts);
       opts.target = gl.TEXTURE_2D;
-      return this.resource(texture(this, opts));
+      return this.resource(createTexture(this, opts));
     },
-    // textureCube({ data: [negxData, negyData,...], width: Int, height: Int, format: PixelFormat, flipY: Boolean })
-    textureCube: function (opts) {
-      log$2('textureCube', opts);
+
+    /**
+     * Create a 2D Texture cube resource.
+     * @memberof ctx
+     * @param {HTMLImageElement | import("./texture.js").TextureOptions} opts
+     * @returns {import("./types.js").PexResource}
+     *
+     * @example
+     * ```js
+     * const tex = ctx.textureCube({
+     *   data: [posx, negx, posy, negy, posz, negz],
+     *   width: 64,
+     *   height: 64
+     * ])
+     * ```
+     */
+    textureCube(opts) {
+      console.debug(NAMESPACE, "textureCube", opts);
       opts.target = gl.TEXTURE_CUBE_MAP;
-      return this.resource(texture(this, opts));
+      return this.resource(createTexture(this, opts));
     },
+
     // framebuffer({ color: [ Texture2D, .. ], depth: Texture2D }
     // framebuffer({ color: [ { texture: Texture2D, target: Enum, level: int }, .. ], depth: { texture: Texture2D }})
-    framebuffer: function (opts) {
-      log$2('framebuffer', opts);
-      return this.resource(framebuffer(this, opts));
+    framebuffer(opts) {
+      console.debug(NAMESPACE, "framebuffer", opts);
+      return this.resource(createFramebuffer(this, opts));
     },
-    // renderbuffer({ width: int, height: int })
-    renderbuffer: function (opts) {
-      log$2('renderbuffer', opts);
-      return this.resource(renderbuffer(this, opts));
+
+    /**
+     * Renderbuffers represent pixel data store for rendering operations.
+     * @memberof ctx
+     * @param {import("./renderbuffer.js").RenderbufferOptions} opts
+     * @returns {import("./types.js").PexResource}
+     *
+     * @example
+     * ```js
+     * const tex = ctx.renderbuffer({
+     *   width: 1280,
+     *   height: 720,
+     *   pixelFormat: ctx.PixelFormat.DEPTH_COMPONENT16
+     * })
+     * ```
+     */
+    renderbuffer(opts) {
+      console.debug(NAMESPACE, "renderbuffer", opts);
+      return this.resource(createRenderbuffer(this, opts));
     },
+
     // TODO: Should we have named versions or generic 'ctx.buffer' command?
     // In regl buffer() is ARRAY_BUFFER (aka VertexBuffer) and elements() is ELEMENT_ARRAY_BUFFER
     // Now in WebGL2 we get more types Uniform, TransformFeedback, Copy
@@ -2049,83 +2135,183 @@ function createContext(opts) {
     //    data: Array or ArrayBuffer
     //    type: 'float', 'uint16' etc
     // }
-    vertexBuffer: function (opts) {
-      log$2('vertexBuffer', opts);
 
-      if (opts.length) {
-        opts = {
-          data: opts
-        };
-      }
-
+    /**
+     * Create an attribute buffer (ARRAY_BUFFER) resource. Stores vertex data in the GPU memory.
+     * @memberof ctx
+     * @param {import("./buffer.js").BufferOptions} opts
+     * @returns {import("./types.js").PexResource}
+     *
+     * @example
+     * ```js
+     * const vertexBuffer = ctx.vertexBuffer({ data: Array|TypedArray|ArrayBuffer })
+     * ```
+     */
+    vertexBuffer(opts) {
+      console.debug(NAMESPACE, "vertexBuffer", opts);
+      if (opts.length) opts = {
+        data: opts
+      };
       opts.target = gl.ARRAY_BUFFER;
-      return this.resource(buffer(this, opts));
+      return this.resource(createBuffer(this, opts));
     },
-    indexBuffer: function (opts) {
-      log$2('indexBuffer', opts);
 
-      if (opts.length) {
-        opts = {
-          data: opts
-        };
-      }
-
+    /**
+     * Create an index buffer (ELEMENT_ARRAY_BUFFER) resource. Stores index data in the GPU memory.
+     * @memberof ctx
+     * @param {import("./buffer.js").BufferOptions} opts
+     * @returns {import("./types.js").PexResource}
+     *
+     * @example
+     * ```js
+     * const indexBuffer = ctx.vertexBuffer({ data: Array|TypedArray|ArrayBuffer })
+     * ```
+     */
+    indexBuffer(opts) {
+      console.debug(NAMESPACE, "indexBuffer", opts);
+      if (opts.length) opts = {
+        data: opts
+      };
       opts.target = gl.ELEMENT_ARRAY_BUFFER;
-      return this.resource(buffer(this, opts));
+      return this.resource(createBuffer(this, opts));
     },
-    program: function (opts) {
-      log$2('program', opts);
-      return this.resource(program(this, opts));
-    },
-    pipeline: function (opts) {
-      log$2('pipeline', opts);
-      return this.resource(pipeline(this, opts));
-    },
-    pass: function (opts) {
-      log$2('pass', opts, opts.color ? opts.color.map(c => c.texture ? c.texture.info : c.info) : '');
-      return this.resource(pass(this, opts));
-    },
-    query: function (opts) {
-      log$2('query', opts);
-      return this.resource(query(this, opts));
-    },
-    beginQuery: function (q) {
-      assert_1(!this.activeQuery, 'Only one query can be active at the time');
 
-      if (q._begin(this, q)) {
-        this.activeQuery = q;
+    /**
+     * Queries can be used for GPU timers.
+     * @memberof ctx
+     * @param {import("./query.js").QueryOptions} opts
+     * @returns {import("./types.js").PexResource}
+     *
+     * @example
+     * ```js
+     * const query = ctx.query({
+     *   target: QueryTarget
+     * })
+     * ```
+     */
+    query(opts) {
+      console.debug(NAMESPACE, "query", opts);
+      return this.resource(createQuery(this, opts));
+    },
+
+    /**
+     * Begin the query measurement.
+     * @memberof ctx
+     * @param {import("./query.js").PexQuery} query
+     * _Note: There can be only one query running at the time._
+     */
+    beginQuery(query) {
+      console.assert(!this.activeQuery, "Only one query can be active at the time");
+
+      if (query._begin(this, query)) {
+        this.activeQuery = query;
       }
     },
-    endQuery: function (q) {
-      if (q._end(this, q)) {
-        this.queries.push(q);
+
+    /**
+     * End the query measurement.
+     * @memberof ctx
+     * @param {import("./query.js").PexQuery} query
+     * _Note: The result is not available immediately and will be `null` until the state changes from `ctx.QueryState.Pending` to `ctx.QueryState.Ready`._
+     */
+    endQuery(query) {
+      if (query._end(this, query)) {
+        this.queries.push(query);
         this.activeQuery = null;
       }
     },
-    readPixels: function (opts) {
-      const x = opts.x || 0;
-      const y = opts.y || 0;
-      const width = opts.width;
-      const height = opts.height;
-      const format = gl.RGBA;
-      const type = gl.UNSIGNED_BYTE;
-      let pixels = null;
-      pixels = new Uint8Array(width * height * 4);
-      gl.readPixels(x, y, width, height, format, type, pixels);
+
+    /**
+     * Helper to read a block of pixels from a specified rectangle of the current color framebuffer.
+     * @memberof ctx
+     * @param {{ x: number, y: number, width: number, height: number }} viewport
+     * @returns {Uint8Array}
+     */
+    readPixels({
+      x = 0,
+      y = 0,
+      width,
+      height
+    }) {
+      const pixels = new Uint8Array(width * height * 4);
+      gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
       return pixels;
     },
-    // update(texture, { data: TypeArray, [width: Int, height: Int] })
-    // update(texture, { data: TypedArray })
-    update: function (resource, opts) {
-      if (this.debugMode) log$2('update', {
-        resource: resource,
-        opts: opts
-      });
+
+    /**
+     * Update a resource.
+     * @memberof ctx
+     * @param {import("./types.js").PexResource} resource
+     * @param {Object} opts
+     *
+     * @example
+     * ```js
+     * ctx.update(buffer, { data: [] })
+     *
+     * ctx.update(texture, {
+     *   width: 1,
+     *   height: 1,
+     *   data: new Uint8Array([255, 0, 0, 255])
+     * })
+     * ```
+     */
+    update(resource, opts) {
+      if (this.debugMode) {
+        console.debug(NAMESPACE, "update", {
+          resource,
+          opts
+        });
+      }
 
       resource._update(this, resource, opts);
     },
+
+    /**
+     * Delete one or all resource(s). Disposed resources are no longer valid for use.
+     * @memberof ctx
+     * @param {import("./types.js").PexResource} [resource]
+     *
+     * @example
+     *
+     * Delete all allocated resources:
+     * ```js
+     * ctx.dispose()
+     * ```
+     *
+     * Delete a single resource:
+     * ```js
+     * ctx.dispose(texture)
+     * ```
+     * _Note: Framebuffers are ref counted and released by Pass. Programs are also ref counted and released by Pipeline._
+     */
+    dispose(resource) {
+      if (this.debugMode) console.debug(NAMESPACE, "dispose", resource);
+      console.assert(resource || arguments.length === 0, "Trying to dispose undefined resource");
+
+      if (resource) {
+        if (!resource._dispose) {
+          console.assert(resource._dispose, "Trying to dispose non resource");
+        }
+
+        const idx = this.resources.indexOf(resource);
+        console.assert(idx !== -1, "Trying to dispose resource from another context");
+        this.resources.splice(idx, 1);
+        this.stats[resource.class].alive--;
+
+        resource._dispose();
+      } else {
+        while (this.resources.length) {
+          this.dispose(this.resources[0]);
+        }
+
+        this.gl.canvas.width = 1;
+        this.gl.canvas.height = 1;
+      }
+    },
+
+    // Private API
     // TODO: i don't like this inherit flag
-    mergeCommands: function (parent, cmd, inherit) {
+    mergeCommands(parent, cmd, inherit) {
       // copy old state so we don't modify it's internals
       const newCmd = Object.assign({}, parent);
 
@@ -2159,7 +2345,8 @@ function createContext(opts) {
       newCmd.uniforms = parent.uniforms || cmd.uniforms ? Object.assign({}, parent.uniforms, cmd.uniforms) : null;
       return newCmd;
     },
-    applyPass: function (pass) {
+
+    applyPass(pass) {
       const gl = this.gl;
       const state = this.state; // Need to find reliable way of deciding if i should update framebuffer
       // 1. If pass has fbo, bind it
@@ -2172,7 +2359,7 @@ function createContext(opts) {
 
         if (framebuffer.id !== state.framebuffer.id) {
           if (this.debugMode) {
-            log$2('change framebuffer', state.framebuffer, '->', framebuffer);
+            console.debug(NAMESPACE, "change framebuffer", state.framebuffer, "->", framebuffer);
           }
 
           if (framebuffer._update && !compareFBOAttachments(framebuffer, pass.opts)) {
@@ -2210,14 +2397,20 @@ function createContext(opts) {
       let clearBits = 0;
 
       if (pass.clearColor !== undefined) {
-        if (this.debugMode) log$2('clearing color', pass.clearColor);
+        if (this.debugMode) {
+          console.debug(NAMESPACE, "clearing color", pass.clearColor);
+        }
+
         clearBits |= gl.COLOR_BUFFER_BIT; // TODO this might be unnecesary but we don't know because we don't store the clearColor in state
 
         gl.clearColor(pass.clearColor[0], pass.clearColor[1], pass.clearColor[2], pass.clearColor[3]);
       }
 
       if (pass.clearDepth !== undefined) {
-        if (this.debugMode) log$2('clearing depth', pass.clearDepth);
+        if (this.debugMode) {
+          console.debug(NAMESPACE, "clearing depth", pass.clearDepth);
+        }
+
         clearBits |= gl.DEPTH_BUFFER_BIT;
 
         if (!state.depthWrite) {
@@ -2229,13 +2422,11 @@ function createContext(opts) {
         gl.clearDepth(pass.clearDepth);
       }
 
-      if (clearBits) {
-        gl.clear(clearBits);
-      }
-
+      if (clearBits) gl.clear(clearBits);
       this.checkError();
     },
-    applyPipeline: function (pipeline) {
+
+    applyPipeline(pipeline) {
       const gl = this.gl;
       const state = this.state;
 
@@ -2290,44 +2481,45 @@ function createContext(opts) {
         }
       }
 
-      if (pipeline.vertexLayout) {
-        state.vertexLayout = pipeline.vertexLayout;
-      }
-
+      if (pipeline.vertexLayout) state.vertexLayout = pipeline.vertexLayout;
       this.checkError();
     },
-    applyUniforms: function (uniforms, cmd) {
-      const gl = this.gl;
-      const state = this.state;
-      let numTextures = 0;
 
-      if (!state.program) {
-        assert_1.fail('Trying to draw without an active program');
+    applyUniforms(uniforms, cmd) {
+      const gl = this.gl;
+      const {
+        program,
+        activeTextures
+      } = this.state;
+
+      if (!program) {
+        throw new Error("Trying to draw without an active program");
       }
 
-      const requiredUniforms = this.debugMode ? Object.keys(state.program.uniforms) : null;
+      let numTextures = 0;
+      const requiredUniforms = this.debugMode ? Object.keys(program.uniforms) : null;
 
-      for (var name in uniforms) {
+      for (const name in uniforms) {
         let value = uniforms[name]; // TODO: find a better way to not trying to set unused uniforms that might have been inherited
 
-        if (!state.program.uniforms[name] && !state.program.uniforms[name + '[0]']) {
+        if (!program.uniforms[name] && !program.uniforms[`${name}[0]`]) {
           continue;
         }
 
         if (value === null || value === undefined) {
-          log$2('invalid command', cmd);
-          assert_1.fail(`Can't set uniform "${name}" with a null value`);
+          if (this.debugMode) console.debug(NAMESPACE, "invalid command", cmd);
+          throw new Error(`Can't set uniform "${name}" with a null value`);
         } // FIXME: uniform array hack
 
 
-        if (Array.isArray(value) && !state.program.uniforms[name]) {
+        if (Array.isArray(value) && !program.uniforms[name]) {
           if (this.debugMode) {
-            log$2('unknown uniform', name, Object.keys(state.program.uniforms));
+            console.debug(NAMESPACE, "unknown uniform", name, Object.keys(program.uniforms));
           }
 
-          for (var i = 0; i < value.length; i++) {
-            var nameIndex = name + '[' + i + ']';
-            state.program.setUniform(nameIndex, value[i]);
+          for (let i = 0; i < value.length; i++) {
+            const nameIndex = `${name}[${i}]`;
+            program.setUniform(nameIndex, value[i]);
 
             if (this.debugMode) {
               requiredUniforms.splice(requiredUniforms.indexOf(nameIndex), 1);
@@ -2339,21 +2531,21 @@ function createContext(opts) {
           const slot = numTextures++;
           gl.activeTexture(gl.TEXTURE0 + slot);
 
-          if (state.activeTextures[slot] !== value) {
+          if (activeTextures[slot] !== value) {
             gl.bindTexture(value.target, value.handle);
-            state.activeTextures[slot] = value;
+            activeTextures[slot] = value;
           }
 
-          state.program.setUniform(name, slot);
+          program.setUniform(name, slot);
 
           if (this.debugMode) {
             requiredUniforms.splice(requiredUniforms.indexOf(name), 1);
           }
-        } else if (!value.length && typeof value === 'object') {
-          log$2('invalid command', cmd);
-          assert_1.fail(`Can set uniform "${name}" with an Object value`);
+        } else if (!value.length && typeof value === "object") {
+          if (this.debugMode) console.debug(NAMESPACE, "invalid command", cmd);
+          throw new Error(`Can set uniform "${name}" with an Object value`);
         } else {
-          state.program.setUniform(name, value);
+          program.setUniform(name, value);
 
           if (this.debugMode) {
             requiredUniforms.splice(requiredUniforms.indexOf(name), 1);
@@ -2362,126 +2554,84 @@ function createContext(opts) {
       }
 
       if (this.debugMode && requiredUniforms.length > 0) {
-        log$2('invalid command', cmd);
-        assert_1.fail(`Trying to draw with missing uniforms: ${requiredUniforms.join(', ')}`);
+        console.debug(NAMESPACE, "invalid command", cmd);
+        throw new Error(`Trying to draw with missing uniforms: ${requiredUniforms.join(", ")}`);
       }
 
       this.checkError();
     },
-    drawVertexData: function (cmd) {
-      const state = this.state;
-      const vertexLayout = state.vertexLayout;
 
-      if (!state.program) {
-        assert_1.fail('Trying to draw without an active program');
+    drawVertexData(cmd) {
+      var _cmd$vertexArray;
+
+      const {
+        vertexLayout,
+        program,
+        vertexArray
+      } = this.state;
+
+      if (!program) {
+        throw new Error("Trying to draw without an active program");
       }
 
       if (this.debugMode) {
         // TODO: can vertex layout be ever different if it's derived from pipeline's shader?
-        if (vertexLayout.length !== Object.keys(state.program.attributes).length) {
-          log$2('Invalid vertex layout not matching the shader', vertexLayout, state.program.attributes, cmd);
-          assert_1.fail('Invalid vertex layout not matching the shader');
+        if (Object.keys(vertexLayout).length !== Object.keys(program.attributes).length) {
+          console.debug(NAMESPACE, "Invalid vertex layout not matching the shader", vertexLayout, program.attributes, cmd);
+          throw new Error("Invalid vertex layout not matching the shader");
         }
       }
 
-      let instanced = false; // TODO: disable unused vertex array slots
+      if (cmd.vertexArray) {
+        //TODO: verify vertex layout
+        for (let i = 0; i < vertexLayout.length; i++) {
+          const [name, location] = vertexLayout[i];
 
-      for (let i = 0; i < 16; i++) {
-        state.activeAttributes[i] = null;
-        gl.disableVertexAttribArray(i);
-      } // TODO: the same as i support [tex] and { texture: tex } i should support buffers in attributes?
+          if (!cmd.vertexArray.attributes[name] || !cmd.vertexArray.attributes[name].location === location) {
+            if (this.debugMode) {
+              console.debug(NAMESPACE, "invalid command", cmd, "vertex array doesn't satisfy vertex layout", vertexLayout);
+            }
 
-
-      for (let i = 0; i < vertexLayout.length; i++) {
-        const layout = vertexLayout[i];
-        const name = layout[0];
-        const location = layout[1];
-        const size = layout[2];
-        const attrib = cmd.attributes[i] || cmd.attributes[name];
-
-        if (!attrib) {
-          log$2('Invalid command', cmd, "doesn't satisfy vertex layout", vertexLayout);
-          assert_1.fail(`Command is missing attribute "${name}" at location ${location} with ${attrib}`);
-        }
-
-        let buffer = attrib.buffer;
-
-        if (!buffer && attrib.class === 'vertexBuffer') {
-          buffer = attrib;
-        }
-
-        if (!buffer || !buffer.target) {
-          log$2('Invalid command', cmd);
-          assert_1.fail(`Trying to draw arrays with invalid buffer for attribute : ${name}`);
-        }
-
-        gl.bindBuffer(buffer.target, buffer.handle);
-
-        if (size === 16) {
-          gl.enableVertexAttribArray(location + 0);
-          gl.enableVertexAttribArray(location + 1);
-          gl.enableVertexAttribArray(location + 2);
-          gl.enableVertexAttribArray(location + 3);
-          state.activeAttributes[location + 0] = buffer;
-          state.activeAttributes[location + 1] = buffer;
-          state.activeAttributes[location + 2] = buffer;
-          state.activeAttributes[location + 3] = buffer; // we still check for buffer type because while e.g. pex-renderer would copy buffer type to attrib
-          // a raw pex-context example probably would not
-
-          gl.vertexAttribPointer(location, 4, attrib.type || buffer.type, attrib.normalized || false, attrib.stride || 64, attrib.offset || 0);
-          gl.vertexAttribPointer(location + 1, 4, attrib.type || buffer.type, attrib.normalized || false, attrib.stride || 64, attrib.offset || 16);
-          gl.vertexAttribPointer(location + 2, 4, attrib.type || buffer.type, attrib.normalized || false, attrib.stride || 64, attrib.offset || 32);
-          gl.vertexAttribPointer(location + 3, 4, attrib.type || buffer.type, attrib.normalized || false, attrib.stride || 64, attrib.offset || 48);
-
-          if (attrib.divisor) {
-            gl.vertexAttribDivisor(location + 0, attrib.divisor);
-            gl.vertexAttribDivisor(location + 1, attrib.divisor);
-            gl.vertexAttribDivisor(location + 2, attrib.divisor);
-            gl.vertexAttribDivisor(location + 3, attrib.divisor);
-            instanced = true;
-          } else if (capabilities.instancing) {
-            gl.vertexAttribDivisor(location + 0, 0);
-            gl.vertexAttribDivisor(location + 1, 0);
-            gl.vertexAttribDivisor(location + 2, 0);
-            gl.vertexAttribDivisor(location + 3, 0);
+            throw new Error(`Command is missing attribute "${name}" at location ${location}`);
           }
-        } else {
-          gl.enableVertexAttribArray(location);
-          state.activeAttributes[location] = buffer;
-          gl.vertexAttribPointer(location, size, attrib.type || buffer.type, attrib.normalized || false, attrib.stride || 0, attrib.offset || 0);
+        }
 
-          if (attrib.divisor) {
-            gl.vertexAttribDivisor(location, attrib.divisor);
-            instanced = true;
-          } else if (capabilities.instancing) {
-            gl.vertexAttribDivisor(location, 0);
+        if (vertexArray !== cmd.vertexArray.handle) {
+          this.state.vertexArray = cmd.vertexArray.handle;
+          gl.bindVertexArray(cmd.vertexArray.handle);
+        }
+
+        if (cmd.vertexArray.indices) {
+          let indexBuffer = cmd.vertexArray.indices.buffer;
+
+          if (!indexBuffer && cmd.vertexArray.indices.class === "indexBuffer") {
+            indexBuffer = cmd.vertexArray.indices;
           }
-        } // TODO: how to match index with vertexLayout location?
 
+          this.state.indexBuffer = indexBuffer;
+        }
+      } else {
+        if (this.state.vertexArray !== undefined) {
+          this.state.vertexArray = undefined;
+          gl.bindVertexArray(null);
+        } // Sets ctx.state.indexBuffer and ctx.state.activeAttributes
+
+
+        enableVertexData(ctx, vertexLayout, cmd, true);
       }
 
-      let primitive = cmd.pipeline.primitive;
+      const instanced = Object.values(cmd.attributes || cmd.vertexArray.attributes).some(attrib => attrib.divisor);
+      const primitive = cmd.pipeline.primitive;
 
-      if (cmd.indices) {
-        let indexBuffer = cmd.indices.buffer;
+      if (cmd.indices || (_cmd$vertexArray = cmd.vertexArray) !== null && _cmd$vertexArray !== void 0 && _cmd$vertexArray.indices) {
+        var _cmd$indices, _cmd$vertexArray2, _cmd$vertexArray2$ind, _cmd$indices2, _cmd$vertexArray3, _cmd$vertexArray3$ind;
 
-        if (!indexBuffer && cmd.indices.class === 'indexBuffer') {
-          indexBuffer = cmd.indices;
-        }
-
-        if (!indexBuffer || !indexBuffer.target) {
-          log$2('Invalid command', cmd);
-          assert_1.fail(`Trying to draw arrays with invalid buffer for elements`);
-        }
-
-        state.indexBuffer = indexBuffer;
-        gl.bindBuffer(indexBuffer.target, indexBuffer.handle);
-        var count = cmd.count || indexBuffer.length;
-        var offset = cmd.indices.offset || 0;
-        var type = cmd.indices.type || indexBuffer.type;
+        // TODO: is that always correct
+        const count = cmd.count || this.state.indexBuffer.length;
+        const offset = ((_cmd$indices = cmd.indices) === null || _cmd$indices === void 0 ? void 0 : _cmd$indices.offset) || ((_cmd$vertexArray2 = cmd.vertexArray) === null || _cmd$vertexArray2 === void 0 ? void 0 : (_cmd$vertexArray2$ind = _cmd$vertexArray2.indices) === null || _cmd$vertexArray2$ind === void 0 ? void 0 : _cmd$vertexArray2$ind.offset) || 0;
+        const type = ((_cmd$indices2 = cmd.indices) === null || _cmd$indices2 === void 0 ? void 0 : _cmd$indices2.type) || ((_cmd$vertexArray3 = cmd.vertexArray) === null || _cmd$vertexArray3 === void 0 ? void 0 : (_cmd$vertexArray3$ind = _cmd$vertexArray3.indices) === null || _cmd$vertexArray3$ind === void 0 ? void 0 : _cmd$vertexArray3$ind.offset) || this.state.indexBuffer.type;
 
         if (instanced) {
-          // TODO: check if instancing available
           gl.drawElementsInstanced(primitive, count, type, offset, cmd.instances);
         } else {
           gl.drawElements(primitive, count, type, offset);
@@ -2495,79 +2645,33 @@ function createContext(opts) {
           gl.drawArrays(primitive, first, cmd.count);
         }
       } else {
-        assert_1.fail('Vertex arrays requres elements or count to draw');
+        throw new Error("Vertex arrays requires elements or count to draw");
       }
 
       this.checkError();
     },
-    frame: function (cb) {
-      const self = this;
-      raf_1(function frame() {
-        if (self.updatePixelRatio) {
-          self.pixelRatio = self.updatePixelRatio; // we need to reaply width/height and update styles
 
-          if (!self.updateWidth) {
-            self.updateWidth = parseInt(gl.canvas.style.width) || gl.canvas.width;
-          }
-
-          if (!self.updateHeight) {
-            self.updateHeight = parseInt(gl.canvas.style.height) || gl.canvas.height;
-          }
-
-          self.updatePixelRatio = 0;
-        }
-
-        if (self.updateWidth) {
-          gl.canvas.style.width = self.updateWidth + 'px';
-          gl.canvas.width = self.updateWidth * self.pixelRatio;
-          self.updateWidth = 0;
-        }
-
-        if (self.updateHeight) {
-          gl.canvas.style.height = self.updateHeight + 'px';
-          gl.canvas.height = self.updateHeight * self.pixelRatio;
-          self.updateHeight = 0;
-        }
-
-        if (self.defaultState.viewport[2] !== gl.drawingBufferWidth || self.defaultState.viewport[3] !== gl.drawingBufferHeight) {
-          self.defaultState.viewport[2] = gl.drawingBufferWidth;
-          self.defaultState.viewport[3] = gl.drawingBufferHeight;
-          self.defaultState.pass.framebuffer.width = gl.drawingBufferWidth;
-          self.defaultState.pass.framebuffer.height = gl.drawingBufferHeight;
-          gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-        }
-
-        if (cb() === false) {
-          // interrupt render loop
-          return;
-        }
-
-        if (self.queries.length) {
-          self.queries = self.queries.filter(q => !q._available(self, q));
-        }
-
-        raf_1(frame);
-      });
-    },
     // TODO: switching to lightweight resources would allow to just clone state
     // and use commands as state modifiers?
-    apply: function (cmd) {
-      const state = this.state;
-      if (this.debugMode) log$2('apply', cmd.name || cmd.id, {
-        cmd: cmd,
-        state: JSON.parse(JSON.stringify(state))
-      });
+    apply(cmd) {
+      if (this.debugMode) {
+        console.debug(NAMESPACE, "apply", cmd.name || cmd.id, {
+          cmd,
+          state: JSON.parse(JSON.stringify(this.state))
+        });
+      }
+
       this.checkError();
 
       if (cmd.scissor) {
-        if (cmd.scissor !== state.scissor) {
-          state.scissor = cmd.scissor;
+        if (cmd.scissor !== this.state.scissor) {
+          this.state.scissor = cmd.scissor;
           gl.enable(gl.SCISSOR_TEST);
-          gl.scissor(state.scissor[0], state.scissor[1], state.scissor[2], state.scissor[3]);
+          gl.scissor(this.state.scissor[0], this.state.scissor[1], this.state.scissor[2], this.state.scissor[3]);
         }
       } else {
-        if (cmd.scissor !== state.scissor) {
-          state.scissor = cmd.scissor;
+        if (cmd.scissor !== this.state.scissor) {
+          this.state.scissor = cmd.scissor;
           gl.disable(gl.SCISSOR_TEST);
         }
       }
@@ -2576,151 +2680,19 @@ function createContext(opts) {
       if (cmd.pipeline) this.applyPipeline(cmd.pipeline);
       if (cmd.uniforms) this.applyUniforms(cmd.uniforms);
 
-      if (cmd.viewport) {
-        if (cmd.viewport !== state.viewport) {
-          state.viewport = cmd.viewport;
-          gl.viewport(state.viewport[0], state.viewport[1], state.viewport[2], state.viewport[3]);
-        }
+      if (cmd.viewport && cmd.viewport !== this.state.viewport) {
+        this.state.viewport = cmd.viewport;
+        gl.viewport(this.state.viewport[0], this.state.viewport[1], this.state.viewport[2], this.state.viewport[3]);
       }
 
-      if (cmd.attributes) {
-        this.drawVertexData(cmd);
-      }
-    },
-    submit: function (cmd, batches, subCommand) {
-      var _this$state$framebuff, _this$state$framebuff2;
-
-      const prevFramebufferId = (_this$state$framebuff = this.state.framebuffer) === null || _this$state$framebuff === void 0 ? void 0 : _this$state$framebuff.id;
-
-      if (this.debugMode) {
-        checkProps_1(allowedCommandProps, cmd);
-
-        if (batches && subCommand) {
-          log$2('submit', cmd.name || cmd.id, {
-            depth: this.stack.length,
-            cmd: cmd,
-            batches: batches,
-            subCommand: subCommand,
-            state: this.state,
-            stack: this.stack
-          });
-        } else if (batches) {
-          log$2('submit', cmd.name || cmd.id, {
-            depth: this.stack.length,
-            cmd: cmd,
-            batches: batches,
-            state: this.state,
-            stack: this.stack
-          });
-        } else {
-          log$2('submit', cmd.name || cmd.id, {
-            depth: this.stack.length,
-            cmd: cmd,
-            state: this.state,
-            stack: this.stack
-          });
-        }
-      }
-
-      if (batches) {
-        if (Array.isArray(batches)) {
-          // TODO: quick hack
-          for (let i = 0; i < batches.length; i++) {
-            const batch = batches[i];
-            this.submit(this.mergeCommands(cmd, batch, true), subCommand);
-          }
-
-          return;
-        } else if (typeof batches === 'object') {
-          this.submit(this.mergeCommands(cmd, batches, true), subCommand);
-          return;
-        } else {
-          subCommand = batches; // shift argument
-        }
-      }
-
-      const parentState = this.stack[this.stack.length - 1];
-      const cmdState = this.mergeCommands(parentState, cmd, false);
-      this.apply(cmdState);
-      const currFramebufferId = (_this$state$framebuff2 = this.state.framebuffer) === null || _this$state$framebuff2 === void 0 ? void 0 : _this$state$framebuff2.id;
-
-      if (this.debugMode) {
-        const framebufferCanged = prevFramebufferId != currFramebufferId;
-        log$2('fbo-state', '  '.repeat(this.stack.length), cmd.name, framebufferCanged ? `${prevFramebufferId} -> ${currFramebufferId}` : currFramebufferId);
-      }
-
-      if (this.debugMode) {
-        cmdState.debugId = this.debugCommands.length;
-        this.debugCommands.push({
-          cmd,
-          cmdState,
-          parentState
-        });
-      }
-
-      if (subCommand) {
-        if (this.debugMode) {
-          this.debugGraph += `subgraph cluster_${cmd.name || cmd.id} {\n`;
-          this.debugGraph += `label = "${cmd.name}"\n`;
-
-          if (cmd.program) {
-            this.debugGraph += `${cmd.program.id} -> cluster_${cmd.name || cmd.id}\n`;
-          }
-
-          if (cmd.framebuffer) {
-            this.debugGraph += `${cmd.framebuffer.id} -> cluster_${cmd.name || cmd.id}\n`;
-
-            for (let i = 0; i < cmd.framebuffer.color; i++) {
-              const attachment = cmd.framebuffer.color[i];
-              this.debugGraph += `${attachment.texture.id} -> ${cmd.framebuffer.id}\n`;
-            }
-
-            if (cmd.framebuffer.depth) {
-              this.debugGraph += `${cmd.framebuffer.depth.texture.id} -> ${cmd.framebuffer.id}\n`;
-            }
-          }
-        }
-
-        this.stack.push(cmdState);
-        subCommand();
-        this.stack.pop();
-
-        if (this.debugMode) {
-          this.debugGraph += '}\n';
-        }
-      }
-
-      this.checkError();
-    },
-    dispose: function (res) {
-      log$2('dispose', res);
-      assert_1(res || arguments.length === 0, 'Trying to dispose undefined resource');
-
-      if (res) {
-        if (!res._dispose) {
-          assert_1(res._dispose, 'Trying to dispose non resource');
-        }
-
-        const idx = this.resources.indexOf(res);
-        assert_1(idx !== -1, 'Trying to dispose resource from another context');
-        this.resources.splice(idx, 1);
-        this.stats[res.class].alive--;
-
-        res._dispose();
-      } else {
-        while (this.resources.length) {
-          this.dispose(this.resources[0]);
-        }
-
-        this.gl.canvas.width = 1;
-        this.gl.canvas.height = 1;
-      }
+      if (cmd.attributes || cmd.vertexArray) this.drawVertexData(cmd);
     }
+
   });
+  if (opts.debug) ctx.debug(true);
+  console.debug(NAMESPACE, "capabilities", ctx.capabilities);
   ctx.apply(defaultState);
   return ctx;
 }
 
-var pexContext = createContext;
-
-export default pexContext;
+export default createContext;

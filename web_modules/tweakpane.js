@@ -1,16 +1,331 @@
-import './common/web.dom-collections.iterator-6ff37229.js';
-import './common/esnext.iterator.map-e455ac63.js';
-import './common/esnext.iterator.filter-6eaab0d3.js';
-import './common/esnext.map.update-7353e721.js';
-import './common/esnext.set.union-3c32e317.js';
-import './common/esnext.iterator.find-ab3af766.js';
-import './common/es.string.replace-4768289e.js';
-import { a1 as getDefaultExportFromCjs, j as createCommonjsModule, k as commonjsGlobal } from './common/set-to-string-tag-f46d73c4.js';
-import './common/string-multibyte-037a230c.js';
-import './common/species-constructor-1e061cc5.js';
+import './common/web.dom-collections.iterator-4d9c3279.js';
+import { g as getIteratorDirect, b as asyncIteratorClose, i as iterate } from './common/es.error.cause-0cbcfba0.js';
+import './common/esnext.iterator.for-each-4afc5818.js';
+import { g as getBuiltIn, _ as _export, b as aCallable, a as anObject, f as functionCall, i as isCallable, E as functionUncurryThis, a3 as getDefaultExportFromCjs, W as createCommonjsModule, a2 as commonjsGlobal } from './common/object-set-prototype-of-c6b82070.js';
+import { c as collectionDeleteAll } from './common/esnext.map.update-4076d5c5.js';
+import { s as speciesConstructor, f as functionBindContext, a as getIterator } from './common/inherit-if-required-718dc9f8.js';
+import { t as toString_1 } from './common/function-apply-6538ee25.js';
+import './common/es.string.replace-3aa962b0.js';
+import './common/string-multibyte-e0d8bd77.js';
+
+// https://github.com/tc39/proposal-iterator-helpers
+
+
+
+
+
+
+
+
+var Promise = getBuiltIn('Promise');
+var $TypeError = TypeError;
+
+_export({ target: 'AsyncIterator', proto: true, real: true, forced: true }, {
+  reduce: function reduce(reducer /* , initialValue */) {
+    var record = getIteratorDirect(this);
+    var iterator = record.iterator;
+    var next = record.next;
+    var noInitial = arguments.length < 2;
+    var accumulator = noInitial ? undefined : arguments[1];
+    aCallable(reducer);
+
+    return new Promise(function (resolve, reject) {
+      var ifAbruptCloseAsyncIterator = function (error) {
+        asyncIteratorClose(iterator, reject, error, reject);
+      };
+
+      var loop = function () {
+        try {
+          Promise.resolve(anObject(functionCall(next, iterator))).then(function (step) {
+            try {
+              if (anObject(step).done) {
+                noInitial ? reject($TypeError('Reduce of empty iterator with no initial value')) : resolve(accumulator);
+              } else {
+                var value = step.value;
+                if (noInitial) {
+                  noInitial = false;
+                  accumulator = value;
+                  loop();
+                } else try {
+                  Promise.resolve(reducer(accumulator, value)).then(function (result) {
+                    accumulator = result;
+                    loop();
+                  }, ifAbruptCloseAsyncIterator);
+                } catch (error3) { ifAbruptCloseAsyncIterator(error3); }
+              }
+            } catch (error2) { reject(error2); }
+          }, reject);
+        } catch (error) { reject(error); }
+      };
+
+      loop();
+    });
+  }
+});
+
+// https://github.com/tc39/proposal-iterator-helpers
+
+
+
+
+
+var $TypeError$1 = TypeError;
+
+_export({ target: 'Iterator', proto: true, real: true, forced: true }, {
+  reduce: function reduce(reducer /* , initialValue */) {
+    var record = getIteratorDirect(this);
+    aCallable(reducer);
+    var noInitial = arguments.length < 2;
+    var accumulator = noInitial ? undefined : arguments[1];
+    iterate(record, function (value) {
+      if (noInitial) {
+        noInitial = false;
+        accumulator = value;
+      } else {
+        accumulator = reducer(accumulator, value);
+      }
+    }, { IS_RECORD: true });
+    if (noInitial) throw $TypeError$1('Reduce of empty iterator with no initial value');
+    return accumulator;
+  }
+});
+
+// https://github.com/tc39/collection-methods
+var collectionAddAll = function addAll(/* ...elements */) {
+  var set = anObject(this);
+  var adder = aCallable(set.add);
+  for (var k = 0, len = arguments.length; k < len; k++) {
+    functionCall(adder, set, arguments[k]);
+  }
+  return set;
+};
+
+// `Set.prototype.addAll` method
+// https://github.com/tc39/proposal-collection-methods
+_export({ target: 'Set', proto: true, real: true, forced: true }, {
+  addAll: collectionAddAll
+});
+
+// `Set.prototype.deleteAll` method
+// https://github.com/tc39/proposal-collection-methods
+_export({ target: 'Set', proto: true, real: true, forced: true }, {
+  deleteAll: collectionDeleteAll
+});
+
+// `Set.prototype.difference` method
+// https://github.com/tc39/proposal-set-methods
+_export({ target: 'Set', proto: true, real: true, forced: true }, {
+  difference: function difference(iterable) {
+    var set = anObject(this);
+    var newSet = new (speciesConstructor(set, getBuiltIn('Set')))(set);
+    var remover = aCallable(newSet['delete']);
+    iterate(iterable, function (value) {
+      functionCall(remover, newSet, value);
+    });
+    return newSet;
+  }
+});
+
+var getSetIterator = function (it) {
+  // eslint-disable-next-line es-x/no-set -- safe
+  return functionCall(Set.prototype.values, it);
+};
+
+// `Set.prototype.every` method
+// https://github.com/tc39/proposal-collection-methods
+_export({ target: 'Set', proto: true, real: true, forced: true }, {
+  every: function every(callbackfn /* , thisArg */) {
+    var set = anObject(this);
+    var iterator = getSetIterator(set);
+    var boundFunction = functionBindContext(callbackfn, arguments.length > 1 ? arguments[1] : undefined);
+    return !iterate(iterator, function (value, stop) {
+      if (!boundFunction(value, value, set)) return stop();
+    }, { IS_ITERATOR: true, INTERRUPTED: true }).stopped;
+  }
+});
+
+// `Set.prototype.filter` method
+// https://github.com/tc39/proposal-collection-methods
+_export({ target: 'Set', proto: true, real: true, forced: true }, {
+  filter: function filter(callbackfn /* , thisArg */) {
+    var set = anObject(this);
+    var iterator = getSetIterator(set);
+    var boundFunction = functionBindContext(callbackfn, arguments.length > 1 ? arguments[1] : undefined);
+    var newSet = new (speciesConstructor(set, getBuiltIn('Set')))();
+    var adder = aCallable(newSet.add);
+    iterate(iterator, function (value) {
+      if (boundFunction(value, value, set)) functionCall(adder, newSet, value);
+    }, { IS_ITERATOR: true });
+    return newSet;
+  }
+});
+
+// `Set.prototype.find` method
+// https://github.com/tc39/proposal-collection-methods
+_export({ target: 'Set', proto: true, real: true, forced: true }, {
+  find: function find(callbackfn /* , thisArg */) {
+    var set = anObject(this);
+    var iterator = getSetIterator(set);
+    var boundFunction = functionBindContext(callbackfn, arguments.length > 1 ? arguments[1] : undefined);
+    return iterate(iterator, function (value, stop) {
+      if (boundFunction(value, value, set)) return stop(value);
+    }, { IS_ITERATOR: true, INTERRUPTED: true }).result;
+  }
+});
+
+// `Set.prototype.intersection` method
+// https://github.com/tc39/proposal-set-methods
+_export({ target: 'Set', proto: true, real: true, forced: true }, {
+  intersection: function intersection(iterable) {
+    var set = anObject(this);
+    var newSet = new (speciesConstructor(set, getBuiltIn('Set')))();
+    var hasCheck = aCallable(set.has);
+    var adder = aCallable(newSet.add);
+    iterate(iterable, function (value) {
+      if (functionCall(hasCheck, set, value)) functionCall(adder, newSet, value);
+    });
+    return newSet;
+  }
+});
+
+// `Set.prototype.isDisjointFrom` method
+// https://tc39.github.io/proposal-set-methods/#Set.prototype.isDisjointFrom
+_export({ target: 'Set', proto: true, real: true, forced: true }, {
+  isDisjointFrom: function isDisjointFrom(iterable) {
+    var set = anObject(this);
+    var hasCheck = aCallable(set.has);
+    return !iterate(iterable, function (value, stop) {
+      if (functionCall(hasCheck, set, value) === true) return stop();
+    }, { INTERRUPTED: true }).stopped;
+  }
+});
+
+// `Set.prototype.isSubsetOf` method
+// https://tc39.github.io/proposal-set-methods/#Set.prototype.isSubsetOf
+_export({ target: 'Set', proto: true, real: true, forced: true }, {
+  isSubsetOf: function isSubsetOf(iterable) {
+    var iterator = getIterator(this);
+    var otherSet = anObject(iterable);
+    var hasCheck = otherSet.has;
+    if (!isCallable(hasCheck)) {
+      otherSet = new (getBuiltIn('Set'))(iterable);
+      hasCheck = aCallable(otherSet.has);
+    }
+    return !iterate(iterator, function (value, stop) {
+      if (functionCall(hasCheck, otherSet, value) === false) return stop();
+    }, { IS_ITERATOR: true, INTERRUPTED: true }).stopped;
+  }
+});
+
+// `Set.prototype.isSupersetOf` method
+// https://tc39.github.io/proposal-set-methods/#Set.prototype.isSupersetOf
+_export({ target: 'Set', proto: true, real: true, forced: true }, {
+  isSupersetOf: function isSupersetOf(iterable) {
+    var set = anObject(this);
+    var hasCheck = aCallable(set.has);
+    return !iterate(iterable, function (value, stop) {
+      if (functionCall(hasCheck, set, value) === false) return stop();
+    }, { INTERRUPTED: true }).stopped;
+  }
+});
+
+var arrayJoin = functionUncurryThis([].join);
+var push = [].push;
+
+// `Set.prototype.join` method
+// https://github.com/tc39/proposal-collection-methods
+_export({ target: 'Set', proto: true, real: true, forced: true }, {
+  join: function join(separator) {
+    var set = anObject(this);
+    var iterator = getSetIterator(set);
+    var sep = separator === undefined ? ',' : toString_1(separator);
+    var result = [];
+    iterate(iterator, push, { that: result, IS_ITERATOR: true });
+    return arrayJoin(result, sep);
+  }
+});
+
+// `Set.prototype.map` method
+// https://github.com/tc39/proposal-collection-methods
+_export({ target: 'Set', proto: true, real: true, forced: true }, {
+  map: function map(callbackfn /* , thisArg */) {
+    var set = anObject(this);
+    var iterator = getSetIterator(set);
+    var boundFunction = functionBindContext(callbackfn, arguments.length > 1 ? arguments[1] : undefined);
+    var newSet = new (speciesConstructor(set, getBuiltIn('Set')))();
+    var adder = aCallable(newSet.add);
+    iterate(iterator, function (value) {
+      functionCall(adder, newSet, boundFunction(value, value, set));
+    }, { IS_ITERATOR: true });
+    return newSet;
+  }
+});
+
+var $TypeError$2 = TypeError;
+
+// `Set.prototype.reduce` method
+// https://github.com/tc39/proposal-collection-methods
+_export({ target: 'Set', proto: true, real: true, forced: true }, {
+  reduce: function reduce(callbackfn /* , initialValue */) {
+    var set = anObject(this);
+    var iterator = getSetIterator(set);
+    var noInitial = arguments.length < 2;
+    var accumulator = noInitial ? undefined : arguments[1];
+    aCallable(callbackfn);
+    iterate(iterator, function (value) {
+      if (noInitial) {
+        noInitial = false;
+        accumulator = value;
+      } else {
+        accumulator = callbackfn(accumulator, value, value, set);
+      }
+    }, { IS_ITERATOR: true });
+    if (noInitial) throw $TypeError$2('Reduce of empty set with no initial value');
+    return accumulator;
+  }
+});
+
+// `Set.prototype.some` method
+// https://github.com/tc39/proposal-collection-methods
+_export({ target: 'Set', proto: true, real: true, forced: true }, {
+  some: function some(callbackfn /* , thisArg */) {
+    var set = anObject(this);
+    var iterator = getSetIterator(set);
+    var boundFunction = functionBindContext(callbackfn, arguments.length > 1 ? arguments[1] : undefined);
+    return iterate(iterator, function (value, stop) {
+      if (boundFunction(value, value, set)) return stop();
+    }, { IS_ITERATOR: true, INTERRUPTED: true }).stopped;
+  }
+});
+
+// `Set.prototype.symmetricDifference` method
+// https://github.com/tc39/proposal-set-methods
+_export({ target: 'Set', proto: true, real: true, forced: true }, {
+  symmetricDifference: function symmetricDifference(iterable) {
+    var set = anObject(this);
+    var newSet = new (speciesConstructor(set, getBuiltIn('Set')))(set);
+    var remover = aCallable(newSet['delete']);
+    var adder = aCallable(newSet.add);
+    iterate(iterable, function (value) {
+      functionCall(remover, newSet, value) || functionCall(adder, newSet, value);
+    });
+    return newSet;
+  }
+});
+
+// `Set.prototype.union` method
+// https://github.com/tc39/proposal-set-methods
+_export({ target: 'Set', proto: true, real: true, forced: true }, {
+  union: function union(iterable) {
+    var set = anObject(this);
+    var newSet = new (speciesConstructor(set, getBuiltIn('Set')))(set);
+    iterate(iterable, aCallable(newSet.add), { that: newSet });
+    return newSet;
+  }
+});
 
 var tweakpane = createCommonjsModule(function (module, exports) {
-  /*! Tweakpane 3.0.8 (c) 2016 cocopon, licensed under the MIT license. */
+  /*! Tweakpane 3.1.0 (c) 2016 cocopon, licensed under the MIT license. */
   (function (global, factory) {
      factory(exports) ;
   })(commonjsGlobal, function (exports) {
@@ -41,6 +356,10 @@ var tweakpane = createCommonjsModule(function (module, exports) {
     class BladeApi {
       constructor(controller) {
         this.controller_ = controller;
+      }
+
+      get element() {
+        return this.controller_.view.element;
       }
 
       get disabled() {
@@ -95,6 +414,14 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       constructor(target, expanded) {
         super(target);
         this.expanded = expanded;
+      }
+
+    }
+
+    class TpTabSelectEvent extends TpEvent {
+      constructor(target, index) {
+        super(target);
+        this.index = index;
       }
 
     }
@@ -1003,7 +1330,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
     }
 
     function addSeparatorAsBlade(api, opt_params) {
-      const params = opt_params || {};
+      const params = opt_params !== null && opt_params !== void 0 ? opt_params : {};
       return api.addBlade(Object.assign(Object.assign({}, params), {
         view: 'separator'
       }));
@@ -1268,7 +1595,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       }
 
       addInput(object, key, opt_params) {
-        const params = opt_params || {};
+        const params = opt_params !== null && opt_params !== void 0 ? opt_params : {};
         const doc = this.controller_.view.element.ownerDocument;
         const bc = this.pool_.createInput(doc, createBindingTarget(object, key, params.presetKey), params);
         const api = new InputBindingApi(bc);
@@ -1276,7 +1603,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       }
 
       addMonitor(object, key, opt_params) {
-        const params = opt_params || {};
+        const params = opt_params !== null && opt_params !== void 0 ? opt_params : {};
         const doc = this.controller_.view.element.ownerDocument;
         const bc = this.pool_.createMonitor(doc, createBindingTarget(object, key), params);
         const api = new MonitorBindingApi(bc);
@@ -1823,7 +2150,9 @@ var tweakpane = createCommonjsModule(function (module, exports) {
 
     class FolderView {
       constructor(doc, config) {
-        this.className_ = ClassName(config.viewName || 'fld');
+        var _a;
+
+        this.className_ = ClassName((_a = config.viewName) !== null && _a !== void 0 ? _a : 'fld');
         this.element = doc.createElement('div');
         this.element.classList.add(this.className_(), bladeContainerClassName());
         config.viewProps.bindClassModifiers(this.element);
@@ -2217,6 +2546,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         super(controller, new RackApi(controller.rackController, pool));
         this.onPageAdd_ = this.onPageAdd_.bind(this);
         this.onPageRemove_ = this.onPageRemove_.bind(this);
+        this.onSelect_ = this.onSelect_.bind(this);
         this.emitter_ = new Emitter();
         this.pageApiMap_ = new Map();
         this.rackApi_.on('change', ev => {
@@ -2229,6 +2559,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
             event: ev
           });
         });
+        this.controller_.tab.selectedIndex.emitter.on('change', this.onSelect_);
         this.controller_.pageSet.emitter.on('add', this.onPageAdd_);
         this.controller_.pageSet.emitter.on('remove', this.onPageRemove_);
         this.controller_.pageSet.items.forEach(pc => {
@@ -2306,6 +2637,79 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         this.pageApiMap_.delete(ev.item);
       }
 
+      onSelect_(ev) {
+        this.emitter_.emit('select', {
+          event: new TpTabSelectEvent(this, ev.rawValue)
+        });
+      }
+
+    }
+
+    const INDEX_NOT_SELECTED = -1;
+
+    class Tab {
+      constructor() {
+        this.onItemSelectedChange_ = this.onItemSelectedChange_.bind(this);
+        this.empty = createValue(true);
+        this.selectedIndex = createValue(INDEX_NOT_SELECTED);
+        this.items_ = [];
+      }
+
+      add(item, opt_index) {
+        const index = opt_index !== null && opt_index !== void 0 ? opt_index : this.items_.length;
+        this.items_.splice(index, 0, item);
+        item.emitter.on('change', this.onItemSelectedChange_);
+        this.keepSelection_();
+      }
+
+      remove(item) {
+        const index = this.items_.indexOf(item);
+
+        if (index < 0) {
+          return;
+        }
+
+        this.items_.splice(index, 1);
+        item.emitter.off('change', this.onItemSelectedChange_);
+        this.keepSelection_();
+      }
+
+      keepSelection_() {
+        if (this.items_.length === 0) {
+          this.selectedIndex.rawValue = INDEX_NOT_SELECTED;
+          this.empty.rawValue = true;
+          return;
+        }
+
+        const firstSelIndex = this.items_.findIndex(s => s.rawValue);
+
+        if (firstSelIndex < 0) {
+          this.items_.forEach((s, i) => {
+            s.rawValue = i === 0;
+          });
+          this.selectedIndex.rawValue = 0;
+        } else {
+          this.items_.forEach((s, i) => {
+            s.rawValue = i === firstSelIndex;
+          });
+          this.selectedIndex.rawValue = firstSelIndex;
+        }
+
+        this.empty.rawValue = false;
+      }
+
+      onItemSelectedChange_(ev) {
+        if (ev.rawValue) {
+          const index = this.items_.findIndex(s => s === ev.sender);
+          this.items_.forEach((s, i) => {
+            s.rawValue = i === index;
+          });
+          this.selectedIndex.rawValue = index;
+        } else {
+          this.keepSelection_();
+        }
+      }
+
     }
 
     const className$k = ClassName('tab');
@@ -2334,24 +2738,22 @@ var tweakpane = createCommonjsModule(function (module, exports) {
           blade: config.blade,
           viewProps: config.viewProps
         });
-        const empty = createValue(true);
+        const tab = new Tab();
         super({
           blade: config.blade,
           rackController: cr,
           view: new TabView(doc, {
             contentsElement: cr.view.element,
-            empty: empty,
+            empty: tab.empty,
             viewProps: config.viewProps
           })
         });
         this.onPageAdd_ = this.onPageAdd_.bind(this);
         this.onPageRemove_ = this.onPageRemove_.bind(this);
-        this.onPageSelectedChange_ = this.onPageSelectedChange_.bind(this);
         this.pageSet_ = new NestedOrderedSet(() => null);
         this.pageSet_.emitter.on('add', this.onPageAdd_);
         this.pageSet_.emitter.on('remove', this.onPageRemove_);
-        this.empty_ = empty;
-        this.applyPages_();
+        this.tab = tab;
       }
 
       get pageSet() {
@@ -2359,61 +2761,25 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       }
 
       add(pc, opt_index) {
-        this.pageSet_.add(pc, opt_index !== null && opt_index !== void 0 ? opt_index : this.pageSet_.items.length);
+        this.pageSet_.add(pc, opt_index);
       }
 
       remove(index) {
         this.pageSet_.remove(this.pageSet_.items[index]);
       }
 
-      applyPages_() {
-        this.keepSelection_();
-        this.empty_.rawValue = this.pageSet_.items.length === 0;
-      }
-
       onPageAdd_(ev) {
         const pc = ev.item;
         insertElementAt(this.view.itemsElement, pc.itemController.view.element, ev.index);
         this.rackController.rack.add(pc.contentController, ev.index);
-        pc.props.value('selected').emitter.on('change', this.onPageSelectedChange_);
-        this.applyPages_();
+        this.tab.add(pc.props.value('selected'));
       }
 
       onPageRemove_(ev) {
         const pc = ev.item;
         removeElement(pc.itemController.view.element);
         this.rackController.rack.remove(pc.contentController);
-        pc.props.value('selected').emitter.off('change', this.onPageSelectedChange_);
-        this.applyPages_();
-      }
-
-      keepSelection_() {
-        if (this.pageSet_.items.length === 0) {
-          return;
-        }
-
-        const firstSelIndex = this.pageSet_.items.findIndex(pc => pc.props.get('selected'));
-
-        if (firstSelIndex < 0) {
-          this.pageSet_.items.forEach((pc, i) => {
-            pc.props.set('selected', i === 0);
-          });
-        } else {
-          this.pageSet_.items.forEach((pc, i) => {
-            pc.props.set('selected', i === firstSelIndex);
-          });
-        }
-      }
-
-      onPageSelectedChange_(ev) {
-        if (ev.rawValue) {
-          const index = this.pageSet_.items.findIndex(pc => pc.props.value('selected') === ev.sender);
-          this.pageSet_.items.forEach((pc, i) => {
-            pc.props.set('selected', i === index);
-          });
-        } else {
-          this.keepSelection_();
-        }
+        this.tab.remove(pc.props.value('selected'));
       }
 
     }
@@ -2660,13 +3026,15 @@ var tweakpane = createCommonjsModule(function (module, exports) {
     }
 
     class StepConstraint {
-      constructor(step) {
+      constructor(step, origin = 0) {
         this.step = step;
+        this.origin = origin;
       }
 
       constrain(value) {
-        const r = value < 0 ? -Math.round(-value / this.step) : Math.round(value / this.step);
-        return r * this.step;
+        const o = this.origin % this.step;
+        const r = Math.round((value - o) / this.step);
+        return o + r * this.step;
       }
 
     }
@@ -3184,7 +3552,9 @@ var tweakpane = createCommonjsModule(function (module, exports) {
     }
 
     function parsePrimaryExpression(text, cursor) {
-      return parseLiteral(text, cursor) || parseParenthesizedExpression(text, cursor);
+      var _a;
+
+      return (_a = parseLiteral(text, cursor)) !== null && _a !== void 0 ? _a : parseParenthesizedExpression(text, cursor);
     }
 
     function parseUnaryExpression(text, cursor) {
@@ -3445,11 +3815,13 @@ var tweakpane = createCommonjsModule(function (module, exports) {
     }
 
     function computeOffset$1(ev, elem) {
+      var _a, _b;
+
       const win = elem.ownerDocument.defaultView;
       const rect = elem.getBoundingClientRect();
       return {
-        x: ev.pageX - ((win && win.scrollX || 0) + rect.left),
-        y: ev.pageY - ((win && win.scrollY || 0) + rect.top)
+        x: ev.pageX - (((_a = win && win.scrollX) !== null && _a !== void 0 ? _a : 0) + rect.left),
+        y: ev.pageY - (((_b = win && win.scrollY) !== null && _b !== void 0 ? _b : 0) + rect.top)
       };
     }
 
@@ -3673,6 +4045,8 @@ var tweakpane = createCommonjsModule(function (module, exports) {
 
     class NumberTextController {
       constructor(doc, config) {
+        var _a;
+
         this.originRawValue_ = 0;
         this.onInputChange_ = this.onInputChange_.bind(this);
         this.onInputKeyDown_ = this.onInputKeyDown_.bind(this);
@@ -3683,6 +4057,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         this.baseStep_ = config.baseStep;
         this.parser_ = config.parser;
         this.props = config.props;
+        this.sliderProps_ = (_a = config.sliderProps) !== null && _a !== void 0 ? _a : null;
         this.value = config.value;
         this.viewProps = config.viewProps;
         this.dragging_ = createValue(null);
@@ -3702,13 +4077,31 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         ph.emitter.on('up', this.onPointerUp_);
       }
 
+      constrainValue_(value) {
+        var _a, _b;
+
+        const min = (_a = this.sliderProps_) === null || _a === void 0 ? void 0 : _a.get('minValue');
+        const max = (_b = this.sliderProps_) === null || _b === void 0 ? void 0 : _b.get('maxValue');
+        let v = value;
+
+        if (min !== undefined) {
+          v = Math.max(v, min);
+        }
+
+        if (max !== undefined) {
+          v = Math.min(v, max);
+        }
+
+        return v;
+      }
+
       onInputChange_(e) {
         const inputElem = forceCast(e.currentTarget);
         const value = inputElem.value;
         const parsedValue = this.parser_(value);
 
         if (!isEmpty(parsedValue)) {
-          this.value.rawValue = parsedValue;
+          this.value.rawValue = this.constrainValue_(parsedValue);
         }
 
         this.view.refresh();
@@ -3721,7 +4114,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
           return;
         }
 
-        this.value.setRawValue(this.value.rawValue + step, {
+        this.value.setRawValue(this.constrainValue_(this.value.rawValue + step), {
           forceEmit: false,
           last: false
         });
@@ -3751,7 +4144,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         }
 
         const dx = data.point.x - data.bounds.width / 2;
-        return this.originRawValue_ + dx * this.props.get('draggingScale');
+        return this.constrainValue_(this.originRawValue_ + dx * this.props.get('draggingScale'));
       }
 
       onPointerMove_(ev) {
@@ -3926,6 +4319,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
           baseStep: config.baseStep,
           parser: config.parser,
           props: config.textProps,
+          sliderProps: config.sliderProps,
           value: config.value,
           viewProps: config.viewProps
         });
@@ -4101,7 +4495,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
 
     }
 
-    function createConstraint$5(params) {
+    function createConstraint$6(params) {
       const constraints = [];
       const lc = createListConstraint(params.options);
 
@@ -4131,7 +4525,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       },
       binding: {
         reader: _args => boolFromUnknown,
-        constraint: args => createConstraint$5(args.params),
+        constraint: args => createConstraint$6(args.params),
         writer: _args => writePrimitive
       },
       controller: args => {
@@ -4189,7 +4583,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
 
     }
 
-    function rgbToHsl(r, g, b) {
+    function rgbToHslInt(r, g, b) {
       const rp = constrainRange(r / 255, 0, 1);
       const gp = constrainRange(g / 255, 0, 1);
       const bp = constrainRange(b / 255, 0, 1);
@@ -4217,7 +4611,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       return [h * 360, s * 100, l * 100];
     }
 
-    function hslToRgb(h, s, l) {
+    function hslToRgbInt(h, s, l) {
       const hp = (h % 360 + 360) % 360;
       const sp = constrainRange(s / 100, 0, 1);
       const lp = constrainRange(l / 100, 0, 1);
@@ -4243,7 +4637,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       return [(rp + m) * 255, (gp + m) * 255, (bp + m) * 255];
     }
 
-    function rgbToHsv(r, g, b) {
+    function rgbToHsvInt(r, g, b) {
       const rp = constrainRange(r / 255, 0, 1);
       const gp = constrainRange(g / 255, 0, 1);
       const bp = constrainRange(b / 255, 0, 1);
@@ -4267,7 +4661,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       return [h, s * 100, v * 100];
     }
 
-    function hsvToRgb(h, s, v) {
+    function hsvToRgbInt(h, s, v) {
       const hp = loopRange(h, 360);
       const sp = constrainRange(s / 100, 0, 1);
       const vp = constrainRange(v / 100, 0, 1);
@@ -4293,12 +4687,12 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       return [(rp + m) * 255, (gp + m) * 255, (bp + m) * 255];
     }
 
-    function hslToHsv(h, s, l) {
+    function hslToHsvInt(h, s, l) {
       const sd = l + s * (100 - Math.abs(2 * l - 100)) / (2 * 100);
       return [h, sd !== 0 ? s * (100 - Math.abs(2 * l - 100)) / sd : 0, l + s * (100 - Math.abs(2 * l - 100)) / (2 * 100)];
     }
 
-    function hsvToHsl(h, s, v) {
+    function hsvToHslInt(h, s, v) {
       const sd = 100 - Math.abs(v * (200 - s) / 100 - 100);
       return [h, sd !== 0 ? s * v / sd : 0, v * (200 - s) / (2 * 100)];
     }
@@ -4314,42 +4708,43 @@ var tweakpane = createCommonjsModule(function (module, exports) {
     const MODE_CONVERTER_MAP = {
       hsl: {
         hsl: (h, s, l) => [h, s, l],
-        hsv: hslToHsv,
-        rgb: hslToRgb
+        hsv: hslToHsvInt,
+        rgb: hslToRgbInt
       },
       hsv: {
-        hsl: hsvToHsl,
+        hsl: hsvToHslInt,
         hsv: (h, s, v) => [h, s, v],
-        rgb: hsvToRgb
+        rgb: hsvToRgbInt
       },
       rgb: {
-        hsl: rgbToHsl,
-        hsv: rgbToHsv,
+        hsl: rgbToHslInt,
+        hsv: rgbToHsvInt,
         rgb: (r, g, b) => [r, g, b]
       }
     };
 
-    function convertColorMode(components, fromMode, toMode) {
-      return MODE_CONVERTER_MAP[fromMode][toMode](...components);
+    function getColorMaxComponents(mode, type) {
+      return [type === 'float' ? 1 : mode === 'rgb' ? 255 : 360, type === 'float' ? 1 : mode === 'rgb' ? 255 : 100, type === 'float' ? 1 : mode === 'rgb' ? 255 : 100];
     }
 
-    const CONSTRAINT_MAP = {
-      hsl: comps => {
-        var _a;
+    function constrainColorComponents(components, mode, type) {
+      var _a;
 
-        return [loopRange(comps[0], 360), constrainRange(comps[1], 0, 100), constrainRange(comps[2], 0, 100), constrainRange((_a = comps[3]) !== null && _a !== void 0 ? _a : 1, 0, 1)];
-      },
-      hsv: comps => {
-        var _a;
+      const ms = getColorMaxComponents(mode, type);
+      return [mode === 'rgb' ? constrainRange(components[0], 0, ms[0]) : loopRange(components[0], ms[0]), constrainRange(components[1], 0, ms[1]), constrainRange(components[2], 0, ms[2]), constrainRange((_a = components[3]) !== null && _a !== void 0 ? _a : 1, 0, 1)];
+    }
 
-        return [loopRange(comps[0], 360), constrainRange(comps[1], 0, 100), constrainRange(comps[2], 0, 100), constrainRange((_a = comps[3]) !== null && _a !== void 0 ? _a : 1, 0, 1)];
-      },
-      rgb: comps => {
-        var _a;
+    function convertColorType(comps, mode, from, to) {
+      const fms = getColorMaxComponents(mode, from);
+      const tms = getColorMaxComponents(mode, to);
+      return comps.map((c, index) => c / fms[index] * tms[index]);
+    }
 
-        return [constrainRange(comps[0], 0, 255), constrainRange(comps[1], 0, 255), constrainRange(comps[2], 0, 255), constrainRange((_a = comps[3]) !== null && _a !== void 0 ? _a : 1, 0, 1)];
-      }
-    };
+    function convertColor(components, from, to) {
+      const intComps = convertColorType(components, from.mode, from.type, 'int');
+      const result = MODE_CONVERTER_MAP[from.mode][to.mode](...intComps);
+      return convertColorType(result, to.mode, 'int', to.type);
+    }
 
     function isRgbColorComponent(obj, key) {
       if (typeof obj !== 'object' || isEmpty(obj)) {
@@ -4360,22 +4755,23 @@ var tweakpane = createCommonjsModule(function (module, exports) {
     }
 
     class Color {
-      constructor(comps, mode) {
-        this.mode_ = mode;
-        this.comps_ = CONSTRAINT_MAP[mode](comps);
+      constructor(comps, mode, type = 'int') {
+        this.mode = mode;
+        this.type = type;
+        this.comps_ = constrainColorComponents(comps, mode, type);
       }
 
-      static black() {
-        return new Color([0, 0, 0], 'rgb');
+      static black(type = 'int') {
+        return new Color([0, 0, 0], 'rgb', type);
       }
 
-      static fromObject(obj) {
+      static fromObject(obj, type = 'int') {
         const comps = 'a' in obj ? [obj.r, obj.g, obj.b, obj.a] : [obj.r, obj.g, obj.b];
-        return new Color(comps, 'rgb');
+        return new Color(comps, 'rgb', type);
       }
 
-      static toRgbaObject(color) {
-        return color.toRgbaObject();
+      static toRgbaObject(color, type = 'int') {
+        return color.toRgbaObject(type);
       }
 
       static isRgbColorObject(obj) {
@@ -4391,7 +4787,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       }
 
       static equals(v1, v2) {
-        if (v1.mode_ !== v2.mode_) {
+        if (v1.mode !== v2.mode) {
           return false;
         }
 
@@ -4407,16 +4803,18 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         return true;
       }
 
-      get mode() {
-        return this.mode_;
+      getComponents(opt_mode, type = 'int') {
+        return appendAlphaComponent(convertColor(removeAlphaComponent(this.comps_), {
+          mode: this.mode,
+          type: this.type
+        }, {
+          mode: opt_mode !== null && opt_mode !== void 0 ? opt_mode : this.mode,
+          type
+        }), this.comps_[3]);
       }
 
-      getComponents(opt_mode) {
-        return appendAlphaComponent(convertColorMode(removeAlphaComponent(this.comps_), this.mode_, opt_mode || this.mode_), this.comps_[3]);
-      }
-
-      toRgbaObject() {
-        const rgbComps = this.getComponents('rgb');
+      toRgbaObject(type = 'int') {
+        const rgbComps = this.getComponents('rgb', type);
         return {
           r: rgbComps[0],
           g: rgbComps[1],
@@ -4484,10 +4882,18 @@ var tweakpane = createCommonjsModule(function (module, exports) {
 
     }
 
+    function parseColorType(value) {
+      return value === 'int' ? 'int' : value === 'float' ? 'float' : undefined;
+    }
+
     function parseColorInputParams(params) {
       const p = ParamsParsers;
       return parseParams(params, {
         alpha: p.optional.boolean,
+        color: p.optional.object({
+          alpha: p.optional.boolean,
+          type: p.optional.custom(parseColorType)
+        }),
         expanded: p.optional.boolean,
         picker: p.optional.custom(parsePickerLayout)
       });
@@ -4495,6 +4901,16 @@ var tweakpane = createCommonjsModule(function (module, exports) {
 
     function getBaseStepForColor(forAlpha) {
       return forAlpha ? 0.1 : 1;
+    }
+
+    function extractColorType(params) {
+      var _a;
+
+      return (_a = params.color) === null || _a === void 0 ? void 0 : _a.type;
+    }
+
+    function equalsStringColorFormat(f1, f2) {
+      return f1.alpha === f2.alpha && f1.mode === f2.mode && f1.notation === f2.notation && f1.type === f2.type;
     }
 
     function parseCssNumberOrPercentage(text, maxValue) {
@@ -4526,130 +4942,313 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       return ANGLE_TO_DEG_MAP[unit](angle);
     }
 
-    const NOTATION_TO_PARSER_MAP = {
-      'func.rgb': text => {
-        const m = text.match(/^rgb\(\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*\)$/);
+    function parseFunctionalRgbColorComponents(text) {
+      const m = text.match(/^rgb\(\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*\)$/);
 
-        if (!m) {
-          return null;
-        }
-
-        const comps = [parseCssNumberOrPercentage(m[1], 255), parseCssNumberOrPercentage(m[2], 255), parseCssNumberOrPercentage(m[3], 255)];
-
-        if (isNaN(comps[0]) || isNaN(comps[1]) || isNaN(comps[2])) {
-          return null;
-        }
-
-        return new Color(comps, 'rgb');
-      },
-      'func.rgba': text => {
-        const m = text.match(/^rgba\(\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*\)$/);
-
-        if (!m) {
-          return null;
-        }
-
-        const comps = [parseCssNumberOrPercentage(m[1], 255), parseCssNumberOrPercentage(m[2], 255), parseCssNumberOrPercentage(m[3], 255), parseCssNumberOrPercentage(m[4], 1)];
-
-        if (isNaN(comps[0]) || isNaN(comps[1]) || isNaN(comps[2]) || isNaN(comps[3])) {
-          return null;
-        }
-
-        return new Color(comps, 'rgb');
-      },
-      'func.hsl': text => {
-        const m = text.match(/^hsl\(\s*([0-9A-Fa-f.]+(?:deg|grad|rad|turn)?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*\)$/);
-
-        if (!m) {
-          return null;
-        }
-
-        const comps = [parseCssNumberOrAngle(m[1]), parseCssNumberOrPercentage(m[2], 100), parseCssNumberOrPercentage(m[3], 100)];
-
-        if (isNaN(comps[0]) || isNaN(comps[1]) || isNaN(comps[2])) {
-          return null;
-        }
-
-        return new Color(comps, 'hsl');
-      },
-      'func.hsla': text => {
-        const m = text.match(/^hsla\(\s*([0-9A-Fa-f.]+(?:deg|grad|rad|turn)?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*\)$/);
-
-        if (!m) {
-          return null;
-        }
-
-        const comps = [parseCssNumberOrAngle(m[1]), parseCssNumberOrPercentage(m[2], 100), parseCssNumberOrPercentage(m[3], 100), parseCssNumberOrPercentage(m[4], 1)];
-
-        if (isNaN(comps[0]) || isNaN(comps[1]) || isNaN(comps[2]) || isNaN(comps[3])) {
-          return null;
-        }
-
-        return new Color(comps, 'hsl');
-      },
-      'hex.rgb': text => {
-        const mRgb = text.match(/^#([0-9A-Fa-f])([0-9A-Fa-f])([0-9A-Fa-f])$/);
-
-        if (mRgb) {
-          return new Color([parseInt(mRgb[1] + mRgb[1], 16), parseInt(mRgb[2] + mRgb[2], 16), parseInt(mRgb[3] + mRgb[3], 16)], 'rgb');
-        }
-
-        const mRrggbb = text.match(/^(?:#|0x)([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})$/);
-
-        if (mRrggbb) {
-          return new Color([parseInt(mRrggbb[1], 16), parseInt(mRrggbb[2], 16), parseInt(mRrggbb[3], 16)], 'rgb');
-        }
-
-        return null;
-      },
-      'hex.rgba': text => {
-        const mRgb = text.match(/^#?([0-9A-Fa-f])([0-9A-Fa-f])([0-9A-Fa-f])([0-9A-Fa-f])$/);
-
-        if (mRgb) {
-          return new Color([parseInt(mRgb[1] + mRgb[1], 16), parseInt(mRgb[2] + mRgb[2], 16), parseInt(mRgb[3] + mRgb[3], 16), mapRange(parseInt(mRgb[4] + mRgb[4], 16), 0, 255, 0, 1)], 'rgb');
-        }
-
-        const mRrggbb = text.match(/^(?:#|0x)?([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})$/);
-
-        if (mRrggbb) {
-          return new Color([parseInt(mRrggbb[1], 16), parseInt(mRrggbb[2], 16), parseInt(mRrggbb[3], 16), mapRange(parseInt(mRrggbb[4], 16), 0, 255, 0, 1)], 'rgb');
-        }
-
+      if (!m) {
         return null;
       }
-    };
 
-    function getColorNotation(text) {
-      const notations = Object.keys(NOTATION_TO_PARSER_MAP);
-      return notations.reduce((result, notation) => {
-        if (result) {
-          return result;
+      const comps = [parseCssNumberOrPercentage(m[1], 255), parseCssNumberOrPercentage(m[2], 255), parseCssNumberOrPercentage(m[3], 255)];
+
+      if (isNaN(comps[0]) || isNaN(comps[1]) || isNaN(comps[2])) {
+        return null;
+      }
+
+      return comps;
+    }
+
+    function createFunctionalRgbColorParser(type) {
+      return text => {
+        const comps = parseFunctionalRgbColorComponents(text);
+        return comps ? new Color(comps, 'rgb', type) : null;
+      };
+    }
+
+    function parseFunctionalRgbaColorComponents(text) {
+      const m = text.match(/^rgba\(\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*\)$/);
+
+      if (!m) {
+        return null;
+      }
+
+      const comps = [parseCssNumberOrPercentage(m[1], 255), parseCssNumberOrPercentage(m[2], 255), parseCssNumberOrPercentage(m[3], 255), parseCssNumberOrPercentage(m[4], 1)];
+
+      if (isNaN(comps[0]) || isNaN(comps[1]) || isNaN(comps[2]) || isNaN(comps[3])) {
+        return null;
+      }
+
+      return comps;
+    }
+
+    function createFunctionalRgbaColorParser(type) {
+      return text => {
+        const comps = parseFunctionalRgbaColorComponents(text);
+        return comps ? new Color(comps, 'rgb', type) : null;
+      };
+    }
+
+    function parseHslColorComponents(text) {
+      const m = text.match(/^hsl\(\s*([0-9A-Fa-f.]+(?:deg|grad|rad|turn)?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*\)$/);
+
+      if (!m) {
+        return null;
+      }
+
+      const comps = [parseCssNumberOrAngle(m[1]), parseCssNumberOrPercentage(m[2], 100), parseCssNumberOrPercentage(m[3], 100)];
+
+      if (isNaN(comps[0]) || isNaN(comps[1]) || isNaN(comps[2])) {
+        return null;
+      }
+
+      return comps;
+    }
+
+    function createHslColorParser(type) {
+      return text => {
+        const comps = parseHslColorComponents(text);
+        return comps ? new Color(comps, 'hsl', type) : null;
+      };
+    }
+
+    function parseHslaColorComponents(text) {
+      const m = text.match(/^hsla\(\s*([0-9A-Fa-f.]+(?:deg|grad|rad|turn)?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*,\s*([0-9A-Fa-f.]+%?)\s*\)$/);
+
+      if (!m) {
+        return null;
+      }
+
+      const comps = [parseCssNumberOrAngle(m[1]), parseCssNumberOrPercentage(m[2], 100), parseCssNumberOrPercentage(m[3], 100), parseCssNumberOrPercentage(m[4], 1)];
+
+      if (isNaN(comps[0]) || isNaN(comps[1]) || isNaN(comps[2]) || isNaN(comps[3])) {
+        return null;
+      }
+
+      return comps;
+    }
+
+    function createHslaColorParser(type) {
+      return text => {
+        const comps = parseHslaColorComponents(text);
+        return comps ? new Color(comps, 'hsl', type) : null;
+      };
+    }
+
+    function parseHexRgbColorComponents(text) {
+      const mRgb = text.match(/^#([0-9A-Fa-f])([0-9A-Fa-f])([0-9A-Fa-f])$/);
+
+      if (mRgb) {
+        return [parseInt(mRgb[1] + mRgb[1], 16), parseInt(mRgb[2] + mRgb[2], 16), parseInt(mRgb[3] + mRgb[3], 16)];
+      }
+
+      const mRrggbb = text.match(/^(?:#|0x)([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})$/);
+
+      if (mRrggbb) {
+        return [parseInt(mRrggbb[1], 16), parseInt(mRrggbb[2], 16), parseInt(mRrggbb[3], 16)];
+      }
+
+      return null;
+    }
+
+    function parseHexRgbColor(text) {
+      const comps = parseHexRgbColorComponents(text);
+      return comps ? new Color(comps, 'rgb', 'int') : null;
+    }
+
+    function parseHexRgbaColorComponents(text) {
+      const mRgb = text.match(/^#?([0-9A-Fa-f])([0-9A-Fa-f])([0-9A-Fa-f])([0-9A-Fa-f])$/);
+
+      if (mRgb) {
+        return [parseInt(mRgb[1] + mRgb[1], 16), parseInt(mRgb[2] + mRgb[2], 16), parseInt(mRgb[3] + mRgb[3], 16), mapRange(parseInt(mRgb[4] + mRgb[4], 16), 0, 255, 0, 1)];
+      }
+
+      const mRrggbb = text.match(/^(?:#|0x)?([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})$/);
+
+      if (mRrggbb) {
+        return [parseInt(mRrggbb[1], 16), parseInt(mRrggbb[2], 16), parseInt(mRrggbb[3], 16), mapRange(parseInt(mRrggbb[4], 16), 0, 255, 0, 1)];
+      }
+
+      return null;
+    }
+
+    function parseHexRgbaColor(text) {
+      const comps = parseHexRgbaColorComponents(text);
+      return comps ? new Color(comps, 'rgb', 'int') : null;
+    }
+
+    function parseObjectRgbColorComponents(text) {
+      const m = text.match(/^\{\s*r\s*:\s*([0-9A-Fa-f.]+%?)\s*,\s*g\s*:\s*([0-9A-Fa-f.]+%?)\s*,\s*b\s*:\s*([0-9A-Fa-f.]+%?)\s*\}$/);
+
+      if (!m) {
+        return null;
+      }
+
+      const comps = [parseFloat(m[1]), parseFloat(m[2]), parseFloat(m[3])];
+
+      if (isNaN(comps[0]) || isNaN(comps[1]) || isNaN(comps[2])) {
+        return null;
+      }
+
+      return comps;
+    }
+
+    function createObjectRgbColorParser(type) {
+      return text => {
+        const comps = parseObjectRgbColorComponents(text);
+        return comps ? new Color(comps, 'rgb', type) : null;
+      };
+    }
+
+    function parseObjectRgbaColorComponents(text) {
+      const m = text.match(/^\{\s*r\s*:\s*([0-9A-Fa-f.]+%?)\s*,\s*g\s*:\s*([0-9A-Fa-f.]+%?)\s*,\s*b\s*:\s*([0-9A-Fa-f.]+%?)\s*,\s*a\s*:\s*([0-9A-Fa-f.]+%?)\s*\}$/);
+
+      if (!m) {
+        return null;
+      }
+
+      const comps = [parseFloat(m[1]), parseFloat(m[2]), parseFloat(m[3]), parseFloat(m[4])];
+
+      if (isNaN(comps[0]) || isNaN(comps[1]) || isNaN(comps[2]) || isNaN(comps[3])) {
+        return null;
+      }
+
+      return comps;
+    }
+
+    function createObjectRgbaColorParser(type) {
+      return text => {
+        const comps = parseObjectRgbaColorComponents(text);
+        return comps ? new Color(comps, 'rgb', type) : null;
+      };
+    }
+
+    const PARSER_AND_RESULT = [{
+      parser: parseHexRgbColorComponents,
+      result: {
+        alpha: false,
+        mode: 'rgb',
+        notation: 'hex'
+      }
+    }, {
+      parser: parseHexRgbaColorComponents,
+      result: {
+        alpha: true,
+        mode: 'rgb',
+        notation: 'hex'
+      }
+    }, {
+      parser: parseFunctionalRgbColorComponents,
+      result: {
+        alpha: false,
+        mode: 'rgb',
+        notation: 'func'
+      }
+    }, {
+      parser: parseFunctionalRgbaColorComponents,
+      result: {
+        alpha: true,
+        mode: 'rgb',
+        notation: 'func'
+      }
+    }, {
+      parser: parseHslColorComponents,
+      result: {
+        alpha: false,
+        mode: 'hsl',
+        notation: 'func'
+      }
+    }, {
+      parser: parseHslaColorComponents,
+      result: {
+        alpha: true,
+        mode: 'hsl',
+        notation: 'func'
+      }
+    }, {
+      parser: parseObjectRgbColorComponents,
+      result: {
+        alpha: false,
+        mode: 'rgb',
+        notation: 'object'
+      }
+    }, {
+      parser: parseObjectRgbaColorComponents,
+      result: {
+        alpha: true,
+        mode: 'rgb',
+        notation: 'object'
+      }
+    }];
+
+    function detectStringColor(text) {
+      return PARSER_AND_RESULT.reduce((prev, {
+        parser,
+        result: detection
+      }) => {
+        if (prev) {
+          return prev;
         }
 
-        const subparser = NOTATION_TO_PARSER_MAP[notation];
-        return subparser(text) ? notation : null;
+        return parser(text) ? detection : null;
       }, null);
     }
 
-    const CompositeColorParser = text => {
-      const notation = getColorNotation(text);
-      return notation ? NOTATION_TO_PARSER_MAP[notation](text) : null;
-    };
+    function detectStringColorFormat(text, type = 'int') {
+      const r = detectStringColor(text);
 
-    function hasAlphaComponent(notation) {
-      return notation === 'func.hsla' || notation === 'func.rgba' || notation === 'hex.rgba';
-    }
-
-    function colorFromString(value) {
-      if (typeof value === 'string') {
-        const cv = CompositeColorParser(value);
-
-        if (cv) {
-          return cv;
-        }
+      if (!r) {
+        return null;
       }
 
-      return Color.black();
+      if (r.notation === 'hex' && type !== 'float') {
+        return Object.assign(Object.assign({}, r), {
+          type: 'int'
+        });
+      }
+
+      if (r.notation === 'func') {
+        return Object.assign(Object.assign({}, r), {
+          type: type
+        });
+      }
+
+      return null;
+    }
+
+    const TYPE_TO_PARSERS = {
+      int: [parseHexRgbColor, parseHexRgbaColor, createFunctionalRgbColorParser('int'), createFunctionalRgbaColorParser('int'), createHslColorParser('int'), createHslaColorParser('int'), createObjectRgbColorParser('int'), createObjectRgbaColorParser('int')],
+      float: [createFunctionalRgbColorParser('float'), createFunctionalRgbaColorParser('float'), createHslColorParser('float'), createHslaColorParser('float'), createObjectRgbColorParser('float'), createObjectRgbaColorParser('float')]
+    };
+
+    function createColorStringBindingReader(type) {
+      const parsers = TYPE_TO_PARSERS[type];
+      return value => {
+        if (typeof value !== 'string') {
+          return Color.black(type);
+        }
+
+        const result = parsers.reduce((prev, parser) => {
+          if (prev) {
+            return prev;
+          }
+
+          return parser(value);
+        }, null);
+        return result !== null && result !== void 0 ? result : Color.black(type);
+      };
+    }
+
+    function createColorStringParser(type) {
+      const parsers = TYPE_TO_PARSERS[type];
+      return value => {
+        return parsers.reduce((prev, parser) => {
+          if (prev) {
+            return prev;
+          }
+
+          return parser(value);
+        }, null);
+      };
     }
 
     function zerofill(comp) {
@@ -4668,20 +5267,32 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       return `${prefix}${hexes}`;
     }
 
-    function colorToFunctionalRgbString(value) {
-      const formatter = createNumberFormatter(0);
-      const comps = removeAlphaComponent(value.getComponents('rgb')).map(comp => formatter(comp));
+    function colorToFunctionalRgbString(value, opt_type) {
+      const formatter = createNumberFormatter(opt_type === 'float' ? 2 : 0);
+      const comps = removeAlphaComponent(value.getComponents('rgb', opt_type)).map(comp => formatter(comp));
       return `rgb(${comps.join(', ')})`;
     }
 
-    function colorToFunctionalRgbaString(value) {
+    function createFunctionalRgbColorFormatter(type) {
+      return value => {
+        return colorToFunctionalRgbString(value, type);
+      };
+    }
+
+    function colorToFunctionalRgbaString(value, opt_type) {
       const aFormatter = createNumberFormatter(2);
-      const rgbFormatter = createNumberFormatter(0);
-      const comps = value.getComponents('rgb').map((comp, index) => {
+      const rgbFormatter = createNumberFormatter(opt_type === 'float' ? 2 : 0);
+      const comps = value.getComponents('rgb', opt_type).map((comp, index) => {
         const formatter = index === 3 ? aFormatter : rgbFormatter;
         return formatter(comp);
       });
       return `rgba(${comps.join(', ')})`;
+    }
+
+    function createFunctionalRgbaColorFormatter(type) {
+      return value => {
+        return colorToFunctionalRgbaString(value, type);
+      };
     }
 
     function colorToFunctionalHslString(value) {
@@ -4696,17 +5307,108 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       return `hsla(${comps.join(', ')})`;
     }
 
-    const NOTATION_TO_STRINGIFIER_MAP = {
-      'func.hsl': colorToFunctionalHslString,
-      'func.hsla': colorToFunctionalHslaString,
-      'func.rgb': colorToFunctionalRgbString,
-      'func.rgba': colorToFunctionalRgbaString,
-      'hex.rgb': colorToHexRgbString,
-      'hex.rgba': colorToHexRgbaString
-    };
+    function colorToObjectRgbString(value, type) {
+      const formatter = createNumberFormatter(type === 'float' ? 2 : 0);
+      const names = ['r', 'g', 'b'];
+      const comps = removeAlphaComponent(value.getComponents('rgb', type)).map((comp, index) => `${names[index]}: ${formatter(comp)}`);
+      return `{${comps.join(', ')}}`;
+    }
 
-    function getColorStringifier(notation) {
-      return NOTATION_TO_STRINGIFIER_MAP[notation];
+    function createObjectRgbColorFormatter(type) {
+      return value => colorToObjectRgbString(value, type);
+    }
+
+    function colorToObjectRgbaString(value, type) {
+      const aFormatter = createNumberFormatter(2);
+      const rgbFormatter = createNumberFormatter(type === 'float' ? 2 : 0);
+      const names = ['r', 'g', 'b', 'a'];
+      const comps = value.getComponents('rgb', type).map((comp, index) => {
+        const formatter = index === 3 ? aFormatter : rgbFormatter;
+        return `${names[index]}: ${formatter(comp)}`;
+      });
+      return `{${comps.join(', ')}}`;
+    }
+
+    function createObjectRgbaColorFormatter(type) {
+      return value => colorToObjectRgbaString(value, type);
+    }
+
+    const FORMAT_AND_STRINGIFIERS = [{
+      format: {
+        alpha: false,
+        mode: 'rgb',
+        notation: 'hex',
+        type: 'int'
+      },
+      stringifier: colorToHexRgbString
+    }, {
+      format: {
+        alpha: true,
+        mode: 'rgb',
+        notation: 'hex',
+        type: 'int'
+      },
+      stringifier: colorToHexRgbaString
+    }, {
+      format: {
+        alpha: false,
+        mode: 'hsl',
+        notation: 'func',
+        type: 'int'
+      },
+      stringifier: colorToFunctionalHslString
+    }, {
+      format: {
+        alpha: true,
+        mode: 'hsl',
+        notation: 'func',
+        type: 'int'
+      },
+      stringifier: colorToFunctionalHslaString
+    }, ...['int', 'float'].reduce((prev, type) => {
+      return [...prev, {
+        format: {
+          alpha: false,
+          mode: 'rgb',
+          notation: 'func',
+          type: type
+        },
+        stringifier: createFunctionalRgbColorFormatter(type)
+      }, {
+        format: {
+          alpha: true,
+          mode: 'rgb',
+          notation: 'func',
+          type: type
+        },
+        stringifier: createFunctionalRgbaColorFormatter(type)
+      }, {
+        format: {
+          alpha: false,
+          mode: 'rgb',
+          notation: 'object',
+          type: type
+        },
+        stringifier: createObjectRgbColorFormatter(type)
+      }, {
+        format: {
+          alpha: true,
+          mode: 'rgb',
+          notation: 'object',
+          type: type
+        },
+        stringifier: createObjectRgbaColorFormatter(type)
+      }];
+    }, [])];
+
+    function findColorStringifier(format) {
+      return FORMAT_AND_STRINGIFIERS.reduce((prev, fas) => {
+        if (prev) {
+          return prev;
+        }
+
+        return equalsStringColorFormat(fas.format, format) ? fas.stringifier : null;
+      }, null);
     }
 
     const className$a = ClassName('apl');
@@ -4913,33 +5615,17 @@ var tweakpane = createCommonjsModule(function (module, exports) {
 
     }
 
-    const FORMATTER = createNumberFormatter(0);
-    const MODE_TO_CONSTRAINT_MAP = {
-      rgb: () => {
-        return new RangeConstraint({
-          min: 0,
-          max: 255
-        });
-      },
-      hsl: index => {
-        return index === 0 ? new RangeConstraint({
-          min: 0,
-          max: 360
-        }) : new RangeConstraint({
-          min: 0,
-          max: 100
-        });
-      },
-      hsv: index => {
-        return index === 0 ? new RangeConstraint({
-          min: 0,
-          max: 360
-        }) : new RangeConstraint({
-          min: 0,
-          max: 100
-        });
-      }
-    };
+    function createFormatter$2(type) {
+      return createNumberFormatter(type === 'float' ? 2 : 0);
+    }
+
+    function createConstraint$5(mode, type, index) {
+      const max = getColorMaxComponents(mode, type)[index];
+      return new RangeConstraint({
+        min: 0,
+        max: max
+      });
+    }
 
     function createComponentController(doc, config, index) {
       return new NumberTextController(doc, {
@@ -4947,11 +5633,11 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         baseStep: getBaseStepForColor(false),
         parser: config.parser,
         props: ValueMap.fromObject({
-          draggingScale: 1,
-          formatter: FORMATTER
+          draggingScale: config.colorType === 'float' ? 0.01 : 1,
+          formatter: createFormatter$2(config.colorType)
         }),
         value: createValue(0, {
-          constraint: MODE_TO_CONSTRAINT_MAP[config.colorMode](index)
+          constraint: createConstraint$5(config.colorMode, config.colorType, index)
         }),
         viewProps: config.viewProps
       });
@@ -4960,6 +5646,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
     class ColorTextController {
       constructor(doc, config) {
         this.onModeSelectChange_ = this.onModeSelectChange_.bind(this);
+        this.colorType_ = config.colorType;
         this.parser_ = config.parser;
         this.value = config.value;
         this.viewProps = config.viewProps;
@@ -4975,6 +5662,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       createComponentControllers_(doc) {
         const cc = {
           colorMode: this.colorMode.rawValue,
+          colorType: this.colorType_,
           parser: this.parser_,
           viewProps: this.viewProps
         };
@@ -4984,13 +5672,13 @@ var tweakpane = createCommonjsModule(function (module, exports) {
             primary: this.value,
             secondary: cs.value,
             forward: p => {
-              return p.rawValue.getComponents(this.colorMode.rawValue)[index];
+              return p.rawValue.getComponents(this.colorMode.rawValue, this.colorType_)[index];
             },
             backward: (p, s) => {
               const pickedMode = this.colorMode.rawValue;
-              const comps = p.rawValue.getComponents(pickedMode);
+              const comps = p.rawValue.getComponents(pickedMode, this.colorType_);
               comps[index] = s.rawValue;
-              return new Color(appendAlphaComponent(removeAlphaComponent(comps), comps[3]), pickedMode);
+              return new Color(appendAlphaComponent(removeAlphaComponent(comps), comps[3]), pickedMode, this.colorType_);
             }
           });
         });
@@ -5165,7 +5853,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
           for (let ix = 0; ix < width; ix++) {
             const s = mapRange(ix, 0, width, 0, 100);
             const v = mapRange(iy, 0, height, 100, 0);
-            const rgbComps = hsvToRgb(hsvComps[0], s, v);
+            const rgbComps = hsvToRgbInt(hsvComps[0], s, v);
             const i = (iy * width + ix) * 4;
             data[i] = rgbComps[0];
             data[i + 1] = rgbComps[1];
@@ -5327,6 +6015,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         }
 
         this.textC_ = new ColorTextController(doc, {
+          colorType: config.colorType,
           parser: parseNumber,
           value: this.value,
           viewProps: this.viewProps
@@ -5428,6 +6117,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
           viewProps: this.viewProps
         }) : null;
         const pickerC = new ColorPickerController(doc, {
+          colorType: config.colorType,
           supportsAlpha: config.supportsAlpha,
           value: this.value,
           viewProps: this.viewProps
@@ -5511,12 +6201,12 @@ var tweakpane = createCommonjsModule(function (module, exports) {
 
     }
 
-    function colorFromObject(value) {
+    function colorFromObject(value, opt_type) {
       if (Color.isColorObject(value)) {
-        return Color.fromObject(value);
+        return Color.fromObject(value, opt_type);
       }
 
-      return Color.black();
+      return Color.black(opt_type);
     }
 
     function colorToRgbNumber(value) {
@@ -5556,11 +6246,11 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       return numberToRgbaColor(value);
     }
 
-    function createColorStringWriter(notation) {
-      const stringify = getColorStringifier(notation);
-      return (target, value) => {
+    function createColorStringWriter(format) {
+      const stringify = findColorStringifier(format);
+      return stringify ? (target, value) => {
         writePrimitive(target, stringify(value));
-      };
+      } : null;
     }
 
     function createColorNumberWriter(supportsAlpha) {
@@ -5570,31 +6260,55 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       };
     }
 
-    function writeRgbaColorObject(target, value) {
-      const obj = value.toRgbaObject();
+    function writeRgbaColorObject(target, value, opt_type) {
+      const obj = value.toRgbaObject(opt_type);
       target.writeProperty('r', obj.r);
       target.writeProperty('g', obj.g);
       target.writeProperty('b', obj.b);
       target.writeProperty('a', obj.a);
     }
 
-    function writeRgbColorObject(target, value) {
-      const obj = value.toRgbaObject();
+    function writeRgbColorObject(target, value, opt_type) {
+      const obj = value.toRgbaObject(opt_type);
       target.writeProperty('r', obj.r);
       target.writeProperty('g', obj.g);
       target.writeProperty('b', obj.b);
     }
 
-    function createColorObjectWriter(supportsAlpha) {
-      return supportsAlpha ? writeRgbaColorObject : writeRgbColorObject;
+    function createColorObjectWriter(supportsAlpha, opt_type) {
+      return (target, inValue) => {
+        if (supportsAlpha) {
+          writeRgbaColorObject(target, inValue, opt_type);
+        } else {
+          writeRgbColorObject(target, inValue, opt_type);
+        }
+      };
     }
 
     function shouldSupportAlpha$1(inputParams) {
-      return 'alpha' in inputParams && inputParams.alpha === true;
+      var _a;
+
+      if ((inputParams === null || inputParams === void 0 ? void 0 : inputParams.alpha) || ((_a = inputParams === null || inputParams === void 0 ? void 0 : inputParams.color) === null || _a === void 0 ? void 0 : _a.alpha)) {
+        return true;
+      }
+
+      return false;
     }
 
     function createFormatter$1(supportsAlpha) {
       return supportsAlpha ? v => colorToHexRgbaString(v, '0x') : v => colorToHexRgbString(v, '0x');
+    }
+
+    function isForColor(params) {
+      if ('color' in params) {
+        return true;
+      }
+
+      if ('view' in params && params.view === 'color') {
+        return true;
+      }
+
+      return false;
     }
 
     const NumberColorInputPlugin = {
@@ -5605,11 +6319,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
           return null;
         }
 
-        if (!('view' in params)) {
-          return null;
-        }
-
-        if (params.view !== 'color') {
+        if (!isForColor(params)) {
           return null;
         }
 
@@ -5633,9 +6343,10 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         const expanded = 'expanded' in args.params ? args.params.expanded : undefined;
         const picker = 'picker' in args.params ? args.params.picker : undefined;
         return new ColorController(args.document, {
+          colorType: 'int',
           expanded: expanded !== null && expanded !== void 0 ? expanded : false,
           formatter: createFormatter$1(supportsAlpha),
-          parser: CompositeColorParser,
+          parser: createColorStringParser('int'),
           pickerLayout: picker !== null && picker !== void 0 ? picker : 'popup',
           supportsAlpha: supportsAlpha,
           value: args.value,
@@ -5646,6 +6357,22 @@ var tweakpane = createCommonjsModule(function (module, exports) {
 
     function shouldSupportAlpha(initialValue) {
       return Color.isRgbaColorObject(initialValue);
+    }
+
+    function createColorObjectReader(opt_type) {
+      return value => {
+        return colorFromObject(value, opt_type);
+      };
+    }
+
+    function createColorObjectFormatter(supportsAlpha, type) {
+      return value => {
+        if (supportsAlpha) {
+          return colorToObjectRgbaString(value, type);
+        }
+
+        return colorToObjectRgbString(value, type);
+      };
     }
 
     const ObjectColorInputPlugin = {
@@ -5663,19 +6390,22 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         } : null;
       },
       binding: {
-        reader: _args => colorFromObject,
+        reader: args => createColorObjectReader(extractColorType(args.params)),
         equals: Color.equals,
-        writer: args => createColorObjectWriter(shouldSupportAlpha(args.initialValue))
+        writer: args => createColorObjectWriter(shouldSupportAlpha(args.initialValue), extractColorType(args.params))
       },
       controller: args => {
+        var _a;
+
         const supportsAlpha = Color.isRgbaColorObject(args.initialValue);
         const expanded = 'expanded' in args.params ? args.params.expanded : undefined;
         const picker = 'picker' in args.params ? args.params.picker : undefined;
-        const formatter = supportsAlpha ? colorToHexRgbaString : colorToHexRgbString;
+        const type = (_a = extractColorType(args.params)) !== null && _a !== void 0 ? _a : 'int';
         return new ColorController(args.document, {
+          colorType: type,
           expanded: expanded !== null && expanded !== void 0 ? expanded : false,
-          formatter: formatter,
-          parser: CompositeColorParser,
+          formatter: createColorObjectFormatter(supportsAlpha, type),
+          parser: createColorStringParser(type),
           pickerLayout: picker !== null && picker !== void 0 ? picker : 'popup',
           supportsAlpha: supportsAlpha,
           value: args.value,
@@ -5695,9 +6425,15 @@ var tweakpane = createCommonjsModule(function (module, exports) {
           return null;
         }
 
-        const notation = getColorNotation(value);
+        const format = detectStringColorFormat(value, extractColorType(params));
 
-        if (!notation) {
+        if (!format) {
+          return null;
+        }
+
+        const stringifier = findColorStringifier(format);
+
+        if (!stringifier) {
           return null;
         }
 
@@ -5708,34 +6444,50 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         } : null;
       },
       binding: {
-        reader: _args => colorFromString,
+        reader: args => {
+          var _a;
+
+          return createColorStringBindingReader((_a = extractColorType(args.params)) !== null && _a !== void 0 ? _a : 'int');
+        },
         equals: Color.equals,
         writer: args => {
-          const notation = getColorNotation(args.initialValue);
+          const format = detectStringColorFormat(args.initialValue, extractColorType(args.params));
 
-          if (!notation) {
+          if (!format) {
             throw TpError.shouldNeverHappen();
           }
 
-          return createColorStringWriter(notation);
+          const writer = createColorStringWriter(format);
+
+          if (!writer) {
+            throw TpError.notBindable();
+          }
+
+          return writer;
         }
       },
       controller: args => {
-        const notation = getColorNotation(args.initialValue);
+        const format = detectStringColorFormat(args.initialValue, extractColorType(args.params));
 
-        if (!notation) {
+        if (!format) {
           throw TpError.shouldNeverHappen();
         }
 
-        const stringifier = getColorStringifier(notation);
+        const stringifier = findColorStringifier(format);
+
+        if (!stringifier) {
+          throw TpError.shouldNeverHappen();
+        }
+
         const expanded = 'expanded' in args.params ? args.params.expanded : undefined;
         const picker = 'picker' in args.params ? args.params.picker : undefined;
         return new ColorController(args.document, {
+          colorType: format.type,
           expanded: expanded !== null && expanded !== void 0 ? expanded : false,
           formatter: stringifier,
-          parser: CompositeColorParser,
+          parser: createColorStringParser(format.type),
           pickerLayout: picker !== null && picker !== void 0 ? picker : 'popup',
-          supportsAlpha: hasAlphaComponent(notation),
+          supportsAlpha: format.alpha,
           value: args.value,
           viewProps: args.viewProps
         });
@@ -5815,9 +6567,9 @@ var tweakpane = createCommonjsModule(function (module, exports) {
 
     }
 
-    function createStepConstraint(params) {
+    function createStepConstraint(params, initialValue) {
       if ('step' in params && !isEmpty(params.step)) {
-        return new StepConstraint(params.step);
+        return new StepConstraint(params.step, initialValue);
       }
 
       return null;
@@ -5834,9 +6586,9 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       return null;
     }
 
-    function createConstraint$4(params) {
+    function createConstraint$4(params, initialValue) {
       const constraints = [];
-      const sc = createStepConstraint(params);
+      const sc = createStepConstraint(params, initialValue);
 
       if (sc) {
         constraints.push(sc);
@@ -5895,7 +6647,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       },
       binding: {
         reader: _args => numberFromUnknown,
-        constraint: args => createConstraint$4(args.params),
+        constraint: args => createConstraint$4(args.params, args.initialValue),
         writer: _args => writePrimitive
       },
       controller: args => {
@@ -6318,39 +7070,41 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       target.writeProperty('y', value.y);
     }
 
-    function createDimensionConstraint$2(params) {
+    function createDimensionConstraint(params, initialValue) {
       if (!params) {
         return undefined;
       }
 
       const constraints = [];
+      const cs = createStepConstraint(params, initialValue);
 
-      if (!isEmpty(params.step)) {
-        constraints.push(new StepConstraint(params.step));
+      if (cs) {
+        constraints.push(cs);
       }
 
-      if (!isEmpty(params.max) || !isEmpty(params.min)) {
-        constraints.push(new RangeConstraint({
-          max: params.max,
-          min: params.min
-        }));
+      const rs = createRangeConstraint(params);
+
+      if (rs) {
+        constraints.push(rs);
       }
 
       return new CompositeConstraint(constraints);
     }
 
-    function createConstraint$3(params) {
+    function createConstraint$3(params, initialValue) {
       return new PointNdConstraint({
         assembly: Point2dAssembly,
-        components: [createDimensionConstraint$2('x' in params ? params.x : undefined), createDimensionConstraint$2('y' in params ? params.y : undefined)]
+        components: [createDimensionConstraint('x' in params ? params.x : undefined, initialValue.x), createDimensionConstraint('y' in params ? params.y : undefined, initialValue.y)]
       });
     }
 
     function getSuitableMaxDimensionValue(constraint, rawValue) {
+      var _a, _b;
+
       const rc = constraint && findConstraint(constraint, RangeConstraint);
 
       if (rc) {
-        return Math.max(Math.abs(rc.minValue || 0), Math.abs(rc.maxValue || 0));
+        return Math.max(Math.abs((_a = rc.minValue) !== null && _a !== void 0 ? _a : 0), Math.abs((_b = rc.maxValue) !== null && _b !== void 0 ? _b : 0));
       }
 
       const step = getBaseStep(constraint);
@@ -6417,7 +7171,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       },
       binding: {
         reader: _args => point2dFromUnknown,
-        constraint: args => createConstraint$3(args.params),
+        constraint: args => createConstraint$3(args.params, args.initialValue),
         equals: Point2d.equals,
         writer: _args => writePoint2d
       },
@@ -6501,31 +7255,10 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       target.writeProperty('z', value.z);
     }
 
-    function createDimensionConstraint$1(params) {
-      if (!params) {
-        return undefined;
-      }
-
-      const constraints = [];
-
-      if (!isEmpty(params.step)) {
-        constraints.push(new StepConstraint(params.step));
-      }
-
-      if (!isEmpty(params.max) || !isEmpty(params.min)) {
-        constraints.push(new RangeConstraint({
-          max: params.max,
-          min: params.min
-        }));
-      }
-
-      return new CompositeConstraint(constraints);
-    }
-
-    function createConstraint$2(params) {
+    function createConstraint$2(params, initialValue) {
       return new PointNdConstraint({
         assembly: Point3dAssembly,
-        components: [createDimensionConstraint$1('x' in params ? params.x : undefined), createDimensionConstraint$1('y' in params ? params.y : undefined), createDimensionConstraint$1('z' in params ? params.z : undefined)]
+        components: [createDimensionConstraint('x' in params ? params.x : undefined, initialValue.x), createDimensionConstraint('y' in params ? params.y : undefined, initialValue.y), createDimensionConstraint('z' in params ? params.z : undefined, initialValue.z)]
       });
     }
 
@@ -6561,7 +7294,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       },
       binding: {
         reader: _args => point3dFromUnknown,
-        constraint: args => createConstraint$2(args.params),
+        constraint: args => createConstraint$2(args.params, args.initialValue),
         equals: Point3d.equals,
         writer: _args => writePoint3d
       },
@@ -6643,31 +7376,10 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       target.writeProperty('w', value.w);
     }
 
-    function createDimensionConstraint(params) {
-      if (!params) {
-        return undefined;
-      }
-
-      const constraints = [];
-
-      if (!isEmpty(params.step)) {
-        constraints.push(new StepConstraint(params.step));
-      }
-
-      if (!isEmpty(params.max) || !isEmpty(params.min)) {
-        constraints.push(new RangeConstraint({
-          max: params.max,
-          min: params.min
-        }));
-      }
-
-      return new CompositeConstraint(constraints);
-    }
-
-    function createConstraint$1(params) {
+    function createConstraint$1(params, initialValue) {
       return new PointNdConstraint({
         assembly: Point4dAssembly,
-        components: [createDimensionConstraint('x' in params ? params.x : undefined), createDimensionConstraint('y' in params ? params.y : undefined), createDimensionConstraint('z' in params ? params.z : undefined), createDimensionConstraint('w' in params ? params.w : undefined)]
+        components: [createDimensionConstraint('x' in params ? params.x : undefined, initialValue.x), createDimensionConstraint('y' in params ? params.y : undefined, initialValue.y), createDimensionConstraint('z' in params ? params.z : undefined, initialValue.z), createDimensionConstraint('w' in params ? params.w : undefined, initialValue.w)]
       });
     }
 
@@ -6704,7 +7416,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       },
       binding: {
         reader: _args => point4dFromUnknown,
-        constraint: args => createConstraint$1(args.params),
+        constraint: args => createConstraint$1(args.params, args.initialValue),
         equals: Point4d.equals,
         writer: _args => writePoint4d
       },
@@ -6934,31 +7646,6 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         });
       }
     };
-
-    class GraphCursor {
-      constructor() {
-        this.emitter = new Emitter();
-        this.index_ = -1;
-      }
-
-      get index() {
-        return this.index_;
-      }
-
-      set index(index) {
-        const changed = this.index_ !== index;
-
-        if (changed) {
-          this.index_ = index;
-          this.emitter.emit('change', {
-            index: index,
-            sender: this
-          });
-        }
-      }
-
-    }
-
     const className = ClassName('grl');
 
     class GraphLogView {
@@ -6969,8 +7656,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         this.element.classList.add(className());
         config.viewProps.bindClassModifiers(this.element);
         this.formatter_ = config.formatter;
-        this.minValue_ = config.minValue;
-        this.maxValue_ = config.maxValue;
+        this.props_ = config.props;
         this.cursor_ = config.cursor;
         this.cursor_.emitter.on('change', this.onCursorChange_);
         const svgElem = doc.createElementNS(SVG_NS, 'svg');
@@ -6997,8 +7683,8 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       update_() {
         const bounds = this.svgElem_.getBoundingClientRect();
         const maxIndex = this.value.rawValue.length - 1;
-        const min = this.minValue_;
-        const max = this.maxValue_;
+        const min = this.props_.get('minValue');
+        const max = this.props_.get('maxValue');
         const points = [];
         this.value.rawValue.forEach((v, index) => {
           if (v === undefined) {
@@ -7011,14 +7697,14 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         });
         this.lineElem_.setAttributeNS(null, 'points', points.join(' '));
         const tooltipElem = this.tooltipElem_;
-        const value = this.value.rawValue[this.cursor_.index];
+        const value = this.value.rawValue[this.cursor_.rawValue];
 
         if (value === undefined) {
           tooltipElem.classList.remove(className('t', 'a'));
           return;
         }
 
-        const tx = mapRange(this.cursor_.index, 0, maxIndex, 0, bounds.width);
+        const tx = mapRange(this.cursor_.rawValue, 0, maxIndex, 0, bounds.width);
         const ty = mapRange(value, min, max, bounds.height, 0);
         tooltipElem.style.left = `${tx}px`;
         tooltipElem.style.top = `${ty}px`;
@@ -7048,15 +7734,15 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         this.onGraphPointerDown_ = this.onGraphPointerDown_.bind(this);
         this.onGraphPointerMove_ = this.onGraphPointerMove_.bind(this);
         this.onGraphPointerUp_ = this.onGraphPointerUp_.bind(this);
+        this.props_ = config.props;
         this.value = config.value;
         this.viewProps = config.viewProps;
-        this.cursor_ = new GraphCursor();
+        this.cursor_ = createValue(-1);
         this.view = new GraphLogView(doc, {
           cursor: this.cursor_,
           formatter: config.formatter,
           lineCount: config.lineCount,
-          maxValue: config.maxValue,
-          minValue: config.minValue,
+          props: this.props_,
           value: this.value,
           viewProps: this.viewProps
         });
@@ -7073,12 +7759,12 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       }
 
       onGraphMouseLeave_() {
-        this.cursor_.index = -1;
+        this.cursor_.rawValue = -1;
       }
 
       onGraphMouseMove_(ev) {
         const bounds = this.view.element.getBoundingClientRect();
-        this.cursor_.index = Math.floor(mapRange(ev.offsetX, 0, bounds.width, 0, this.value.rawValue.length));
+        this.cursor_.rawValue = Math.floor(mapRange(ev.offsetX, 0, bounds.width, 0, this.value.rawValue.length));
       }
 
       onGraphPointerDown_(ev) {
@@ -7087,15 +7773,15 @@ var tweakpane = createCommonjsModule(function (module, exports) {
 
       onGraphPointerMove_(ev) {
         if (!ev.data.point) {
-          this.cursor_.index = -1;
+          this.cursor_.rawValue = -1;
           return;
         }
 
-        this.cursor_.index = Math.floor(mapRange(ev.data.point.x, 0, ev.data.bounds.width, 0, this.value.rawValue.length));
+        this.cursor_.rawValue = Math.floor(mapRange(ev.data.point.x, 0, ev.data.bounds.width, 0, this.value.rawValue.length));
       }
 
       onGraphPointerUp_() {
-        this.cursor_.index = -1;
+        this.cursor_.rawValue = -1;
       }
 
     }
@@ -7129,8 +7815,10 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       return new GraphLogController(args.document, {
         formatter: createFormatter(args.params),
         lineCount: (_a = args.params.lineCount) !== null && _a !== void 0 ? _a : Constants.monitor.defaultLineCount,
-        maxValue: (_b = 'max' in args.params ? args.params.max : null) !== null && _b !== void 0 ? _b : 100,
-        minValue: (_c = 'min' in args.params ? args.params.min : null) !== null && _c !== void 0 ? _c : 0,
+        props: ValueMap.fromObject({
+          maxValue: (_b = 'max' in args.params ? args.params.max : null) !== null && _b !== void 0 ? _b : 100,
+          minValue: (_c = 'min' in args.params ? args.params.min : null) !== null && _c !== void 0 ? _c : 0
+        }),
         value: args.value,
         viewProps: args.viewProps
       });
@@ -7295,7 +7983,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         binding: binding,
         blade: createBlade(),
         props: ValueMap.fromObject({
-          label: label || args.target.key
+          label: label !== null && label !== void 0 ? label : args.target.key
         }),
         valueController: controller
       });
@@ -7424,7 +8112,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
           });
         }
 
-        const bc = this.pluginsMap_.inputs.reduce((result, plugin) => result || createInputBindingController(plugin, {
+        const bc = this.pluginsMap_.inputs.reduce((result, plugin) => result !== null && result !== void 0 ? result : createInputBindingController(plugin, {
           document: document,
           target: target,
           params: params
@@ -7443,7 +8131,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       }
 
       createMonitor(document, target, params) {
-        const bc = this.pluginsMap_.monitors.reduce((result, plugin) => result || createMonitorBindingController(plugin, {
+        const bc = this.pluginsMap_.monitors.reduce((result, plugin) => result !== null && result !== void 0 ? result : createMonitorBindingController(plugin, {
           document: document,
           params: params,
           target: target
@@ -7462,7 +8150,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
       }
 
       createBlade(document, params) {
-        const bc = this.pluginsMap_.blades.reduce((result, plugin) => result || createBladeController(plugin, {
+        const bc = this.pluginsMap_.blades.reduce((result, plugin) => result !== null && result !== void 0 ? result : createBladeController(plugin, {
           document: document,
           params: params
         }), null);
@@ -7492,7 +8180,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
           return new RackApi(bc, this);
         }
 
-        const api = this.pluginsMap_.blades.reduce((result, plugin) => result || plugin.api({
+        const api = this.pluginsMap_.blades.reduce((result, plugin) => result !== null && result !== void 0 ? result : plugin.api({
           controller: bc,
           pool: this
         }), null);
@@ -7942,9 +8630,9 @@ var tweakpane = createCommonjsModule(function (module, exports) {
 
     class Pane extends RootApi {
       constructor(opt_config) {
-        var _a;
+        var _a, _b;
 
-        const config = opt_config || {};
+        const config = opt_config !== null && opt_config !== void 0 ? opt_config : {};
         const doc = (_a = config.document) !== null && _a !== void 0 ? _a : getWindowDocument();
         const pool = createDefaultPluginPool();
         const rootController = new RootController(doc, {
@@ -7957,7 +8645,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
         });
         super(rootController, pool);
         this.pool_ = pool;
-        this.containerElem_ = config.container || createDefaultWrapperElement(doc);
+        this.containerElem_ = (_b = config.container) !== null && _b !== void 0 ? _b : createDefaultWrapperElement(doc);
         this.containerElem_.appendChild(this.element);
         this.doc_ = doc;
         this.usesDefaultWrapper_ = !config.container;
@@ -8019,7 +8707,7 @@ var tweakpane = createCommonjsModule(function (module, exports) {
 
     }
 
-    const VERSION = new Semver('3.0.8');
+    const VERSION = new Semver('3.1.0');
     exports.BladeApi = BladeApi;
     exports.ButtonApi = ButtonApi;
     exports.FolderApi = FolderApi;

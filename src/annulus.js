@@ -1,6 +1,4 @@
-/**
- * @module annulus
- */
+/** @module annulus */
 import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
 
 /**

@@ -1,21 +1,5 @@
-import { H as functionBindNative, g as global_1, n as functionUncurryThis, x as requireObjectCoercible, A as toIntegerOrInfinity } from './set-to-string-tag-f46d73c4.js';
-import { d as classof } from './species-constructor-1e061cc5.js';
-
-var FunctionPrototype = Function.prototype;
-var apply = FunctionPrototype.apply;
-var call = FunctionPrototype.call;
-
-// eslint-disable-next-line es/no-reflect -- safe
-var functionApply = typeof Reflect == 'object' && Reflect.apply || (functionBindNative ? call.bind(apply) : function () {
-  return call.apply(apply, arguments);
-});
-
-var String = global_1.String;
-
-var toString_1 = function (argument) {
-  if (classof(argument) === 'Symbol') throw TypeError('Cannot convert a Symbol value to a string');
-  return String(argument);
-};
+import { E as functionUncurryThis, R as requireObjectCoercible, S as toIntegerOrInfinity } from './object-set-prototype-of-c6b82070.js';
+import { t as toString_1 } from './function-apply-6538ee25.js';
 
 var charAt = functionUncurryThis(''.charAt);
 var charCodeAt = functionUncurryThis(''.charCodeAt);
@@ -49,4 +33,4 @@ var stringMultibyte = {
   charAt: createMethod(true)
 };
 
-export { functionApply as f, stringMultibyte as s, toString_1 as t };
+export { stringMultibyte as s };

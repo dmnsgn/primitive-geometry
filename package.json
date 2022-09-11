@@ -55,14 +55,13 @@
     "dev": "npx snowdev dev"
   },
   "devDependencies": {
-    "assert": "^2.0.0",
-    "async-preloader": "^6.1.2",
+    "async-preloader": "^7.0.0",
     "cameras": "^3.1.1",
-    "es-module-shims": "^1.5.4",
+    "es-module-shims": "^1.5.17",
     "gl-matrix": "^3.4.3",
-    "pex-context": "^2.11.0-2",
-    "pex-geom": "github:pex-gl/pex-geom#v3",
-    "tweakpane": "^3.0.8"
+    "pex-context": "^3.0.0-alpha.1",
+    "pex-geom": "^3.0.0-alpha.3",
+    "tweakpane": "^3.1.0"
   },
   "engines": {
     "node": ">=15.0.0",

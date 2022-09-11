@@ -1,6 +1,4 @@
-/**
- * @module icosahedron
- */
+/** @module icosahedron */
 import icosphere from "./icosphere.js";
 import { checkArguments } from "./utils.js";
 

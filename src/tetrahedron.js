@@ -1,6 +1,4 @@
-/**
- * @module tetrahedron
- */
+/** @module tetrahedron */
 import cylinder from "./cylinder.js";
 import { checkArguments } from "./utils.js";
 

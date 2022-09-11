@@ -1,6 +1,4 @@
-/**
- * @module capsule
- */
+/** @module capsule */
 import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
 
 /**

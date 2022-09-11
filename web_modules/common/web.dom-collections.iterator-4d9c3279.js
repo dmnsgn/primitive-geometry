@@ -1,43 +1,4 @@
-import { w as wellKnownSymbol, e as objectGetPrototypeOf, i as fails, u as isCallable, r as redefine, K as documentCreateElement, L as objectDefineProperty, a as objectCreate, b as createPropertyDescriptor, s as setToStringTag, I as iterators, o as objectSetPrototypeOf, f as createNonEnumerableProperty, p as functionCall, _ as _export, M as functionName, q as internalState, N as descriptors, O as toIndexedObject, g as global_1 } from './set-to-string-tag-f46d73c4.js';
-
-var ITERATOR = wellKnownSymbol('iterator');
-var BUGGY_SAFARI_ITERATORS = false;
-
-// `%IteratorPrototype%` object
-// https://tc39.es/ecma262/#sec-%iteratorprototype%-object
-var IteratorPrototype, PrototypeOfArrayIteratorPrototype, arrayIterator;
-
-/* eslint-disable es/no-array-prototype-keys -- safe */
-if ([].keys) {
-  arrayIterator = [].keys();
-  // Safari 8 has buggy iterators w/o `next`
-  if (!('next' in arrayIterator)) BUGGY_SAFARI_ITERATORS = true;
-  else {
-    PrototypeOfArrayIteratorPrototype = objectGetPrototypeOf(objectGetPrototypeOf(arrayIterator));
-    if (PrototypeOfArrayIteratorPrototype !== Object.prototype) IteratorPrototype = PrototypeOfArrayIteratorPrototype;
-  }
-}
-
-var NEW_ITERATOR_PROTOTYPE = IteratorPrototype == undefined || fails(function () {
-  var test = {};
-  // FF44- legacy iterators case
-  return IteratorPrototype[ITERATOR].call(test) !== test;
-});
-
-if (NEW_ITERATOR_PROTOTYPE) IteratorPrototype = {};
-
-// `%IteratorPrototype%[@@iterator]()` method
-// https://tc39.es/ecma262/#sec-%iteratorprototype%-@@iterator
-if (!isCallable(IteratorPrototype[ITERATOR])) {
-  redefine(IteratorPrototype, ITERATOR, function () {
-    return this;
-  });
-}
-
-var iteratorsCore = {
-  IteratorPrototype: IteratorPrototype,
-  BUGGY_SAFARI_ITERATORS: BUGGY_SAFARI_ITERATORS
-};
+import { d as documentCreateElement, w as wellKnownSymbol, o as objectCreate, c as objectDefineProperty, e as objectGetPrototypeOf, h as fails, i as isCallable, j as defineBuiltIn, k as createPropertyDescriptor, s as setToStringTag, l as iterators, m as objectSetPrototypeOf, n as createNonEnumerableProperty, f as functionCall, _ as _export, p as functionName, q as internalState, r as descriptors, t as toIndexedObject, u as global_1 } from './object-set-prototype-of-c6b82070.js';
 
 // iterable DOM collections
 // flag - `iterable` interface - 'entries', 'keys', 'values', 'forEach' methods
@@ -83,13 +44,15 @@ var DOMTokenListPrototype = classList && classList.constructor && classList.cons
 
 var domTokenListPrototype = DOMTokenListPrototype === Object.prototype ? undefined : DOMTokenListPrototype;
 
+var defineProperty = objectDefineProperty.f;
+
 var UNSCOPABLES = wellKnownSymbol('unscopables');
 var ArrayPrototype = Array.prototype;
 
 // Array.prototype[@@unscopables]
 // https://tc39.es/ecma262/#sec-array.prototype-@@unscopables
 if (ArrayPrototype[UNSCOPABLES] == undefined) {
-  objectDefineProperty.f(ArrayPrototype, UNSCOPABLES, {
+  defineProperty(ArrayPrototype, UNSCOPABLES, {
     configurable: true,
     value: objectCreate(null)
   });
@@ -98,6 +61,45 @@ if (ArrayPrototype[UNSCOPABLES] == undefined) {
 // add a key to Array.prototype[@@unscopables]
 var addToUnscopables = function (key) {
   ArrayPrototype[UNSCOPABLES][key] = true;
+};
+
+var ITERATOR = wellKnownSymbol('iterator');
+var BUGGY_SAFARI_ITERATORS = false;
+
+// `%IteratorPrototype%` object
+// https://tc39.es/ecma262/#sec-%iteratorprototype%-object
+var IteratorPrototype, PrototypeOfArrayIteratorPrototype, arrayIterator;
+
+/* eslint-disable es-x/no-array-prototype-keys -- safe */
+if ([].keys) {
+  arrayIterator = [].keys();
+  // Safari 8 has buggy iterators w/o `next`
+  if (!('next' in arrayIterator)) BUGGY_SAFARI_ITERATORS = true;
+  else {
+    PrototypeOfArrayIteratorPrototype = objectGetPrototypeOf(objectGetPrototypeOf(arrayIterator));
+    if (PrototypeOfArrayIteratorPrototype !== Object.prototype) IteratorPrototype = PrototypeOfArrayIteratorPrototype;
+  }
+}
+
+var NEW_ITERATOR_PROTOTYPE = IteratorPrototype == undefined || fails(function () {
+  var test = {};
+  // FF44- legacy iterators case
+  return IteratorPrototype[ITERATOR].call(test) !== test;
+});
+
+if (NEW_ITERATOR_PROTOTYPE) IteratorPrototype = {};
+
+// `%IteratorPrototype%[@@iterator]()` method
+// https://tc39.es/ecma262/#sec-%iteratorprototype%-@@iterator
+if (!isCallable(IteratorPrototype[ITERATOR])) {
+  defineBuiltIn(IteratorPrototype, ITERATOR, function () {
+    return this;
+  });
+}
+
+var iteratorsCore = {
+  IteratorPrototype: IteratorPrototype,
+  BUGGY_SAFARI_ITERATORS: BUGGY_SAFARI_ITERATORS
 };
 
 var IteratorPrototype$1 = iteratorsCore.IteratorPrototype;
@@ -158,7 +160,7 @@ var defineIterator = function (Iterable, NAME, IteratorConstructor, next, DEFAUL
         if (objectSetPrototypeOf) {
           objectSetPrototypeOf(CurrentIteratorPrototype, IteratorPrototype$2);
         } else if (!isCallable(CurrentIteratorPrototype[ITERATOR$1])) {
-          redefine(CurrentIteratorPrototype, ITERATOR$1, returnThis$1);
+          defineBuiltIn(CurrentIteratorPrototype, ITERATOR$1, returnThis$1);
         }
       }
       // Set @@toStringTag to native iterators
@@ -185,21 +187,21 @@ var defineIterator = function (Iterable, NAME, IteratorConstructor, next, DEFAUL
     };
     if (FORCED) for (KEY in methods) {
       if (BUGGY_SAFARI_ITERATORS$1 || INCORRECT_VALUES_NAME || !(KEY in IterablePrototype)) {
-        redefine(IterablePrototype, KEY, methods[KEY]);
+        defineBuiltIn(IterablePrototype, KEY, methods[KEY]);
       }
     } else _export({ target: NAME, proto: true, forced: BUGGY_SAFARI_ITERATORS$1 || INCORRECT_VALUES_NAME }, methods);
   }
 
   // define iterator
   if ( IterablePrototype[ITERATOR$1] !== defaultIterator) {
-    redefine(IterablePrototype, ITERATOR$1, defaultIterator, { name: DEFAULT });
+    defineBuiltIn(IterablePrototype, ITERATOR$1, defaultIterator, { name: DEFAULT });
   }
   iterators[NAME] = defaultIterator;
 
   return methods;
 };
 
-var defineProperty = objectDefineProperty.f;
+var defineProperty$1 = objectDefineProperty.f;
 
 
 
@@ -253,7 +255,7 @@ addToUnscopables('entries');
 
 // V8 ~ Chrome 45- bug
 if ( descriptors && values.name !== 'values') try {
-  defineProperty(values, 'name', { value: 'values' });
+  defineProperty$1(values, 'name', { value: 'values' });
 } catch (error) { /* empty */ }
 
 var ITERATOR$2 = wellKnownSymbol('iterator');
@@ -288,4 +290,4 @@ for (var COLLECTION_NAME in domIterables) {
 
 handlePrototype(domTokenListPrototype, 'DOMTokenList');
 
-export { createIteratorConstructor as c, defineIterator as d, iteratorsCore as i };
+export { addToUnscopables as a, createIteratorConstructor as c, defineIterator as d, iteratorsCore as i };

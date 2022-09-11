@@ -1,6 +1,6 @@
-import { w as wellKnownSymbol, g as global_1, e as objectGetPrototypeOf, P as uid, o as objectSetPrototypeOf, f as createNonEnumerableProperty, u as isCallable, N as descriptors, C as hasOwnProperty_1, B as isObject, L as objectDefineProperty, d as objectIsPrototypeOf, E as tryToString, r as redefine, i as fails, A as toIntegerOrInfinity, z as toLength, t as toObject, F as lengthOfArrayLike, Q as toAbsoluteIndex, n as functionUncurryThis, s as setToStringTag, R as objectGetOwnPropertyNames, M as functionName, q as internalState, p as functionCall, v as classofRaw, S as indexedObject, h as getBuiltIn, j as createCommonjsModule, _ as _export, a as objectCreate, T as toPropertyKey, U as isSymbol, b as createPropertyDescriptor, V as objectGetOwnPropertyDescriptor, W as engineUserAgent, D as aCallable, X as engineV8Version } from './set-to-string-tag-f46d73c4.js';
-import { d as classof, a as anInstance, r as redefineAll, e as aConstructor, g as getIteratorMethod, b as isArrayIteratorMethod, c as getIterator, f as functionBindContext, h as isConstructor, i as inheritIfRequired, s as speciesConstructor } from './species-constructor-1e061cc5.js';
-import { a as arraySliceSimple, b as arraySort } from './array-sort-c6e1ac34.js';
+import { w as wellKnownSymbol, u as global_1, e as objectGetPrototypeOf, T as uid, m as objectSetPrototypeOf, i as isCallable, r as descriptors, B as hasOwnProperty_1, D as isObject, n as createNonEnumerableProperty, c as objectDefineProperty, q as internalState, z as objectIsPrototypeOf, x as tryToString, j as defineBuiltIn, h as fails, S as toIntegerOrInfinity, U as toLength, H as toObject, y as lengthOfArrayLike, Q as toAbsoluteIndex, E as functionUncurryThis, s as setToStringTag, V as objectGetOwnPropertyNames, p as functionName, f as functionCall, N as classofRaw, I as indexedObject, g as getBuiltIn, W as createCommonjsModule, _ as _export, o as objectCreate, P as toPropertyKey, X as isSymbol, k as createPropertyDescriptor, Y as objectGetOwnPropertyDescriptor, Z as toPrimitive, $ as engineUserAgent, b as aCallable, a0 as engineV8Version } from './object-set-prototype-of-c6b82070.js';
+import { h as classof, b as anInstance, d as defineBuiltIns, j as aConstructor, g as getIteratorMethod, i as isArrayIteratorMethod, a as getIterator, f as functionBindContext, e as isConstructor, c as inheritIfRequired, s as speciesConstructor } from './inherit-if-required-718dc9f8.js';
+import { b as arraySliceSimple, a as arraySort } from './array-sort-42b2ed4a.js';
 
 var ITERATOR = wellKnownSymbol('iterator');
 var SAFE_CLOSING = false;
@@ -18,7 +18,7 @@ try {
   iteratorWithReturn[ITERATOR] = function () {
     return this;
   };
-  // eslint-disable-next-line es/no-array-from, no-throw-literal -- required for testing
+  // eslint-disable-next-line es-x/no-array-from, no-throw-literal -- required for testing
   Array.from(iteratorWithReturn, function () { throw 2; });
 } catch (error) { /* empty */ }
 
@@ -39,7 +39,7 @@ var checkCorrectnessOfIteration = function (exec, SKIP_CLOSING) {
   return ITERATION_SUPPORT;
 };
 
-// eslint-disable-next-line es/no-typed-arrays -- safe
+// eslint-disable-next-line es-x/no-typed-arrays -- safe
 var arrayBufferNative = typeof ArrayBuffer != 'undefined' && typeof DataView != 'undefined';
 
 var defineProperty = objectDefineProperty.f;
@@ -49,18 +49,21 @@ var defineProperty = objectDefineProperty.f;
 
 
 
-var Int8Array = global_1.Int8Array;
-var Int8ArrayPrototype = Int8Array && Int8Array.prototype;
+
+var enforceInternalState = internalState.enforce;
+var getInternalState = internalState.get;
+var Int8Array$1 = global_1.Int8Array;
+var Int8ArrayPrototype = Int8Array$1 && Int8Array$1.prototype;
 var Uint8ClampedArray$1 = global_1.Uint8ClampedArray;
 var Uint8ClampedArrayPrototype = Uint8ClampedArray$1 && Uint8ClampedArray$1.prototype;
-var TypedArray = Int8Array && objectGetPrototypeOf(Int8Array);
+var TypedArray = Int8Array$1 && objectGetPrototypeOf(Int8Array$1);
 var TypedArrayPrototype = Int8ArrayPrototype && objectGetPrototypeOf(Int8ArrayPrototype);
 var ObjectPrototype = Object.prototype;
-var TypeError = global_1.TypeError;
+var TypeError$1 = global_1.TypeError;
 
 var TO_STRING_TAG = wellKnownSymbol('toStringTag');
 var TYPED_ARRAY_TAG = uid('TYPED_ARRAY_TAG');
-var TYPED_ARRAY_CONSTRUCTOR = uid('TYPED_ARRAY_CONSTRUCTOR');
+var TYPED_ARRAY_CONSTRUCTOR = 'TypedArrayConstructor';
 // Fixing native typed arrays in Opera Presto crashes the browser, see #595
 var NATIVE_ARRAY_BUFFER_VIEWS = arrayBufferNative && !!objectSetPrototypeOf && classof(global_1.opera) !== 'Opera';
 var TYPED_ARRAY_TAG_REQUIRED = false;
@@ -91,6 +94,13 @@ var isView = function isView(it) {
     || hasOwnProperty_1(BigIntArrayConstructorsList, klass);
 };
 
+var getTypedArrayConstructor = function (it) {
+  var proto = objectGetPrototypeOf(it);
+  if (!isObject(proto)) return;
+  var state = getInternalState(proto);
+  return (state && hasOwnProperty_1(state, TYPED_ARRAY_CONSTRUCTOR)) ? state[TYPED_ARRAY_CONSTRUCTOR] : getTypedArrayConstructor(proto);
+};
+
 var isTypedArray = function (it) {
   if (!isObject(it)) return false;
   var klass = classof(it);
@@ -100,12 +110,12 @@ var isTypedArray = function (it) {
 
 var aTypedArray = function (it) {
   if (isTypedArray(it)) return it;
-  throw TypeError('Target is not a typed array');
+  throw TypeError$1('Target is not a typed array');
 };
 
 var aTypedArrayConstructor = function (C) {
   if (isCallable(C) && (!objectSetPrototypeOf || objectIsPrototypeOf(TypedArray, C))) return C;
-  throw TypeError(tryToString(C) + ' is not a typed array constructor');
+  throw TypeError$1(tryToString(C) + ' is not a typed array constructor');
 };
 
 var exportTypedArrayMethod = function (KEY, property, forced, options) {
@@ -122,7 +132,7 @@ var exportTypedArrayMethod = function (KEY, property, forced, options) {
     }
   }
   if (!TypedArrayPrototype[KEY] || forced) {
-    redefine(TypedArrayPrototype, KEY, forced ? property
+    defineBuiltIn(TypedArrayPrototype, KEY, forced ? property
       : NATIVE_ARRAY_BUFFER_VIEWS && Int8ArrayPrototype[KEY] || property, options);
   }
 };
@@ -140,14 +150,14 @@ var exportTypedArrayStaticMethod = function (KEY, property, forced) {
     if (!TypedArray[KEY] || forced) {
       // V8 ~ Chrome 49-50 `%TypedArray%` methods are non-writable non-configurable
       try {
-        return redefine(TypedArray, KEY, forced ? property : NATIVE_ARRAY_BUFFER_VIEWS && TypedArray[KEY] || property);
+        return defineBuiltIn(TypedArray, KEY, forced ? property : NATIVE_ARRAY_BUFFER_VIEWS && TypedArray[KEY] || property);
       } catch (error) { /* empty */ }
     } else return;
   }
   for (ARRAY in TypedArrayConstructorsList) {
     TypedArrayConstructor = global_1[ARRAY];
     if (TypedArrayConstructor && (!TypedArrayConstructor[KEY] || forced)) {
-      redefine(TypedArrayConstructor, KEY, property);
+      defineBuiltIn(TypedArrayConstructor, KEY, property);
     }
   }
 };
@@ -155,21 +165,21 @@ var exportTypedArrayStaticMethod = function (KEY, property, forced) {
 for (NAME in TypedArrayConstructorsList) {
   Constructor = global_1[NAME];
   Prototype = Constructor && Constructor.prototype;
-  if (Prototype) createNonEnumerableProperty(Prototype, TYPED_ARRAY_CONSTRUCTOR, Constructor);
+  if (Prototype) enforceInternalState(Prototype)[TYPED_ARRAY_CONSTRUCTOR] = Constructor;
   else NATIVE_ARRAY_BUFFER_VIEWS = false;
 }
 
 for (NAME in BigIntArrayConstructorsList) {
   Constructor = global_1[NAME];
   Prototype = Constructor && Constructor.prototype;
-  if (Prototype) createNonEnumerableProperty(Prototype, TYPED_ARRAY_CONSTRUCTOR, Constructor);
+  if (Prototype) enforceInternalState(Prototype)[TYPED_ARRAY_CONSTRUCTOR] = Constructor;
 }
 
 // WebKit bug - typed arrays constructors prototype is Object.prototype
 if (!NATIVE_ARRAY_BUFFER_VIEWS || !isCallable(TypedArray) || TypedArray === Function.prototype) {
   // eslint-disable-next-line no-shadow -- safe
   TypedArray = function TypedArray() {
-    throw TypeError('Incorrect invocation');
+    throw TypeError$1('Incorrect invocation');
   };
   if (NATIVE_ARRAY_BUFFER_VIEWS) for (NAME in TypedArrayConstructorsList) {
     if (global_1[NAME]) objectSetPrototypeOf(global_1[NAME], TypedArray);
@@ -200,12 +210,12 @@ if (descriptors && !hasOwnProperty_1(TypedArrayPrototype, TO_STRING_TAG)) {
 
 var arrayBufferViewCore = {
   NATIVE_ARRAY_BUFFER_VIEWS: NATIVE_ARRAY_BUFFER_VIEWS,
-  TYPED_ARRAY_CONSTRUCTOR: TYPED_ARRAY_CONSTRUCTOR,
   TYPED_ARRAY_TAG: TYPED_ARRAY_TAG_REQUIRED && TYPED_ARRAY_TAG,
   aTypedArray: aTypedArray,
   aTypedArrayConstructor: aTypedArrayConstructor,
   exportTypedArrayMethod: exportTypedArrayMethod,
   exportTypedArrayStaticMethod: exportTypedArrayStaticMethod,
+  getTypedArrayConstructor: getTypedArrayConstructor,
   isView: isView,
   isTypedArray: isTypedArray,
   TypedArray: TypedArray,
@@ -219,23 +229,23 @@ var arrayBufferViewCore = {
 var NATIVE_ARRAY_BUFFER_VIEWS$1 = arrayBufferViewCore.NATIVE_ARRAY_BUFFER_VIEWS;
 
 var ArrayBuffer$1 = global_1.ArrayBuffer;
-var Int8Array$1 = global_1.Int8Array;
+var Int8Array$2 = global_1.Int8Array;
 
 var typedArrayConstructorsRequireWrappers = !NATIVE_ARRAY_BUFFER_VIEWS$1 || !fails(function () {
-  Int8Array$1(1);
+  Int8Array$2(1);
 }) || !fails(function () {
-  new Int8Array$1(-1);
+  new Int8Array$2(-1);
 }) || !checkCorrectnessOfIteration(function (iterable) {
-  new Int8Array$1();
-  new Int8Array$1(null);
-  new Int8Array$1(1.5);
-  new Int8Array$1(iterable);
+  new Int8Array$2();
+  new Int8Array$2(null);
+  new Int8Array$2(1.5);
+  new Int8Array$2(iterable);
 }, true) || fails(function () {
   // Safari (11+) bug - a reason why even Safari 13 should load a typed array polyfill
-  return new Int8Array$1(new ArrayBuffer$1(2), 1, undefined).length !== 1;
+  return new Int8Array$2(new ArrayBuffer$1(2), 1, undefined).length !== 1;
 });
 
-var RangeError = global_1.RangeError;
+var $RangeError = RangeError;
 
 // `ToIndex` abstract operation
 // https://tc39.es/ecma262/#sec-toindex
@@ -243,14 +253,12 @@ var toIndex = function (it) {
   if (it === undefined) return 0;
   var number = toIntegerOrInfinity(it);
   var length = toLength(number);
-  if (number !== length) throw RangeError('Wrong length or index');
+  if (number !== length) throw $RangeError('Wrong length or index');
   return length;
 };
 
 // IEEE754 conversions based on https://github.com/feross/ieee754
-
-
-var Array$1 = global_1.Array;
+var $Array = Array;
 var abs = Math.abs;
 var pow = Math.pow;
 var floor = Math.floor;
@@ -258,7 +266,7 @@ var log = Math.log;
 var LN2 = Math.LN2;
 
 var pack = function (number, mantissaLength, bytes) {
-  var buffer = Array$1(bytes);
+  var buffer = $Array(bytes);
   var exponentLength = bytes * 8 - mantissaLength - 1;
   var eMax = (1 << exponentLength) - 1;
   var eBias = eMax >> 1;
@@ -374,7 +382,7 @@ var defineProperty$1 = objectDefineProperty.f;
 
 var PROPER_FUNCTION_NAME = functionName.PROPER;
 var CONFIGURABLE_FUNCTION_NAME = functionName.CONFIGURABLE;
-var getInternalState = internalState.get;
+var getInternalState$1 = internalState.get;
 var setInternalState = internalState.set;
 var ARRAY_BUFFER = 'ArrayBuffer';
 var DATA_VIEW = 'DataView';
@@ -387,7 +395,7 @@ var ArrayBufferPrototype = $ArrayBuffer && $ArrayBuffer[PROTOTYPE];
 var $DataView = global_1[DATA_VIEW];
 var DataViewPrototype = $DataView && $DataView[PROTOTYPE];
 var ObjectPrototype$1 = Object.prototype;
-var Array$2 = global_1.Array;
+var Array$1 = global_1.Array;
 var RangeError$1 = global_1.RangeError;
 var fill = functionUncurryThis(arrayFill);
 var reverse = functionUncurryThis([].reverse);
@@ -420,14 +428,14 @@ var packFloat64 = function (number) {
 };
 
 var addGetter = function (Constructor, key) {
-  defineProperty$1(Constructor[PROTOTYPE], key, { get: function () { return getInternalState(this)[key]; } });
+  defineProperty$1(Constructor[PROTOTYPE], key, { get: function () { return getInternalState$1(this)[key]; } });
 };
 
 var get = function (view, count, index, isLittleEndian) {
   var intIndex = toIndex(index);
-  var store = getInternalState(view);
+  var store = getInternalState$1(view);
   if (intIndex + count > store.byteLength) throw RangeError$1(WRONG_INDEX);
-  var bytes = getInternalState(store.buffer).bytes;
+  var bytes = getInternalState$1(store.buffer).bytes;
   var start = intIndex + store.byteOffset;
   var pack = arraySliceSimple(bytes, start, start + count);
   return isLittleEndian ? pack : reverse(pack);
@@ -435,9 +443,9 @@ var get = function (view, count, index, isLittleEndian) {
 
 var set = function (view, count, index, conversion, value, isLittleEndian) {
   var intIndex = toIndex(index);
-  var store = getInternalState(view);
+  var store = getInternalState$1(view);
   if (intIndex + count > store.byteLength) throw RangeError$1(WRONG_INDEX);
-  var bytes = getInternalState(store.buffer).bytes;
+  var bytes = getInternalState$1(store.buffer).bytes;
   var start = intIndex + store.byteOffset;
   var pack = conversion(+value);
   for (var i = 0; i < count; i++) bytes[start + i] = pack[isLittleEndian ? i : count - i - 1];
@@ -448,7 +456,7 @@ if (!arrayBufferNative) {
     anInstance(this, ArrayBufferPrototype);
     var byteLength = toIndex(length);
     setInternalState(this, {
-      bytes: fill(Array$2(byteLength), 0),
+      bytes: fill(Array$1(byteLength), 0),
       byteLength: byteLength
     });
     if (!descriptors) this.byteLength = byteLength;
@@ -459,7 +467,7 @@ if (!arrayBufferNative) {
   $DataView = function DataView(buffer, byteOffset, byteLength) {
     anInstance(this, DataViewPrototype);
     anInstance(buffer, ArrayBufferPrototype);
-    var bufferLength = getInternalState(buffer).byteLength;
+    var bufferLength = getInternalState$1(buffer).byteLength;
     var offset = toIntegerOrInfinity(byteOffset);
     if (offset < 0 || offset > bufferLength) throw RangeError$1('Wrong offset');
     byteLength = byteLength === undefined ? bufferLength - offset : toLength(byteLength);
@@ -485,7 +493,7 @@ if (!arrayBufferNative) {
     addGetter($DataView, 'byteOffset');
   }
 
-  redefineAll(DataViewPrototype, {
+  defineBuiltIns(DataViewPrototype, {
     getInt8: function getInt8(byteOffset) {
       return get(this, 1, byteOffset)[0] << 24 >> 24;
     },
@@ -579,7 +587,7 @@ if (!arrayBufferNative) {
   var $setInt8 = functionUncurryThis(DataViewPrototype.setInt8);
   testView.setInt8(0, 2147483648);
   testView.setInt8(1, 2147483649);
-  if (testView.getInt8(0) || !testView.getInt8(1)) redefineAll(DataViewPrototype, {
+  if (testView.getInt8(0) || !testView.getInt8(1)) defineBuiltIns(DataViewPrototype, {
     setInt8: function setInt8(byteOffset, value) {
       $setInt8(this, byteOffset, value << 24 >> 24);
     },
@@ -601,24 +609,24 @@ var floor$1 = Math.floor;
 
 // `IsIntegralNumber` abstract operation
 // https://tc39.es/ecma262/#sec-isintegralnumber
-// eslint-disable-next-line es/no-number-isinteger -- safe
+// eslint-disable-next-line es-x/no-number-isinteger -- safe
 var isIntegralNumber = Number.isInteger || function isInteger(it) {
   return !isObject(it) && isFinite(it) && floor$1(it) === it;
 };
 
-var RangeError$2 = global_1.RangeError;
+var $RangeError$1 = RangeError;
 
 var toPositiveInteger = function (it) {
   var result = toIntegerOrInfinity(it);
-  if (result < 0) throw RangeError$2("The argument can't be less than 0");
+  if (result < 0) throw $RangeError$1("The argument can't be less than 0");
   return result;
 };
 
-var RangeError$3 = global_1.RangeError;
+var $RangeError$2 = RangeError;
 
 var toOffset = function (it, BYTES) {
   var offset = toPositiveInteger(it);
-  if (offset % BYTES) throw RangeError$3('Wrong offset');
+  if (offset % BYTES) throw $RangeError$2('Wrong offset');
   return offset;
 };
 
@@ -653,13 +661,13 @@ var typedArrayFrom = function from(source /* , mapfn, thisArg */) {
 
 // `IsArray` abstract operation
 // https://tc39.es/ecma262/#sec-isarray
-// eslint-disable-next-line es/no-array-isarray -- safe
+// eslint-disable-next-line es-x/no-array-isarray -- safe
 var isArray = Array.isArray || function isArray(argument) {
   return classofRaw(argument) == 'Array';
 };
 
 var SPECIES = wellKnownSymbol('species');
-var Array$3 = global_1.Array;
+var $Array$1 = Array;
 
 // a part of `ArraySpeciesCreate` abstract operation
 // https://tc39.es/ecma262/#sec-arrayspeciescreate
@@ -668,12 +676,12 @@ var arraySpeciesConstructor = function (originalArray) {
   if (isArray(originalArray)) {
     C = originalArray.constructor;
     // cross-realm fallback
-    if (isConstructor(C) && (C === Array$3 || isArray(C.prototype))) C = undefined;
+    if (isConstructor(C) && (C === $Array$1 || isArray(C.prototype))) C = undefined;
     else if (isObject(C)) {
       C = C[SPECIES];
       if (C === null) C = undefined;
     }
-  } return C === undefined ? Array$3 : C;
+  } return C === undefined ? $Array$1 : C;
 };
 
 // `ArraySpeciesCreate` abstract operation
@@ -797,6 +805,7 @@ var forEach = arrayIteration.forEach;
 
 var getInternalState = internalState.get;
 var setInternalState = internalState.set;
+var enforceInternalState = internalState.enforce;
 var nativeDefineProperty = objectDefineProperty.f;
 var nativeGetOwnPropertyDescriptor = objectGetOwnPropertyDescriptor.f;
 var round = Math.round;
@@ -805,7 +814,6 @@ var ArrayBuffer = arrayBuffer.ArrayBuffer;
 var ArrayBufferPrototype = ArrayBuffer.prototype;
 var DataView = arrayBuffer.DataView;
 var NATIVE_ARRAY_BUFFER_VIEWS = arrayBufferViewCore.NATIVE_ARRAY_BUFFER_VIEWS;
-var TYPED_ARRAY_CONSTRUCTOR = arrayBufferViewCore.TYPED_ARRAY_CONSTRUCTOR;
 var TYPED_ARRAY_TAG = arrayBufferViewCore.TYPED_ARRAY_TAG;
 var TypedArray = arrayBufferViewCore.TypedArray;
 var TypedArrayPrototype = arrayBufferViewCore.TypedArrayPrototype;
@@ -982,17 +990,17 @@ if (descriptors) {
       createNonEnumerableProperty(TypedArrayConstructorPrototype, 'constructor', TypedArrayConstructor);
     }
 
-    createNonEnumerableProperty(TypedArrayConstructorPrototype, TYPED_ARRAY_CONSTRUCTOR, TypedArrayConstructor);
+    enforceInternalState(TypedArrayConstructorPrototype).TypedArrayConstructor = TypedArrayConstructor;
 
     if (TYPED_ARRAY_TAG) {
       createNonEnumerableProperty(TypedArrayConstructorPrototype, TYPED_ARRAY_TAG, CONSTRUCTOR_NAME);
     }
 
+    var FORCED = TypedArrayConstructor != NativeTypedArrayConstructor;
+
     exported[CONSTRUCTOR_NAME] = TypedArrayConstructor;
 
-    _export({
-      global: true, forced: TypedArrayConstructor != NativeTypedArrayConstructor, sham: !NATIVE_ARRAY_BUFFER_VIEWS
-    }, exported);
+    _export({ global: true, constructor: true, forced: FORCED, sham: !NATIVE_ARRAY_BUFFER_VIEWS }, exported);
 
     if (!(BYTES_PER_ELEMENT in TypedArrayConstructor)) {
       createNonEnumerableProperty(TypedArrayConstructor, BYTES_PER_ELEMENT, BYTES);
@@ -1020,15 +1028,47 @@ exportTypedArrayMethod$1('at', function at(index) {
   return (k < 0 || k >= len) ? undefined : O[k];
 });
 
-var RangeError$4 = global_1.RangeError;
-var Int8Array$2 = global_1.Int8Array;
-var Int8ArrayPrototype$1 = Int8Array$2 && Int8Array$2.prototype;
-var $set = Int8ArrayPrototype$1 && Int8ArrayPrototype$1.set;
+var $TypeError = TypeError;
+
+// `ToBigInt` abstract operation
+// https://tc39.es/ecma262/#sec-tobigint
+var toBigInt = function (argument) {
+  var prim = toPrimitive(argument, 'number');
+  if (typeof prim == 'number') throw $TypeError("Can't convert number to bigint");
+  // eslint-disable-next-line es-x/no-bigint -- safe
+  return BigInt(prim);
+};
+
 var aTypedArray$2 = arrayBufferViewCore.aTypedArray;
 var exportTypedArrayMethod$2 = arrayBufferViewCore.exportTypedArrayMethod;
+var slice = functionUncurryThis(''.slice);
+
+// V8 ~ Chrome < 59, Safari < 14.1, FF < 55, Edge <=18
+var CONVERSION_BUG = fails(function () {
+  var count = 0;
+  // eslint-disable-next-line es-x/no-typed-arrays -- safe
+  new Int8Array(2).fill({ valueOf: function () { return count++; } });
+  return count !== 1;
+});
+
+// `%TypedArray%.prototype.fill` method
+// https://tc39.es/ecma262/#sec-%typedarray%.prototype.fill
+exportTypedArrayMethod$2('fill', function fill(value /* , start, end */) {
+  var length = arguments.length;
+  aTypedArray$2(this);
+  var actualValue = slice(classof(this), 0, 3) === 'Big' ? toBigInt(value) : +value;
+  return functionCall(arrayFill, this, actualValue, length > 1 ? arguments[1] : undefined, length > 2 ? arguments[2] : undefined);
+}, CONVERSION_BUG);
+
+var RangeError$2 = global_1.RangeError;
+var Int8Array$3 = global_1.Int8Array;
+var Int8ArrayPrototype$1 = Int8Array$3 && Int8Array$3.prototype;
+var $set = Int8ArrayPrototype$1 && Int8ArrayPrototype$1.set;
+var aTypedArray$3 = arrayBufferViewCore.aTypedArray;
+var exportTypedArrayMethod$3 = arrayBufferViewCore.exportTypedArrayMethod;
 
 var WORKS_WITH_OBJECTS_AND_GEERIC_ON_TYPED_ARRAYS = !fails(function () {
-  // eslint-disable-next-line es/no-typed-arrays -- required for testing
+  // eslint-disable-next-line es-x/no-typed-arrays -- required for testing
   var array = new Uint8ClampedArray(2);
   functionCall($set, array, { length: 1, 0: 3 }, 1);
   return array[1] !== 3;
@@ -1036,7 +1076,7 @@ var WORKS_WITH_OBJECTS_AND_GEERIC_ON_TYPED_ARRAYS = !fails(function () {
 
 // https://bugs.chromium.org/p/v8/issues/detail?id=11294 and other
 var TO_OBJECT_BUG = WORKS_WITH_OBJECTS_AND_GEERIC_ON_TYPED_ARRAYS && arrayBufferViewCore.NATIVE_ARRAY_BUFFER_VIEWS && fails(function () {
-  var array = new Int8Array$2(2);
+  var array = new Int8Array$3(2);
   array.set(1);
   array.set('2', 1);
   return array[0] !== 0 || array[1] !== 2;
@@ -1044,15 +1084,15 @@ var TO_OBJECT_BUG = WORKS_WITH_OBJECTS_AND_GEERIC_ON_TYPED_ARRAYS && arrayBuffer
 
 // `%TypedArray%.prototype.set` method
 // https://tc39.es/ecma262/#sec-%typedarray%.prototype.set
-exportTypedArrayMethod$2('set', function set(arrayLike /* , offset */) {
-  aTypedArray$2(this);
+exportTypedArrayMethod$3('set', function set(arrayLike /* , offset */) {
+  aTypedArray$3(this);
   var offset = toOffset(arguments.length > 1 ? arguments[1] : undefined, 1);
   var src = toObject(arrayLike);
   if (WORKS_WITH_OBJECTS_AND_GEERIC_ON_TYPED_ARRAYS) return functionCall($set, this, src, offset);
   var length = this.length;
   var len = lengthOfArrayLike(src);
   var index = 0;
-  if (len + offset > length) throw RangeError$4('Wrong length');
+  if (len + offset > length) throw RangeError$2('Wrong length');
   while (index < len) this[offset + index] = src[index++];
 }, !WORKS_WITH_OBJECTS_AND_GEERIC_ON_TYPED_ARRAYS || TO_OBJECT_BUG);
 
@@ -1066,9 +1106,8 @@ var webkit = engineUserAgent.match(/AppleWebKit\/(\d+)\./);
 
 var engineWebkitVersion = !!webkit && +webkit[1];
 
-var Array$4 = global_1.Array;
-var aTypedArray$3 = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$3 = arrayBufferViewCore.exportTypedArrayMethod;
+var aTypedArray$4 = arrayBufferViewCore.aTypedArray;
+var exportTypedArrayMethod$4 = arrayBufferViewCore.exportTypedArrayMethod;
 var Uint16Array = global_1.Uint16Array;
 var un$Sort = Uint16Array && functionUncurryThis(Uint16Array.prototype.sort);
 
@@ -1087,7 +1126,7 @@ var STABLE_SORT = !!un$Sort && !fails(function () {
   if (engineWebkitVersion) return engineWebkitVersion < 602;
 
   var array = new Uint16Array(516);
-  var expected = Array$4(516);
+  var expected = Array(516);
   var index, mod;
 
   for (index = 0; index < 516; index++) {
@@ -1119,11 +1158,11 @@ var getSortCompare = function (comparefn) {
 
 // `%TypedArray%.prototype.sort` method
 // https://tc39.es/ecma262/#sec-%typedarray%.prototype.sort
-exportTypedArrayMethod$3('sort', function sort(comparefn) {
+exportTypedArrayMethod$4('sort', function sort(comparefn) {
   if (comparefn !== undefined) aCallable(comparefn);
   if (STABLE_SORT) return un$Sort(this, comparefn);
 
-  return arraySort(aTypedArray$3(this), getSortCompare(comparefn));
+  return arraySort(aTypedArray$4(this), getSortCompare(comparefn));
 }, !STABLE_SORT || ACCEPT_INCORRECT_ARGUMENTS);
 
 var arrayFromConstructorAndList = function (Constructor, list) {
@@ -1134,13 +1173,13 @@ var arrayFromConstructorAndList = function (Constructor, list) {
   return result;
 };
 
-var TYPED_ARRAY_CONSTRUCTOR$1 = arrayBufferViewCore.TYPED_ARRAY_CONSTRUCTOR;
 var aTypedArrayConstructor$2 = arrayBufferViewCore.aTypedArrayConstructor;
+var getTypedArrayConstructor$1 = arrayBufferViewCore.getTypedArrayConstructor;
 
 // a part of `TypedArraySpeciesCreate` abstract operation
 // https://tc39.es/ecma262/#typedarray-species-create
 var typedArraySpeciesConstructor = function (originalArray) {
-  return aTypedArrayConstructor$2(speciesConstructor(originalArray, originalArray[TYPED_ARRAY_CONSTRUCTOR$1]));
+  return aTypedArrayConstructor$2(speciesConstructor(originalArray, getTypedArrayConstructor$1(originalArray)));
 };
 
 var typedArrayFromSpeciesAndList = function (instance, list) {
@@ -1150,13 +1189,13 @@ var typedArrayFromSpeciesAndList = function (instance, list) {
 var $filterReject = arrayIteration.filterReject;
 
 
-var aTypedArray$4 = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$4 = arrayBufferViewCore.exportTypedArrayMethod;
+var aTypedArray$5 = arrayBufferViewCore.aTypedArray;
+var exportTypedArrayMethod$5 = arrayBufferViewCore.exportTypedArrayMethod;
 
 // `%TypedArray%.prototype.filterReject` method
 // https://github.com/tc39/proposal-array-filtering
-exportTypedArrayMethod$4('filterReject', function filterReject(callbackfn /* , thisArg */) {
-  var list = $filterReject(aTypedArray$4(this), callbackfn, arguments.length > 1 ? arguments[1] : undefined);
+exportTypedArrayMethod$5('filterReject', function filterReject(callbackfn /* , thisArg */) {
+  var list = $filterReject(aTypedArray$5(this), callbackfn, arguments.length > 1 ? arguments[1] : undefined);
   return typedArrayFromSpeciesAndList(this, list);
 }, true);
 
@@ -1192,30 +1231,30 @@ var arrayIterationFromLast = {
 
 var $findLast = arrayIterationFromLast.findLast;
 
-var aTypedArray$5 = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$5 = arrayBufferViewCore.exportTypedArrayMethod;
+var aTypedArray$6 = arrayBufferViewCore.aTypedArray;
+var exportTypedArrayMethod$6 = arrayBufferViewCore.exportTypedArrayMethod;
 
 // `%TypedArray%.prototype.findLast` method
 // https://github.com/tc39/proposal-array-find-from-last
-exportTypedArrayMethod$5('findLast', function findLast(predicate /* , thisArg */) {
-  return $findLast(aTypedArray$5(this), predicate, arguments.length > 1 ? arguments[1] : undefined);
+exportTypedArrayMethod$6('findLast', function findLast(predicate /* , thisArg */) {
+  return $findLast(aTypedArray$6(this), predicate, arguments.length > 1 ? arguments[1] : undefined);
 });
 
 var $findLastIndex = arrayIterationFromLast.findLastIndex;
 
-var aTypedArray$6 = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$6 = arrayBufferViewCore.exportTypedArrayMethod;
+var aTypedArray$7 = arrayBufferViewCore.aTypedArray;
+var exportTypedArrayMethod$7 = arrayBufferViewCore.exportTypedArrayMethod;
 
 // `%TypedArray%.prototype.findLastIndex` method
 // https://github.com/tc39/proposal-array-find-from-last
-exportTypedArrayMethod$6('findLastIndex', function findLastIndex(predicate /* , thisArg */) {
-  return $findLastIndex(aTypedArray$6(this), predicate, arguments.length > 1 ? arguments[1] : undefined);
+exportTypedArrayMethod$7('findLastIndex', function findLastIndex(predicate /* , thisArg */) {
+  return $findLastIndex(aTypedArray$7(this), predicate, arguments.length > 1 ? arguments[1] : undefined);
 });
 
-var Array$5 = global_1.Array;
+var $Array$2 = Array;
 var push$1 = functionUncurryThis([].push);
 
-var arrayGroupBy = function ($this, callbackfn, that, specificConstructor) {
+var arrayGroup = function ($this, callbackfn, that, specificConstructor) {
   var O = toObject($this);
   var self = indexedObject(O);
   var boundFunction = functionBindContext(callbackfn, that);
@@ -1234,7 +1273,7 @@ var arrayGroupBy = function ($this, callbackfn, that, specificConstructor) {
   // TODO: Remove this block from `core-js@4`
   if (specificConstructor) {
     Constructor = specificConstructor(O);
-    if (Constructor !== Array$5) {
+    if (Constructor !== $Array$2) {
       for (key in target) target[key] = arrayFromConstructorAndList(Constructor, target[key]);
     }
   } return target;
@@ -1245,14 +1284,14 @@ var arrayGroupBy = function ($this, callbackfn, that, specificConstructor) {
 
 
 
-var aTypedArray$7 = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$7 = arrayBufferViewCore.exportTypedArrayMethod;
+var aTypedArray$8 = arrayBufferViewCore.aTypedArray;
+var exportTypedArrayMethod$8 = arrayBufferViewCore.exportTypedArrayMethod;
 
 // `%TypedArray%.prototype.groupBy` method
 // https://github.com/tc39/proposal-array-grouping
-exportTypedArrayMethod$7('groupBy', function groupBy(callbackfn /* , thisArg */) {
+exportTypedArrayMethod$8('groupBy', function groupBy(callbackfn /* , thisArg */) {
   var thisArg = arguments.length > 1 ? arguments[1] : undefined;
-  return arrayGroupBy(aTypedArray$7(this), callbackfn, thisArg, typedArraySpeciesConstructor);
+  return arrayGroup(aTypedArray$8(this), callbackfn, thisArg, typedArraySpeciesConstructor);
 }, true);
 
 // https://tc39.es/proposal-change-array-by-copy/#sec-array.prototype.toReversed
@@ -1265,74 +1304,92 @@ var arrayToReversed = function (O, C) {
   return A;
 };
 
-var aTypedArray$8 = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$8 = arrayBufferViewCore.exportTypedArrayMethod;
-var TYPED_ARRAY_CONSTRUCTOR$2 = arrayBufferViewCore.TYPED_ARRAY_CONSTRUCTOR;
+var aTypedArray$9 = arrayBufferViewCore.aTypedArray;
+var exportTypedArrayMethod$9 = arrayBufferViewCore.exportTypedArrayMethod;
+var getTypedArrayConstructor$2 = arrayBufferViewCore.getTypedArrayConstructor;
 
 // `%TypedArray%.prototype.toReversed` method
 // https://tc39.es/proposal-change-array-by-copy/#sec-%typedarray%.prototype.toReversed
-exportTypedArrayMethod$8('toReversed', function toReversed() {
-  return arrayToReversed(aTypedArray$8(this), this[TYPED_ARRAY_CONSTRUCTOR$2]);
-}, true);
+exportTypedArrayMethod$9('toReversed', function toReversed() {
+  return arrayToReversed(aTypedArray$9(this), getTypedArrayConstructor$2(this));
+});
 
-var aTypedArray$9 = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$9 = arrayBufferViewCore.exportTypedArrayMethod;
-var TYPED_ARRAY_CONSTRUCTOR$3 = arrayBufferViewCore.TYPED_ARRAY_CONSTRUCTOR;
+var aTypedArray$a = arrayBufferViewCore.aTypedArray;
+var getTypedArrayConstructor$3 = arrayBufferViewCore.getTypedArrayConstructor;
+var exportTypedArrayMethod$a = arrayBufferViewCore.exportTypedArrayMethod;
 var sort = functionUncurryThis(arrayBufferViewCore.TypedArrayPrototype.sort);
 
 // `%TypedArray%.prototype.toSorted` method
 // https://tc39.es/proposal-change-array-by-copy/#sec-%typedarray%.prototype.toSorted
-exportTypedArrayMethod$9('toSorted', function toSorted(compareFn) {
+exportTypedArrayMethod$a('toSorted', function toSorted(compareFn) {
   if (compareFn !== undefined) aCallable(compareFn);
-  var O = aTypedArray$9(this);
-  var A = arrayFromConstructorAndList(O[TYPED_ARRAY_CONSTRUCTOR$3], O);
+  var O = aTypedArray$a(this);
+  var A = arrayFromConstructorAndList(getTypedArrayConstructor$3(O), O);
   return sort(A, compareFn);
-}, true);
+});
 
-var arraySlice = functionUncurryThis([].slice);
+// TODO: Remove from `core-js@4`
 
+
+
+
+
+
+var aTypedArray$b = arrayBufferViewCore.aTypedArray;
+var getTypedArrayConstructor$4 = arrayBufferViewCore.getTypedArrayConstructor;
+var exportTypedArrayMethod$b = arrayBufferViewCore.exportTypedArrayMethod;
 var max = Math.max;
 var min = Math.min;
 
-// https://tc39.es/proposal-change-array-by-copy/#sec-array.prototype.toSpliced
+// some early implementations, like WebKit, does not follow the final semantic
+var PROPER_ORDER = !fails(function () {
+  // eslint-disable-next-line es-x/no-typed-arrays -- required for testing
+  var array = new Int8Array([1]);
+
+  var spliced = array.toSpliced(1, 0, {
+    valueOf: function () {
+      array[0] = 2;
+      return 3;
+    }
+  });
+
+  return spliced[0] !== 2 || spliced[1] !== 3;
+});
+
+// `%TypedArray%.prototype.toSpliced` method
 // https://tc39.es/proposal-change-array-by-copy/#sec-%typedarray%.prototype.toSpliced
-var arrayToSpliced = function (O, C, args) {
-  var start = args[0];
-  var deleteCount = args[1];
+exportTypedArrayMethod$b('toSpliced', function toSpliced(start, deleteCount /* , ...items */) {
+  var O = aTypedArray$b(this);
+  var C = getTypedArrayConstructor$4(O);
   var len = lengthOfArrayLike(O);
   var actualStart = toAbsoluteIndex(start, len);
-  var argumentsLength = args.length;
+  var argumentsLength = arguments.length;
   var k = 0;
-  var insertCount, actualDeleteCount, newLen, A;
+  var insertCount, actualDeleteCount, convertedItems, newLen, A;
   if (argumentsLength === 0) {
     insertCount = actualDeleteCount = 0;
   } else if (argumentsLength === 1) {
     insertCount = 0;
     actualDeleteCount = len - actualStart;
   } else {
-    insertCount = argumentsLength - 2;
     actualDeleteCount = min(max(toIntegerOrInfinity(deleteCount), 0), len - actualStart);
+    insertCount = argumentsLength - 2;
+    if (insertCount) {
+      convertedItems = new C(insertCount);
+      for (var i = 2; i < argumentsLength; i++) {
+        convertedItems[i - 2] = arguments[i];
+      }
+    }
   }
   newLen = len + insertCount - actualDeleteCount;
   A = new C(newLen);
 
   for (; k < actualStart; k++) A[k] = O[k];
-  for (; k < actualStart + insertCount; k++) A[k] = args[k - actualStart + 2];
+  for (; k < actualStart + insertCount; k++) A[k] = convertedItems[k - actualStart];
   for (; k < newLen; k++) A[k] = O[k + actualDeleteCount - insertCount];
 
   return A;
-};
-
-var aTypedArray$a = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$a = arrayBufferViewCore.exportTypedArrayMethod;
-var TYPED_ARRAY_CONSTRUCTOR$4 = arrayBufferViewCore.TYPED_ARRAY_CONSTRUCTOR;
-
-// `%TypedArray%.prototype.toSpliced` method
-// https://tc39.es/proposal-change-array-by-copy/#sec-%typedarray%.prototype.toSpliced
-// eslint-disable-next-line no-unused-vars -- required for .length
-exportTypedArrayMethod$a('toSpliced', function toSpliced(start, deleteCount /* , ...items */) {
-  return arrayToSpliced(aTypedArray$a(this), this[TYPED_ARRAY_CONSTRUCTOR$4], arraySlice(arguments));
-}, true);
+}, !PROPER_ORDER);
 
 var Map = getBuiltIn('Map');
 var MapPrototype = Map.prototype;
@@ -1363,17 +1420,17 @@ var arrayUniqueBy = function uniqueBy(resolver) {
   return result;
 };
 
-var aTypedArray$b = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$b = arrayBufferViewCore.exportTypedArrayMethod;
+var aTypedArray$c = arrayBufferViewCore.aTypedArray;
+var exportTypedArrayMethod$c = arrayBufferViewCore.exportTypedArrayMethod;
 var arrayUniqueBy$1 = functionUncurryThis(arrayUniqueBy);
 
 // `%TypedArray%.prototype.uniqueBy` method
 // https://github.com/tc39/proposal-array-unique
-exportTypedArrayMethod$b('uniqueBy', function uniqueBy(resolver) {
-  return typedArrayFromSpeciesAndList(this, arrayUniqueBy$1(aTypedArray$b(this), resolver));
+exportTypedArrayMethod$c('uniqueBy', function uniqueBy(resolver) {
+  return typedArrayFromSpeciesAndList(this, arrayUniqueBy$1(aTypedArray$c(this), resolver));
 }, true);
 
-var RangeError$5 = global_1.RangeError;
+var $RangeError$3 = RangeError;
 
 // https://tc39.es/proposal-change-array-by-copy/#sec-array.prototype.with
 // https://tc39.es/proposal-change-array-by-copy/#sec-%typedarray%.prototype.with
@@ -1381,21 +1438,41 @@ var arrayWith = function (O, C, index, value) {
   var len = lengthOfArrayLike(O);
   var relativeIndex = toIntegerOrInfinity(index);
   var actualIndex = relativeIndex < 0 ? len + relativeIndex : relativeIndex;
-  if (actualIndex >= len || actualIndex < 0) throw RangeError$5('Incorrect index');
+  if (actualIndex >= len || actualIndex < 0) throw $RangeError$3('Incorrect index');
   var A = new C(len);
   var k = 0;
   for (; k < len; k++) A[k] = k === actualIndex ? value : O[k];
   return A;
 };
 
-var aTypedArray$c = arrayBufferViewCore.aTypedArray;
-var exportTypedArrayMethod$c = arrayBufferViewCore.exportTypedArrayMethod;
-var TYPED_ARRAY_CONSTRUCTOR$5 = arrayBufferViewCore.TYPED_ARRAY_CONSTRUCTOR;
+var slice$1 = functionUncurryThis(''.slice);
+
+var isBigIntArray = function (it) {
+  return slice$1(classof(it), 0, 3) === 'Big';
+};
+
+var aTypedArray$d = arrayBufferViewCore.aTypedArray;
+var getTypedArrayConstructor$5 = arrayBufferViewCore.getTypedArrayConstructor;
+var exportTypedArrayMethod$d = arrayBufferViewCore.exportTypedArrayMethod;
+
+var PROPER_ORDER$1 = !!function () {
+  try {
+    // eslint-disable-next-line no-throw-literal, es-x/no-typed-arrays -- required for testing
+    new Int8Array(1)['with'](2, { valueOf: function () { throw 8; } });
+  } catch (error) {
+    // some early implementations, like WebKit, does not follow the final semantic
+    // https://github.com/tc39/proposal-change-array-by-copy/pull/86
+    return error === 8;
+  }
+}();
 
 // `%TypedArray%.prototype.with` method
 // https://tc39.es/proposal-change-array-by-copy/#sec-%typedarray%.prototype.with
-exportTypedArrayMethod$c('with', { 'with': function (index, value) {
-  return arrayWith(aTypedArray$c(this), this[TYPED_ARRAY_CONSTRUCTOR$5], index, value);
-} }['with'], true);
+exportTypedArrayMethod$d('with', { 'with': function (index, value) {
+  var O = aTypedArray$d(this);
+  var relativeIndex = toIntegerOrInfinity(index);
+  var actualValue = isBigIntArray(O) ? toBigInt(value) : +value;
+  return arrayWith(O, getTypedArrayConstructor$5(O), relativeIndex, actualValue);
+} }['with'], !PROPER_ORDER$1);
 
 export { typedArrayConstructor as t };
