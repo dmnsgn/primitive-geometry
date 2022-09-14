@@ -1,13 +1,22 @@
 /** @module utils */
 
 /**
+ * Two times PI.
+ * @constant {number}
  */
+export const TAU = Math.PI * 2;
 
 /**
  * Two times PI.
  * @constant {number}
  */
-export const TAU = Math.PI * 2;
+export const HALF_PI = Math.PI / 2;
+
+/**
+ * Square root of 2.
+ * @constant {number}
+ */
+export const SQRT2 = Math.sqrt(2);
 
 /**
  * Normalize a vector 3.
@@ -65,7 +74,7 @@ export const TMP = [0, 0, 0];
 /**
  * @private
  */
-const PLANE_DIRECTIONS = {
+export const PLANE_DIRECTIONS = {
   z: [0, 1, 2, 1, -1, 1],
   "-z": [0, 1, 2, -1, -1, -1],
   "-x": [2, 1, 0, 1, -1, -1],

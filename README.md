@@ -30,6 +30,7 @@ npm install primitive-geometry
 - Outputs TypedArray (`Float32Array` for geometry data and `Uint8Array|Uint16Array|Uint32Array` for cells)
 - Zero dependency
 - Same parameters naming: radius (or rx/ry/rz), scale (or height/sx/sy/sz), segments (or nx/ny/nz) and a few specific parameters for icosphere/cylinder/cone/torus.
+- Different **Elliptical mappings**: see the [comparison images](examples/elliptical-mapping/elliptical-mapping.md) and the [demo](https://dmnsgn.github.io/primitive-geometry/?id=elliptical-mapping).
 
 See difference with v1 [here](#License).
 
@@ -43,11 +44,74 @@ import Primitives from "primitive-geometry";
 const quadGeometry = Primitives.quad({
   scale: 0.5,
 });
+console.log(quadGeometry);
+// {
+//   positions: Float32Array [x, y, z, x, y, z,  ...],
+//   normals: Float32Array [x, y, z, x, y, z, ...]
+//   uvs: Float32Array [u, v, u, v, ...],
+//   cells: Uint8/16/32/Array [a, b, c, a, b, c, ...],
+// }
 const planeGeometry = Primitives.plane({
   sx: 1,
   sy: 1,
   nx: 1,
   ny: 1,
+  direction: "z",
+  quads: false,
+});
+
+const ellipseGeometry = Primitives.ellipse({
+  sx: 1,
+  sy: 0.5,
+  radius: 0.5,
+  segments: 32,
+  innerSegments: 16,
+  theta: Math.PI * 2,
+  mapping: mappings.elliptical,
+});
+const disc = Primitives.disc({
+  radius: 0.5,
+  segments: 32,
+  innerSegments: 16,
+  theta: Math.PI * 2,
+  mapping: mappings.concentric,
+});
+const superellipse = Primitives.superellipse({
+  sx: 1,
+  sy: 0.5,
+  radius: 0.5,
+  segments: 32,
+  innerSegments: 16,
+  theta: Math.PI * 2,
+  mapping: mappings.lamé,
+  m: 2,
+  n: 2,
+});
+const squircle = Primitives.squircle({
+  sx: 1,
+  sy: 1,
+  radius: 0.5,
+  segments: 128,
+  innerSegments: 16,
+  theta: Math.PI * 2,
+  mapping: mappings.fgSquircular,
+  squareness: 0.95,
+});
+const annulus = Primitives.annulus({
+  radius: 0.5,
+  segments: 32,
+  innerSegments: 16,
+  theta: Math.PI * 2,
+  innerRadius: radius * 0.5,
+  mapping: mappings.concentric,
+});
+const reuleux = Primitives.reuleux({
+  radius: 0.5,
+  segments: 32,
+  innerSegments: 16,
+  theta: Math.PI * 2,
+  mapping: mappings.concentric,
+  n: 3,
 });
 
 const cubeGeometry = Primitives.cube({
@@ -68,6 +132,28 @@ const roundedCubeGeometry = Primitives.roundedCube({
   radius: 0.25,
   roundSegments: 8,
   edgeSegments: 1,
+});
+
+const sphereGeometry = Primitives.sphere({
+  radius: 0.5,
+  nx: 32,
+  ny: 16,
+  theta: Math.PI,
+  phi: Math.PI * 2,
+});
+const icosphereGeometry = Primitives.icosphere({
+  radius: 0.5,
+  subdivisions: 2,
+});
+const ellipsoidGeometry = Primitives.ellipsoid({
+  radius: 1,
+  nx: 32,
+  ny: 16,
+  rx: 0.5,
+  ry: 0.25,
+  rz: 0.25,
+  theta: Math.PI,
+  phi: Math.PI * 2,
 });
 
 const cylinderGeometry = Primitives.cylinder({
@@ -99,28 +185,6 @@ const capsuleGeometry = Primitives.capsule({
   roundedSegments: 16,
   theta: Math.PI * 2,
 });
-
-const sphereGeometry = Primitives.sphere({
-  radius: 0.5,
-  nx: 32,
-  ny: 16,
-  theta: Math.PI,
-  phi: Math.PI * 2,
-});
-const icosphereGeometry = Primitives.icosphere({
-  radius: 0.5,
-  subdivisions: 2,
-});
-const ellipsoidGeometry = Primitives.ellipsoid({
-  radius: 1,
-  nx: 32,
-  ny: 16,
-  rx: 0.5,
-  ry: 0.25,
-  rz: 0.25,
-  theta: Math.PI,
-  phi: Math.PI * 2,
-});
 const torusGeometry = Primitives.torus({
   radius: 0.4,
   segments: 64,
@@ -137,19 +201,6 @@ const icosahedron = Primitives.icosahedron({
   radius: 0.5,
 });
 
-const disc = Primitives.disc({
-  radius: 0.5,
-  segments: 32,
-  theta: Math.PI * 2,
-});
-const annulus = Primitives.annulus({
-  radius: 0.5,
-  segments: 32,
-  theta: Math.PI * 2,
-  innerRadius: radius * 0.5,
-  innerSegments: 1,
-});
-
 // without normals/uvs
 const boxGeometry = Primitives.box({
   sx: 1,
@@ -162,14 +213,6 @@ const circleGeometry = Primitives.circle({
   closed: false,
   theta: Math.PI * 2,
 });
-
-console.log(quadGeometry);
-// {
-//   positions: [ [x, y, z], [x, y, z], ... ],
-//   cells: [ [a, b, c], [a, b, c], ... ],
-//   uvs: [ [u, v], [u, v], ... ],
-//   normals: [ [x, y, z], [x, y, z], ... ]
-// }
 ```
 
 ## API
@@ -922,6 +965,7 @@ See original packages used in v1:
 
 Differences with v1:
 
+- [x] base disc on ellispse and add inner segments
 - [x] fix cylinder orientation and uvs
 - [x] fix icosphere uvs (based on: https://github.com/mourner/icomesh)
 - [x] fix quad normal to +z

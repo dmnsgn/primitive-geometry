@@ -1,13 +1,15 @@
 /** @module annulus */
+import { concentric } from "./mappings.js";
 import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
 
 /**
  * @typedef {Object} AnnulusOptions
  * @property {number} [radius=0.5]
  * @property {number} [segments=32]
+ * @property {number} [innerSegments=16]
  * @property {number} [theta=TAU]
  * @property {number} [innerRadius=radius * 0.5]
- * @property {number} [innerSegments=1]
+ * @property {Function} [mapping=mappings.concentric]
  */
 
 /**
@@ -18,9 +20,10 @@ import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
 function annulus({
   radius = 0.5,
   segments = 32,
+  innerSegments = 16,
   theta = TAU,
   innerRadius = radius * 0.5,
-  innerSegments = 1,
+  mapping = concentric,
 } = {}) {
   checkArguments(arguments);
 
@@ -37,17 +40,32 @@ function annulus({
   for (let j = 0; j <= innerSegments; j++) {
     const r = innerRadius + (radius - innerRadius) * (j / innerSegments);
 
+    const s = (j + 1) / (innerSegments + 1);
+
     for (let i = 0; i <= segments; i++, vertexIndex++) {
       const t = (i / segments) * theta;
 
-      positions[vertexIndex * 3] = r * Math.cos(t);
-      positions[vertexIndex * 3 + 1] = r * Math.sin(t);
+      const cosTheta = Math.cos(t);
+      const sinTheta = Math.sin(t);
+
+      const x = r * cosTheta;
+      const y = r * sinTheta;
+
+      positions[vertexIndex * 3] = x;
+      positions[vertexIndex * 3 + 1] = y;
 
       normals[vertexIndex * 3 + 2] = 1;
 
-      uvs[vertexIndex * 2] = (positions[vertexIndex * 3] / radius + 1) / 2;
-      uvs[vertexIndex * 2 + 1] =
-        (positions[vertexIndex * 3 + 1] / radius + 1) / 2;
+      mapping({
+        uvs,
+        index: vertexIndex * 2,
+        u: s * cosTheta,
+        v: s * sinTheta,
+        radius,
+        t,
+        x,
+        y,
+      });
 
       if (i < segments && j < innerSegments) {
         const a = j * (segments + 1) + i;

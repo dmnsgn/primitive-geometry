@@ -42,6 +42,18 @@
     <script async src="web_modules/es-module-shims.js" type="module"></script>
     <script src="web_modules/import-map.json" type="importmap-shim"></script>
 
-    <script src="examples/index.js" type="module-shim"></script>
+    <script type="module-shim">
+      (async () => {
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id");
+
+        try {
+          await importShim(`./examples/${id || "index"}.js`);
+        } catch (error) {
+          console.error(error);
+          await importShim(`./examples/index.js`);
+        }
+      })();
+    </script>
   </body>
 </html>
