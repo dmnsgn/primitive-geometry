@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [2.8.0](https://github.com/dmnsgn/primitive-geometry/compare/v2.7.0...v2.8.0) (2022-09-14)
+
+
+### Features
+
+* add elliptical geometries (ellipse, superellipse, squircle, reuleux) ([ba5b72f](https://github.com/dmnsgn/primitive-geometry/commit/ba5b72f6fed5748cde1dc62b8b9580f33f481cc1))
+
+
+
 # [2.7.0](https://github.com/dmnsgn/primitive-geometry/compare/v2.6.0...v2.7.0) (2022-06-15)
 
 

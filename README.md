@@ -223,7 +223,7 @@ const circleGeometry = Primitives.circle({
 
 <dl>
 <dt><a href="#module_index">index</a></dt>
-<dd><p>Re-export all geometries and utils.</p>
+<dd><p>Re-export all geometries, UV mappings functions and utils.</p>
 </dd>
 <dt><a href="#module_annulus">annulus</a></dt>
 <dd></dd>
@@ -241,19 +241,29 @@ const circleGeometry = Primitives.circle({
 <dd></dd>
 <dt><a href="#module_disc">disc</a></dt>
 <dd></dd>
+<dt><a href="#module_ellipse">ellipse</a></dt>
+<dd></dd>
 <dt><a href="#module_ellipsoid">ellipsoid</a></dt>
 <dd></dd>
 <dt><a href="#module_icosahedron">icosahedron</a></dt>
 <dd></dd>
 <dt><a href="#module_icosphere">icosphere</a></dt>
 <dd></dd>
+<dt><a href="#module_mappings">mappings</a></dt>
+<dd></dd>
 <dt><a href="#module_plane">plane</a></dt>
 <dd></dd>
 <dt><a href="#module_quad">quad</a></dt>
 <dd></dd>
-<dt><a href="#module_rounded-cube">rounded-cube</a></dt>
+<dt><a href="#module_reuleux">reuleux</a></dt>
+<dd></dd>
+<dt><a href="#module_roundedCube">roundedCube</a></dt>
 <dd></dd>
 <dt><a href="#module_sphere">sphere</a></dt>
+<dd></dd>
+<dt><a href="#module_squircle">squircle</a></dt>
+<dd></dd>
+<dt><a href="#module_superellipse">superellipse</a></dt>
 <dd></dd>
 <dt><a href="#module_tetrahedron">tetrahedron</a></dt>
 <dd></dd>
@@ -278,7 +288,7 @@ const circleGeometry = Primitives.circle({
 
 ## index
 
-Re-export all geometries and utils.
+Re-export all geometries, UV mappings functions and utils.
 
 <a name="module_annulus"></a>
 
@@ -305,13 +315,14 @@ Re-export all geometries and utils.
 **Kind**: inner typedef of [<code>annulus</code>](#exp_module_annulus--annulus)
 **Properties**
 
-| Name            | Type                | Default                    |
-| --------------- | ------------------- | -------------------------- |
-| [radius]        | <code>number</code> | <code>0.5</code>           |
-| [segments]      | <code>number</code> | <code>32</code>            |
-| [theta]         | <code>number</code> | <code>TAU</code>           |
-| [innerRadius]   | <code>number</code> | <code>radius \* 0.5</code> |
-| [innerSegments] | <code>number</code> | <code>1</code>             |
+| Name            | Type                  | Default                          |
+| --------------- | --------------------- | -------------------------------- |
+| [radius]        | <code>number</code>   | <code>0.5</code>                 |
+| [segments]      | <code>number</code>   | <code>32</code>                  |
+| [innerSegments] | <code>number</code>   | <code>16</code>                  |
+| [theta]         | <code>number</code>   | <code>TAU</code>                 |
+| [innerRadius]   | <code>number</code>   | <code>radius \* 0.5</code>       |
+| [mapping]       | <code>function</code> | <code>mappings.concentric</code> |
 
 <a name="module_box"></a>
 
@@ -541,11 +552,48 @@ Re-export all geometries and utils.
 **Kind**: inner typedef of [<code>disc</code>](#exp_module_disc--disc)
 **Properties**
 
-| Name       | Type                | Default          |
-| ---------- | ------------------- | ---------------- |
-| [radius]   | <code>number</code> | <code>0.5</code> |
-| [segments] | <code>number</code> | <code>32</code>  |
-| [theta]    | <code>number</code> | <code>TAU</code> |
+| Name            | Type                  | Default                          |
+| --------------- | --------------------- | -------------------------------- |
+| [radius]        | <code>number</code>   | <code>0.5</code>                 |
+| [segments]      | <code>number</code>   | <code>32</code>                  |
+| [innerSegments] | <code>number</code>   | <code>16</code>                  |
+| [theta]         | <code>number</code>   | <code>TAU</code>                 |
+| [mapping]       | <code>function</code> | <code>mappings.concentric</code> |
+
+<a name="module_ellipse"></a>
+
+## ellipse
+
+- [ellipse](#module_ellipse)
+  - [ellipse([options])](#exp_module_ellipse--ellipse) ⇒ [<code>BasicSimplicialComplex</code>](#BasicSimplicialComplex) ⏏
+    - [~EllipseOptions](#module_ellipse--ellipse..EllipseOptions) : <code>Object</code>
+
+<a name="exp_module_ellipse--ellipse"></a>
+
+### ellipse([options]) ⇒ [<code>BasicSimplicialComplex</code>](#BasicSimplicialComplex) ⏏
+
+**Kind**: Exported function
+
+| Param     | Type                                                                    | Default         |
+| --------- | ----------------------------------------------------------------------- | --------------- |
+| [options] | [<code>EllipseOptions</code>](#module_ellipse--ellipse..EllipseOptions) | <code>{}</code> |
+
+<a name="module_ellipse--ellipse..EllipseOptions"></a>
+
+#### ellipse~EllipseOptions : <code>Object</code>
+
+**Kind**: inner typedef of [<code>ellipse</code>](#exp_module_ellipse--ellipse)
+**Properties**
+
+| Name            | Type                  | Default                          |
+| --------------- | --------------------- | -------------------------------- |
+| [sx]            | <code>number</code>   | <code>1</code>                   |
+| [sy]            | <code>number</code>   | <code>0.5</code>                 |
+| [radius]        | <code>number</code>   | <code>0.5</code>                 |
+| [segments]      | <code>number</code>   | <code>32</code>                  |
+| [innerSegments] | <code>number</code>   | <code>16</code>                  |
+| [theta]         | <code>number</code>   | <code>TAU</code>                 |
+| [mapping]       | <code>function</code> | <code>mappings.elliptical</code> |
 
 <a name="module_ellipsoid"></a>
 
@@ -644,6 +692,10 @@ Default to an oblate spheroid.
 | [radius]       | <code>number</code> | <code>0.5</code> |
 | [subdivisions] | <code>number</code> | <code>2</code>   |
 
+<a name="module_mappings"></a>
+
+## mappings
+
 <a name="module_plane"></a>
 
 ## plane
@@ -713,29 +765,64 @@ Default to an oblate spheroid.
 | ------- | ------------------- | ---------------- |
 | [scale] | <code>number</code> | <code>0.5</code> |
 
-<a name="module_rounded-cube"></a>
+<a name="module_reuleux"></a>
 
-## rounded-cube
+## reuleux
 
-- [rounded-cube](#module_rounded-cube)
-  - [roundedCube([options])](#exp_module_rounded-cube--roundedCube) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~RoundedCubeOptions](#module_rounded-cube--roundedCube..RoundedCubeOptions) : <code>Object</code>
+- [reuleux](#module_reuleux)
+  - [reuleux([options])](#exp_module_reuleux--reuleux) ⇒ [<code>BasicSimplicialComplex</code>](#BasicSimplicialComplex) ⏏
+    - [~ReuleuxOptions](#module_reuleux--reuleux..ReuleuxOptions) : <code>Object</code>
 
-<a name="exp_module_rounded-cube--roundedCube"></a>
+<a name="exp_module_reuleux--reuleux"></a>
+
+### reuleux([options]) ⇒ [<code>BasicSimplicialComplex</code>](#BasicSimplicialComplex) ⏏
+
+**Kind**: Exported function
+**See**: [Parametric equations for regular and Reuleaux polygons](https://tpfto.wordpress.com/2011/09/15/parametric-equations-for-regular-and-reuleaux-polygons/)
+
+| Param     | Type                                                                    | Default         |
+| --------- | ----------------------------------------------------------------------- | --------------- |
+| [options] | [<code>ReuleuxOptions</code>](#module_reuleux--reuleux..ReuleuxOptions) | <code>{}</code> |
+
+<a name="module_reuleux--reuleux..ReuleuxOptions"></a>
+
+#### reuleux~ReuleuxOptions : <code>Object</code>
+
+**Kind**: inner typedef of [<code>reuleux</code>](#exp_module_reuleux--reuleux)
+**Properties**
+
+| Name            | Type                  | Default                          |
+| --------------- | --------------------- | -------------------------------- |
+| [radius]        | <code>number</code>   | <code>0.5</code>                 |
+| [segments]      | <code>number</code>   | <code>32</code>                  |
+| [innerSegments] | <code>number</code>   | <code>16</code>                  |
+| [theta]         | <code>number</code>   | <code>TAU</code>                 |
+| [mapping]       | <code>function</code> | <code>mappings.concentric</code> |
+| [n]             | <code>number</code>   | <code>3</code>                   |
+
+<a name="module_roundedCube"></a>
+
+## roundedCube
+
+- [roundedCube](#module_roundedCube)
+  - [roundedCube([options])](#exp_module_roundedCube--roundedCube) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
+    - [~RoundedCubeOptions](#module_roundedCube--roundedCube..RoundedCubeOptions) : <code>Object</code>
+
+<a name="exp_module_roundedCube--roundedCube"></a>
 
 ### roundedCube([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
 
 **Kind**: Exported function
 
-| Param     | Type                                           | Default         |
-| --------- | ---------------------------------------------- | --------------- |
-| [options] | <code>module:rounded~RoundedCubeOptions</code> | <code>{}</code> |
+| Param     | Type                                                                                    | Default         |
+| --------- | --------------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>RoundedCubeOptions</code>](#module_roundedCube--roundedCube..RoundedCubeOptions) | <code>{}</code> |
 
-<a name="module_rounded-cube--roundedCube..RoundedCubeOptions"></a>
+<a name="module_roundedCube--roundedCube..RoundedCubeOptions"></a>
 
 #### roundedCube~RoundedCubeOptions : <code>Object</code>
 
-**Kind**: inner typedef of [<code>roundedCube</code>](#exp_module_rounded-cube--roundedCube)
+**Kind**: inner typedef of [<code>roundedCube</code>](#exp_module_roundedCube--roundedCube)
 **Properties**
 
 | Name            | Type                | Default                 |
@@ -782,6 +869,89 @@ Default to an oblate spheroid.
 | [ny]     | <code>number</code> | <code>16</code>      |
 | [theta]  | <code>number</code> | <code>Math.PI</code> |
 | [phi]    | <code>number</code> | <code>TAU</code>     |
+
+<a name="module_squircle"></a>
+
+## squircle
+
+- [squircle](#module_squircle)
+  - [squircle([options])](#exp_module_squircle--squircle) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
+    - [~SquircleOptions](#module_squircle--squircle..SquircleOptions) : <code>Object</code>
+
+<a name="exp_module_squircle--squircle"></a>
+
+### squircle([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
+
+Fernández-Guasti squircle
+
+**Kind**: Exported function
+**See**: [Squircular Calculations – Chamberlain Fong](https://arxiv.org/vc/arxiv/papers/1604/1604.02174v1.pdf)
+
+| Param     | Type                                                                        | Default         |
+| --------- | --------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>SquircleOptions</code>](#module_squircle--squircle..SquircleOptions) | <code>{}</code> |
+
+<a name="module_squircle--squircle..SquircleOptions"></a>
+
+#### squircle~SquircleOptions : <code>Object</code>
+
+**Kind**: inner typedef of [<code>squircle</code>](#exp_module_squircle--squircle)
+**Properties**
+
+| Name            | Type                  | Default                            | Description             |
+| --------------- | --------------------- | ---------------------------------- | ----------------------- |
+| [sx]            | <code>number</code>   | <code>1</code>                     |                         |
+| [sy]            | <code>number</code>   | <code>1</code>                     |                         |
+| [radius]        | <code>number</code>   | <code>0.5</code>                   |                         |
+| [segments]      | <code>number</code>   | <code>128</code>                   |                         |
+| [innerSegments] | <code>number</code>   | <code>16</code>                    |                         |
+| [theta]         | <code>number</code>   | <code>TAU</code>                   |                         |
+| [mapping]       | <code>function</code> | <code>mappings.fgSquircular</code> |                         |
+| [squareness]    | <code>number</code>   | <code>0.95</code>                  | Squareness (0 < s <= 1) |
+
+<a name="module_superellipse"></a>
+
+## superellipse
+
+- [superellipse](#module_superellipse)
+  - [superellipse([options])](#exp_module_superellipse--superellipse) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
+    - [~SuperellipseOptions](#module_superellipse--superellipse..SuperellipseOptions) : <code>Object</code>
+
+<a name="exp_module_superellipse--superellipse"></a>
+
+### superellipse([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
+
+Lamé curve
+See elliptical-mapping example for a few special cases
+
+**Kind**: Exported function
+**See**
+
+- [Wolfram MathWorld – Superellipse](https://mathworld.wolfram.com/Superellipse.html)
+- [Wikipedia – Superellipse](https://en.wikipedia.org/wiki/Superellipse)
+
+| Param     | Type                                                                                        | Default         |
+| --------- | ------------------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>SuperellipseOptions</code>](#module_superellipse--superellipse..SuperellipseOptions) | <code>{}</code> |
+
+<a name="module_superellipse--superellipse..SuperellipseOptions"></a>
+
+#### superellipse~SuperellipseOptions : <code>Object</code>
+
+**Kind**: inner typedef of [<code>superellipse</code>](#exp_module_superellipse--superellipse)
+**Properties**
+
+| Name            | Type                  | Default                    |
+| --------------- | --------------------- | -------------------------- |
+| [sx]            | <code>number</code>   | <code>1</code>             |
+| [sy]            | <code>number</code>   | <code>0.5</code>           |
+| [radius]        | <code>number</code>   | <code>0.5</code>           |
+| [segments]      | <code>number</code>   | <code>32</code>            |
+| [innerSegments] | <code>number</code>   | <code>16</code>            |
+| [theta]         | <code>number</code>   | <code>TAU</code>           |
+| [mapping]       | <code>function</code> | <code>mappings.lamé</code> |
+| [m]             | <code>number</code>   | <code>2</code>             |
+| [n]             | <code>number</code>   | <code>m</code>             |
 
 <a name="module_tetrahedron"></a>
 
@@ -852,6 +1022,8 @@ Default to an oblate spheroid.
 
 - [utils](#module_utils)
   - [.TAU](#module_utils.TAU) : <code>number</code>
+  - [.HALF_PI](#module_utils.HALF_PI) : <code>number</code>
+  - [.SQRT2](#module_utils.SQRT2) : <code>number</code>
   - [.getCellsTypedArray](#module_utils.getCellsTypedArray) ⇒ <code>Uint8Array</code> \| <code>Uint16Array</code> \| <code>Uint32Array</code>
   - [.normalize(v)](#module_utils.normalize) ⇒ <code>Array.&lt;number&gt;</code>
   - [.checkArguments(...args)](#module_utils.checkArguments)
@@ -862,6 +1034,20 @@ Default to an oblate spheroid.
 ### utils.TAU : <code>number</code>
 
 Two times PI.
+
+**Kind**: static constant of [<code>utils</code>](#module_utils)
+<a name="module_utils.HALF_PI"></a>
+
+### utils.HALF_PI : <code>number</code>
+
+Two times PI.
+
+**Kind**: static constant of [<code>utils</code>](#module_utils)
+<a name="module_utils.SQRT2"></a>
+
+### utils.SQRT2 : <code>number</code>
+
+Square root of 2.
 
 **Kind**: static constant of [<code>utils</code>](#module_utils)
 <a name="module_utils.getCellsTypedArray"></a>

@@ -1,6 +1,6 @@
 {
   "name": "primitive-geometry",
-  "version": "2.7.0",
+  "version": "2.8.0",
   "description": "Geometries for 3D rendering, including normals, UVs and cell indices (faces). Perfect if you want to supercharge your dependency folder... with 30KB of geometries.",
   "keywords": [
     "simplicial",
