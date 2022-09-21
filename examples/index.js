@@ -2,6 +2,8 @@ import * as Primitives from "../index.js";
 
 import { modeOptions, setGeometries } from "./render.js";
 
+const params = new URLSearchParams(window.location.search);
+
 // Utils
 function computeEdges(positions, cells, stride = 3) {
   const edges = new (Primitives.utils.getCellsTypedArray(positions.length / 3))(
@@ -40,39 +42,44 @@ circle.positions = new Float32Array((circle.positions.length / 2) * 3).map(
 circle.edges = circle.cells;
 
 // Circle and box are rendered as lines
-const geometries = [
-  box,
-  circle,
-  quadsPlane,
-  Primitives.quad(),
-  Primitives.plane(),
-  null,
-  Primitives.ellipse(),
-  Primitives.disc(),
-  Primitives.superellipse(),
-  Primitives.squircle(),
-  Primitives.annulus(),
-  Primitives.reuleux(),
-  null,
-  Primitives.cube(),
-  Primitives.roundedCube(),
-  null,
-  Primitives.sphere(),
-  Primitives.icosphere(),
-  Primitives.ellipsoid(),
-  null,
-  Primitives.cylinder(),
-  Primitives.cone(),
-  Primitives.capsule(),
-  Primitives.torus(),
-  null,
-  Primitives.tetrahedron(),
-  Primitives.icosahedron(),
-];
+const geometries =
+  params.has("geometry") && Primitives[params.get("geometry")]
+    ? [Primitives[params.get("geometry")]()]
+    : [
+        box,
+        circle,
+        quadsPlane,
+        Primitives.quad(),
+        null,
+        Primitives.plane(),
+        Primitives.roundedRectangle(),
+        Primitives.stadium(),
+        null,
+        Primitives.ellipse(),
+        Primitives.disc(),
+        Primitives.superellipse(),
+        Primitives.squircle(),
+        Primitives.annulus(),
+        Primitives.reuleux(),
+        null,
+        Primitives.cube(),
+        Primitives.roundedCube(),
+        null,
+        Primitives.sphere(),
+        Primitives.icosphere(),
+        Primitives.ellipsoid(),
+        null,
+        Primitives.cylinder(),
+        Primitives.cone(),
+        Primitives.capsule(),
+        Primitives.torus(),
+        null,
+        Primitives.tetrahedron(),
+        Primitives.icosahedron(),
+      ];
 
 setGeometries(geometries);
 
-const params = new URLSearchParams(window.location.search);
 if (params.has("screenshot")) {
   window.screenshotItems = [...modeOptions, "bbox"];
   window.dispatchEvent(new CustomEvent("screenshot"));

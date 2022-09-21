@@ -7,6 +7,8 @@ import AsyncPreloader from "async-preloader";
 import { PerspectiveCamera, Controls } from "cameras";
 import { Pane } from "tweakpane";
 
+const params = new URLSearchParams(window.location.search);
+
 // Setup
 const canvas = document.createElement("canvas");
 document.querySelector("main").appendChild(canvas);
@@ -23,11 +25,15 @@ const camera = new PerspectiveCamera({
   viewport: [0, 0, window.innerWidth, window.innerHeight],
 });
 const controls = new Controls({
-  // position: [0, 0, 4],
-  // distance: 6 * (window.innerHeight / window.innerWidth),
-  phi: Math.PI / 3,
-  theta: Math.PI / 4,
-  distance: 15 * (window.innerHeight / window.innerWidth),
+  ...(params.has("geometry") && Primitives[params.get("geometry")]
+    ? {
+        position: [0, 0, 2],
+      }
+    : {
+        phi: Math.PI / 3,
+        theta: Math.PI / 4,
+        distance: 15 * (window.innerHeight / window.innerWidth),
+      }),
   element: ctx.gl.canvas,
   camera,
   distanceBounds: [1, 100],
@@ -36,7 +42,6 @@ controls.updatePosition();
 controls.target = [0, 0, 0];
 
 // GUI
-const params = new URLSearchParams(window.location.search);
 const modeOptions = ["texture", "normal", "flat-shaded", "uv", "wireframe"];
 
 const CONFIG = {
