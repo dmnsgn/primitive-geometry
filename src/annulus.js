@@ -8,6 +8,7 @@ import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
  * @property {number} [segments=32]
  * @property {number} [innerSegments=16]
  * @property {number} [theta=TAU]
+ * @property {number} [thetaOffset=0]
  * @property {number} [innerRadius=radius * 0.5]
  * @property {Function} [mapping=mappings.concentric]
  */
@@ -22,6 +23,7 @@ function annulus({
   segments = 32,
   innerSegments = 16,
   theta = TAU,
+  thetaOffset = 0,
   innerRadius = radius * 0.5,
   mapping = concentric,
 } = {}) {
@@ -43,7 +45,7 @@ function annulus({
     const s = (j + 1) / (innerSegments + 1);
 
     for (let i = 0; i <= segments; i++, vertexIndex++) {
-      const t = (i / segments) * theta;
+      const t = (i / segments) * theta + thetaOffset;
 
       const cosTheta = Math.cos(t);
       const sinTheta = Math.sin(t);

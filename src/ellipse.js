@@ -10,6 +10,7 @@ import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
  * @property {number} [segments=32]
  * @property {number} [innerSegments=16]
  * @property {number} [theta=TAU]
+ * @property {number} [thetaOffset=0]
  * @property {Function} [mapping=mappings.elliptical]
  */
 
@@ -25,6 +26,7 @@ function ellipse({
   segments = 32,
   innerSegments = 16,
   theta = TAU,
+  thetaOffset = 0,
   mapping = elliptical,
   equation = ({ rx, ry, cosTheta, sinTheta }) => [rx * cosTheta, ry * sinTheta],
 } = {}) {
@@ -51,7 +53,7 @@ function ellipse({
     const r = radius * s;
 
     for (let i = 0; i <= segments; i++, vertexIndex++) {
-      const t = (i / segments) * theta;
+      const t = (i / segments) * theta + thetaOffset;
 
       const cosTheta = Math.cos(t);
       const sinTheta = Math.sin(t);

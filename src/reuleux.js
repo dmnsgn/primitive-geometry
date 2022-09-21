@@ -9,6 +9,7 @@ import { checkArguments, TAU } from "./utils.js";
  * @property {number} [segments=32]
  * @property {number} [innerSegments=16]
  * @property {number} [theta=TAU]
+ * @property {number} [thetaOffset=0]
  * @property {Function} [mapping=mappings.concentric]
  * @property {number} [n=3]
  */
@@ -25,6 +26,7 @@ function reuleux({
   segments = 32,
   innerSegments = 16,
   theta = TAU,
+  thetaOffset = 0,
   mapping = concentric,
   n = 3,
 } = {}) {
@@ -40,6 +42,7 @@ function reuleux({
     segments,
     innerSegments,
     theta,
+    thetaOffset,
     mapping,
     equation: ({ rx, ry, t }) => [
       rx *

@@ -11,6 +11,7 @@ import { checkArguments, TAU } from "./utils.js";
  * @property {number} [segments=32]
  * @property {number} [innerSegments=16]
  * @property {number} [theta=TAU]
+ * @property {number} [thetaOffset=0]
  * @property {Function} [mapping=mappings.lamé]
  * @property {number} [m=2]
  * @property {number} [n=m]
@@ -32,6 +33,7 @@ function superellipse({
   segments = 32,
   innerSegments = 16,
   theta = TAU,
+  thetaOffset = 0,
   mapping = lamé,
   m = 2,
   n = m,
@@ -45,6 +47,7 @@ function superellipse({
     segments,
     innerSegments,
     theta,
+    thetaOffset,
     mapping,
     equation: ({ rx, ry, cosTheta, sinTheta }) => {
       return [

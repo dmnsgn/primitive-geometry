@@ -6,6 +6,7 @@ import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
  * @property {number} [radius=0.5]
  * @property {number} [segments=32]
  * @property {number} [theta=TAU]
+ * @property {number} [thetaOffset=0]
  * @property {boolean} [closed=false]
  */
 
@@ -18,6 +19,7 @@ function circle({
   radius = 0.5,
   segments = 32,
   theta = TAU,
+  thetaOffset = 0,
   closed = false,
 } = {}) {
   checkArguments(arguments);
@@ -28,7 +30,7 @@ function circle({
   );
 
   for (let i = 0; i < segments; i++) {
-    const t = (i / segments) * theta;
+    const t = (i / segments) * theta + thetaOffset;
     positions[i * 2] = radius * Math.cos(t);
     positions[i * 2 + 1] = radius * Math.sin(t);
 

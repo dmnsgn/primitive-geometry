@@ -14,7 +14,9 @@ import {
  * @property {number} [minorRadius=0.1]
  * @property {number} [minorSegments=32]
  * @property {number} [theta=TAU]
+ * @property {number} [thetaOffset=0]
  * @property {number} [phi=TAU]
+ * @property {number} [phiOffset=0]
  */
 
 /**
@@ -29,7 +31,9 @@ function torus({
   minorRadius = 0.1,
   minorSegments = 32,
   theta = TAU,
+  thetaOffset = 0,
   phi = TAU,
+  phiOffset = 0,
 } = {}) {
   checkArguments(arguments);
 
@@ -49,11 +53,11 @@ function torus({
     for (let i = 0; i <= segments; i++, vertexIndex++) {
       const u = i / segments;
 
-      const p = u * phi;
+      const p = u * phi + phiOffset;
       const cosPhi = -Math.cos(p);
       const sinPhi = Math.sin(p);
 
-      const t = v * theta;
+      const t = v * theta + thetaOffset;
       const cosTheta = -Math.cos(t);
       const sinTheta = Math.sin(t);
 

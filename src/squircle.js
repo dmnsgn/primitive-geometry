@@ -11,6 +11,7 @@ import { checkArguments, HALF_PI, SQRT2, TAU } from "./utils.js";
  * @property {number} [segments=128]
  * @property {number} [innerSegments=16]
  * @property {number} [theta=TAU]
+ * @property {number} [thetaOffset=0]
  * @property {Function} [mapping=mappings.fgSquircular]
  * @property {number} [squareness=0.95] Squareness (0 < s <= 1)
  */
@@ -30,6 +31,7 @@ function squircle({
   segments = 128,
   innerSegments = 16,
   theta = TAU,
+  thetaOffset = 0,
   mapping = fgSquircular,
   squareness = 0.95,
 } = {}) {
@@ -42,6 +44,7 @@ function squircle({
     segments,
     innerSegments,
     theta,
+    thetaOffset,
     mapping,
     equation: ({ rx, ry, cosTheta, sinTheta, t }) => {
       // Fix singularities
