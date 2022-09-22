@@ -59,6 +59,23 @@ const planeGeometry = Primitives.plane({
   direction: "z",
   quads: false,
 });
+const roundedRectangleGeometry = Primitives.roundedRectangle({
+  sx: 1,
+  sy: 1,
+  nx: 1,
+  ny: 1,
+  radius: 0.25,
+  roundSegments: 8,
+  edgeSegments: 1,
+});
+const stadiumGeometry = Primitives.stadium({
+  sx: 1,
+  sy: 0.5,
+  nx: 1,
+  ny: 1,
+  roundSegments: 8,
+  edgeSegments: 1,
+});
 
 const ellipseGeometry = Primitives.ellipse({
   sx: 1,

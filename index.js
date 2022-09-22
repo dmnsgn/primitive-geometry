@@ -8,6 +8,8 @@ export { default as circle } from "./src/circle.js";
 
 export { default as quad } from "./src/quad.js";
 export { default as plane } from "./src/plane.js";
+export { default as roundedRectangle } from "./src/rounded-rectangle.js";
+export { default as stadium } from "./src/stadium.js";
 
 export { default as ellipse } from "./src/ellipse.js";
 export { default as disc } from "./src/disc.js";
