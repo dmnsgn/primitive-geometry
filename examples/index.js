@@ -1,28 +1,8 @@
 import * as Primitives from "../index.js";
 
-import { modeOptions, setGeometries } from "./render.js";
+import { modeOptions, setGeometries, computeEdges } from "./render.js";
 
 const params = new URLSearchParams(window.location.search);
-
-// Utils
-function computeEdges(positions, cells, stride = 3) {
-  const edges = new (Primitives.utils.getCellsTypedArray(positions.length / 3))(
-    cells.length * 2
-  );
-
-  let cellIndex = 0;
-
-  for (let i = 0; i < cells.length; i += stride) {
-    for (let j = 0; j < stride; j++) {
-      const a = cells[i + j];
-      const b = cells[i + ((j + 1) % stride)];
-      edges[cellIndex] = Math.min(a, b);
-      edges[cellIndex + 1] = Math.max(a, b);
-      cellIndex += 2;
-    }
-  }
-  return edges;
-}
 
 // I don't like performances, just give me the biggest you've got
 // Primitives.utils.setTypedArrayType(Uint32Array);

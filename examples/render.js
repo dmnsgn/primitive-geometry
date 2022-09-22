@@ -155,8 +155,13 @@ const drawLinesCmd = {
   pipeline: ctx.pipeline({
     depthTest: true,
     primitive: ctx.Primitive.Lines,
+    blend: true,
+    blendSrcRGBFactor: ctx.BlendFactor.SrcAlpha,
+    blendSrcAlphaFactor: ctx.BlendFactor.One,
+    blendDstRGBFactor: ctx.BlendFactor.OneMinusSrcAlpha,
+    blendDstAlphaFactor: ctx.BlendFactor.One,
     vert: /* glsl */ `
-  precision mediump float;
+precision mediump float;
 
 attribute vec3 aPosition;
 attribute vec3 aColor;
@@ -179,15 +184,15 @@ void main() {
     frag: /* glsl */ `
 precision mediump float;
 
-uniform vec4 uColor;
+uniform float uOpacity;
 
 varying vec3 vColor;
 
 void main () {
-  gl_FragColor = vec4(vColor, 1.0);
+  gl_FragColor = vec4(vColor, uOpacity);
 }`,
   }),
-  uniforms: { uColor: [0.8, 0.8, 0.8, 1] },
+  uniforms: { uOpacity: 1 },
 };
 
 const bboxCells = ctx.indexBuffer(
@@ -198,6 +203,8 @@ const bboxCells = ctx.indexBuffer(
     0, 4, 1, 5, 2, 6, 3, 7
   )
 );
+const unitBox = Primitives.box();
+unitBox.edges = computeEdges(unitBox.positions, unitBox.cells, 4);
 
 const drawAxesCmd = {
   ...drawLinesCmd,
@@ -226,7 +233,7 @@ const drawAxesCmd = {
     ),
   },
   indices: ctx.indexBuffer(Uint8Array.of(0, 1, 2, 3, 4, 5)),
-  uniforms: { uColor: [0.8, 0.8, 0.8, 1], uModelMatrix: mat4.create() },
+  uniforms: { uModelMatrix: mat4.create() },
 };
 
 // Events
@@ -296,6 +303,26 @@ ctx.frame(() => {
     });
 
     if (CONFIG.bbox) {
+      unitBox.positionsBuffer ||= ctx.vertexBuffer(unitBox.positions);
+      unitBox.colorsBuffer ||= ctx.vertexBuffer(unitBox.positions.map(() => 1));
+      unitBox.indicesBuffer ||= ctx.indexBuffer(unitBox.edges);
+      ctx.submit(drawLinesCmd, {
+        attributes: {
+          aPosition: unitBox.positionsBuffer,
+          aColor: unitBox.colorsBuffer,
+        },
+        indices: unitBox.indicesBuffer,
+        uniforms: {
+          uOpacity: 0.2,
+          uMode: modeOptions.findIndex((o) => o === CONFIG.mode),
+          uProjectionMatrix: camera.projectionMatrix,
+          uViewMatrix: camera.viewMatrix,
+          uInverseViewMatrix: camera.inverseViewMatrix,
+          uNormalMatrix: mesh.normalMatrix,
+          uModelMatrix: mesh.modelMatrix,
+        },
+      });
+
       mesh.bboxPositions ||= ctx.vertexBuffer(mesh.bbox);
       mesh.bboxColors ||= ctx.vertexBuffer(mesh.bbox.map((p) => p * 0.5 + 0.5));
 
@@ -306,7 +333,6 @@ ctx.frame(() => {
         },
         indices: bboxCells,
         uniforms: {
-          uColor: [1, 0, 0, 1],
           uMode: modeOptions.findIndex((o) => o === CONFIG.mode),
           uProjectionMatrix: camera.projectionMatrix,
           uViewMatrix: camera.viewMatrix,
@@ -433,4 +459,12 @@ const setGeometries = (geometries) => {
   meshes.forEach((mesh) => mesh && (mesh.translation[2] -= halfGridSize));
 };
 
-export { CONFIG, setGeometries, modeOptions, pane, controls, camera };
+export {
+  CONFIG,
+  setGeometries,
+  computeEdges,
+  modeOptions,
+  pane,
+  controls,
+  camera,
+};
