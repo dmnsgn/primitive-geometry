@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [2.9.0](https://github.com/dmnsgn/primitive-geometry/compare/v2.8.0...v2.9.0) (2022-09-22)
+
+
+### Features
+
+* add phi/thetaOffset ([1ea22da](https://github.com/dmnsgn/primitive-geometry/commit/1ea22da7b69384c0d5fc32d9613d68d8a1a4c2ec))
+* add rounded rectangle and stadium ([0dd9d9e](https://github.com/dmnsgn/primitive-geometry/commit/0dd9d9ed70194d1e78f85df6db8096589fd626df))
+
+
+
 # [2.8.0](https://github.com/dmnsgn/primitive-geometry/compare/v2.7.0...v2.8.0) (2022-09-14)
 
 

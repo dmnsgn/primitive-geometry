@@ -276,9 +276,13 @@ const circleGeometry = Primitives.circle({
 <dd></dd>
 <dt><a href="#module_roundedCube">roundedCube</a></dt>
 <dd></dd>
+<dt><a href="#module_roundedRectangle">roundedRectangle</a></dt>
+<dd></dd>
 <dt><a href="#module_sphere">sphere</a></dt>
 <dd></dd>
 <dt><a href="#module_squircle">squircle</a></dt>
+<dd></dd>
+<dt><a href="#module_stadium">stadium</a></dt>
 <dd></dd>
 <dt><a href="#module_superellipse">superellipse</a></dt>
 <dd></dd>
@@ -338,6 +342,7 @@ Re-export all geometries, UV mappings functions and utils.
 | [segments]      | <code>number</code>   | <code>32</code>                  |
 | [innerSegments] | <code>number</code>   | <code>16</code>                  |
 | [theta]         | <code>number</code>   | <code>TAU</code>                 |
+| [thetaOffset]   | <code>number</code>   | <code>0</code>                   |
 | [innerRadius]   | <code>number</code>   | <code>radius \* 0.5</code>       |
 | [mapping]       | <code>function</code> | <code>mappings.concentric</code> |
 
@@ -431,12 +436,13 @@ Re-export all geometries, UV mappings functions and utils.
 **Kind**: inner typedef of [<code>circle</code>](#exp_module_circle--circle)
 **Properties**
 
-| Name       | Type                 | Default            |
-| ---------- | -------------------- | ------------------ |
-| [radius]   | <code>number</code>  | <code>0.5</code>   |
-| [segments] | <code>number</code>  | <code>32</code>    |
-| [theta]    | <code>number</code>  | <code>TAU</code>   |
-| [closed]   | <code>boolean</code> | <code>false</code> |
+| Name          | Type                 | Default            |
+| ------------- | -------------------- | ------------------ |
+| [radius]      | <code>number</code>  | <code>0.5</code>   |
+| [segments]    | <code>number</code>  | <code>32</code>    |
+| [theta]       | <code>number</code>  | <code>TAU</code>   |
+| [thetaOffset] | <code>number</code>  | <code>0</code>     |
+| [closed]      | <code>boolean</code> | <code>false</code> |
 
 <a name="module_cone"></a>
 
@@ -575,6 +581,7 @@ Re-export all geometries, UV mappings functions and utils.
 | [segments]      | <code>number</code>   | <code>32</code>                  |
 | [innerSegments] | <code>number</code>   | <code>16</code>                  |
 | [theta]         | <code>number</code>   | <code>TAU</code>                 |
+| [thetaOffset]   | <code>number</code>   | <code>0</code>                   |
 | [mapping]       | <code>function</code> | <code>mappings.concentric</code> |
 
 <a name="module_ellipse"></a>
@@ -610,6 +617,7 @@ Re-export all geometries, UV mappings functions and utils.
 | [segments]      | <code>number</code>   | <code>32</code>                  |
 | [innerSegments] | <code>number</code>   | <code>16</code>                  |
 | [theta]         | <code>number</code>   | <code>TAU</code>                 |
+| [thetaOffset]   | <code>number</code>   | <code>0</code>                   |
 | [mapping]       | <code>function</code> | <code>mappings.elliptical</code> |
 
 <a name="module_ellipsoid"></a>
@@ -639,16 +647,18 @@ Default to an oblate spheroid.
 **Kind**: inner typedef of [<code>ellipsoid</code>](#exp_module_ellipsoid--ellipsoid)
 **Properties**
 
-| Name     | Type                | Default              |
-| -------- | ------------------- | -------------------- |
-| [radius] | <code>number</code> | <code>0.5</code>     |
-| [nx]     | <code>number</code> | <code>32</code>      |
-| [ny]     | <code>number</code> | <code>16</code>      |
-| [rx]     | <code>number</code> | <code>1</code>       |
-| [rx]     | <code>number</code> | <code>0.5</code>     |
-| [rz]     | <code>number</code> | <code>ry</code>      |
-| [theta]  | <code>number</code> | <code>Math.PI</code> |
-| [phi]    | <code>number</code> | <code>TAU</code>     |
+| Name          | Type                | Default              |
+| ------------- | ------------------- | -------------------- |
+| [radius]      | <code>number</code> | <code>0.5</code>     |
+| [nx]          | <code>number</code> | <code>32</code>      |
+| [ny]          | <code>number</code> | <code>16</code>      |
+| [rx]          | <code>number</code> | <code>1</code>       |
+| [rx]          | <code>number</code> | <code>0.5</code>     |
+| [rz]          | <code>number</code> | <code>ry</code>      |
+| [theta]       | <code>number</code> | <code>Math.PI</code> |
+| [thetaOffset] | <code>number</code> | <code>0</code>       |
+| [phi]         | <code>number</code> | <code>TAU</code>     |
+| [phiOffset]   | <code>number</code> | <code>0</code>       |
 
 <a name="module_icosahedron"></a>
 
@@ -814,6 +824,7 @@ Default to an oblate spheroid.
 | [segments]      | <code>number</code>   | <code>32</code>                  |
 | [innerSegments] | <code>number</code>   | <code>16</code>                  |
 | [theta]         | <code>number</code>   | <code>TAU</code>                 |
+| [thetaOffset]   | <code>number</code>   | <code>0</code>                   |
 | [mapping]       | <code>function</code> | <code>mappings.concentric</code> |
 | [n]             | <code>number</code>   | <code>3</code>                   |
 
@@ -854,6 +865,41 @@ Default to an oblate spheroid.
 | [roundSegments] | <code>number</code> | <code>8</code>          |
 | [edgeSegments]  | <code>number</code> | <code>1</code>          |
 
+<a name="module_roundedRectangle"></a>
+
+## roundedRectangle
+
+- [roundedRectangle](#module_roundedRectangle)
+  - [roundedRectangle([options])](#exp_module_roundedRectangle--roundedRectangle) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
+    - [~RoundedCubeOptions](#module_roundedRectangle--roundedRectangle..RoundedCubeOptions) : <code>Object</code>
+
+<a name="exp_module_roundedRectangle--roundedRectangle"></a>
+
+### roundedRectangle([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
+
+**Kind**: Exported function
+
+| Param     | Type                                                                                              | Default         |
+| --------- | ------------------------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>RoundedCubeOptions</code>](#module_roundedRectangle--roundedRectangle..RoundedCubeOptions) | <code>{}</code> |
+
+<a name="module_roundedRectangle--roundedRectangle..RoundedCubeOptions"></a>
+
+#### roundedRectangle~RoundedCubeOptions : <code>Object</code>
+
+**Kind**: inner typedef of [<code>roundedRectangle</code>](#exp_module_roundedRectangle--roundedRectangle)
+**Properties**
+
+| Name            | Type                | Default                 |
+| --------------- | ------------------- | ----------------------- |
+| [sx]            | <code>number</code> | <code>1</code>          |
+| [sy]            | <code>number</code> | <code>sx</code>         |
+| [nx]            | <code>number</code> | <code>1</code>          |
+| [ny]            | <code>number</code> | <code>nx</code>         |
+| [radius]        | <code>number</code> | <code>sx \* 0.25</code> |
+| [roundSegments] | <code>number</code> | <code>8</code>          |
+| [edgeSegments]  | <code>number</code> | <code>1</code>          |
+
 <a name="module_sphere"></a>
 
 ## sphere
@@ -879,13 +925,15 @@ Default to an oblate spheroid.
 **Kind**: inner typedef of [<code>sphere</code>](#exp_module_sphere--sphere)
 **Properties**
 
-| Name     | Type                | Default              |
-| -------- | ------------------- | -------------------- |
-| [radius] | <code>number</code> | <code>0.5</code>     |
-| [nx]     | <code>number</code> | <code>32</code>      |
-| [ny]     | <code>number</code> | <code>16</code>      |
-| [theta]  | <code>number</code> | <code>Math.PI</code> |
-| [phi]    | <code>number</code> | <code>TAU</code>     |
+| Name          | Type                | Default              |
+| ------------- | ------------------- | -------------------- |
+| [radius]      | <code>number</code> | <code>0.5</code>     |
+| [nx]          | <code>number</code> | <code>32</code>      |
+| [ny]          | <code>number</code> | <code>16</code>      |
+| [theta]       | <code>number</code> | <code>Math.PI</code> |
+| [thetaOffset] | <code>number</code> | <code>0</code>       |
+| [phi]         | <code>number</code> | <code>TAU</code>     |
+| [phiOffset]   | <code>number</code> | <code>0</code>       |
 
 <a name="module_squircle"></a>
 
@@ -923,8 +971,43 @@ Fernández-Guasti squircle
 | [segments]      | <code>number</code>   | <code>128</code>                   |                         |
 | [innerSegments] | <code>number</code>   | <code>16</code>                    |                         |
 | [theta]         | <code>number</code>   | <code>TAU</code>                   |                         |
+| [thetaOffset]   | <code>number</code>   | <code>0</code>                     |                         |
 | [mapping]       | <code>function</code> | <code>mappings.fgSquircular</code> |                         |
 | [squareness]    | <code>number</code>   | <code>0.95</code>                  | Squareness (0 < s <= 1) |
+
+<a name="module_stadium"></a>
+
+## stadium
+
+- [stadium](#module_stadium)
+  - [stadium([options])](#exp_module_stadium--stadium) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
+    - [~StadiumOptions](#module_stadium--stadium..StadiumOptions) : <code>Object</code>
+
+<a name="exp_module_stadium--stadium"></a>
+
+### stadium([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
+
+**Kind**: Exported function
+
+| Param     | Type                                                                    | Default         |
+| --------- | ----------------------------------------------------------------------- | --------------- |
+| [options] | [<code>StadiumOptions</code>](#module_stadium--stadium..StadiumOptions) | <code>{}</code> |
+
+<a name="module_stadium--stadium..StadiumOptions"></a>
+
+#### stadium~StadiumOptions : <code>Object</code>
+
+**Kind**: inner typedef of [<code>stadium</code>](#exp_module_stadium--stadium)
+**Properties**
+
+| Name            | Type                | Default         |
+| --------------- | ------------------- | --------------- |
+| [sx]            | <code>number</code> | <code>1</code>  |
+| [sy]            | <code>number</code> | <code>sx</code> |
+| [nx]            | <code>number</code> | <code>1</code>  |
+| [ny]            | <code>number</code> | <code>nx</code> |
+| [roundSegments] | <code>number</code> | <code>8</code>  |
+| [edgeSegments]  | <code>number</code> | <code>1</code>  |
 
 <a name="module_superellipse"></a>
 
@@ -966,6 +1049,7 @@ See elliptical-mapping example for a few special cases
 | [segments]      | <code>number</code>   | <code>32</code>            |
 | [innerSegments] | <code>number</code>   | <code>16</code>            |
 | [theta]         | <code>number</code>   | <code>TAU</code>           |
+| [thetaOffset]   | <code>number</code>   | <code>0</code>             |
 | [mapping]       | <code>function</code> | <code>mappings.lamé</code> |
 | [m]             | <code>number</code>   | <code>2</code>             |
 | [n]             | <code>number</code>   | <code>m</code>             |
@@ -1031,7 +1115,9 @@ See elliptical-mapping example for a few special cases
 | [minorRadius]   | <code>number</code> | <code>0.1</code> |
 | [minorSegments] | <code>number</code> | <code>32</code>  |
 | [theta]         | <code>number</code> | <code>TAU</code> |
+| [thetaOffset]   | <code>number</code> | <code>0</code>   |
 | [phi]           | <code>number</code> | <code>TAU</code> |
+| [phiOffset]     | <code>number</code> | <code>0</code>   |
 
 <a name="module_utils"></a>
 
