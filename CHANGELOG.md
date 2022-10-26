@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.9.1](https://github.com/dmnsgn/primitive-geometry/compare/v2.9.0...v2.9.1) (2022-10-26)
+
+
+### Bug Fixes
+
+* ccw triangle order for rounded rectangle edges ([c04dc96](https://github.com/dmnsgn/primitive-geometry/commit/c04dc9698eba752b10d73c438a1daeadb474228d))
+
+
+
 # [2.9.0](https://github.com/dmnsgn/primitive-geometry/compare/v2.8.0...v2.9.0) (2022-09-22)
 
 
