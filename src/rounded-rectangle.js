@@ -125,7 +125,8 @@ function roundedRectangle({
       false,
       [(flip ? -1 : 1) * (radius / (su + r2)), radius / (sv + r2)],
       uvOffsetCorner(su, sv)[i],
-      center(x, y)
+      center(x, y),
+      !flip
     );
 
     // Edges

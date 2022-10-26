@@ -98,7 +98,8 @@ export function computePlane(
   quads = false,
   uvScale = [1, 1],
   uvOffset = [0, 0],
-  center = [0, 0, 0]
+  center = [0, 0, 0],
+  ccw = true
 ) {
   const { positions, normals, uvs, cells } = geometry;
   const [u, v, w, flipU, flipV, normal] = PLANE_DIRECTIONS[direction];
@@ -130,12 +131,12 @@ export function computePlane(
           cells[indices.cell + 3] = n + 1;
         } else {
           cells[indices.cell] = n;
-          cells[indices.cell + 1] = n + nu + 1;
-          cells[indices.cell + 2] = n + nu + 2;
+          cells[indices.cell + (ccw ? 1 : 2)] = n + nu + 1;
+          cells[indices.cell + (ccw ? 2 : 1)] = n + nu + 2;
 
           cells[indices.cell + 3] = n;
-          cells[indices.cell + 4] = n + nu + 2;
-          cells[indices.cell + 5] = n + 1;
+          cells[indices.cell + (ccw ? 4 : 5)] = n + nu + 2;
+          cells[indices.cell + (ccw ? 5 : 4)] = n + 1;
         }
         indices.cell += quads ? 4 : 6;
       }
