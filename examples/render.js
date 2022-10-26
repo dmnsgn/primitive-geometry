@@ -13,7 +13,6 @@ const params = new URLSearchParams(window.location.search);
 const canvas = document.createElement("canvas");
 document.querySelector("main").appendChild(canvas);
 const ctx = createContext({
-  type: "webgl",
   canvas,
   pixelRatio: devicePixelRatio,
 });
@@ -89,12 +88,9 @@ const clearCmd = {
 const drawCmd = {
   pipeline: ctx.pipeline({
     depthTest: true,
-    vert: /* glsl */ `
+    cullFace: true,
+    vert: /* glsl */ `#version 300 es
 precision mediump float;
-
-attribute vec3 aPosition;
-attribute vec2 aUv;
-attribute vec3 aNormal;
 
 uniform mat4 uProjectionMatrix;
 uniform mat4 uModelMatrix;
@@ -102,12 +98,16 @@ uniform mat4 uViewMatrix;
 uniform mat4 uInverseViewMatrix;
 uniform mat3 uNormalMatrix;
 
-varying vec3 vPositionWorld;
-varying vec3 vPositionView;
-varying vec3 vNormalView;
-varying vec3 vNormal;
-varying vec3 vNormalWorld;
-varying vec2 vUv;
+in vec3 aPosition;
+in vec2 aUv;
+in vec3 aNormal;
+
+out vec3 vPositionWorld;
+out vec3 vPositionView;
+out vec3 vNormalView;
+out vec3 vNormal;
+out vec3 vNormalWorld;
+out vec2 vUv;
 
 void main() {
   vNormal = aNormal;
@@ -121,30 +121,30 @@ void main() {
 
   gl_Position = uProjectionMatrix * vec4(vPositionView, 1.0);
 }`,
-    frag: /* glsl */ `
-#extension GL_OES_standard_derivatives : enable
-
+    frag: /* glsl */ `#version 300 es
 precision mediump float;
 
 uniform sampler2D uColorMap;
 uniform float uMode;
 
-varying vec3 vPositionWorld;
-varying vec3 vPositionView;
-varying vec3 vNormal;
-varying vec2 vUv;
+in vec3 vPositionWorld;
+in vec3 vPositionView;
+in vec3 vNormal;
+in vec2 vUv;
+
+out vec4 fragColor;
 
 void main () {
-  if (uMode == 0.0) gl_FragColor = texture2D(uColorMap, vUv);
-  if (uMode == 1.0) gl_FragColor = vec4(vNormal * 0.5 + 0.5, 1.0);
+  if (uMode == 0.0) fragColor = texture(uColorMap, vUv);
+  if (uMode == 1.0) fragColor = vec4(vNormal * 0.5 + 0.5, 1.0);
   if (uMode == 2.0) {
     vec3 fdx = vec3(dFdx(vPositionWorld.x), dFdx(vPositionWorld.y), dFdx(vPositionWorld.z));
     vec3 fdy = vec3(dFdy(vPositionWorld.x), dFdy(vPositionWorld.y), dFdy(vPositionWorld.z));
     vec3 normal = normalize(cross(fdx, fdy));
-    gl_FragColor = vec4(normal * 0.5 + 0.5, 1.0);
+    fragColor = vec4(normal * 0.5 + 0.5, 1.0);
   }
-  if (uMode == 3.0) gl_FragColor = vec4(vUv.xy, 0.0, 1.0);
-  if (vUv.x > 1.0 || vUv.x < 0.0 || vUv.y > 1.0 || vUv.y < 0.0) gl_FragColor.a = 0.1;
+  if (uMode == 3.0) fragColor = vec4(vUv.xy, 0.0, 1.0);
+  if (vUv.x > 1.0 || vUv.x < 0.0 || vUv.y > 1.0 || vUv.y < 0.0) fragColor.a = 0.1;
 }`,
   }),
   uniforms: {
@@ -160,19 +160,19 @@ const drawLinesCmd = {
     blendSrcAlphaFactor: ctx.BlendFactor.One,
     blendDstRGBFactor: ctx.BlendFactor.OneMinusSrcAlpha,
     blendDstAlphaFactor: ctx.BlendFactor.One,
-    vert: /* glsl */ `
+    vert: /* glsl */ `#version 300 es
 precision mediump float;
-
-attribute vec3 aPosition;
-attribute vec3 aColor;
 
 uniform mat4 uProjectionMatrix;
 uniform mat4 uModelMatrix;
 uniform mat4 uViewMatrix;
 
-varying vec3 vPositionWorld;
-varying vec3 vPositionView;
-varying vec3 vColor;
+in vec3 aPosition;
+in vec3 aColor;
+
+out vec3 vPositionWorld;
+out vec3 vPositionView;
+out vec3 vColor;
 
 void main() {
   vPositionWorld = (uModelMatrix * vec4(aPosition, 1.0)).xyz;
@@ -181,15 +181,17 @@ void main() {
 
   gl_Position = uProjectionMatrix * vec4(vPositionView, 1.0);
 }`,
-    frag: /* glsl */ `
+    frag: /* glsl */ `#version 300 es
 precision mediump float;
 
 uniform float uOpacity;
 
-varying vec3 vColor;
+in vec3 vColor;
+
+out vec4 fragColor;
 
 void main () {
-  gl_FragColor = vec4(vColor, uOpacity);
+  fragColor = vec4(vColor, uOpacity);
 }`,
   }),
   uniforms: { uOpacity: 1 },
