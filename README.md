@@ -84,6 +84,7 @@ const ellipseGeometry = Primitives.ellipse({
   segments: 32,
   innerSegments: 16,
   theta: Math.PI * 2,
+  thetaOffset: 0,
   mapping: mappings.elliptical,
 });
 const disc = Primitives.disc({
@@ -91,6 +92,7 @@ const disc = Primitives.disc({
   segments: 32,
   innerSegments: 16,
   theta: Math.PI * 2,
+  thetaOffset: 0,
   mapping: mappings.concentric,
 });
 const superellipse = Primitives.superellipse({
@@ -100,6 +102,7 @@ const superellipse = Primitives.superellipse({
   segments: 32,
   innerSegments: 16,
   theta: Math.PI * 2,
+  thetaOffset: 0,
   mapping: mappings.lamé,
   m: 2,
   n: 2,
@@ -111,6 +114,7 @@ const squircle = Primitives.squircle({
   segments: 128,
   innerSegments: 16,
   theta: Math.PI * 2,
+  thetaOffset: 0,
   mapping: mappings.fgSquircular,
   squareness: 0.95,
 });
@@ -119,7 +123,8 @@ const annulus = Primitives.annulus({
   segments: 32,
   innerSegments: 16,
   theta: Math.PI * 2,
-  innerRadius: radius * 0.5,
+  thetaOffset: 0,
+  innerRadius: 0.25,
   mapping: mappings.concentric,
 });
 const reuleux = Primitives.reuleux({
@@ -127,6 +132,7 @@ const reuleux = Primitives.reuleux({
   segments: 32,
   innerSegments: 16,
   theta: Math.PI * 2,
+  thetaOffset: 0,
   mapping: mappings.concentric,
   n: 3,
 });
@@ -156,7 +162,9 @@ const sphereGeometry = Primitives.sphere({
   nx: 32,
   ny: 16,
   theta: Math.PI,
+  thetaOffset: 0,
   phi: Math.PI * 2,
+  phiOffset: 0,
 });
 const icosphereGeometry = Primitives.icosphere({
   radius: 0.5,
@@ -170,7 +178,9 @@ const ellipsoidGeometry = Primitives.ellipsoid({
   ry: 0.25,
   rz: 0.25,
   theta: Math.PI,
+  thetaOffset: 0,
   phi: Math.PI * 2,
+  phiOffset: 0,
 });
 
 const cylinderGeometry = Primitives.cylinder({
@@ -199,7 +209,7 @@ const capsuleGeometry = Primitives.capsule({
   radius: 0.25,
   nx: 16,
   ny: 1,
-  roundedSegments: 16,
+  roundSegments: 16,
   theta: Math.PI * 2,
 });
 const torusGeometry = Primitives.torus({
@@ -208,7 +218,9 @@ const torusGeometry = Primitives.torus({
   minorRadius: 0.1,
   minorSegments: 32,
   theta: Math.PI * 2,
+  thetaOffset: 0,
   phi: Math.PI * 2,
+  phiOffset: 0,
 });
 
 const tetrahedron = Primitives.tetrahedron({
@@ -229,6 +241,7 @@ const circleGeometry = Primitives.circle({
   segments: 32,
   closed: false,
   theta: Math.PI * 2,
+  thetaOffset: 0,
 });
 ```
 
