@@ -19,7 +19,7 @@ import { checkArguments, TAU } from "./utils.js";
  *
  * @alias module:reuleux
  * @param {ReuleuxOptions} [options={}]
- * @returns {import("../types.js").BasicSimplicialComplex}
+ * @returns {import("../types.js").SimplicialComplex}
  */
 function reuleux({
   radius = 0.5,

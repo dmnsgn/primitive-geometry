@@ -16,7 +16,7 @@ import { checkArguments, TAU } from "./utils.js";
 /**
  * @alias module:disc
  * @param {DiscOptions} [options={}]
- * @returns {import("../types.js").BasicSimplicialComplex}
+ * @returns {import("../types.js").SimplicialComplex}
  */
 function disc({
   radius = 0.5,

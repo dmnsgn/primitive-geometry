@@ -17,7 +17,7 @@ import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
 /**
  * @alias module:ellipse
  * @param {EllipseOptions} [options={}]
- * @returns {import("../types.js").BasicSimplicialComplex}
+ * @returns {import("../types.js").SimplicialComplex}
  */
 function ellipse({
   sx = 1,

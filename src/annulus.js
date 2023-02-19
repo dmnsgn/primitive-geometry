@@ -16,7 +16,7 @@ import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
 /**
  * @alias module:annulus
  * @param {AnnulusOptions} [options={}]
- * @returns {import("../types.js").BasicSimplicialComplex}
+ * @returns {import("../types.js").SimplicialComplex}
  */
 function annulus({
   radius = 0.5,
