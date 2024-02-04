@@ -1,6 +1,15 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
+
+# [2.10.0](https://github.com/dmnsgn/primitive-geometry/compare/v2.9.1...v2.10.0) (2024-02-04)
+
+
+### Features
+
+* use 3D positions for circle ([5bb9e3b](https://github.com/dmnsgn/primitive-geometry/commit/5bb9e3b68b4de45ceec0864465a0edf4fffe1d7e)), closes [#15](https://github.com/dmnsgn/primitive-geometry/issues/15)
+
+
 
 ## [2.9.1](https://github.com/dmnsgn/primitive-geometry/compare/v2.9.0...v2.9.1) (2022-10-26)
 

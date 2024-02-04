@@ -310,10 +310,10 @@ const circleGeometry = Primitives.circle({
 ## Typedefs
 
 <dl>
-<dt><a href="#BasicSimplicialComplex">BasicSimplicialComplex</a> : <code>Object</code></dt>
+<dt><a href="#BasicSimplicialComplex">BasicSimplicialComplex</a> : <code>object</code></dt>
 <dd><p>Geometry definition without normals and UVs.</p>
 </dd>
-<dt><a href="#SimplicialComplex">SimplicialComplex</a> : <code>Object</code></dt>
+<dt><a href="#SimplicialComplex">SimplicialComplex</a> : <code>object</code></dt>
 <dd><p>Geometry definition.</p>
 </dd>
 </dl>
@@ -329,12 +329,12 @@ Re-export all geometries, UV mappings functions and utils.
 ## annulus
 
 - [annulus](#module_annulus)
-  - [annulus([options])](#exp_module_annulus--annulus) ⇒ [<code>BasicSimplicialComplex</code>](#BasicSimplicialComplex) ⏏
-    - [~AnnulusOptions](#module_annulus--annulus..AnnulusOptions) : <code>Object</code>
+  - [annulus([options])](#exp_module_annulus--annulus) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
+    - [~AnnulusOptions](#module_annulus--annulus..AnnulusOptions) : <code>object</code>
 
 <a name="exp_module_annulus--annulus"></a>
 
-### annulus([options]) ⇒ [<code>BasicSimplicialComplex</code>](#BasicSimplicialComplex) ⏏
+### annulus([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
 
 **Kind**: Exported function
 
@@ -344,7 +344,7 @@ Re-export all geometries, UV mappings functions and utils.
 
 <a name="module_annulus--annulus..AnnulusOptions"></a>
 
-#### annulus~AnnulusOptions : <code>Object</code>
+#### annulus~AnnulusOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>annulus</code>](#exp_module_annulus--annulus)
 **Properties**
@@ -365,7 +365,7 @@ Re-export all geometries, UV mappings functions and utils.
 
 - [box](#module_box)
   - [box([options])](#exp_module_box--box) ⇒ [<code>BasicSimplicialComplex</code>](#BasicSimplicialComplex) ⏏
-    - [~BoxOptions](#module_box--box..BoxOptions) : <code>Object</code>
+    - [~BoxOptions](#module_box--box..BoxOptions) : <code>object</code>
 
 <a name="exp_module_box--box"></a>
 
@@ -379,7 +379,7 @@ Re-export all geometries, UV mappings functions and utils.
 
 <a name="module_box--box..BoxOptions"></a>
 
-#### box~BoxOptions : <code>Object</code>
+#### box~BoxOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>box</code>](#exp_module_box--box)
 **Properties**
@@ -396,7 +396,7 @@ Re-export all geometries, UV mappings functions and utils.
 
 - [capsule](#module_capsule)
   - [capsule([options])](#exp_module_capsule--capsule) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~CapsuleOptions](#module_capsule--capsule..CapsuleOptions) : <code>Object</code>
+    - [~CapsuleOptions](#module_capsule--capsule..CapsuleOptions) : <code>object</code>
 
 <a name="exp_module_capsule--capsule"></a>
 
@@ -410,7 +410,7 @@ Re-export all geometries, UV mappings functions and utils.
 
 <a name="module_capsule--capsule..CapsuleOptions"></a>
 
-#### capsule~CapsuleOptions : <code>Object</code>
+#### capsule~CapsuleOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>capsule</code>](#exp_module_capsule--capsule)
 **Properties**
@@ -430,7 +430,7 @@ Re-export all geometries, UV mappings functions and utils.
 
 - [circle](#module_circle)
   - [circle([options])](#exp_module_circle--circle) ⇒ [<code>BasicSimplicialComplex</code>](#BasicSimplicialComplex) ⏏
-    - [~CircleOptions](#module_circle--circle..CircleOptions) : <code>Object</code>
+    - [~CircleOptions](#module_circle--circle..CircleOptions) : <code>object</code>
 
 <a name="exp_module_circle--circle"></a>
 
@@ -444,7 +444,7 @@ Re-export all geometries, UV mappings functions and utils.
 
 <a name="module_circle--circle..CircleOptions"></a>
 
-#### circle~CircleOptions : <code>Object</code>
+#### circle~CircleOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>circle</code>](#exp_module_circle--circle)
 **Properties**
@@ -463,7 +463,7 @@ Re-export all geometries, UV mappings functions and utils.
 
 - [cone](#module_cone)
   - [cone([options])](#exp_module_cone--cone) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~ConeOptions](#module_cone--cone..ConeOptions) : <code>Object</code>
+    - [~ConeOptions](#module_cone--cone..ConeOptions) : <code>object</code>
 
 <a name="exp_module_cone--cone"></a>
 
@@ -477,7 +477,7 @@ Re-export all geometries, UV mappings functions and utils.
 
 <a name="module_cone--cone..ConeOptions"></a>
 
-#### cone~ConeOptions : <code>Object</code>
+#### cone~ConeOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>cone</code>](#exp_module_cone--cone)
 **Properties**
@@ -498,7 +498,7 @@ Re-export all geometries, UV mappings functions and utils.
 
 - [cube](#module_cube)
   - [cube([options])](#exp_module_cube--cube) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~CubeOptions](#module_cube--cube..CubeOptions) : <code>Object</code>
+    - [~CubeOptions](#module_cube--cube..CubeOptions) : <code>object</code>
 
 <a name="exp_module_cube--cube"></a>
 
@@ -512,7 +512,7 @@ Re-export all geometries, UV mappings functions and utils.
 
 <a name="module_cube--cube..CubeOptions"></a>
 
-#### cube~CubeOptions : <code>Object</code>
+#### cube~CubeOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>cube</code>](#exp_module_cube--cube)
 **Properties**
@@ -532,7 +532,7 @@ Re-export all geometries, UV mappings functions and utils.
 
 - [cylinder](#module_cylinder)
   - [cylinder([options])](#exp_module_cylinder--cylinder) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~CylinderOptions](#module_cylinder--cylinder..CylinderOptions) : <code>Object</code>
+    - [~CylinderOptions](#module_cylinder--cylinder..CylinderOptions) : <code>object</code>
 
 <a name="exp_module_cylinder--cylinder"></a>
 
@@ -546,7 +546,7 @@ Re-export all geometries, UV mappings functions and utils.
 
 <a name="module_cylinder--cylinder..CylinderOptions"></a>
 
-#### cylinder~CylinderOptions : <code>Object</code>
+#### cylinder~CylinderOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>cylinder</code>](#exp_module_cylinder--cylinder)
 **Properties**
@@ -568,12 +568,12 @@ Re-export all geometries, UV mappings functions and utils.
 ## disc
 
 - [disc](#module_disc)
-  - [disc([options])](#exp_module_disc--disc) ⇒ [<code>BasicSimplicialComplex</code>](#BasicSimplicialComplex) ⏏
-    - [~DiscOptions](#module_disc--disc..DiscOptions) : <code>Object</code>
+  - [disc([options])](#exp_module_disc--disc) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
+    - [~DiscOptions](#module_disc--disc..DiscOptions) : <code>object</code>
 
 <a name="exp_module_disc--disc"></a>
 
-### disc([options]) ⇒ [<code>BasicSimplicialComplex</code>](#BasicSimplicialComplex) ⏏
+### disc([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
 
 **Kind**: Exported function
 
@@ -583,7 +583,7 @@ Re-export all geometries, UV mappings functions and utils.
 
 <a name="module_disc--disc..DiscOptions"></a>
 
-#### disc~DiscOptions : <code>Object</code>
+#### disc~DiscOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>disc</code>](#exp_module_disc--disc)
 **Properties**
@@ -602,12 +602,12 @@ Re-export all geometries, UV mappings functions and utils.
 ## ellipse
 
 - [ellipse](#module_ellipse)
-  - [ellipse([options])](#exp_module_ellipse--ellipse) ⇒ [<code>BasicSimplicialComplex</code>](#BasicSimplicialComplex) ⏏
-    - [~EllipseOptions](#module_ellipse--ellipse..EllipseOptions) : <code>Object</code>
+  - [ellipse([options])](#exp_module_ellipse--ellipse) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
+    - [~EllipseOptions](#module_ellipse--ellipse..EllipseOptions) : <code>object</code>
 
 <a name="exp_module_ellipse--ellipse"></a>
 
-### ellipse([options]) ⇒ [<code>BasicSimplicialComplex</code>](#BasicSimplicialComplex) ⏏
+### ellipse([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
 
 **Kind**: Exported function
 
@@ -617,7 +617,7 @@ Re-export all geometries, UV mappings functions and utils.
 
 <a name="module_ellipse--ellipse..EllipseOptions"></a>
 
-#### ellipse~EllipseOptions : <code>Object</code>
+#### ellipse~EllipseOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>ellipse</code>](#exp_module_ellipse--ellipse)
 **Properties**
@@ -639,7 +639,7 @@ Re-export all geometries, UV mappings functions and utils.
 
 - [ellipsoid](#module_ellipsoid)
   - [ellipsoid([options])](#exp_module_ellipsoid--ellipsoid) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~EllipsoidOptions](#module_ellipsoid--ellipsoid..EllipsoidOptions) : <code>Object</code>
+    - [~EllipsoidOptions](#module_ellipsoid--ellipsoid..EllipsoidOptions) : <code>object</code>
 
 <a name="exp_module_ellipsoid--ellipsoid"></a>
 
@@ -655,7 +655,7 @@ Default to an oblate spheroid.
 
 <a name="module_ellipsoid--ellipsoid..EllipsoidOptions"></a>
 
-#### ellipsoid~EllipsoidOptions : <code>Object</code>
+#### ellipsoid~EllipsoidOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>ellipsoid</code>](#exp_module_ellipsoid--ellipsoid)
 **Properties**
@@ -666,7 +666,7 @@ Default to an oblate spheroid.
 | [nx]          | <code>number</code> | <code>32</code>      |
 | [ny]          | <code>number</code> | <code>16</code>      |
 | [rx]          | <code>number</code> | <code>1</code>       |
-| [rx]          | <code>number</code> | <code>0.5</code>     |
+| [ry]          | <code>number</code> | <code>0.5</code>     |
 | [rz]          | <code>number</code> | <code>ry</code>      |
 | [theta]       | <code>number</code> | <code>Math.PI</code> |
 | [thetaOffset] | <code>number</code> | <code>0</code>       |
@@ -679,7 +679,7 @@ Default to an oblate spheroid.
 
 - [icosahedron](#module_icosahedron)
   - [icosahedron([options])](#exp_module_icosahedron--icosahedron) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~IcosahedronOptions](#module_icosahedron--icosahedron..IcosahedronOptions) : <code>Object</code>
+    - [~IcosahedronOptions](#module_icosahedron--icosahedron..IcosahedronOptions) : <code>object</code>
 
 <a name="exp_module_icosahedron--icosahedron"></a>
 
@@ -693,7 +693,7 @@ Default to an oblate spheroid.
 
 <a name="module_icosahedron--icosahedron..IcosahedronOptions"></a>
 
-#### icosahedron~IcosahedronOptions : <code>Object</code>
+#### icosahedron~IcosahedronOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>icosahedron</code>](#exp_module_icosahedron--icosahedron)
 **Properties**
@@ -708,7 +708,7 @@ Default to an oblate spheroid.
 
 - [icosphere](#module_icosphere)
   - [icosphere([options])](#exp_module_icosphere--icosphere) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~IcosphereOptions](#module_icosphere--icosphere..IcosphereOptions) : <code>Object</code>
+    - [~IcosphereOptions](#module_icosphere--icosphere..IcosphereOptions) : <code>object</code>
 
 <a name="exp_module_icosphere--icosphere"></a>
 
@@ -722,7 +722,7 @@ Default to an oblate spheroid.
 
 <a name="module_icosphere--icosphere..IcosphereOptions"></a>
 
-#### icosphere~IcosphereOptions : <code>Object</code>
+#### icosphere~IcosphereOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>icosphere</code>](#exp_module_icosphere--icosphere)
 **Properties**
@@ -742,7 +742,7 @@ Default to an oblate spheroid.
 
 - [plane](#module_plane)
   - [plane([options])](#exp_module_plane--plane) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~PlaneOptions](#module_plane--plane..PlaneOptions) : <code>Object</code>
+    - [~PlaneOptions](#module_plane--plane..PlaneOptions) : <code>object</code>
     - [~PlaneDirection](#module_plane--plane..PlaneDirection) : <code>&quot;x&quot;</code> \| <code>&quot;-x&quot;</code> \| <code>&quot;y&quot;</code> \| <code>&quot;-y&quot;</code> \| <code>&quot;z&quot;</code> \| <code>&quot;-z&quot;</code>
 
 <a name="exp_module_plane--plane"></a>
@@ -757,7 +757,7 @@ Default to an oblate spheroid.
 
 <a name="module_plane--plane..PlaneOptions"></a>
 
-#### plane~PlaneOptions : <code>Object</code>
+#### plane~PlaneOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>plane</code>](#exp_module_plane--plane)
 **Properties**
@@ -782,7 +782,7 @@ Default to an oblate spheroid.
 
 - [quad](#module_quad)
   - [quad([options])](#exp_module_quad--quad) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~QuadOptions](#module_quad--quad..QuadOptions) : <code>Object</code>
+    - [~QuadOptions](#module_quad--quad..QuadOptions) : <code>object</code>
 
 <a name="exp_module_quad--quad"></a>
 
@@ -796,7 +796,7 @@ Default to an oblate spheroid.
 
 <a name="module_quad--quad..QuadOptions"></a>
 
-#### quad~QuadOptions : <code>Object</code>
+#### quad~QuadOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>quad</code>](#exp_module_quad--quad)
 **Properties**
@@ -810,12 +810,12 @@ Default to an oblate spheroid.
 ## reuleux
 
 - [reuleux](#module_reuleux)
-  - [reuleux([options])](#exp_module_reuleux--reuleux) ⇒ [<code>BasicSimplicialComplex</code>](#BasicSimplicialComplex) ⏏
-    - [~ReuleuxOptions](#module_reuleux--reuleux..ReuleuxOptions) : <code>Object</code>
+  - [reuleux([options])](#exp_module_reuleux--reuleux) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
+    - [~ReuleuxOptions](#module_reuleux--reuleux..ReuleuxOptions) : <code>object</code>
 
 <a name="exp_module_reuleux--reuleux"></a>
 
-### reuleux([options]) ⇒ [<code>BasicSimplicialComplex</code>](#BasicSimplicialComplex) ⏏
+### reuleux([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
 
 **Kind**: Exported function
 **See**: [Parametric equations for regular and Reuleaux polygons](https://tpfto.wordpress.com/2011/09/15/parametric-equations-for-regular-and-reuleaux-polygons/)
@@ -826,7 +826,7 @@ Default to an oblate spheroid.
 
 <a name="module_reuleux--reuleux..ReuleuxOptions"></a>
 
-#### reuleux~ReuleuxOptions : <code>Object</code>
+#### reuleux~ReuleuxOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>reuleux</code>](#exp_module_reuleux--reuleux)
 **Properties**
@@ -847,7 +847,7 @@ Default to an oblate spheroid.
 
 - [roundedCube](#module_roundedCube)
   - [roundedCube([options])](#exp_module_roundedCube--roundedCube) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~RoundedCubeOptions](#module_roundedCube--roundedCube..RoundedCubeOptions) : <code>Object</code>
+    - [~RoundedCubeOptions](#module_roundedCube--roundedCube..RoundedCubeOptions) : <code>object</code>
 
 <a name="exp_module_roundedCube--roundedCube"></a>
 
@@ -861,7 +861,7 @@ Default to an oblate spheroid.
 
 <a name="module_roundedCube--roundedCube..RoundedCubeOptions"></a>
 
-#### roundedCube~RoundedCubeOptions : <code>Object</code>
+#### roundedCube~RoundedCubeOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>roundedCube</code>](#exp_module_roundedCube--roundedCube)
 **Properties**
@@ -884,7 +884,7 @@ Default to an oblate spheroid.
 
 - [roundedRectangle](#module_roundedRectangle)
   - [roundedRectangle([options])](#exp_module_roundedRectangle--roundedRectangle) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~RoundedCubeOptions](#module_roundedRectangle--roundedRectangle..RoundedCubeOptions) : <code>Object</code>
+    - [~RoundedCubeOptions](#module_roundedRectangle--roundedRectangle..RoundedCubeOptions) : <code>object</code>
 
 <a name="exp_module_roundedRectangle--roundedRectangle"></a>
 
@@ -898,7 +898,7 @@ Default to an oblate spheroid.
 
 <a name="module_roundedRectangle--roundedRectangle..RoundedCubeOptions"></a>
 
-#### roundedRectangle~RoundedCubeOptions : <code>Object</code>
+#### roundedRectangle~RoundedCubeOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>roundedRectangle</code>](#exp_module_roundedRectangle--roundedRectangle)
 **Properties**
@@ -919,7 +919,7 @@ Default to an oblate spheroid.
 
 - [sphere](#module_sphere)
   - [sphere([options])](#exp_module_sphere--sphere) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~SphereOptions](#module_sphere--sphere..SphereOptions) : <code>Object</code>
+    - [~SphereOptions](#module_sphere--sphere..SphereOptions) : <code>object</code>
 
 <a name="exp_module_sphere--sphere"></a>
 
@@ -933,7 +933,7 @@ Default to an oblate spheroid.
 
 <a name="module_sphere--sphere..SphereOptions"></a>
 
-#### sphere~SphereOptions : <code>Object</code>
+#### sphere~SphereOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>sphere</code>](#exp_module_sphere--sphere)
 **Properties**
@@ -954,7 +954,7 @@ Default to an oblate spheroid.
 
 - [squircle](#module_squircle)
   - [squircle([options])](#exp_module_squircle--squircle) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~SquircleOptions](#module_squircle--squircle..SquircleOptions) : <code>Object</code>
+    - [~SquircleOptions](#module_squircle--squircle..SquircleOptions) : <code>object</code>
 
 <a name="exp_module_squircle--squircle"></a>
 
@@ -971,7 +971,7 @@ Fernández-Guasti squircle
 
 <a name="module_squircle--squircle..SquircleOptions"></a>
 
-#### squircle~SquircleOptions : <code>Object</code>
+#### squircle~SquircleOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>squircle</code>](#exp_module_squircle--squircle)
 **Properties**
@@ -994,7 +994,7 @@ Fernández-Guasti squircle
 
 - [stadium](#module_stadium)
   - [stadium([options])](#exp_module_stadium--stadium) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~StadiumOptions](#module_stadium--stadium..StadiumOptions) : <code>Object</code>
+    - [~StadiumOptions](#module_stadium--stadium..StadiumOptions) : <code>object</code>
 
 <a name="exp_module_stadium--stadium"></a>
 
@@ -1008,7 +1008,7 @@ Fernández-Guasti squircle
 
 <a name="module_stadium--stadium..StadiumOptions"></a>
 
-#### stadium~StadiumOptions : <code>Object</code>
+#### stadium~StadiumOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>stadium</code>](#exp_module_stadium--stadium)
 **Properties**
@@ -1028,7 +1028,7 @@ Fernández-Guasti squircle
 
 - [superellipse](#module_superellipse)
   - [superellipse([options])](#exp_module_superellipse--superellipse) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~SuperellipseOptions](#module_superellipse--superellipse..SuperellipseOptions) : <code>Object</code>
+    - [~SuperellipseOptions](#module_superellipse--superellipse..SuperellipseOptions) : <code>object</code>
 
 <a name="exp_module_superellipse--superellipse"></a>
 
@@ -1049,7 +1049,7 @@ See elliptical-mapping example for a few special cases
 
 <a name="module_superellipse--superellipse..SuperellipseOptions"></a>
 
-#### superellipse~SuperellipseOptions : <code>Object</code>
+#### superellipse~SuperellipseOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>superellipse</code>](#exp_module_superellipse--superellipse)
 **Properties**
@@ -1073,7 +1073,7 @@ See elliptical-mapping example for a few special cases
 
 - [tetrahedron](#module_tetrahedron)
   - [tetrahedron([options])](#exp_module_tetrahedron--tetrahedron) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~TetrahedronOptions](#module_tetrahedron--tetrahedron..TetrahedronOptions) : <code>Object</code>
+    - [~TetrahedronOptions](#module_tetrahedron--tetrahedron..TetrahedronOptions) : <code>object</code>
 
 <a name="exp_module_tetrahedron--tetrahedron"></a>
 
@@ -1087,7 +1087,7 @@ See elliptical-mapping example for a few special cases
 
 <a name="module_tetrahedron--tetrahedron..TetrahedronOptions"></a>
 
-#### tetrahedron~TetrahedronOptions : <code>Object</code>
+#### tetrahedron~TetrahedronOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>tetrahedron</code>](#exp_module_tetrahedron--tetrahedron)
 **Properties**
@@ -1102,7 +1102,7 @@ See elliptical-mapping example for a few special cases
 
 - [torus](#module_torus)
   - [torus([options])](#exp_module_torus--torus) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~TorusOptions](#module_torus--torus..TorusOptions) : <code>Object</code>
+    - [~TorusOptions](#module_torus--torus..TorusOptions) : <code>object</code>
 
 <a name="exp_module_torus--torus"></a>
 
@@ -1116,7 +1116,7 @@ See elliptical-mapping example for a few special cases
 
 <a name="module_torus--torus..TorusOptions"></a>
 
-#### torus~TorusOptions : <code>Object</code>
+#### torus~TorusOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>torus</code>](#exp_module_torus--torus)
 **Properties**
@@ -1218,7 +1218,7 @@ Enforce a typed array constructor for cells
 
 <a name="BasicSimplicialComplex"></a>
 
-## BasicSimplicialComplex : <code>Object</code>
+## BasicSimplicialComplex : <code>object</code>
 
 Geometry definition without normals and UVs.
 
@@ -1232,7 +1232,7 @@ Geometry definition without normals and UVs.
 
 <a name="SimplicialComplex"></a>
 
-## SimplicialComplex : <code>Object</code>
+## SimplicialComplex : <code>object</code>
 
 Geometry definition.
 
