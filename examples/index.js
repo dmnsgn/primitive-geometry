@@ -15,13 +15,9 @@ quadsPlane.edges = computeEdges(quadsPlane.positions, quadsPlane.cells, 4);
 quadsPlane.quads = true;
 
 const circle = Primitives.circle({ closed: true });
-circle.positions = new Float32Array((circle.positions.length / 2) * 3).map(
-  (_, index) =>
-    index % 3 === 2 ? 0 : circle.positions[Math.round((index * 2) / 3)]
-);
 circle.edges = circle.cells;
 
-// Circle and box are rendered as lines
+// Box and plane of quads are rendered as lines
 const geometries =
   params.has("geometry") && Primitives[params.get("geometry")]
     ? [Primitives[params.get("geometry")]()]

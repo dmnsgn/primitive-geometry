@@ -49,7 +49,7 @@ if (params.has("screenshot")) window.screenshotItems = mappingOptions;
 CONFIG.mapping = "";
 pane.addSeparator();
 pane
-  .addInput(CONFIG, "mapping", {
+  .addBinding(CONFIG, "mapping", {
     options: [
       { text: "", value: "" },
       ...mappingOptions.map((value) => ({
@@ -66,7 +66,7 @@ pane
   });
 
 CONFIG.cycleMapping = false;
-pane.addInput(CONFIG, "cycleMapping");
+pane.addBinding(CONFIG, "cycleMapping");
 
 CONFIG.mapping = params.get("mapping");
 if (params.has("screenshot")) {

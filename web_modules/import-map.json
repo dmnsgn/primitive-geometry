@@ -3,9 +3,12 @@
     "async-preloader": "./async-preloader.js",
     "cameras": "./cameras.js",
     "es-module-shims": "./es-module-shims.js",
+    "es-module-shims/debug": "./es-module-shims/dist/es-module-shims.debug.js",
+    "es-module-shims/wasm": "./es-module-shims/dist/es-module-shims.wasm.js",
     "gl-matrix": "./gl-matrix.js",
     "pex-context": "./pex-context.js",
     "pex-geom": "./pex-geom.js",
-    "tweakpane": "./tweakpane.js"
+    "tweakpane": "./tweakpane.js",
+    "typed-array-interleave": "./typed-array-interleave.js"
   }
 }

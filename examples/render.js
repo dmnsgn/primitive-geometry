@@ -4,6 +4,7 @@ import { mat3, mat4 } from "gl-matrix";
 import createContext from "pex-context";
 import { aabb } from "pex-geom";
 import AsyncPreloader from "async-preloader";
+import typedArrayInterleave from "typed-array-interleave";
 import { PerspectiveCamera, Controls } from "cameras";
 import { Pane } from "tweakpane";
 
@@ -48,16 +49,18 @@ const CONFIG = {
   cycle: false,
   axes: true,
   bbox: params.get("mode") === "bbox",
+  normals: true,
 };
 const pane = new Pane();
-pane.addInput(CONFIG, "mode", {
+pane.addBinding(CONFIG, "mode", {
   options: modeOptions.map((value) => ({
     text: value.toUpperCase(),
     value,
   })),
 });
-pane.addInput(CONFIG, "cycle");
-pane.addInput(CONFIG, "bbox");
+pane.addBinding(CONFIG, "cycle");
+pane.addBinding(CONFIG, "bbox");
+pane.addBinding(CONFIG, "normals");
 
 setInterval(() => {
   if (CONFIG.cycle) {
@@ -334,6 +337,48 @@ ctx.frame(() => {
           aColor: mesh.bboxColors,
         },
         indices: bboxCells,
+        uniforms: {
+          uMode: modeOptions.findIndex((o) => o === CONFIG.mode),
+          uProjectionMatrix: camera.projectionMatrix,
+          uViewMatrix: camera.viewMatrix,
+          uInverseViewMatrix: camera.inverseViewMatrix,
+          uNormalMatrix: mesh.normalMatrix,
+          uModelMatrix: mesh.modelMatrix,
+        },
+      });
+    }
+
+    if (CONFIG.normals && mesh.geometry.normals && !mesh.quads) {
+      mesh.normalsAttributes ||= {
+        aPosition: ctx.vertexBuffer(
+          typedArrayInterleave(
+            Float32Array,
+            [3, 3],
+            mesh.geometry.positions,
+            mesh.geometry.positions.map(
+              (p, i) => p + mesh.geometry.normals[i] * 0.1
+            )
+          )
+        ),
+        aColor: ctx.vertexBuffer(
+          typedArrayInterleave(
+            Float32Array,
+            [3, 3],
+            mesh.geometry.normals.map((p) => p * 0.5 + 0.5),
+            mesh.geometry.normals.map((p) => p * 0.5 + 0.5)
+          )
+        ),
+      };
+
+      mesh.normalsIndices ||= ctx.indexBuffer(
+        new Uint32Array((mesh.geometry.positions.length / 3) * 2).map(
+          (_, i) => i
+        )
+      );
+
+      ctx.submit(drawLinesCmd, {
+        attributes: mesh.normalsAttributes,
+        indices: mesh.normalsIndices,
         uniforms: {
           uMode: modeOptions.findIndex((o) => o === CONFIG.mode),
           uProjectionMatrix: camera.projectionMatrix,

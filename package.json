@@ -60,13 +60,14 @@
     "dev": "npx snowdev dev"
   },
   "devDependencies": {
-    "async-preloader": "^7.0.0",
+    "async-preloader": "^8.0.3",
     "cameras": "^3.1.1",
-    "es-module-shims": "^1.5.17",
+    "es-module-shims": "^1.8.2",
     "gl-matrix": "^3.4.3",
     "pex-context": "^3.0.0-alpha.1",
     "pex-geom": "^3.0.0-alpha.3",
-    "tweakpane": "^3.1.0"
+    "tweakpane": "^4.0.3",
+    "typed-array-interleave": "^2.0.0"
   },
   "engines": {
     "node": ">=15.0.0",
