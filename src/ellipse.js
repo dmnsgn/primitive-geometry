@@ -3,7 +3,7 @@ import { elliptical } from "./mappings.js";
 import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
 
 /**
- * @typedef {Object} EllipseOptions
+ * @typedef {object} EllipseOptions
  * @property {number} [sx=1]
  * @property {number} [sy=0.5]
  * @property {number} [radius=0.5]
@@ -38,7 +38,7 @@ function ellipse({
   const normals = new Float32Array(size * 3);
   const uvs = new Float32Array(size * 2);
   const cells = new (getCellsTypedArray(size))(
-    segments * 3 + (innerSegments - 1) * segments * 6
+    segments * 3 + (innerSegments - 1) * segments * 6,
   );
 
   normals[2] = 1;

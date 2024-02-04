@@ -3,7 +3,7 @@ import ellipsoid from "./ellipsoid.js";
 import { checkArguments } from "./utils.js";
 
 /**
- * @typedef {Object} SphereOptions
+ * @typedef {object} SphereOptions
  * @property {number} [radius=0.5]
  * @property {number} [nx=32]
  * @property {number} [ny=16]

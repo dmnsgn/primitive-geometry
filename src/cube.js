@@ -3,7 +3,7 @@
 import { checkArguments, computePlane, getCellsTypedArray } from "./utils.js";
 
 /**
- * @typedef {Object} CubeOptions
+ * @typedef {object} CubeOptions
  * @property {number} [sx=1]
  * @property {number} [sy=sx]
  * @property {number} [sz=sx]
@@ -28,7 +28,7 @@ function cube({ sx = 1, sy = sx, sz = sx, nx = 1, ny = nx, nz = nx } = {}) {
     normals: new Float32Array(size * 3),
     uvs: new Float32Array(size * 2),
     cells: new (getCellsTypedArray(size))(
-      (nx * ny * 2 + nx * nz * 2 + nz * ny * 2) * 6
+      (nx * ny * 2 + nx * nz * 2 + nz * ny * 2) * 6,
     ),
   };
 

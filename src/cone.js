@@ -3,7 +3,7 @@ import cylinder from "./cylinder.js";
 import { checkArguments } from "./utils.js";
 
 /**
- * @typedef {Object} ConeOptions
+ * @typedef {object} ConeOptions
  * @property {number} [height=1]
  * @property {number} [radius=0.25]
  * @property {number} [nx=16]

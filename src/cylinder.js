@@ -8,7 +8,7 @@ import {
 } from "./utils.js";
 
 /**
- * @typedef {Object} CylinderOptions
+ * @typedef {object} CylinderOptions
  * @property {number} [height=1]
  * @property {number} [radius=0.25]
  * @property {number} [nx=16]

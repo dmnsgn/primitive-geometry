@@ -2,7 +2,7 @@
 import { checkArguments } from "./utils.js";
 
 /**
- * @typedef {Object} BoxOptions
+ * @typedef {object} BoxOptions
  * @property {number} [sx=1]
  * @property {number} [sy=sx]
  * @property {number} [sz=sx]

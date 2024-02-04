@@ -4,7 +4,7 @@ import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
 const f = 0.5 + Math.sqrt(5) / 2;
 
 /**
- * @typedef {Object} IcosphereOptions
+ * @typedef {object} IcosphereOptions
  * @property {number} [radius=0.5]
  * @property {number} [subdivisions=2]
  */

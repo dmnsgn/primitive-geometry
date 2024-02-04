@@ -3,7 +3,7 @@
 import { checkArguments, getCellsTypedArray } from "./utils.js";
 
 /**
- * @typedef {Object} QuadOptions
+ * @typedef {object} QuadOptions
  * @property {number} [scale=0.5]
  */
 

@@ -31,12 +31,12 @@ export function concentric({ uvs, index, u, v, radius }) {
     uvs[index] = remap(x * Math.sign(u), radius);
     uvs[index + 1] = remap(
       x * (FOUR_OVER_PI * Math.atan(v / Math.abs(u))),
-      radius
+      radius,
     );
   } else {
     uvs[index] = remap(
       x * (FOUR_OVER_PI * Math.atan(u / (Math.abs(v) + Number.EPSILON))),
-      radius
+      radius,
     );
     uvs[index + 1] = remap(x * Math.sign(v), radius);
   }
@@ -76,7 +76,7 @@ export function fgSquircular({ uvs, index, u, v, radius }) {
     const sign = Math.sign(u * v);
     const uv2Sum = u2 + v2;
     const sqrtUV = Math.sqrt(
-      uv2Sum - safeSqrt(uv2Sum * (uv2Sum - 4 * u2 * v2))
+      uv2Sum - safeSqrt(uv2Sum * (uv2Sum - 4 * u2 * v2)),
     );
     uvs[index] = remap((sign / (v * SQRT2)) * sqrtUV, radius);
     uvs[index + 1] = remap((sign / (u * SQRT2)) * sqrtUV, radius);
@@ -98,7 +98,7 @@ export function threeSquircular({ uvs, index, u, v, radius }) {
     const v2 = v ** 2;
     const sign = Math.sign(u * v);
     const sqrtUV = Math.sqrt(
-      (1 - safeSqrt(1 - 4 * u ** 4 * v2 - 4 * u2 * v ** 4)) / (2 * (u2 + v2))
+      (1 - safeSqrt(1 - 4 * u ** 4 * v2 - 4 * u2 * v ** 4)) / (2 * (u2 + v2)),
     );
     uvs[index] = remap((sign / v) * sqrtUV, radius);
     uvs[index + 1] = remap((sign / u) * sqrtUV, radius);
@@ -113,7 +113,7 @@ export function cornerificTapered2({ uvs, index, u, v, radius }) {
     const uv2Sum = u2 + v2;
     const sqrtUV = Math.sqrt(
       (uv2Sum - Math.sqrt(uv2Sum * (uv2Sum - 4 * u2 * v2 * (2 - u2 - v2)))) /
-        (2 * (2 - u2 - v2))
+        (2 * (2 - u2 - v2)),
     );
     uvs[index] = remap((sign / v) * sqrtUV, radius);
     uvs[index + 1] = remap((sign / u) * sqrtUV, radius);
@@ -128,7 +128,7 @@ export function tapered4({ uvs, index, u, v, radius }) {
     const uv2Sum = u2 + v2;
     const divider = 3 - u ** 4 - 2 * u2 * v2 - v ** 4;
     const sqrtUV = Math.sqrt(
-      (uv2Sum - safeSqrt(uv2Sum * (uv2Sum - 2 * u2 * v2 * divider))) / divider
+      (uv2Sum - safeSqrt(uv2Sum * (uv2Sum - 2 * u2 * v2 * divider))) / divider,
     );
     uvs[index] = remap((sign / v) * sqrtUV, radius);
     uvs[index + 1] = remap((sign / u) * sqrtUV, radius);
@@ -157,7 +157,7 @@ export function nonAxial2Pinch({ uvs, index, u, v, radius }) {
       isNegligeable(u)
         ? Math.sign(v) * Math.sqrt(Math.abs(v))
         : (sign / (u * FOURTH_SQRT2)) * sqrtUV,
-      radius
+      radius,
     );
   }
 }
@@ -168,7 +168,7 @@ export function nonAxialHalfPinch({ uvs, index, u, v, radius }) {
   const uv2Sum = u2 + v2;
 
   const sqrtUV = Math.sqrt(
-    (1 - safeSqrt(1 - 4 * u2 * v2 * uv2Sum ** 2)) / (2 * uv2Sum)
+    (1 - safeSqrt(1 - 4 * u2 * v2 * uv2Sum ** 2)) / (2 * uv2Sum),
   );
 
   if (isNegligeable(v)) {
@@ -178,7 +178,7 @@ export function nonAxialHalfPinch({ uvs, index, u, v, radius }) {
     uvs[index] = remap((sign / v) * sqrtUV, radius);
     uvs[index + 1] = remap(
       isNegligeable(u) ? Math.sign(v) * v2 : (sign / u) * sqrtUV,
-      radius
+      radius,
     );
   }
 }

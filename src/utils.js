@@ -99,7 +99,7 @@ export function computePlane(
   uvScale = [1, 1],
   uvOffset = [0, 0],
   center = [0, 0, 0],
-  ccw = true
+  ccw = true,
 ) {
   const { positions, normals, uvs, cells } = geometry;
   const [u, v, w, flipU, flipV, normal] = PLANE_DIRECTIONS[direction];

@@ -3,7 +3,7 @@ import icosphere from "./icosphere.js";
 import { checkArguments } from "./utils.js";
 
 /**
- * @typedef {Object} IcosahedronOptions
+ * @typedef {object} IcosahedronOptions
  * @property {number} [radius=0.5]
  */
 

@@ -4,7 +4,7 @@ import { lamé } from "./mappings.js";
 import { checkArguments, TAU } from "./utils.js";
 
 /**
- * @typedef {Object} SuperellipseOptions
+ * @typedef {object} SuperellipseOptions
  * @property {number} [sx=1]
  * @property {number} [sy=0.5]
  * @property {number} [radius=0.5]

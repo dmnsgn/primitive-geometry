@@ -3,7 +3,7 @@ import { concentric } from "./mappings.js";
 import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
 
 /**
- * @typedef {Object} AnnulusOptions
+ * @typedef {object} AnnulusOptions
  * @property {number} [radius=0.5]
  * @property {number} [segments=32]
  * @property {number} [innerSegments=16]

@@ -2,7 +2,7 @@
 import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
 
 /**
- * @typedef {Object} CircleOptions
+ * @typedef {object} CircleOptions
  * @property {number} [radius=0.5]
  * @property {number} [segments=32]
  * @property {number} [theta=TAU]
@@ -26,7 +26,7 @@ function circle({
 
   const positions = new Float32Array(segments * 3);
   const cells = new (getCellsTypedArray(segments))(
-    (segments - (closed ? 0 : 1)) * 2
+    (segments - (closed ? 0 : 1)) * 2,
   );
 
   for (let i = 0; i < segments; i++) {

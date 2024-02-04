@@ -8,12 +8,12 @@ import {
 } from "./utils.js";
 
 /**
- * @typedef {Object} EllipsoidOptions
+ * @typedef {object} EllipsoidOptions
  * @property {number} [radius=0.5]
  * @property {number} [nx=32]
  * @property {number} [ny=16]
  * @property {number} [rx=1]
- * @property {number} [rx=0.5]
+ * @property {number} [ry=0.5]
  * @property {number} [rz=ry]
  * @property {number} [theta=Math.PI]
  * @property {number} [thetaOffset=0]

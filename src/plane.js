@@ -3,7 +3,7 @@
 import { checkArguments, computePlane, getCellsTypedArray } from "./utils.js";
 
 /**
- * @typedef {Object} PlaneOptions
+ * @typedef {object} PlaneOptions
  * @property {number} [sx=1]
  * @property {number} [sy=sx]
  * @property {number} [nx=1]
@@ -47,7 +47,7 @@ function plane({
     ny,
     direction,
     0,
-    quads
+    quads,
   );
 }
 

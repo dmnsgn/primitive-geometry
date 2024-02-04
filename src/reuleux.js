@@ -4,7 +4,7 @@ import { concentric } from "./mappings.js";
 import { checkArguments, TAU } from "./utils.js";
 
 /**
- * @typedef {Object} ReuleuxOptions
+ * @typedef {object} ReuleuxOptions
  * @property {number} [radius=0.5]
  * @property {number} [segments=32]
  * @property {number} [innerSegments=16]

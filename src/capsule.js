@@ -2,7 +2,7 @@
 import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
 
 /**
- * @typedef {Object} CapsuleOptions
+ * @typedef {object} CapsuleOptions
  * @property {number} [height=0.5]
  * @property {number} [radius=0.25]
  * @property {number} [nx=16]
@@ -69,7 +69,7 @@ function capsule({
     computeRing(
       Math.sin(Math.PI * r * ringIncrement),
       Math.sin(Math.PI * (r * ringIncrement - 0.5)),
-      -0.5
+      -0.5,
     );
   }
 
@@ -81,7 +81,7 @@ function capsule({
     computeRing(
       Math.sin(Math.PI * r * ringIncrement),
       Math.sin(Math.PI * (r * ringIncrement - 0.5)),
-      0.5
+      0.5,
     );
   }
 

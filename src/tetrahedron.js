@@ -3,7 +3,7 @@ import cylinder from "./cylinder.js";
 import { checkArguments } from "./utils.js";
 
 /**
- * @typedef {Object} TetrahedronOptions
+ * @typedef {object} TetrahedronOptions
  * @property {number} [radius=0.5]
  */
 

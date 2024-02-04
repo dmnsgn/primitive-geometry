@@ -8,7 +8,7 @@ import {
 } from "./utils.js";
 
 /**
- * @typedef {Object} TorusOptions
+ * @typedef {object} TorusOptions
  * @property {number} [radius=0.4]
  * @property {number} [segments=64]
  * @property {number} [minorRadius=0.1]

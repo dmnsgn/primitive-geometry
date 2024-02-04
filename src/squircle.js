@@ -4,7 +4,7 @@ import { fgSquircular } from "./mappings.js";
 import { checkArguments, HALF_PI, SQRT2, TAU } from "./utils.js";
 
 /**
- * @typedef {Object} SquircleOptions
+ * @typedef {object} SquircleOptions
  * @property {number} [sx=1]
  * @property {number} [sy=1]
  * @property {number} [radius=0.5]
@@ -59,7 +59,7 @@ function squircle({
         return [0, -ry];
       } else {
         const sqrt = Math.sqrt(
-          1 - Math.sqrt(1 - squareness ** 2 * Math.sin(2 * t) ** 2)
+          1 - Math.sqrt(1 - squareness ** 2 * Math.sin(2 * t) ** 2),
         );
 
         return [

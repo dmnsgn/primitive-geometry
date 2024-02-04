@@ -3,7 +3,7 @@ import roundedRectangle from "./rounded-rectangle.js";
 import { checkArguments } from "./utils.js";
 
 /**
- * @typedef {Object} StadiumOptions
+ * @typedef {object} StadiumOptions
  * @property {number} [sx=1]
  * @property {number} [sy=sx]
  * @property {number} [nx=1]

@@ -7,7 +7,7 @@ import {
 } from "./utils.js";
 
 /**
- * @typedef {Object} RoundedCubeOptions
+ * @typedef {object} RoundedCubeOptions
  * @property {number} [sx=1]
  * @property {number} [sy=sx]
  * @property {number} [nx=1]
@@ -46,7 +46,7 @@ function roundedRectangle({
       (nx * ny +
         roundSegments * roundSegments * 4 +
         roundSegments * edgeSegments * 4) *
-        6
+        6,
     ),
   };
 
@@ -95,7 +95,7 @@ function roundedRectangle({
     pw,
     false,
     uvScale,
-    uvOffset
+    uvOffset,
   );
 
   // Corner order: ccw uv-like order and L/B (0) R/T (2)
@@ -126,7 +126,7 @@ function roundedRectangle({
       [(flip ? -1 : 1) * (radius / (su + r2)), radius / (sv + r2)],
       uvOffsetCorner(su, sv)[i],
       center(x, y),
-      !flip
+      !flip,
     );
 
     // Edges
@@ -144,7 +144,7 @@ function roundedRectangle({
         false,
         [uvOffset[0], uvScale[1]],
         ceil === 0 ? uvOffsetStart(su, sv) : uvOffsetEnd(su, sv),
-        center(x, 0)
+        center(x, 0),
       );
       // Bottom/Top
       computePlane(
@@ -161,7 +161,7 @@ function roundedRectangle({
         floor === 0
           ? [...uvOffsetStart(sv, su)].reverse()
           : [...uvOffsetEnd(sv, su)].reverse(),
-        center(0, y)
+        center(0, y),
       );
     }
   }
