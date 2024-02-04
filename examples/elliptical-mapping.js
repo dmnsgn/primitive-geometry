@@ -39,7 +39,7 @@ const update = (mapping) => {
             sy: 2 / 3,
             mapping,
           }), // Piet Hein 6 / 5
-        ]
+        ],
   );
 };
 
@@ -47,7 +47,7 @@ const mappingOptions = Object.keys(Primitives.mappings);
 if (params.has("screenshot")) window.screenshotItems = mappingOptions;
 
 CONFIG.mapping = "";
-pane.addSeparator();
+pane.addBlade({ view: "separator" });
 pane
   .addBinding(CONFIG, "mapping", {
     options: [
