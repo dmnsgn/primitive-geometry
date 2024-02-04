@@ -1267,6 +1267,7 @@ See original packages used in v1:
 
 Differences with v1:
 
+- [x] use 3D positions for circle
 - [x] base disc on ellispse and add inner segments
 - [x] fix cylinder orientation and uvs
 - [x] fix icosphere uvs (based on: https://github.com/mourner/icomesh)

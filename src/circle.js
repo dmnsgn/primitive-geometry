@@ -24,15 +24,15 @@ function circle({
 } = {}) {
   checkArguments(arguments);
 
-  const positions = new Float32Array(segments * 2);
+  const positions = new Float32Array(segments * 3);
   const cells = new (getCellsTypedArray(segments))(
     (segments - (closed ? 0 : 1)) * 2
   );
 
   for (let i = 0; i < segments; i++) {
     const t = (i / segments) * theta + thetaOffset;
-    positions[i * 2] = radius * Math.cos(t);
-    positions[i * 2 + 1] = radius * Math.sin(t);
+    positions[i * 3] = radius * Math.cos(t);
+    positions[i * 3 + 1] = radius * Math.sin(t);
 
     if (i > 0) {
       cells[(i - 1) * 2] = i - 1;
