@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.10.1](https://github.com/dmnsgn/primitive-geometry/compare/v2.10.0...v2.10.1) (2024-06-20)
+
+
+### Bug Fixes
+
+* Update types export in package.json ([4c18ff1](https://github.com/dmnsgn/primitive-geometry/commit/4c18ff141e398ea276919408b9f5d94d73780d41)), closes [#18](https://github.com/dmnsgn/primitive-geometry/issues/18)
+
+
+
 # [2.10.0](https://github.com/dmnsgn/primitive-geometry/compare/v2.9.1...v2.10.0) (2024-02-04)
 
 
