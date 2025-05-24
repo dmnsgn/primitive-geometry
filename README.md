@@ -85,6 +85,7 @@ const ellipseGeometry = Primitives.ellipse({
   innerSegments: 16,
   theta: Math.PI * 2,
   thetaOffset: 0,
+  mergeCentroid: true,
   mapping: mappings.elliptical,
 });
 const disc = Primitives.disc({
@@ -93,6 +94,7 @@ const disc = Primitives.disc({
   innerSegments: 16,
   theta: Math.PI * 2,
   thetaOffset: 0,
+  mergeCentroid: true,
   mapping: mappings.concentric,
 });
 const superellipse = Primitives.superellipse({
@@ -103,6 +105,7 @@ const superellipse = Primitives.superellipse({
   innerSegments: 16,
   theta: Math.PI * 2,
   thetaOffset: 0,
+  mergeCentroid: true,
   mapping: mappings.lamé,
   m: 2,
   n: 2,
@@ -115,10 +118,13 @@ const squircle = Primitives.squircle({
   innerSegments: 16,
   theta: Math.PI * 2,
   thetaOffset: 0,
+  mergeCentroid: true,
   mapping: mappings.fgSquircular,
   squareness: 0.95,
 });
 const annulus = Primitives.annulus({
+  sx: 1,
+  sy: 1,
   radius: 0.5,
   segments: 32,
   innerSegments: 16,
@@ -133,6 +139,7 @@ const reuleux = Primitives.reuleux({
   innerSegments: 16,
   theta: Math.PI * 2,
   thetaOffset: 0,
+  mergeCentroid: true,
   mapping: mappings.concentric,
   n: 3,
 });
