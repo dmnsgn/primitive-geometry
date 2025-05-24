@@ -2,6 +2,7 @@
 import { HALF_PI, SQRT2, TAU } from "./utils.js";
 
 const safeSqrt = (x) => Math.sqrt(Math.max(x, 0));
+const safeDivide = (x, y) => x / (y + Number.EPSILON);
 const isNegligeable = (x) => Math.abs(x) < Number.EPSILON * 2;
 
 const remapRectangular = (x, radius) => (x / radius + 1) / 2;
@@ -12,9 +13,17 @@ export function rectangular({ uvs, index, x, y, radius, sx = 1, sy = 1 }) {
   uvs[index + 1] = remapRectangular(y, radius * sy);
 }
 
+export function polar({ uvs, index, radiusRatio, thetaRatio }) {
+  uvs[index] = radiusRatio;
+  uvs[index + 1] = thetaRatio;
+}
+
 // Basic
 export function radial({ uvs, index, u, v, radius }) {
-  const x = Math.sqrt(u ** 2 + v ** 2) / Math.max(Math.abs(u), Math.abs(v));
+  const x = safeDivide(
+    Math.sqrt(u ** 2 + v ** 2),
+    Math.max(Math.abs(u), Math.abs(v)),
+  );
 
   uvs[index] = remap(x * u, radius);
   uvs[index + 1] = remap(x * v, radius);
@@ -30,12 +39,12 @@ export function concentric({ uvs, index, u, v, radius }) {
   if (u2 > v2) {
     uvs[index] = remap(x * Math.sign(u), radius);
     uvs[index + 1] = remap(
-      x * (FOUR_OVER_PI * Math.atan(v / Math.abs(u))),
+      x * (FOUR_OVER_PI * Math.atan(safeDivide(v, Math.abs(u)))),
       radius,
     );
   } else {
     uvs[index] = remap(
-      x * (FOUR_OVER_PI * Math.atan(u / (Math.abs(v) + Number.EPSILON))),
+      x * (FOUR_OVER_PI * Math.atan(safeDivide(u, Math.abs(v)))),
       radius,
     );
     uvs[index + 1] = remap(x * Math.sign(v), radius);
@@ -150,13 +159,13 @@ export function nonAxial2Pinch({ uvs, index, u, v, radius }) {
 
   if (isNegligeable(v)) {
     uvs[index] = remap(Math.sign(u) * Math.sqrt(Math.abs(u)), radius);
-    uvs[index + 1] = remap((sign / (u * FOURTH_SQRT2)) * sqrtUV, radius);
+    uvs[index + 1] = remap(safeDivide(sign, u * FOURTH_SQRT2) * sqrtUV, radius);
   } else {
-    uvs[index] = remap((sign / (v * FOURTH_SQRT2)) * sqrtUV, radius);
+    uvs[index] = remap(safeDivide(sign, v * FOURTH_SQRT2) * sqrtUV, radius);
     uvs[index + 1] = remap(
       isNegligeable(u)
         ? Math.sign(v) * Math.sqrt(Math.abs(v))
-        : (sign / (u * FOURTH_SQRT2)) * sqrtUV,
+        : safeDivide(sign, u * FOURTH_SQRT2) * sqrtUV,
       radius,
     );
   }
@@ -168,16 +177,16 @@ export function nonAxialHalfPinch({ uvs, index, u, v, radius }) {
   const uv2Sum = u2 + v2;
 
   const sqrtUV = Math.sqrt(
-    (1 - safeSqrt(1 - 4 * u2 * v2 * uv2Sum ** 2)) / (2 * uv2Sum),
+    safeDivide((1 - safeSqrt(1 - 4 * u2 * v2 * uv2Sum ** 2)), (2 * uv2Sum)),
   );
 
   if (isNegligeable(v)) {
     uvs[index] = remap(Math.sign(u) * u2, radius);
-    uvs[index + 1] = remap((sign / u) * sqrtUV, radius);
+    uvs[index + 1] = remap(safeDivide(sign, u) * sqrtUV, radius);
   } else {
-    uvs[index] = remap((sign / v) * sqrtUV, radius);
+    uvs[index] = remap(safeDivide(sign, v) * sqrtUV, radius);
     uvs[index + 1] = remap(
-      isNegligeable(u) ? Math.sign(v) * v2 : (sign / u) * sqrtUV,
+      isNegligeable(u) ? Math.sign(v) * v2 : safeDivide(sign, u) * sqrtUV,
       radius,
     );
   }
