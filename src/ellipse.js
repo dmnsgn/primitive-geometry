@@ -11,6 +11,7 @@ import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
  * @property {number} [innerSegments=16]
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
+ * @property {boolean} [mergeCentroid=true]
  * @property {Function} [mapping=mappings.elliptical]
  */
 
@@ -27,33 +28,43 @@ function ellipse({
   innerSegments = 16,
   theta = TAU,
   thetaOffset = 0,
+  innerRadius = 0,
+  mergeCentroid = true,
   mapping = elliptical,
   equation = ({ rx, ry, cosTheta, sinTheta }) => [rx * cosTheta, ry * sinTheta],
 } = {}) {
   checkArguments(arguments);
 
-  const size = 1 + (segments + 1) + (innerSegments - 1) * (segments + 1);
+  const size = mergeCentroid
+    ? 1 + (segments + 1) + (innerSegments - 1) * (segments + 1)
+    : (segments + 1) * (innerSegments + 1);
 
   const positions = new Float32Array(size * 3);
   const normals = new Float32Array(size * 3);
   const uvs = new Float32Array(size * 2);
   const cells = new (getCellsTypedArray(size))(
-    segments * 3 + (innerSegments - 1) * segments * 6,
+    mergeCentroid
+      ? segments * 3 + (innerSegments - 1) * segments * 6
+      : size * 6,
   );
 
-  normals[2] = 1;
-  uvs[0] = 0.5;
-  uvs[1] = 0.5;
+  if (mergeCentroid) {
+    normals[2] = 1;
+    uvs[0] = 0.5;
+    uvs[1] = 0.5;
+  }
 
-  let vertexIndex = 1;
+  let vertexIndex = mergeCentroid ? 1 : 0;
   let cellIndex = 0;
 
-  for (let j = 0; j < innerSegments; j++) {
-    const s = (j + 1) / innerSegments;
-    const r = radius * s;
+  for (let j = vertexIndex; j <= innerSegments; j++) {
+    const radiusRatio = j / innerSegments;
+
+    const r = innerRadius + (radius - innerRadius) * radiusRatio;
 
     for (let i = 0; i <= segments; i++, vertexIndex++) {
-      const t = (i / segments) * theta + thetaOffset;
+      const thetaRatio = i / segments;
+      const t = thetaOffset + thetaRatio * theta;
 
       const cosTheta = Math.cos(t);
       const sinTheta = Math.sin(t);
@@ -63,7 +74,7 @@ function ellipse({
         ry: sy * r,
         cosTheta,
         sinTheta,
-        s,
+        s: radiusRatio,
         t,
       });
 
@@ -75,9 +86,11 @@ function ellipse({
       mapping({
         uvs,
         index: vertexIndex * 2,
-        u: s * cosTheta,
-        v: s * sinTheta,
+        u: radiusRatio * cosTheta,
+        v: radiusRatio * sinTheta,
         radius,
+        radiusRatio,
+        thetaRatio,
         t,
         // For rectangular
         x,
@@ -87,26 +100,35 @@ function ellipse({
       });
 
       if (i < segments) {
-        if (j === 0) {
+        if (mergeCentroid && j === 1) {
           cells[cellIndex] = i + 1;
           cells[cellIndex + 1] = i + 2;
 
           cellIndex += 3;
-        } else if (j < innerSegments) {
-          const a = 1 + (j - 1) * (segments + 1) + i;
-          const b = a + segments + 1;
-          const c = a + segments + 2;
-          const d = a + 1;
+        } else {
+          let a;
 
-          cells[cellIndex] = a;
-          cells[cellIndex + 1] = b;
-          cells[cellIndex + 2] = d;
+          if (mergeCentroid) {
+            a = 1 + (j - 2) * (segments + 1) + i;
+          } else if (j < innerSegments) {
+            a = j * (segments + 1) + i;
+          }
 
-          cells[cellIndex + 3] = b;
-          cells[cellIndex + 4] = c;
-          cells[cellIndex + 5] = d;
+          if (a !== undefined) {
+            const b = a + segments + 1;
+            const c = a + segments + 2;
+            const d = a + 1;
 
-          cellIndex += 6;
+            cells[cellIndex] = a;
+            cells[cellIndex + 1] = b;
+            cells[cellIndex + 2] = d;
+
+            cells[cellIndex + 3] = b;
+            cells[cellIndex + 4] = c;
+            cells[cellIndex + 5] = d;
+
+            cellIndex += 6;
+          }
         }
       }
     }

@@ -12,6 +12,7 @@ import { checkArguments, TAU } from "./utils.js";
  * @property {number} [innerSegments=16]
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
+ * @property {boolean} [mergeCentroid=true]
  * @property {Function} [mapping=mappings.lamé]
  * @property {number} [m=2]
  * @property {number} [n=m]
@@ -34,6 +35,7 @@ function superellipse({
   innerSegments = 16,
   theta = TAU,
   thetaOffset = 0,
+  mergeCentroid = true,
   mapping = lamé,
   m = 2,
   n = m,
@@ -48,13 +50,12 @@ function superellipse({
     innerSegments,
     theta,
     thetaOffset,
+    mergeCentroid,
     mapping,
-    equation: ({ rx, ry, cosTheta, sinTheta }) => {
-      return [
-        rx * Math.abs(cosTheta) ** (2 / m) * Math.sign(cosTheta),
-        ry * Math.abs(sinTheta) ** (2 / n) * Math.sign(sinTheta),
-      ];
-    },
+    equation: ({ rx, ry, cosTheta, sinTheta }) => [
+      rx * Math.abs(cosTheta) ** (2 / m) * Math.sign(cosTheta),
+      ry * Math.abs(sinTheta) ** (2 / n) * Math.sign(sinTheta),
+    ],
   });
 }
 
