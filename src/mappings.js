@@ -177,7 +177,7 @@ export function nonAxialHalfPinch({ uvs, index, u, v, radius }) {
   const uv2Sum = u2 + v2;
 
   const sqrtUV = Math.sqrt(
-    safeDivide((1 - safeSqrt(1 - 4 * u2 * v2 * uv2Sum ** 2)), (2 * uv2Sum)),
+    safeDivide(1 - safeSqrt(1 - 4 * u2 * v2 * uv2Sum ** 2), 2 * uv2Sum),
   );
 
   if (isNegligeable(v)) {

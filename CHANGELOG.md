@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+# [2.11.0](https://github.com/dmnsgn/primitive-geometry/compare/v2.10.1...v2.11.0) (2025-05-24)
+
+
+### Features
+
+* add mergeCentroid option for ellipse, disc, reuleux, squircle and superellipse ([e590786](https://github.com/dmnsgn/primitive-geometry/commit/e5907861c48aa6aa39d53b792b468bda8fb297ac))
+* add polar uv mapping + add safer division ([fa8e850](https://github.com/dmnsgn/primitive-geometry/commit/fa8e850633e42351ede778f34fd28c81a9fb42a7))
+* use ellipse for annulus + add support for elliptical annulus ([e8b2640](https://github.com/dmnsgn/primitive-geometry/commit/e8b2640d53025abb1c95a1ca1d32b90ea1dab5b6))
+
+
+
 ## [2.10.1](https://github.com/dmnsgn/primitive-geometry/compare/v2.10.0...v2.10.1) (2024-06-20)
 
 

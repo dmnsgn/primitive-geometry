@@ -358,6 +358,8 @@ Re-export all geometries, UV mappings functions and utils.
 
 | Name            | Type                  | Default                          |
 | --------------- | --------------------- | -------------------------------- |
+| [sx]            | <code>number</code>   | <code>1</code>                   |
+| [sy]            | <code>number</code>   | <code>1</code>                   |
 | [radius]        | <code>number</code>   | <code>0.5</code>                 |
 | [segments]      | <code>number</code>   | <code>32</code>                  |
 | [innerSegments] | <code>number</code>   | <code>16</code>                  |
@@ -602,6 +604,7 @@ Re-export all geometries, UV mappings functions and utils.
 | [innerSegments] | <code>number</code>   | <code>16</code>                  |
 | [theta]         | <code>number</code>   | <code>TAU</code>                 |
 | [thetaOffset]   | <code>number</code>   | <code>0</code>                   |
+| [mergeCentroid] | <code>boolean</code>  | <code>true</code>                |
 | [mapping]       | <code>function</code> | <code>mappings.concentric</code> |
 
 <a name="module_ellipse"></a>
@@ -638,6 +641,7 @@ Re-export all geometries, UV mappings functions and utils.
 | [innerSegments] | <code>number</code>   | <code>16</code>                  |
 | [theta]         | <code>number</code>   | <code>TAU</code>                 |
 | [thetaOffset]   | <code>number</code>   | <code>0</code>                   |
+| [mergeCentroid] | <code>boolean</code>  | <code>true</code>                |
 | [mapping]       | <code>function</code> | <code>mappings.elliptical</code> |
 
 <a name="module_ellipsoid"></a>
@@ -845,6 +849,7 @@ Default to an oblate spheroid.
 | [innerSegments] | <code>number</code>   | <code>16</code>                  |
 | [theta]         | <code>number</code>   | <code>TAU</code>                 |
 | [thetaOffset]   | <code>number</code>   | <code>0</code>                   |
+| [mergeCentroid] | <code>boolean</code>  | <code>true</code>                |
 | [mapping]       | <code>function</code> | <code>mappings.concentric</code> |
 | [n]             | <code>number</code>   | <code>3</code>                   |
 
@@ -992,6 +997,7 @@ Fernández-Guasti squircle
 | [innerSegments] | <code>number</code>   | <code>16</code>                    |                         |
 | [theta]         | <code>number</code>   | <code>TAU</code>                   |                         |
 | [thetaOffset]   | <code>number</code>   | <code>0</code>                     |                         |
+| [mergeCentroid] | <code>boolean</code>  | <code>true</code>                  |                         |
 | [mapping]       | <code>function</code> | <code>mappings.fgSquircular</code> |                         |
 | [squareness]    | <code>number</code>   | <code>0.95</code>                  | Squareness (0 < s <= 1) |
 
@@ -1070,6 +1076,7 @@ See elliptical-mapping example for a few special cases
 | [innerSegments] | <code>number</code>   | <code>16</code>            |
 | [theta]         | <code>number</code>   | <code>TAU</code>           |
 | [thetaOffset]   | <code>number</code>   | <code>0</code>             |
+| [mergeCentroid] | <code>boolean</code>  | <code>true</code>          |
 | [mapping]       | <code>function</code> | <code>mappings.lamé</code> |
 | [m]             | <code>number</code>   | <code>2</code>             |
 | [n]             | <code>number</code>   | <code>m</code>             |
