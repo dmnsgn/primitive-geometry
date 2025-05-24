@@ -206,7 +206,7 @@ const bboxCells = ctx.indexBuffer(
     0, 1, 1, 2, 2, 3, 3, 0,
     4, 5, 5, 6, 6, 7, 7, 4,
     0, 4, 1, 5, 2, 6, 3, 7
-  )
+  ),
 );
 const unitBox = Primitives.box();
 unitBox.edges = computeEdges(unitBox.positions, unitBox.cells, 4);
@@ -223,7 +223,7 @@ const drawAxesCmd = {
         0, 1, 0,
         0, 0, 0,
         0, 0, 1,
-      )
+      ),
     ),
     aColor: ctx.vertexBuffer(
       // prettier-ignore
@@ -234,7 +234,7 @@ const drawAxesCmd = {
         0.5, 1, 0.5,
         0, 0, 1,
         0.5, 0.5, 1,
-      )
+      ),
     ),
   },
   indices: ctx.indexBuffer(Uint8Array.of(0, 1, 2, 3, 4, 5)),
@@ -283,7 +283,7 @@ ctx.frame(() => {
       mesh.modelMatrix,
       mesh.rotation,
       mesh.translation,
-      mesh.scale
+      mesh.scale,
     );
 
     mat4.multiply(mesh.modelViewMatrix, camera.viewMatrix, mesh.modelMatrix);
@@ -356,24 +356,24 @@ ctx.frame(() => {
             [3, 3],
             mesh.geometry.positions,
             mesh.geometry.positions.map(
-              (p, i) => p + mesh.geometry.normals[i] * 0.1
-            )
-          )
+              (p, i) => p + mesh.geometry.normals[i] * 0.1,
+            ),
+          ),
         ),
         aColor: ctx.vertexBuffer(
           typedArrayInterleave(
             Float32Array,
             [3, 3],
             mesh.geometry.normals.map((p) => p * 0.5 + 0.5),
-            mesh.geometry.normals.map((p) => p * 0.5 + 0.5)
-          )
+            mesh.geometry.normals.map((p) => p * 0.5 + 0.5),
+          ),
         ),
       };
 
       mesh.normalsIndices ||= ctx.indexBuffer(
         new Uint32Array((mesh.geometry.positions.length / 3) * 2).map(
-          (_, i) => i
-        )
+          (_, i) => i,
+        ),
       );
 
       ctx.submit(drawLinesCmd, {
@@ -407,7 +407,7 @@ ctx.frame(() => {
 
 function computeEdges(positions, cells, stride = 3) {
   const edges = new (Primitives.utils.getCellsTypedArray(positions.length / 3))(
-    cells.length * 2
+    cells.length * 2,
   );
 
   let cellIndex = 0;
@@ -445,13 +445,14 @@ const setGeometries = (geometries) => {
               aabb.create(),
               Array.from(
                 { length: geometry.positions.length / 3 },
-                (_, index) => geometry.positions.slice(index * 3, index * 3 + 3)
-              )
-            )
+                (_, index) =>
+                  geometry.positions.slice(index * 3, index * 3 + 3),
+              ),
+            ),
           )
           .flat(),
         edges: ctx.indexBuffer(
-          geometry.edges || computeEdges(geometry.positions, geometry.cells)
+          geometry.edges || computeEdges(geometry.positions, geometry.cells),
         ),
         attributes: geometry.normals
           ? {
@@ -459,17 +460,17 @@ const setGeometries = (geometries) => {
               aNormal: ctx.vertexBuffer(geometry.normals),
               aUv: ctx.vertexBuffer(geometry.uvs),
               aColor: ctx.vertexBuffer(
-                geometry.normals.map((p) => p * 0.5 + 0.5)
+                geometry.normals.map((p) => p * 0.5 + 0.5),
               ),
             }
           : {
               aPosition: ctx.vertexBuffer(geometry.positions),
               aColor: ctx.vertexBuffer(
-                geometry.positions.map((p) => p * 0.5 + 0.5)
+                geometry.positions.map((p) => p * 0.5 + 0.5),
               ),
             },
         indices: ctx.indexBuffer(geometry.cells),
-      }
+      },
   );
   console.log(meshes);
 
@@ -485,7 +486,7 @@ const setGeometries = (geometries) => {
       current.gridSize = Math.max(current.gridSize, current.count);
       return current;
     },
-    { gridSize: 0, count: 0 }
+    { gridSize: 0, count: 0 },
   );
 
   const halfSize = (gridSize - 1) * 0.5;

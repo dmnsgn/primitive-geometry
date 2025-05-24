@@ -4,40 +4,48 @@ import { setGeometries, pane, controls, CONFIG } from "./render.js";
 
 const params = new URLSearchParams(window.location.search);
 
-const update = (mapping) => {
+const update = (options) => {
   setGeometries(
     params.has("screenshot")
-      ? [Primitives.disc({ segments: 128, innerSegments: 128, mapping })]
+      ? [Primitives.disc({ segments: 128, innerSegments: 128, ...options })]
       : [
-          Primitives.ellipse({ mapping }),
-          Primitives.disc({ mapping }),
-          Primitives.superellipse({ mapping }),
+          Primitives.ellipse(options),
+          Primitives.disc(options),
+          Primitives.superellipse(options),
           null,
-          Primitives.squircle({ mapping }),
-          Primitives.annulus({ mapping }),
-          Primitives.reuleux({ mapping }),
+          Primitives.annulus(options),
+          // Elliptical annulus
+          Primitives.annulus({ sy: 0.5, options }),
+          null,
+          Primitives.squircle(options),
+          Primitives.reuleux(options),
           null,
           Primitives.superellipse({
             m: 4,
             sx: 1,
             sy: 1,
-            mapping,
+            ...options,
           }), // Lamé special quartic (Squircle)
-          Primitives.superellipse({ m: 4, sx: 1, sy: 0.5, mapping }), // Rectellipse
-          Primitives.superellipse({ m: 2 / 3, sy: 1, mapping }), // Astroid
+          Primitives.superellipse({
+            m: 4,
+            sx: 1,
+            sy: 0.5,
+            ...options,
+          }), // Rectellipse
+          Primitives.superellipse({ m: 2 / 3, sy: 1, ...options }), // Astroid
           null,
-          Primitives.superellipse({ m: 1, sy: 1, mapping }), // Diamond
+          Primitives.superellipse({ m: 1, sy: 1, ...options }), // Diamond
           Primitives.superellipse({
             m: 5 / 2,
             sx: 6 / 6,
             sy: 5 / 6,
-            mapping,
+            ...options,
           }), // Piet Hein 6 / 5
           Primitives.superellipse({
             m: 5 / 2,
             sx: 3 / 3,
             sy: 2 / 3,
-            mapping,
+            ...options,
           }), // Piet Hein 6 / 5
         ],
   );
@@ -47,6 +55,19 @@ const mappingOptions = Object.keys(Primitives.mappings);
 if (params.has("screenshot")) window.screenshotItems = mappingOptions;
 
 CONFIG.mapping = "";
+CONFIG.theta = Primitives.utils.TAU;
+CONFIG.thetaOffset = 0;
+CONFIG.mergeCentroid = false;
+
+const getGeometryOptions = () => ({
+  // segments: 4,
+  // innerSegments: 4,
+  mapping: Primitives.mappings[CONFIG.mapping],
+  theta: CONFIG.theta,
+  thetaOffset: CONFIG.thetaOffset,
+  mergeCentroid: CONFIG.mergeCentroid,
+});
+
 pane.addBlade({ view: "separator" });
 pane
   .addBinding(CONFIG, "mapping", {
@@ -59,11 +80,30 @@ pane
     ],
   })
   .on("change", (event) => {
-    update(Primitives.mappings[event.value]);
+    update(getGeometryOptions());
     if (params.has("screenshot")) {
       window.dispatchEvent(new CustomEvent("screenshot"));
     }
   });
+pane
+  .addBinding(CONFIG, "theta", {
+    min: 0,
+    max: Primitives.utils.TAU,
+  })
+  .on("change", () => {
+    update(getGeometryOptions());
+  });
+pane
+  .addBinding(CONFIG, "thetaOffset", {
+    min: 0,
+    max: Primitives.utils.TAU,
+  })
+  .on("change", () => {
+    update(getGeometryOptions());
+  });
+pane.addBinding(CONFIG, "mergeCentroid").on("change", () => {
+  update(getGeometryOptions());
+});
 
 CONFIG.cycleMapping = false;
 pane.addBinding(CONFIG, "cycleMapping");
