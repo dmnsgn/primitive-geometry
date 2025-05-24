@@ -1,9 +1,12 @@
 /** @module annulus */
+import ellipse from "./ellipse.js";
 import { concentric } from "./mappings.js";
-import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
+import { checkArguments, TAU } from "./utils.js";
 
 /**
  * @typedef {object} AnnulusOptions
+ * @property {number} [sx=1]
+ * @property {number} [sy=1]
  * @property {number} [radius=0.5]
  * @property {number} [segments=32]
  * @property {number} [innerSegments=16]
@@ -19,6 +22,8 @@ import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
  * @returns {import("../types.js").SimplicialComplex}
  */
 function annulus({
+  sx = 1,
+  sy = 1,
   radius = 0.5,
   segments = 32,
   innerSegments = 16,
@@ -29,66 +34,18 @@ function annulus({
 } = {}) {
   checkArguments(arguments);
 
-  const size = (segments + 1) * (innerSegments + 1);
-
-  const positions = new Float32Array(size * 3);
-  const normals = new Float32Array(size * 3);
-  const uvs = new Float32Array(size * 2);
-  const cells = new (getCellsTypedArray(size))(size * 6);
-
-  let vertexIndex = 0;
-  let cellIndex = 0;
-
-  for (let j = 0; j <= innerSegments; j++) {
-    const r = innerRadius + (radius - innerRadius) * (j / innerSegments);
-
-    const s = (j + 1) / (innerSegments + 1);
-
-    for (let i = 0; i <= segments; i++, vertexIndex++) {
-      const t = (i / segments) * theta + thetaOffset;
-
-      const cosTheta = Math.cos(t);
-      const sinTheta = Math.sin(t);
-
-      const x = r * cosTheta;
-      const y = r * sinTheta;
-
-      positions[vertexIndex * 3] = x;
-      positions[vertexIndex * 3 + 1] = y;
-
-      normals[vertexIndex * 3 + 2] = 1;
-
-      mapping({
-        uvs,
-        index: vertexIndex * 2,
-        u: s * cosTheta,
-        v: s * sinTheta,
-        radius,
-        t,
-        x,
-        y,
-      });
-
-      if (i < segments && j < innerSegments) {
-        const a = j * (segments + 1) + i;
-        const b = a + segments + 1;
-        const c = a + segments + 2;
-        const d = a + 1;
-
-        cells[cellIndex] = a;
-        cells[cellIndex + 1] = b;
-        cells[cellIndex + 2] = d;
-
-        cells[cellIndex + 3] = b;
-        cells[cellIndex + 4] = c;
-        cells[cellIndex + 5] = d;
-
-        cellIndex += 6;
-      }
-    }
-  }
-
-  return { positions, normals, uvs, cells };
+  return ellipse({
+    sx,
+    sy,
+    radius,
+    segments,
+    innerSegments,
+    theta,
+    thetaOffset,
+    innerRadius,
+    mergeCentroid: false,
+    mapping,
+  });
 }
 
 export default annulus;
