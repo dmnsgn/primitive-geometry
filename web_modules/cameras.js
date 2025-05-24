@@ -1,5 +1,5 @@
-import { l as lookAt, c as copy, i as invert, f as fromValues, a as create, b as create$1, d as frustum, p as perspective, o as ortho, e as create$2, z as zero, s as subtract, g as distance, h as set, j as copy$1, k as sub, m as add, n as scale, q as copy$2, r as subtract$1, t as transformQuat, u as rotationTo, v as invert$1, w as create$3, x as length, y as glMatrix } from './_chunks/vec2-gBI_Bzrb.js';
-import { g as getDefaultExportFromCjs } from './_chunks/_commonjsHelpers-jjO7Zipk.js';
+import { f as fromValues, c as create, a as create$1, l as lookAt, b as copy, i as invert, d as frustum, p as perspective, o as ortho, e as create$2, z as zero, s as subtract, g as distance, h as set, j as copy$1, k as glMatrix, m as create$3, n as copy$2, q as subtract$1, r as length, t as sub, u as add, v as scale, w as transformQuat, x as rotationTo, y as invert$1 } from './_chunks/vec2-BUEubpJQ.js';
+import { g as getDefaultExportFromCjs } from './_chunks/_commonjsHelpers-BFTU3MAI.js';
 
 // Camera
 var CameraType;
@@ -29,11 +29,6 @@ var PointerManagerState;
 })(PointerManagerState || (PointerManagerState = {}));
 
 class Camera {
-    update() {
-        lookAt(this.viewMatrix, this.position, this.target, this.up);
-        copy(this.inverseViewMatrix, this.viewMatrix);
-        invert(this.inverseViewMatrix, this.inverseViewMatrix);
-    }
     constructor(options){
         this.type = CameraType.Camera;
         this.near = 0.1;
@@ -46,9 +41,22 @@ class Camera {
         this.inverseViewMatrix = create$1();
         Object.assign(this, options);
     }
+    update() {
+        lookAt(this.viewMatrix, this.position, this.target, this.up);
+        copy(this.inverseViewMatrix, this.viewMatrix);
+        invert(this.inverseViewMatrix, this.inverseViewMatrix);
+    }
 }
 
 class PerspectiveCamera extends Camera {
+    constructor(options){
+        super(options);
+        this.type = CameraType.Perspective;
+        this.fov = Math.PI / 4;
+        this.aspect = 1;
+        Object.assign(this, options);
+        this.updateProjectionMatrix();
+    }
     updateProjectionMatrix() {
         if (this.view) {
             const aspectRatio = this.view.totalSize[0] / this.view.totalSize[1];
@@ -69,17 +77,20 @@ class PerspectiveCamera extends Camera {
             perspective(this.projectionMatrix, this.fov, this.aspect, this.near, this.far);
         }
     }
-    constructor(options){
-        super(options);
-        this.type = CameraType.Perspective;
-        this.fov = Math.PI / 4;
-        this.aspect = 1;
-        Object.assign(this, options);
-        this.updateProjectionMatrix();
-    }
 }
 
 class OrthographicCamera extends Camera {
+    constructor(options){
+        super(options);
+        this.type = CameraType.Orthographic;
+        this.left = -1;
+        this.right = 1;
+        this.top = 1;
+        this.bottom = -1;
+        this.zoom = 1;
+        Object.assign(this, options);
+        this.updateProjectionMatrix();
+    }
     updateProjectionMatrix() {
         const dx = (this.right - this.left) / (2 / this.zoom);
         const dy = (this.top - this.bottom) / (2 / this.zoom);
@@ -100,17 +111,6 @@ class OrthographicCamera extends Camera {
             bottom = top - scaleH * (this.view.size[1] / zoomH);
         }
         ortho(this.projectionMatrix, left, right, bottom, top, this.near, this.far);
-    }
-    constructor(options){
-        super(options);
-        this.type = CameraType.Orthographic;
-        this.left = -1;
-        this.right = 1;
-        this.top = 1;
-        this.bottom = -1;
-        this.zoom = 1;
-        Object.assign(this, options);
-        this.updateProjectionMatrix();
     }
 }
 
@@ -226,7 +226,7 @@ function _populate() {
             // digits.  If only one set of digits is found, returns just the major
             // version number.
             var ver = /(?:Mac OS X (\d+(?:[._]\d+)?))/.exec(uas);
-            _osx = ver ? parseFloat(ver[1].replace("_", ".")) : true;
+            _osx = ver ? parseFloat(ver[1].replace('_', '.')) : true;
         } else {
             _osx = false;
         }
@@ -344,19 +344,14 @@ var UserAgent_DEPRECATED$1 = {
 };
 var UserAgent_DEPRECATED_1 = UserAgent_DEPRECATED$1;
 
-var canUseDOM = !!(typeof window !== "undefined" && window.document && window.document.createElement);
+var canUseDOM = !!(typeof window !== 'undefined' && window.document && window.document.createElement);
 /**
  * Simple, lightweight module assisting with the detection and context of
  * Worker. Helps avoid circular dependencies and allows code to reason about
  * whether or not they are in a Worker, even if they never include the main
  * `ReactWorker` dependency.
  */ var ExecutionEnvironment$1 = {
-    canUseDOM: canUseDOM,
-    canUseWorkers: typeof Worker !== "undefined",
-    canUseEventListeners: canUseDOM && !!(window.addEventListener || window.attachEvent),
-    canUseViewport: canUseDOM && !!window.screen,
-    isInWorker: !canUseDOM // For now, this is true - might change in the future.
-};
+    canUseDOM: canUseDOM};
 var ExecutionEnvironment_1 = ExecutionEnvironment$1;
 
 var ExecutionEnvironment = ExecutionEnvironment_1;
@@ -364,7 +359,7 @@ var useHasFeature;
 if (ExecutionEnvironment.canUseDOM) {
     useHasFeature = document.implementation && document.implementation.hasFeature && // always returns true in newer browsers as per the standard.
     // @see http://dom.spec.whatwg.org/#dom-domimplementation-hasfeature
-    document.implementation.hasFeature("", "") !== true;
+    document.implementation.hasFeature('', '') !== true;
 }
 /**
  * Checks if an event is supported in the current execution environment.
@@ -380,19 +375,19 @@ if (ExecutionEnvironment.canUseDOM) {
  * @internal
  * @license Modernizr 3.0.0pre (Custom Build) | MIT
  */ function isEventSupported$1(eventNameSuffix, capture) {
-    if (!ExecutionEnvironment.canUseDOM || capture && !("addEventListener" in document)) {
+    if (!ExecutionEnvironment.canUseDOM || capture && !('addEventListener' in document)) {
         return false;
     }
-    var eventName = "on" + eventNameSuffix;
+    var eventName = 'on' + eventNameSuffix;
     var isSupported = eventName in document;
     if (!isSupported) {
-        var element = document.createElement("div");
-        element.setAttribute(eventName, "return;");
-        isSupported = typeof element[eventName] === "function";
+        var element = document.createElement('div');
+        element.setAttribute(eventName, 'return;');
+        isSupported = typeof element[eventName] === 'function';
     }
-    if (!isSupported && useHasFeature && eventNameSuffix === "wheel") {
+    if (!isSupported && useHasFeature && eventNameSuffix === 'wheel') {
         // This is the only way to test support for the `wheel` event in IE9+.
-        isSupported = document.implementation.hasFeature("Events.wheel", "3.0");
+        isSupported = document.implementation.hasFeature('Events.wheel', '3.0');
     }
     return isSupported;
 }
@@ -506,29 +501,29 @@ var PAGE_HEIGHT = 800;
  */ function normalizeWheel$2(/*object*/ event) /*object*/ {
     var sX = 0, sY = 0, pX = 0, pY = 0; // pixelX, pixelY
     // Legacy
-    if ("detail" in event) {
+    if ('detail' in event) {
         sY = event.detail;
     }
-    if ("wheelDelta" in event) {
+    if ('wheelDelta' in event) {
         sY = -event.wheelDelta / 120;
     }
-    if ("wheelDeltaY" in event) {
+    if ('wheelDeltaY' in event) {
         sY = -event.wheelDeltaY / 120;
     }
-    if ("wheelDeltaX" in event) {
+    if ('wheelDeltaX' in event) {
         sX = -event.wheelDeltaX / 120;
     }
     // side scrolling on FF with DOMMouseScroll
-    if ("axis" in event && event.axis === event.HORIZONTAL_AXIS) {
+    if ('axis' in event && event.axis === event.HORIZONTAL_AXIS) {
         sX = sY;
         sY = 0;
     }
     pX = sX * PIXEL_STEP;
     pY = sY * PIXEL_STEP;
-    if ("deltaY" in event) {
+    if ('deltaY' in event) {
         pY = event.deltaY;
     }
-    if ("deltaX" in event) {
+    if ('deltaX' in event) {
         pX = event.deltaX;
     }
     if ((pX || pY) && event.deltaMode) {
@@ -559,7 +554,7 @@ var PAGE_HEIGHT = 800;
  * the older DOMMouseScroll for Firefox, as FF does not include wheelDelta with
  * 'wheel' event, making spin speed determination impossible.
  */ normalizeWheel$2.getEventType = function() /*string*/ {
-    return UserAgent_DEPRECATED.firefox() ? "DOMMouseScroll" : isEventSupported("wheel") ? "wheel" : "mousewheel";
+    return UserAgent_DEPRECATED.firefox() ? 'DOMMouseScroll' : isEventSupported('wheel') ? 'wheel' : 'mousewheel';
 };
 var normalizeWheel_1 = normalizeWheel$2;
 
@@ -575,6 +570,19 @@ const VEC2_IDENTITY = create$2();
 const tempElement = create$2();
 const tempPointer = create$2();
 class PointerManager {
+    constructor(options){
+        this.initialTouchDistance = 0;
+        this.initialPosition = create$2();
+        this.lastPosition = create$2();
+        this.movePosition = create$2();
+        this.clientSize = create$2();
+        Object.assign(this, options);
+        this.onMouseWheel = this.onMouseWheel.bind(this);
+        this.onMouseDown = this.onMouseDown.bind(this);
+        this.onTouchStart = this.onTouchStart.bind(this);
+        this.handleDragging = this.handleDragging.bind(this);
+        this.onPointerUp = this.onPointerUp.bind(this);
+    }
     static isTouchEvent(event) {
         return HAS_TOUCH_EVENTS && event instanceof TouchEvent;
     }
@@ -623,7 +631,7 @@ class PointerManager {
     }
     getElementPosition() {
         return this.isElementRoot ? VEC2_IDENTITY : (()=>{
-            const { left , top  } = this.element.getBoundingClientRect();
+            const { left, top } = this.element.getBoundingClientRect();
             tempElement[0] = left;
             tempElement[1] = top;
             return tempElement;
@@ -637,7 +645,7 @@ class PointerManager {
         this.setRelativePosition(this.initialPosition, event);
         this.setClientSize(this.clientSize);
         if (PointerManager.isTouchEvent(event) && event.touches.length >= 2) {
-            const { clientX , clientY  } = event.touches[1];
+            const { clientX, clientY } = event.touches[1];
             // Get finger distance
             this.initialTouchDistance = distance([
                 clientX,
@@ -703,19 +711,6 @@ class PointerManager {
         document.removeEventListener("mouseup", this.onPointerUp);
         document.removeEventListener("touchend", this.onPointerUp);
     }
-    constructor(options){
-        this.initialTouchDistance = 0;
-        this.initialPosition = create$2();
-        this.lastPosition = create$2();
-        this.movePosition = create$2();
-        this.clientSize = create$2();
-        Object.assign(this, options);
-        this.onMouseWheel = this.onMouseWheel.bind(this);
-        this.onMouseDown = this.onMouseDown.bind(this);
-        this.onTouchStart = this.onTouchStart.bind(this);
-        this.handleDragging = this.handleDragging.bind(this);
-        this.onPointerUp = this.onPointerUp.bind(this);
-    }
 }
 PointerManager.BUTTONS = [
     PointerManagerState.MouseLeft,
@@ -729,10 +724,76 @@ PointerManager.TOUCHES = [
     PointerManagerState.TouchThree
 ];
 
-const { EPSILON  } = glMatrix;
+const { EPSILON } = glMatrix;
 const PI2 = Math.PI * 2;
 const TEMP = create();
 class Controls {
+    constructor(options){
+        this.config = {
+            [PointerManagerState.MouseLeft]: ControlsActions.Rotate,
+            [PointerManagerState.MouseMiddle]: ControlsActions.Dolly,
+            [PointerManagerState.MouseRight]: ControlsActions.RotatePolar,
+            [PointerManagerState.MouseWheel]: ControlsActions.Dolly,
+            [PointerManagerState.TouchOne]: ControlsActions.Rotate,
+            [PointerManagerState.TouchTwo]: ControlsActions.Dolly,
+            [PointerManagerState.TouchThree]: ControlsActions.RotatePolar
+        };
+        this.position = fromValues(0, 0, 1);
+        this.target = create();
+        this.phi = Math.PI / 2;
+        this.theta = 0;
+        this.damping = 0.9;
+        this.dolly = true;
+        this.dollySpeed = 1;
+        this.dollyMaxDelta = Infinity;
+        this.rotate = true;
+        this.rotateSpeed = 1;
+        this.rotateMaxThetaDelta = Infinity;
+        this.rotateMaxPhiDelta = Infinity;
+        this.distanceBounds = [
+            EPSILON,
+            Infinity
+        ];
+        this.phiBounds = [
+            0,
+            Math.PI
+        ];
+        this.thetaBounds = [
+            -Infinity,
+            Infinity
+        ];
+        this.sphericalTarget = create();
+        this.targetTarget = create();
+        this.upQuat = create$3();
+        this.upQuatInverse = create$3();
+        Object.assign(this, options);
+        // Set by spherical angle and optional distance
+        if (options.theta || options.phi) {
+            this.updatePosition();
+        } else {
+            if (!options.position) copy$2(this.position, options.camera.position);
+            subtract$1(TEMP, this.position, this.target);
+            this.distance = length(TEMP);
+            this.theta = Math.atan2(this.position[0], this.position[2]);
+            this.phi = Math.acos(clamp$1(this.position[1] / this.distance, -1, 1));
+        }
+        // Init private targets
+        this.sphericalTarget[0] = this.theta;
+        this.sphericalTarget[1] = this.phi;
+        this.sphericalTarget[2] = this.distance;
+        copy$2(this.targetTarget, this.target);
+        this.update();
+        this.onPointerUpdate = this.onPointerUpdate.bind(this);
+        this.pointerManager = new PointerManager({
+            element: this.element,
+            config: {
+                wheel: true,
+                drag: true
+            },
+            onPointerUpdate: this.onPointerUpdate
+        });
+        this.pointerManager.enable();
+    }
     static isNegligeable(number) {
         return Math.abs(number) < EPSILON;
     }
@@ -807,72 +868,6 @@ class Controls {
         // TODO: copy directly into camera as an option
         transformQuat(this.position, this.position, this.upQuatInverse);
         add(this.position, this.target, this.position);
-    }
-    constructor(options){
-        this.config = {
-            [PointerManagerState.MouseLeft]: ControlsActions.Rotate,
-            [PointerManagerState.MouseMiddle]: ControlsActions.Dolly,
-            [PointerManagerState.MouseRight]: ControlsActions.RotatePolar,
-            [PointerManagerState.MouseWheel]: ControlsActions.Dolly,
-            [PointerManagerState.TouchOne]: ControlsActions.Rotate,
-            [PointerManagerState.TouchTwo]: ControlsActions.Dolly,
-            [PointerManagerState.TouchThree]: ControlsActions.RotatePolar
-        };
-        this.position = fromValues(0, 0, 1);
-        this.target = create();
-        this.phi = Math.PI / 2;
-        this.theta = 0;
-        this.damping = 0.9;
-        this.dolly = true;
-        this.dollySpeed = 1;
-        this.dollyMaxDelta = Infinity;
-        this.rotate = true;
-        this.rotateSpeed = 1;
-        this.rotateMaxThetaDelta = Infinity;
-        this.rotateMaxPhiDelta = Infinity;
-        this.distanceBounds = [
-            EPSILON,
-            Infinity
-        ];
-        this.phiBounds = [
-            0,
-            Math.PI
-        ];
-        this.thetaBounds = [
-            -Infinity,
-            Infinity
-        ];
-        this.sphericalTarget = create();
-        this.targetTarget = create();
-        this.upQuat = create$3();
-        this.upQuatInverse = create$3();
-        Object.assign(this, options);
-        // Set by spherical angle and optional distance
-        if (options.theta || options.phi) {
-            this.updatePosition();
-        } else {
-            if (!options.position) copy$2(this.position, options.camera.position);
-            subtract$1(TEMP, this.position, this.target);
-            this.distance = length(TEMP);
-            this.theta = Math.atan2(this.position[0], this.position[2]);
-            this.phi = Math.acos(clamp$1(this.position[1] / this.distance, -1, 1));
-        }
-        // Init private targets
-        this.sphericalTarget[0] = this.theta;
-        this.sphericalTarget[1] = this.phi;
-        this.sphericalTarget[2] = this.distance;
-        copy$2(this.targetTarget, this.target);
-        this.update();
-        this.onPointerUpdate = this.onPointerUpdate.bind(this);
-        this.pointerManager = new PointerManager({
-            element: this.element,
-            config: {
-                wheel: true,
-                drag: true
-            },
-            onPointerUpdate: this.onPointerUpdate
-        });
-        this.pointerManager.enable();
     }
 }
 Controls.Y_UP = fromValues(0, 1, 0);

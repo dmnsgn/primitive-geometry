@@ -1,4 +1,4 @@
-/**
+/** @module pex-gl */ /**
  * Context fallbacks map
  * @constant
  */ const FALLBACKS = {
@@ -14,22 +14,14 @@
     webgpu: []
 };
 /**
- * @typedef {Object} Options Options for context creation. All optional.
- * @property {number} [width=window.innerWidth] Request an initial canvas width.
- * @property {number} [height=window.innerHeight] Request an initial canvas height.
- * @property {boolean} [pixelRatio=1] Multiply canvas dimensions with a given ratio.
- * @property {boolean} [fullscreen=!opts.width && !opts.height] Make the canvas fullscreen.
- * @property {"2d" | "bitmaprenderer" | "webgl" | "webgl2" | "webgpu"} [type="webgl"] A "contextType" for getContext.
- * @property {HTMLElement} [element=document.body] Element to append the canvas to.
- * @property {...(CanvasRenderingContext2DSettings | WebGLContextAttributes)} [contextAttributes={}] Attributes to be passed to getContext.
- */ /**
  * Creates a rendering context.
- * @param {Options} [opts={}]
+ * @alias module:pex-gl.default
+ * @param {import("./types.js").PexGLOptions} [opts={}]
  * @returns {RenderingContext}
  */ function createRenderingContext(opts) {
     if (opts === void 0) opts = {};
     // Get options and set defaults
-    const { width =window.innerWidth , height =window.innerHeight , pixelRatio =1 , fullscreen =!opts.width && !opts.height , type ="webgl" , element =document.body , ...contextAttributes } = {
+    const { width = window.innerWidth, height = window.innerHeight, pixelRatio = 1, fullscreen = !opts.width && !opts.height, type = "webgl", element = document.body, ...contextAttributes } = {
         ...opts
     };
     const canvas = opts.canvas || document.createElement("canvas");
@@ -89,6 +81,8 @@ const checkProps = (allowedProps, obj)=>Object.keys(obj).forEach((prop)=>{
         if (!allowedProps.includes(prop)) throw new Error(`Unknown prop "${prop}"`);
     });
 const isWebGL2 = (gl)=>typeof WebGL2RenderingContext !== "undefined" && gl instanceof WebGL2RenderingContext;
+const isObject = (obj)=>Object.prototype.toString.call(obj) === "[object Object]";
+const is2DArray = (arr)=>arr[0]?.length;
 // State and gl
 function compareFBOAttachments(framebuffer, passOpts) {
     const fboDepthAttachment = framebuffer.depth?.texture;
@@ -102,9 +96,10 @@ function compareFBOAttachments(framebuffer, passOpts) {
     }
     return true;
 }
+const getUniformLocation = (gl, program, name)=>gl.getUniformLocation(program.handle, name);
 function enableVertexData(ctx, vertexLayout, cmd, updateState) {
     const gl = ctx.gl;
-    const { attributes ={} , indices  } = cmd;
+    const { attributes = {}, indices } = cmd;
     for(let i = 0; i < ctx.capabilities.maxVertexAttribs; i++){
         ctx.state.activeAttributes[i] = null;
         gl.disableVertexAttribArray(i);
@@ -150,7 +145,17 @@ function enableVertexData(ctx, vertexLayout, cmd, updateState) {
         } else {
             gl.enableVertexAttribArray(location);
             if (updateState) ctx.state.activeAttributes[location] = buffer;
-            gl.vertexAttribPointer(location, size, attrib.type || buffer.type, attrib.normalized || false, attrib.stride || 0, attrib.offset || 0);
+            let offset = attrib.offset || 0;
+            const type = attrib.type || buffer.type;
+            // Instanced Base fallback
+            if (!ctx.capabilities.drawInstancedBase && (cmd.baseInstance || cmd.baseVertex)) {
+                if (indices) {
+                    offset += (attrib.divisor ? cmd.baseInstance : cmd.baseVertex) * size * ctx.DataTypeConstructor[type].BYTES_PER_ELEMENT;
+                } else {
+                    if (attrib.divisor) offset += cmd.count * cmd.baseInstance / size;
+                }
+            }
+            gl.vertexAttribPointer(location, size, type, attrib.normalized || false, attrib.stride || 0, offset);
             gl.vertexAttribDivisor(location, attrib.divisor || 0);
         }
     // TODO: how to match index with vertexLayout location?
@@ -168,20 +173,137 @@ function enableVertexData(ctx, vertexLayout, cmd, updateState) {
         gl.bindBuffer(indexBuffer.target, indexBuffer.handle);
     }
 }
+function drawElements(ctx, cmd, instanced, primitive) {
+    const gl = ctx.gl;
+    // TODO: is that always correct
+    const count = cmd.count || ctx.state.indexBuffer.length;
+    const offset = cmd.indices?.offset || cmd.vertexArray?.indices?.offset || 0;
+    const type = cmd.indices?.type || cmd.vertexArray?.indices?.offset || ctx.state.indexBuffer.type;
+    // Instanced drawing
+    if (instanced) {
+        if (cmd.multiDraw) {
+            if (ctx.capabilities.multiDraw) {
+                // Multidraw elements instanced base
+                if (ctx.capabilities.multiDrawInstancedBase && (cmd.multiDraw.baseVertices || cmd.multiDraw.baseInstances)) {
+                    const ext = gl.getExtension("WEBGL_multi_draw_instanced_base_vertex_base_instance");
+                    ext.multiDrawElementsInstancedBaseVertexBaseInstanceWEBGL(primitive, cmd.multiDraw.counts, cmd.multiDraw.countsOffset || 0, type, cmd.multiDraw.offsets, cmd.multiDraw.offsetsOffset || 0, cmd.multiDraw.instanceCounts, cmd.multiDraw.instanceCountsOffset || 0, cmd.multiDraw.baseVertices || [], cmd.multiDraw.baseVerticesOffset || 0, cmd.multiDraw.baseInstances || [], cmd.multiDraw.baseInstancesOffset || 0, cmd.multiDraw.drawCount || cmd.multiDraw.counts.length);
+                } else {
+                    // Multidraw elements instanced (or multidraw base fallback with offset from enableVertexData)
+                    const ext = gl.getExtension("WEBGL_multi_draw");
+                    // TODO: fallback
+                    if (cmd.multiDraw.baseVertices || cmd.multiDraw.baseInstances) {
+                        console.error("Unsupported multiDrawInstancedBase. No fallback.");
+                    }
+                    ext.multiDrawElementsInstancedWEBGL(primitive, cmd.multiDraw.counts, cmd.multiDraw.countsOffset || 0, type, cmd.multiDraw.offsets, cmd.multiDraw.offsetsOffset || 0, cmd.multiDraw.instanceCounts, cmd.multiDraw.instanceCountsOffset || 0, cmd.multiDraw.drawCount || cmd.multiDraw.counts.length);
+                }
+            } else {
+                // Multi draw elements instanced fallback
+                // TODO: fallback
+                console.error("Unsupported multidraw. No fallback.");
+            }
+        } else {
+            // Non-multi drawing
+            if (ctx.capabilities.drawInstancedBase && (Number.isFinite(cmd.baseVertex) || Number.isFinite(cmd.baseInstance))) {
+                // Draw elements instanced base
+                const ext = gl.getExtension("WEBGL_draw_instanced_base_vertex_base_instance");
+                ext.drawElementsInstancedBaseVertexBaseInstanceWEBGL(primitive, count, type, offset, cmd.instances, cmd.baseVertex || 0, cmd.baseInstance || 0);
+            } else {
+                // Draw elements instanced (or base fallback with offset from enableVertexData)
+                gl.drawElementsInstanced(primitive, count, type, offset, cmd.instances);
+            }
+        }
+    } else {
+        // Non instanced drawing
+        if (cmd.multiDraw) {
+            if (ctx.capabilities.multiDraw) {
+                // Multidraw elements
+                const ext = gl.getExtension("WEBGL_multi_draw");
+                ext.multiDrawElementsWEBGL(primitive, cmd.multiDraw.counts, cmd.multiDraw.countsOffset || 0, type, cmd.multiDraw.offsets, cmd.multiDraw.offsetsOffset || 0, cmd.multiDraw.drawCount || cmd.multiDraw.counts.length);
+            } else {
+                // Multidraw elements fallback
+                const countsOffset = cmd.multiDraw.countsOffset || 0;
+                const offsetsOffset = cmd.multiDraw.offsetsOffset || 0;
+                const drawCount = cmd.multiDraw.drawCount || cmd.multiDraw.counts.length;
+                for(let i = 0; i < drawCount; i++){
+                    gl.drawElements(primitive, cmd.multiDraw.counts[i + countsOffset], type, cmd.multiDraw.offsets[i + offsetsOffset]);
+                }
+            }
+        } else {
+            // Draw elements
+            gl.drawElements(primitive, count, type, offset);
+        }
+    }
+}
+function drawArrays(ctx, cmd, instanced, primitive) {
+    const gl = ctx.gl;
+    if (instanced) {
+        if (cmd.multiDraw && ctx.capabilities.multiDraw) {
+            if (cmd.multiDraw.baseInstances && ctx.capabilities.multiDrawInstancedBase) {
+                const ext = gl.getExtension("WEBGL_multi_draw_instanced_base_vertex_base_instance");
+                ext.multiDrawArraysInstancedBaseInstanceWEBGL(primitive, cmd.multiDraw.firsts, cmd.multiDraw.firstsOffset || 0, cmd.multiDraw.counts, cmd.multiDraw.countsOffset || 0, cmd.multiDraw.instanceCounts, cmd.multiDraw.instanceCountsOffset || 0, cmd.multiDraw.baseInstances, cmd.multiDraw.baseInstancesOffset || 0, cmd.multiDraw.drawCount || cmd.multiDraw.firsts.length);
+            } else {
+                const ext = gl.getExtension("WEBGL_multi_draw");
+                ext.multiDrawArraysInstancedWEBGL(primitive, cmd.multiDraw.firsts, cmd.multiDraw.firstsOffset || 0, cmd.multiDraw.counts, cmd.multiDraw.countsOffset || 0, cmd.multiDraw.instanceCounts, cmd.multiDraw.instanceCountsOffset || 0, cmd.multiDraw.drawCount || cmd.multiDraw.firsts.length);
+            }
+        } else {
+            // Non-multi drawing
+            if (ctx.capabilities.drawInstancedBase && Number.isFinite(cmd.baseInstance)) {
+                // Draw arrays instanced with base instance
+                const ext = gl.getExtension("WEBGL_draw_instanced_base_vertex_base_instance");
+                ext.drawArraysInstancedBaseInstanceWEBGL(primitive, cmd.first || 0, cmd.count, cmd.instances, cmd.baseInstance);
+            } else {
+                // Draw arrays instanced (or base instance fallback)
+                gl.drawArraysInstanced(primitive, cmd.first || 0, cmd.count, cmd.instances);
+            }
+        }
+    } else {
+        // Non instanced drawing
+        if (cmd.multiDraw) {
+            // Multidraw arrays
+            if (ctx.capabilities.multiDraw) {
+                const ext = gl.getExtension("WEBGL_multi_draw");
+                ext.multiDrawArraysWEBGL(primitive, cmd.multiDraw.firsts, cmd.multiDraw.firstsOffset || 0, cmd.multiDraw.counts, cmd.multiDraw.countsOffset || 0, cmd.multiDraw.drawCount || cmd.multiDraw.firsts.length);
+            } else {
+                // Multidraw arrays fallback
+                const firstsOffset = cmd.multiDraw.firstsOffset || 0;
+                const countsOffset = cmd.multiDraw.countsOffset || 0;
+                const drawCount = cmd.multiDraw.drawCount || cmd.multiDraw.firsts.length;
+                for(let i = 0; i < drawCount; i++){
+                    gl.drawArrays(primitive, cmd.multiDraw.firsts[i + firstsOffset], cmd.multiDraw.counts[i + countsOffset]);
+                }
+            }
+        } else {
+            // Draw arrays
+            gl.drawArrays(primitive, cmd.first || 0, cmd.count);
+        }
+    }
+}
+function draw(ctx, cmd) {
+    const instanced = Object.values(cmd.attributes || cmd.vertexArray.attributes).some((attrib)=>attrib.divisor);
+    const primitive = cmd.pipeline.primitive;
+    // Draw elements/arrays: instanced, base, multi-draw
+    if (cmd.indices || cmd.vertexArray?.indices) {
+        drawElements(ctx, cmd, instanced, primitive);
+    } else if (cmd.count || cmd.multiDraw?.counts) {
+        drawArrays(ctx, cmd, instanced, primitive);
+    } else {
+        throw new Error("Vertex arrays requires elements, count or multiDraw");
+    }
+}
 
 /**
  * @typedef {HTMLImageElement | HTMLVideoElement | HTMLCanvasElement} TextureOptionsData
- * @property {Array|TypedArray} data
+ * @property {Array | import("./types.js").TypedArray} data
  * @property {number} width
  * @property {number} height
  */ /**
- * @typedef {WebGLRenderingContext.TEXTURE_2D | WebGLRenderingContext.TEXTURE_CUBE_MAP} TextureTarget
+ * @typedef {WebGLRenderingContext.TEXTURE_2D | WebGLRenderingContext.TEXTURE_CUBE_MAP | WebGL2RenderingContext.TEXTURE_2D_ARRAY | WebGL2RenderingContext.TEXTURE_3D} TextureTarget
  */ /**
  * @typedef {import("./types.js").PexResource} TextureOptions
- * @property {HTMLImageElement | HTMLVideoElement | HTMLCanvasElement | Array | TypedArray |TextureOptionsData | HTMLImageElement[] | TextureOptionsData[]} [data]
+ * @property {HTMLImageElement | HTMLVideoElement | HTMLCanvasElement | Array | import("./types.js").TypedArray | TextureOptionsData} [data]
  * @property {number} [width]
  * @property {number} [height]
- * @property {ctx.PixelFormat} [pixelFormat=ctx.PixelFormat.RGB8]
+ * @property {ctx.PixelFormat} [pixelFormat=ctx.PixelFormat.RGBA8]
  * @property {ctx.TextureFormat} [internalFormat=ctx.TextureFormat.RGBA]
  * @property {ctx.DataType} [type=ctx.TextureFormat[opts.pixelFormat]]
  * @property {ctx.Encoding} [encoding=ctx.Encoding.Linear]
@@ -196,10 +318,16 @@ function enableVertexData(ctx, vertexLayout, cmd, updateState) {
  * @property {boolean} [flipY=false]
  * @property {boolean} [compressed=false]
  * @property {TextureTarget} [target]
+ * @property {number} [offset]
  */ /**
- * @typedef {TextureCube} TextureCubeOptions
- * @property {HTMLImage[]|TypedArray[]} [data] 6 images, one for each face +X, -X, +Y, -Y, +Z, -Z
- */ const allowedProps$4 = [
+ * @typedef {import("./types.js").PexResource} Texture2DArrayOptions
+ * @augments TextureOptions
+ * @property {HTMLImageElement[] | TextureOptionsData[] | Array[] | import("./types.js").TypedArray[]} [data]
+ */ /**
+ * @typedef {import("./types.js").PexResource} TextureCubeOptions
+ * @augments TextureOptions
+ * @property {HTMLImageElement[] | import("./types.js").TypedArray[]} [data] 6 images, one for each face +X, -X, +Y, -Y, +Z, -Z
+ */ const allowedProps$5 = [
     "name",
     "data",
     "width",
@@ -218,10 +346,11 @@ function enableVertexData(ctx, vertexLayout, cmd, updateState) {
     "wrapT",
     "aniso",
     "premultiplyAlpha",
-    "compressed"
+    "compressed",
+    "offset"
 ];
 function createTexture(ctx, opts) {
-    checkProps(allowedProps$4, opts);
+    if (isObject(opts)) checkProps(allowedProps$5, opts);
     const gl = ctx.gl;
     const texture = {
         class: "texture",
@@ -229,44 +358,57 @@ function createTexture(ctx, opts) {
         target: opts.target,
         width: 0,
         height: 0,
-        _update: updateTexture2D,
+        _update: updateTexture,
         _dispose () {
             gl.deleteTexture(this.handle);
             this.handle = null;
         }
     };
-    updateTexture2D(ctx, texture, opts);
+    updateTexture(ctx, texture, opts);
     return texture;
 }
 function orValue(a, b) {
     return a !== undefined ? a : b;
 }
-function updateTexture2D(ctx, texture, opts) {
+const isElement = (element)=>element && element instanceof Element;
+const isBuffer = (object)=>[
+        "vertexBuffer",
+        "indexBuffer"
+    ].includes(object?.class);
+const arrayToTypedArray = (ctx, type, array)=>{
+    const TypedArray = ctx.DataTypeConstructor[type];
+    console.assert(TypedArray, `Unknown texture data type: ${type}`);
+    return new TypedArray(array);
+};
+function updateTexture(ctx, texture, opts) {
     // checkProps(allowedProps, opts)
     const gl = ctx.gl;
-    let compressed = opts.compressed || texture.compressed;
     let data = null;
     let width = opts.width;
     let height = opts.height;
     let flipY = orValue(opts.flipY, orValue(texture.flipY, false));
     let target = opts.target || texture.target;
     let pixelFormat = opts.pixelFormat || texture.pixelFormat || ctx.PixelFormat.RGBA8;
-    let encoding = opts.encoding || texture.encoding || ctx.Encoding.Linear;
-    let min = opts.min || texture.min || gl.NEAREST;
-    let mag = opts.mag || texture.mag || gl.NEAREST;
-    let wrapS = opts.wrapS || opts.wrap || texture.wrapS || texture.wrap || gl.CLAMP_TO_EDGE;
-    let wrapT = opts.wrapT || opts.wrap || texture.wrapT || texture.wrap || gl.CLAMP_TO_EDGE;
-    let aniso = opts.aniso || texture.aniso || 0;
-    let premultiplyAlpha = orValue(opts.premultiplyAlpha, orValue(texture.premultiplyAlpha, false));
+    const encoding = opts.encoding || texture.encoding || ctx.Encoding.Linear;
+    const min = opts.min || texture.min || gl.NEAREST;
+    const mag = opts.mag || texture.mag || gl.NEAREST;
+    const wrapS = opts.wrapS || opts.wrap || texture.wrapS || texture.wrap || gl.CLAMP_TO_EDGE;
+    const wrapT = opts.wrapT || opts.wrap || texture.wrapT || texture.wrap || gl.CLAMP_TO_EDGE;
+    const aniso = opts.aniso || texture.aniso || 0;
+    const premultiplyAlpha = orValue(opts.premultiplyAlpha, orValue(texture.premultiplyAlpha, false));
+    const compressed = opts.compressed || texture.compressed;
     let internalFormat = opts.internalFormat || texture.internalFormat;
     let type;
     let format;
+    // Bind
     const textureUnit = 0;
     gl.activeTexture(gl.TEXTURE0 + textureUnit);
-    gl.bindTexture(texture.target, texture.handle);
+    gl.bindTexture(target, texture.handle);
     ctx.state.activeTextures[textureUnit] = texture;
+    // Pixel storage mode
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipY);
     gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, premultiplyAlpha);
+    // Parameters
     gl.texParameteri(target, gl.TEXTURE_MAG_FILTER, mag);
     gl.texParameteri(target, gl.TEXTURE_MIN_FILTER, min);
     gl.texParameteri(target, gl.TEXTURE_WRAP_S, wrapS);
@@ -275,25 +417,37 @@ function updateTexture2D(ctx, texture, opts) {
         const anisoExt = gl.getExtension("EXT_texture_filter_anisotropic");
         gl.texParameterf(target, anisoExt.TEXTURE_MAX_ANISOTROPY_EXT, aniso);
     }
-    const img = opts.data ? opts.data : opts;
-    if (img && img.nodeName || !ctx.capabilities.isWebGL2 && img instanceof ImageBitmap) {
-        console.assert(img instanceof HTMLImageElement || img instanceof HTMLVideoElement || img instanceof HTMLCanvasElement || img instanceof ImageBitmap, "Texture2D.update opts has to be HTMLImageElement, HTMLVideoElement, HTMLCanvasElement or ImageBitmap");
-        width = img.width || img.videoHeight;
-        height = img.height || img.videoHeight;
-        internalFormat = gl.RGBA;
-        format = gl.RGBA;
-        type = gl.UNSIGNED_BYTE;
+    // Data provided as element or ImageBitmap:
+    // - width/height are retrieved from the element
+    // - format/type are set to defaults
+    const element = opts.data || opts;
+    if (isElement(element) || !ctx.capabilities.isWebGL2 && element instanceof ImageBitmap) {
+        console.assert(element instanceof HTMLImageElement || element instanceof HTMLVideoElement || element instanceof HTMLCanvasElement || element instanceof ImageBitmap, "Texture2D.update opts has to be HTMLImageElement, HTMLVideoElement, HTMLCanvasElement or ImageBitmap");
         pixelFormat = ctx.PixelFormat.RGBA;
-        gl.texImage2D(target, 0, internalFormat, format, type, img);
-        texture.width = width;
-        texture.height = height;
+        texture.internalFormat = gl.RGBA;
+        texture.format = gl.RGBA;
+        texture.type = gl.UNSIGNED_BYTE;
+        texture.target = target;
+        texture.compressed = false;
+        texture.width = element.videoWidth || element.width;
+        texture.height = element.videoHeight || element.height;
+        gl.texImage2D(texture.target, 0, texture.internalFormat, texture.format, texture.type, element);
     } else if (typeof opts === "object") {
         // Check data type
         console.assert(!data || Array.isArray(opts.data) || Object.values(ctx.DataTypeConstructor).some((TypedArray)=>opts.data instanceof TypedArray), "Texture2D.update opts.data has to be null, an Array or a TypedArray");
-        // Handle pixel data with flags
-        data = opts.data ? opts.data.data || opts.data : null;
-        if (!opts.width && data && data.width) width = data.width;
-        if (!opts.height && data && data.height) height = data.height;
+        const isTexture2DArray = target === gl.TEXTURE_2D_ARRAY;
+        const isTextureCube = target === gl.TEXTURE_CUBE_MAP;
+        if (isTexture2DArray || isTextureCube) {
+            data = Array.isArray(opts) && opts.length ? opts : opts.data ?? null;
+            width ||= data?.[0]?.data?.width || data?.[0]?.width;
+            height ||= data?.[0]?.data?.height || data?.[0]?.height;
+        } else {
+            // Handle pixel data with flags
+            data = opts.data ? opts.data.data || opts.data : null;
+            // Update can be called without width/height (for flags only changes)
+            width ||= data?.width;
+            height ||= data?.height;
+        }
         console.assert(!data || width !== undefined && height !== undefined, "Texture2D.update opts.width and opts.height are required when providing opts.data");
         // Get internalFormat (format the GPU use internally) from opts.internalFormat (mainly for compressed texture) or pixelFormat
         if (!internalFormat || opts.internalFormat) {
@@ -329,6 +483,11 @@ function updateTexture2D(ctx, texture, opts) {
         [format, type] = ctx.TextureFormat[pixelFormat];
         type = opts.type || type;
         console.assert(type, `Texture2D.update Unknown type ${type}.`);
+        texture.internalFormat = internalFormat;
+        texture.format = format;
+        texture.type = type;
+        texture.target = target;
+        texture.compressed = compressed;
         if (target === gl.TEXTURE_2D) {
             // Prepare data for mipmaps
             data = Array.isArray(data) && data[0].data ? data : [
@@ -338,72 +497,88 @@ function updateTexture2D(ctx, texture, opts) {
                     height
                 }
             ];
-            for(let level = 0; level < data.length; level++){
-                let { data: levelData , width , height  } = data[level];
-                // Convert array of numbers to typed array
-                if (Array.isArray(levelData)) {
-                    const TypedArray = ctx.DataTypeConstructor[type];
-                    console.assert(TypedArray, `Unknown texture data type: ${type}`);
-                    levelData = new TypedArray(levelData);
-                }
-                if (compressed) {
-                    gl.compressedTexImage2D(target, level, internalFormat, width, height, 0, levelData);
-                } else if (width && height) {
-                    gl.texImage2D(target, level, internalFormat, width, height, 0, format, type, levelData);
-                }
-            }
             if (data[0].width) texture.width = data[0].width;
             if (data[0].height) texture.height = data[0].height;
-        } else if (target === gl.TEXTURE_CUBE_MAP) {
-            console.assert(!data || Array.isArray(data) && data.length === 6, "TextureCube requires data for 6 faces");
-            // TODO: gl.compressedTexImage2D, manual mimaps
-            let lod = 0;
-            for(let i = 0; i < 6; i++){
-                let faceData = data ? data[i].data || data[i] : null;
-                const faceTarget = gl.TEXTURE_CUBE_MAP_POSITIVE_X + i;
-                if (Array.isArray(faceData)) {
-                    // Convert array of numbers to typed array
-                    const TypedArray = ctx.DataTypeConstructor[type];
-                    console.assert(TypedArray, `Unknown texture data type: ${type}`);
-                    faceData = new TypedArray(faceData);
-                    gl.texImage2D(faceTarget, lod, internalFormat, width, height, 0, format, type, faceData);
-                } else if (faceData && faceData.nodeName) {
-                    gl.texImage2D(faceTarget, lod, internalFormat, format, type, faceData);
-                } else {
-                    gl.texImage2D(faceTarget, lod, internalFormat, width, height, 0, format, type, faceData);
-                }
-                texture.width = width;
-                texture.height = height;
-            }
+            updateTexture2D(ctx, texture, data, opts);
+        } else if (isTexture2DArray) {
+            texture.width = width;
+            texture.height = height;
+            if (data?.length) updateTexture2DArray(ctx, texture, data);
+        } else if (isTextureCube) {
+            texture.width = width;
+            texture.height = height;
+            updateTextureCube(ctx, texture, data);
         }
     } else {
         // TODO: should i assert of throw new Error(msg)?
         throw new Error("Texture2D.update opts has to be a HTMLElement, ImageBitmap or Object");
     }
-    if (opts.mipmap) {
-        gl.generateMipmap(texture.target);
-    }
-    texture.compressed = compressed;
-    texture.target = target;
+    if (opts.mipmap) gl.generateMipmap(texture.target);
     texture.pixelFormat = pixelFormat;
-    texture.encoding = encoding;
     texture.min = min;
     texture.mag = mag;
     texture.wrapS = wrapS;
     texture.wrapT = wrapT;
-    texture.format = format;
     texture.flipY = flipY;
-    texture.internalFormat = internalFormat;
-    texture.type = type;
-    texture.info = "";
-    texture.info += Object.keys(ctx.PixelFormat).find((key)=>ctx.PixelFormat[key] === pixelFormat);
-    texture.info += "_";
-    texture.info += Object.keys(ctx.Encoding).find((key)=>ctx.Encoding[key] === encoding);
+    texture.encoding = encoding;
+    texture.info = `${Object.keys(ctx.PixelFormat).find((key)=>ctx.PixelFormat[key] === pixelFormat)}_${Object.keys(ctx.Encoding).find((key)=>ctx.Encoding[key] === encoding)}`;
     return texture;
+}
+function updateTexture2D(ctx, texture, data, param) {
+    let { offset } = param === void 0 ? {} : param;
+    const gl = ctx.gl;
+    const { internalFormat, format, type, target, compressed } = texture;
+    for(let level = 0; level < data.length; level++){
+        let { data: levelData, width, height } = data[level];
+        if (Array.isArray(levelData)) {
+            levelData = arrayToTypedArray(ctx, type, levelData);
+        }
+        if (compressed) {
+            gl.compressedTexImage2D(target, level, internalFormat, width, height, 0, levelData);
+        } else if (width && height) {
+            const fromBuffer = isBuffer(levelData);
+            if (fromBuffer) gl.bindBuffer(gl.PIXEL_UNPACK_BUFFER, levelData.handle);
+            gl.texImage2D(target, level, internalFormat, width, height, 0, format, type, fromBuffer ? offset ?? 0 : levelData);
+            if (fromBuffer) gl.bindBuffer(gl.PIXEL_UNPACK_BUFFER, null);
+        }
+    }
+}
+function updateTexture2DArray(ctx, texture, data) {
+    const gl = ctx.gl;
+    const { internalFormat, format, type, target, width, height } = texture;
+    const depth = data.length;
+    // TODO: compressed and lod
+    const lod = 0;
+    for(let i = 0; i < depth; i++){
+        const pixels = data[i].data || data[i];
+        const w = pixels.width ?? width;
+        const h = pixels.height ?? height;
+        if (i === 0) gl.texStorage3D(target, 1, internalFormat, w, h, depth);
+        gl.texSubImage3D(target, lod, 0, 0, i, w, h, 1, format, type, pixels);
+    }
+}
+function updateTextureCube(ctx, texture, data) {
+    console.assert(!data || Array.isArray(data) && data.length === 6, "TextureCube requires data for 6 faces");
+    const gl = ctx.gl;
+    const { internalFormat, format, type, width, height } = texture;
+    // TODO: gl.compressedTexImage2D, manual mimaps
+    const lod = 0;
+    for(let i = 0; i < 6; i++){
+        let faceData = data ? data[i].data || data[i] : null;
+        const faceTarget = gl.TEXTURE_CUBE_MAP_POSITIVE_X + i;
+        if (isElement(faceData)) {
+            gl.texImage2D(faceTarget, lod, internalFormat, format, type, faceData);
+        } else {
+            if (Array.isArray(faceData)) {
+                faceData = arrayToTypedArray(ctx, type, faceData);
+            }
+            gl.texImage2D(faceTarget, lod, internalFormat, width, height, 0, format, type, faceData);
+        }
+    }
 }
 
 /**
- * @typedef {Object} Attachment
+ * @typedef {object} Attachment
  * @property {import("./types.js").PexResource} texture
  * @property {WebGLRenderingContext.FRAMEBUFFER} target
  */ function createFramebuffer(ctx, opts) {
@@ -510,8 +685,9 @@ function updateFramebuffer(ctx, framebuffer, opts) {
 function updateRenderbuffer(ctx, renderbuffer, opts) {
     Object.assign(renderbuffer, opts);
     const gl = ctx.gl;
-    console.assert(renderbuffer.pixelFormat === ctx.PixelFormat.DEPTH_COMPONENT16, "Only PixelFormat.DEPTH_COMPONENT16 is supported for renderbuffers");
-    renderbuffer.format = gl[renderbuffer.pixelFormat];
+    const internalFormat = opts.internalFormat || (Object.keys(ctx.RenderbufferFloatFormat).includes(renderbuffer.pixelFormat) ? ctx.RenderbufferFloatFormat[renderbuffer.pixelFormat] : gl[renderbuffer.pixelFormat]);
+    console.assert(internalFormat, `Unsupported float renderable format ${renderbuffer.pixelFormat}`);
+    renderbuffer.format = internalFormat;
     gl.bindRenderbuffer(renderbuffer.target, renderbuffer.handle);
     gl.renderbufferStorage(renderbuffer.target, renderbuffer.format, renderbuffer.width, renderbuffer.height);
     gl.bindRenderbuffer(renderbuffer.target, null);
@@ -519,11 +695,11 @@ function updateRenderbuffer(ctx, renderbuffer, opts) {
 
 /**
  * @typedef {import("./types.js").PexResource} PassOptions
- * @property {Texture2D[]|import("./framebuffer.js").Attachment[]} [color] render target
- * @property {Texture2D} [depth] render target
+ * @property {import("./types.js").PexTexture2D[] | import("./framebuffer.js").Attachment[]} [color] render target
+ * @property {import("./types.js").PexTexture2D} [depth] render target
  * @property {import("./types.js").Color} [clearColor]
  * @property {number} [clearDepth]
- */ const allowedProps$3 = [
+ */ const allowedProps$4 = [
     "name",
     "framebuffer",
     "color",
@@ -532,7 +708,7 @@ function updateRenderbuffer(ctx, renderbuffer, opts) {
     "clearDepth"
 ];
 function createPass(ctx, opts) {
-    checkProps(allowedProps$3, opts);
+    checkProps(allowedProps$4, opts);
     const pass = {
         class: "pass",
         opts,
@@ -569,7 +745,7 @@ function createPass(ctx, opts) {
  * @property {ctx.Face} [cullFaceMode=ctx.Face.Back] Face culling mode
  * @property {boolean[]} [colorMask=[true, true, true, true]] Color write mask for [r, g, b, a]
  * @property {ctx.Primitive} [primitive=ctx.Primitive.Triangles] Geometry primitive
- */ const allowedProps$2 = [
+ */ const allowedProps$3 = [
     "vert",
     "frag",
     "program",
@@ -588,11 +764,9 @@ function createPass(ctx, opts) {
     "vertexLayout"
 ];
 function createPipeline(ctx, opts) {
-    checkProps(allowedProps$2, opts);
+    checkProps(allowedProps$3, opts);
     const pipeline = Object.assign({
         class: "pipeline",
-        vert: null,
-        frag: null,
         program: null,
         depthWrite: true,
         depthTest: false,
@@ -644,15 +818,19 @@ function createPipeline(ctx, opts) {
 
 /**
  * @typedef {import("./types.js").PexResource} VertexArrayOptions
- * @property {Object} vertexLayout
- * @property {Object} [attributes]
- * @property {Object} [indices]
+ * @property {object} vertexLayout
+ * @property {object} [attributes]
+ * @property {object} [indices]
  */ function createVertexArray(ctx, opts) {
     const gl = ctx.gl;
     const vertexArray = {
         class: "vertexArray",
         handle: gl.createVertexArray(),
         _update: updateVertexArray,
+        _dispose () {
+            gl.deleteVertexArray(this.handle);
+            this.handle = null;
+        },
         ...opts
     };
     updateVertexArray(ctx, vertexArray, opts);
@@ -668,11 +846,11 @@ const TYPE_TO_SIZE = {
 };
 // TODO: can't update attributes/indices as they're in vertexArray
 function updateVertexArray(ctx, vertexArray, param) {
-    let { vertexLayout  } = param;
+    let { vertexLayout } = param;
     const gl = ctx.gl;
     gl.bindVertexArray(vertexArray.handle);
     enableVertexData(ctx, Object.entries(vertexLayout).map((param)=>{
-        let [name, { location , type , size  }] = param;
+        let [name, { location, type, size }] = param;
         return [
             name,
             location,
@@ -682,6 +860,52 @@ function updateVertexArray(ctx, vertexArray, param) {
     gl.bindVertexArray(null);
 }
 
+/**
+ * @typedef {import("./types.js").PexResource} TransformFeedbackOptions
+ * @property {object} varyings
+ * @property {number} bufferMode
+ * @property {number} primitiveMode
+ */ const allowedProps$2 = [
+    "varyings",
+    "bufferMode",
+    "primitiveMode"
+];
+function createTransformFeedback(ctx, opts) {
+    const gl = ctx.gl;
+    const transformFeedback = {
+        class: "transformFeedback",
+        handle: gl.createTransformFeedback(),
+        bufferMode: gl.SEPARATE_ATTRIBS,
+        primitiveMode: gl.POINTS,
+        _update: updateTransformFeedback,
+        _dispose () {
+            gl.deleteTransformFeedback(this.handle);
+            this.handle = null;
+        },
+        ...opts
+    };
+    updateTransformFeedback(ctx, transformFeedback, opts);
+    return transformFeedback;
+}
+function updateTransformFeedback(ctx, transformFeedback, opts) {
+    checkProps(allowedProps$2, opts);
+    const gl = ctx.gl;
+    gl.bindVertexArray(null);
+    gl.bindTransformFeedback(gl.TRANSFORM_FEEDBACK, transformFeedback.handle);
+    let index = 0;
+    for(let varyingName in opts.varyings){
+        gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, index++, opts.varyings[varyingName].handle);
+    }
+    gl.bindTransformFeedback(gl.TRANSFORM_FEEDBACK, null);
+}
+
+const builtInAttributes = [
+    "gl_VertexID",
+    "gl_InstanceID",
+    "gl_DrawID",
+    "gl_BaseVertex",
+    "gl_BaseInstance"
+];
 function createProgram(ctx, opts) {
     const gl = ctx.gl;
     const program = {
@@ -690,6 +914,7 @@ function createProgram(ctx, opts) {
         attributes: [],
         attributesPerLocation: {},
         uniforms: {},
+        varyings: null,
         refCount: 0,
         _update: updateProgram,
         _dispose () {
@@ -698,6 +923,7 @@ function createProgram(ctx, opts) {
             this.attributes = null;
             this.attributesPerLocation = null;
             this.uniforms = null;
+            this.varyings = null;
         },
         setUniform (name, value) {
             const uniform = this.uniforms[name];
@@ -721,7 +947,7 @@ function createProgram(ctx, opts) {
     return program;
 }
 function updateProgram(ctx, program, param) {
-    let { vert , frag , vertexLayout  } = param;
+    let { vert, frag, vertexLayout } = param;
     console.assert(typeof vert === "string", "Vertex shader source must be a string");
     console.assert(typeof frag === "string", "Fragment shader source must be a string");
     const gl = ctx.gl;
@@ -774,14 +1000,14 @@ function updateUniforms(ctx, program) {
             name,
             type: info.type,
             size,
-            location: gl.getUniformLocation(program.handle, name)
+            location: getUniformLocation(gl, program, name)
         };
         if (info.size > 1) {
             for(let j = 1; j < info.size; j++){
                 const indexedName = `${info.name.substr(0, info.name.indexOf("[") + 1) + j}]`;
                 program.uniforms[indexedName] = {
                     type: info.type,
-                    location: gl.getUniformLocation(program.handle, indexedName)
+                    location: getUniformLocation(gl, program, indexedName)
                 };
             }
         }
@@ -796,6 +1022,9 @@ function updateAttributes(ctx, program) {
         const info = gl.getActiveAttrib(program.handle, i);
         const name = info.name;
         const size = ctx.AttributeSize[info.type];
+        if (builtInAttributes.includes(name)) {
+            continue;
+        }
         if (size === undefined) {
             throw new Error(`Unknwon uniform type ${info.type} : ${ctx.getGLString(info.type)}`);
         }
@@ -812,18 +1041,16 @@ function updateAttributes(ctx, program) {
 
 /**
  * @typedef {import("./types.js").PexResource} BufferOptions
- * @property {Array|TypedArray|ArrayBuffer} data
+ * @property {Array | import("./types.js").TypedArray | ArrayBuffer} data
  * @property {ctx.DataType} [type]
  * @property {ctx.Usage} [usage=ctx.Usage.StaticDraw]
  * @property {number} offset
- * @property {boolean} normalized
  */ const allowedProps$1 = [
     "target",
     "data",
     "usage",
     "type",
-    "offset",
-    "normalized"
+    "offset"
 ];
 function createBuffer(ctx, opts) {
     checkProps(allowedProps$1, opts);
@@ -847,14 +1074,13 @@ function updateBuffer(ctx, buffer, opts) {
     checkProps(allowedProps$1, opts);
     const gl = ctx.gl;
     let data = opts.data || opts;
-    let type = opts.type || buffer.type;
+    let type = opts.type;
     let offset = opts.offset || 0;
     if (Array.isArray(data)) {
         if (!type) {
-            if (opts.target === gl.ARRAY_BUFFER) {
+            if (buffer.target === gl.ARRAY_BUFFER) {
                 type = ctx.DataType.Float32;
-            }
-            if (opts.target === gl.ELEMENT_ARRAY_BUFFER) {
+            } else if (buffer.target === gl.ELEMENT_ARRAY_BUFFER) {
                 type = ctx.DataType.Uint16;
             }
         }
@@ -893,10 +1119,9 @@ function updateBuffer(ctx, buffer, opts) {
     } else if (data instanceof ArrayBuffer) {
         // assuming type was provided
         if (!type) {
-            if (opts.target === gl.ARRAY_BUFFER) {
+            if (buffer.target === gl.ARRAY_BUFFER) {
                 type = ctx.DataType.Float32;
-            }
-            if (opts.target === gl.ELEMENT_ARRAY_BUFFER) {
+            } else if (buffer.target === gl.ELEMENT_ARRAY_BUFFER) {
                 type = ctx.DataType.Uint16;
             }
         }
@@ -917,6 +1142,7 @@ function updateBuffer(ctx, buffer, opts) {
     } else {
         gl.bufferData(buffer.target, data, buffer.usage);
     }
+    buffer.info = ctx.DataTypeConstructor[type].name;
 }
 
 /**
@@ -953,7 +1179,7 @@ function createQuery(ctx, opts) {
     return query;
 }
 function begin(param, q) {
-    let { QueryState , gl  } = param;
+    let { QueryState, gl } = param;
     if (q.state !== QueryState.Ready) return false;
     gl.beginQuery(q.target, q.handle);
     q.state = QueryState.Active;
@@ -961,14 +1187,14 @@ function begin(param, q) {
     return true;
 }
 function end(param, q) {
-    let { QueryState , gl  } = param;
+    let { QueryState, gl } = param;
     if (q.state !== QueryState.Active) return false;
     gl.endQuery(q.target);
     q.state = QueryState.Pending;
     return true;
 }
 function available(param, q) {
-    let { gl , QueryState  } = param;
+    let { gl, QueryState } = param;
     const available = gl.getQueryParameter(q.handle, gl.QUERY_RESULT_AVAILABLE);
     if (available) {
         q.result = gl.getQueryParameter(q.handle, gl.QUERY_RESULT);
@@ -980,7 +1206,7 @@ function available(param, q) {
 }
 
 function polyfill(ctx) {
-    const { gl , capabilities  } = ctx;
+    const { gl, capabilities } = ctx;
     if (!gl.HALF_FLOAT) {
         const ext = gl.getExtension("OES_texture_half_float");
         if (ext) gl.HALF_FLOAT = ext.HALF_FLOAT_OES;
@@ -1025,7 +1251,7 @@ function polyfill(ctx) {
         };
         gl.getQueryObject = gl.getQueryParameter;
     } else {
-        const extDTQ = capabilities.isWebGL2 ? gl.getExtension("EXT_disjoint_timer_query_webgl2") : gl.getExtension("EXT_disjoint_timer_query");
+        const extDTQ = gl.getExtension("EXT_disjoint_timer_query_webgl2") || gl.getExtension("EXT_disjoint_timer_query");
         gl.TIME_ELAPSED = extDTQ.TIME_ELAPSED_EXT;
         gl.GPU_DISJOINT = extDTQ.GPU_DISJOINT_EXT;
         gl.QUERY_RESULT ||= extDTQ.QUERY_RESULT_EXT;
@@ -1039,11 +1265,17 @@ function polyfill(ctx) {
     if (!capabilities.isWebGL2) {
         gl.getExtension("OES_element_index_uint");
         gl.getExtension("OES_standard_derivatives");
+        const extsRGB = gl.getExtension("EXT_sRGB");
+        if (extsRGB) {
+            gl.SRGB ||= extsRGB.SRGB_EXT;
+            gl.SRGB8 ||= extsRGB.SRGB_ALPHA_EXT;
+            gl.SRGB8_ALPHA8 ||= extsRGB.SRGB8_ALPHA8_EXT;
+        }
     }
 }
 
 /**
- * @typedef {Object} PexContextOptions
+ * @typedef {object} PexContextOptions
  * @property {WebGLRenderingContext | WebGL2RenderingContext} [gl=WebGL2RenderingContext]
  * @property {number} [width=window.innerWidth]
  * @property {number} [height=window.innerHeight]
@@ -1051,23 +1283,55 @@ function polyfill(ctx) {
  * @property {"webgl" | "webgl2"} [type="webgl2"]
  * @property {boolean} [debug=false]
  */ /**
- * @typedef {Object} PexResource
+ * @typedef {object} PexResource
  * All resources are plain js object and once constructed their properties can be accessed directly.
- * Please note those props are read only. To set new values or upload new data to GPU see [updating resources]{@link context~update}.
+ * Please note those props are read only. To set new values or upload new data to GPU see [updating resources]{@link ctx.update}.
  * @property {string} name
  */ /**
- * @typedef {Object} PexCommand
+ * @typedef {object} PexTexture2D
+ */ /**
+ * @typedef {object} PexAttribute
+ * @property {object} buffer ctx.vertexBuffer() or ctx.indexBuffer()
+ * @property {number} [offset]
+ * @property {number} [stride]
+ * @property {number} [divisor]
+ * @property {boolean} [normalized]
+ */ /**
+ * @typedef {object} PexCommand
  * @property {import("./pass.js").PassOptions} pass
  * @property {import("./pipeline.js").PipelineOptions} pipeline
- * @property {Object} attributes vertex attributes, map of `attibuteName: ctx.VertexBuffer`   or `attributeName: { buffer: VertexBuffer, offset: number, stride: number, divisor: number }`
- * @property {Object} indices indices, `ctx.IndexBuffer` or `{ buffer: IndexBuffer, offset: number, stride: number }`
- * @property {number} count number of vertices to draw
- * @property {number} instances number instances to draw
- * @property {Object} uniforms shader uniforms, map of `name: value`
- * @property {Viewport} viewport drawing viewport bounds
- * @property {Viewport} scissor scissor test bounds
+ * @property {object} [attributes] vertex attributes, map of `attributeName: ctx.vertexBuffer()`  or [`attributeName: PexAttribute`]{@link PexAttribute}
+ * @property {object} [indices] indices, `ctx.indexBuffer()` or [`PexAttribute`]{@link PexAttribute}
+ * @property {number} [count] number of vertices to draw
+ * @property {number} [instances] number instances to draw
+ * @property {object} [uniforms] shader uniforms, map of `name: value`
+ * @property {Viewport} [viewport] drawing viewport bounds
+ * @property {Viewport} [scissor] scissor test bounds
+ * @property {MultiDrawOptions} [multiDraw]
+ * @property {number} [baseVertex]
+ * @property {number} [baseInstance]
  */ /**
- * @typedef {Object} PexContextSetOptions
+ * @typedef {object} MultiDrawOptions
+ * @see [WEBGL_multi_draw extension]{@link https://registry.khronos.org/webgl/extensions/WEBGL_multi_draw/}
+ * @see [WEBGL_draw_instanced_base_vertex_base_instance extension]{@link https://registry.khronos.org/webgl/extensions/WEBGL_draw_instanced_base_vertex_base_instance/}
+ * @see [WEBGL_multi_draw_instanced_base_vertex_base_instance extension]{@link https://registry.khronos.org/webgl/extensions/WEBGL_multi_draw_instanced_base_vertex_base_instance/}
+ *
+ * @property {(Int32Array|Array)} counts
+ * @property {number} [countsOffset]
+ * @property {(Int32Array|Array)} offsets
+ * @property {number} [offsetsOffset]
+ * @property {(Int32Array|Array)} firsts
+ * @property {number} [firstsOffset]
+ * @property {(Int32Array|Array)} instanceCounts
+ * @property {number} [instanceCountsOffset]
+ *
+ * @property {(Int32Array|Array)} baseVertices
+ * @property {number} [baseVerticesOffset]
+ * @property {(UInt32Array|Array)} baseInstances
+ * @property {number} [baseInstancesOffset]
+ * @property {number} [drawCount]
+ */ /**
+ * @typedef {object} PexContextSetOptions
  * @property {number} [width]
  * @property {number} [height]
  * @property {number} [pixelRatio]
@@ -1075,8 +1339,10 @@ function polyfill(ctx) {
  * @typedef {number[]} Viewport [x, y, w, h]
  */ /**
  * @typedef {number[]} Color [r, g, b, a]
+ */ /**
+ * @typedef {(Int8Array|Uint8Array|Uint8ClampedArray|Int16Array|Uint16Array|Int32Array|Uint32Array|Float32Array|Float64Array|BigInt64Array|BigUint64Array)} TypedArray
  */ const addEnums = (ctx)=>{
-    const { gl , capabilities  } = ctx;
+    const { gl, capabilities } = ctx;
     /** @enum */ ctx.BlendFactor = {
         One: gl.ONE,
         Zero: gl.ZERO,
@@ -1258,11 +1524,11 @@ function polyfill(ctx) {
     };
     /**
    * @enum
-   *
+   * @private
    * @description
    * Mapping of format and type (with alternative types).
    */ ctx.TextureFormat = {
-        // Unsized Internal Formats
+        // Unsized internal formats
         RGB: [
             gl.RGB,
             ctx.DataType.Uint8
@@ -1284,90 +1550,35 @@ function polyfill(ctx) {
             ctx.DataType.Uint8
         ],
         // Sized internal formats
-        R8: [
-            gl.RED,
-            ctx.DataType.Uint8
-        ],
-        R8_SNORM: [
-            gl.RED,
-            ctx.DataType.Int8
-        ],
-        R16F: [
-            gl.RED,
-            ctx.DataType.Float16
-        ],
-        R32F: [
-            gl.RED,
-            ctx.DataType.Float32
-        ],
-        R8UI: [
-            gl.RED_INTEGER,
-            ctx.DataType.Uint8
-        ],
-        R8I: [
-            gl.RED_INTEGER,
-            ctx.DataType.Int8
-        ],
-        R16UI: [
-            gl.RED_INTEGER,
-            ctx.DataType.Uint16
-        ],
-        R16I: [
-            gl.RED_INTEGER,
-            ctx.DataType.Int16
-        ],
-        R32UI: [
-            gl.RED_INTEGER,
-            ctx.DataType.Uint32
-        ],
-        R32I: [
-            gl.RED_INTEGER,
-            ctx.DataType.Int32
-        ],
-        RG8: [
-            gl.RG,
-            ctx.DataType.Uint8
-        ],
-        RG8_SNORM: [
-            gl.RG,
-            ctx.DataType.Int8
-        ],
-        RG16F: [
-            gl.RG,
-            ctx.DataType.Float16
-        ],
-        RG32F: [
-            gl.RG,
-            ctx.DataType.Float32
-        ],
-        RG8UI: [
-            gl.RG_INTEGER,
-            ctx.DataType.Uint8
-        ],
-        RG8I: [
-            gl.RG_INTEGER,
-            ctx.DataType.Int8
-        ],
-        RG16UI: [
-            gl.RG_INTEGER,
-            ctx.DataType.Uint16
-        ],
-        RG16I: [
-            gl.RG_INTEGER,
-            ctx.DataType.Int16
-        ],
-        RG32UI: [
-            gl.RG_INTEGER,
-            ctx.DataType.Uint32
-        ],
-        RG32I: [
-            gl.RG_INTEGER,
-            ctx.DataType.Int32
-        ],
-        RGB8: [
-            gl.RGB,
-            ctx.DataType.Uint8
-        ],
+        ...Object.fromEntries([
+            "R",
+            "RG",
+            "RGB",
+            "RGBA"
+        ].flatMap((format)=>Object.entries({
+                8: "Uint8",
+                "8_SNORM": "Int8",
+                "16F": "Float16",
+                "32F": "Float32",
+                "8UI": "Uint8",
+                "8I": "Int8",
+                "16UI": "Uint16",
+                "16I": "Int16",
+                "32UI": "Uint32",
+                "32I": "Int32"
+            }).map((param)=>{
+                let [type, DataType] = param;
+                return [
+                    [
+                        `${format}${type}`
+                    ],
+                    [
+                        gl[`${format === "R" ? "RED" : format}${type.endsWith("I") ? "_INTEGER" : ""}`],
+                        ctx.DataType[DataType]
+                    ]
+                ];
+            }))),
+        // Special
         SRGB8: [
             gl.RGB,
             ctx.DataType.Uint8
@@ -1375,10 +1586,6 @@ function polyfill(ctx) {
         RGB565: [
             gl.RGB,
             gl.UNSIGNED_SHORT_5_6_5
-        ],
-        RGB8_SNORM: [
-            gl.RGB,
-            ctx.DataType.Int8
         ],
         R11F_G11F_B10F: [
             gl.RGB,
@@ -1388,49 +1595,9 @@ function polyfill(ctx) {
             gl.RGB,
             gl.UNSIGNED_INT_5_9_9_9_REV
         ],
-        RGB16F: [
-            gl.RGB,
-            ctx.DataType.Float16
-        ],
-        RGB32F: [
-            gl.RGB,
-            ctx.DataType.Float32
-        ],
-        RGB8UI: [
-            gl.RGB_INTEGER,
-            ctx.DataType.Uint8
-        ],
-        RGB8I: [
-            gl.RGB_INTEGER,
-            ctx.DataType.Int8
-        ],
-        RGB16UI: [
-            gl.RGB_INTEGER,
-            ctx.DataType.Uint16
-        ],
-        RGB16I: [
-            gl.RGB_INTEGER,
-            ctx.DataType.Int16
-        ],
-        RGB32UI: [
-            gl.RGB_INTEGER,
-            ctx.DataType.Uint32
-        ],
-        RGB32I: [
-            gl.RGB_INTEGER,
-            ctx.DataType.Int32
-        ],
-        RGBA8: [
-            gl.RGBA,
-            ctx.DataType.Uint8
-        ],
         SRGB8_ALPHA8: [
             gl.RGBA,
             ctx.DataType.Uint8
-        ],
-        RGBA8_SNORM: [
-            gl.RGBA,
-            ctx.DataType.Int8
         ],
         RGB5_A1: [
             gl.RGBA,
@@ -1444,41 +1611,9 @@ function polyfill(ctx) {
             gl.RGBA,
             gl.UNSIGNED_INT_2_10_10_10_REV
         ],
-        RGBA16F: [
-            gl.RGBA,
-            ctx.DataType.Float16
-        ],
-        RGBA32F: [
-            gl.RGBA,
-            ctx.DataType.Float32
-        ],
-        RGBA8UI: [
-            gl.RGBA_INTEGER,
-            ctx.DataType.Uint8
-        ],
-        RGBA8I: [
-            gl.RGBA_INTEGER,
-            ctx.DataType.Int8
-        ],
         RGB10_A2UI: [
             gl.RGBA_INTEGER,
             gl.UNSIGNED_INT_2_10_10_10_REV
-        ],
-        RGBA16UI: [
-            gl.RGBA_INTEGER,
-            ctx.DataType.Uint16
-        ],
-        RGBA16I: [
-            gl.RGBA_INTEGER,
-            ctx.DataType.Int16
-        ],
-        RGBA32I: [
-            gl.RGBA_INTEGER,
-            ctx.DataType.Int32
-        ],
-        RGBA32UI: [
-            gl.RGBA_INTEGER,
-            ctx.DataType.Uint32
         ],
         // Depth and stencil
         DEPTH_COMPONENT16: [
@@ -1522,19 +1657,43 @@ function polyfill(ctx) {
             ctx.DataType.Float32
         ];
     }
+    const legacyPixelFormat = {
+        Depth: "DEPTH_COMPONENT16",
+        Depth16: "DEPTH_COMPONENT16",
+        Depth24: "DEPTH_COMPONENT24"
+    };
     /**
    * @enum
    * @description
    * Mapping of {@link #ctx.TextureFormat|ctx.TextureFormat} keys to their string values and legacy depth formats
+   *
+   * One of:
+   * - Unsized: RGB, RGBA, LUMINANCE_ALPHA, LUMINANCE, ALPHA
+   * - Sized 1 component: R8, R8_SNORM, R16F, R32F, R8UI, R8I, R16UI, R16I, R32UI, R32I
+   * - Sized 2 components: RG8, RG8_SNORM, RG16F, RG32F, RG8UI, RG8I, RG16UI, RG16I, RG32UI, RG32I
+   * - Sized 3 components: RGB8, RGB8_SNORM, RGB16F, RGB32F, RGB8UI, RGB8I, RGB16UI, RGB16I, RGB32UI, RGB32I
+   * - Sized 4 components: RGBA8, RGBA8_SNORM, RGBA16F, RGBA32F, RGBA8UI, RGBA8I, RGBA16UI, RGBA16I, RGBA32UI, RGBA32I
+   * - Sized special: SRGB8, RGB565, R11F_G11F_B10F, RGB9_E5, SRGB8_ALPHA8, RGB5_A1, RGBA4, RGB10_A2, RGB10_A2UI
+   * - Sized depth/stencil: DEPTH_COMPONENT16, DEPTH_COMPONENT24, DEPTH_COMPONENT32F, DEPTH24_STENCIL8, DEPTH32F_STENCIL8
    */ ctx.PixelFormat = {
         ...Object.fromEntries(Object.keys(ctx.TextureFormat).map((internalFormat)=>[
                 internalFormat,
                 internalFormat
             ])),
-        // Legacy
-        Depth: "DEPTH_COMPONENT16",
-        Depth16: "DEPTH_COMPONENT16",
-        Depth24: "DEPTH_COMPONENT24"
+        ...legacyPixelFormat
+    };
+    const extColorBufferFloat = !!gl.getExtension("EXT_color_buffer_float"); // WebGL2 only
+    /** @enum */ ctx.RenderbufferFloatFormat = {
+        // With EXT_color_buffer_float, types just become color-renderable
+        // With EXT_color_buffer_half_float and WEBGL_color_buffer_float,
+        // they come from the extension and need _EXT suffix
+        RGBA32F: extColorBufferFloat && gl.RGBA32F || gl.getExtension("WEBGL_color_buffer_float")?.RGBA32F_EXT,
+        RGBA16F: extColorBufferFloat && gl.RGBA16F || gl.getExtension("EXT_color_buffer_half_float")?.RGBA16F_EXT,
+        R16F: extColorBufferFloat && gl.R16F,
+        RG16F: extColorBufferFloat && gl.RG16F,
+        R32F: extColorBufferFloat && gl.R32F,
+        RG32F: extColorBufferFloat && gl.RG32F,
+        R11F_G11F_B10F: extColorBufferFloat && gl.R11F_G11F_B10F
     };
     /** @enum */ ctx.Encoding = {
         Linear: 1,
@@ -1556,7 +1715,8 @@ function polyfill(ctx) {
     };
     /** @enum */ ctx.Wrap = {
         ClampToEdge: gl.CLAMP_TO_EDGE,
-        Repeat: gl.REPEAT
+        Repeat: gl.REPEAT,
+        MirroredRepeat: gl.MIRRORED_REPEAT
     };
     /** @enum */ ctx.QueryTarget = {
         TimeElapsed: gl.TIME_ELAPSED,
@@ -1581,8 +1741,13 @@ const allowedCommandProps = [
     "attributes",
     "indices",
     "count",
+    "first",
+    "baseVertex",
+    "baseInstance",
+    "multiDraw",
     "instances",
     "vertexArray",
+    "transformFeedback",
     "viewport",
     "scissor"
 ];
@@ -1602,6 +1767,7 @@ const allowedCommandProps = [
     }
     const gl = opts.gl || createRenderingContext(opts);
     console.assert(gl, "pex-context: createContext failed");
+    const isWebGL2$1 = isWebGL2(gl);
     /**
    * @namespace ctx
    */ const ctx = {
@@ -1613,31 +1779,41 @@ const allowedCommandProps = [
      * Max capabilities and extensions availability. See {@link #capabilitiesTable|Capabilities Table}.
      * @memberof ctx
      */ capabilities: {
-            isWebGL2: isWebGL2(gl),
+            isWebGL2: isWebGL2$1,
             maxColorAttachments: 1,
             maxTextureImageUnits: gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS),
             maxVertexTextureImageUnits: gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS),
             maxVertexAttribs: gl.getParameter(gl.MAX_VERTEX_ATTRIBS),
             maxTextureSize: gl.getParameter(gl.MAX_TEXTURE_SIZE),
             maxCubeMapTextureSize: gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE),
-            depthTexture: !!gl.getExtension("WEBGL_depth_texture"),
-            shaderTextureLod: !!gl.getExtension("EXT_shader_texture_lod"),
-            textureFloat: !!gl.getExtension("OES_texture_float"),
+            depthTexture: isWebGL2$1 || !!gl.getExtension("WEBGL_depth_texture"),
+            shaderTextureLod: isWebGL2$1 || !!gl.getExtension("EXT_shader_texture_lod"),
+            textureFloat: isWebGL2$1 || !!gl.getExtension("OES_texture_float"),
             textureFloatLinear: !!gl.getExtension("OES_texture_float_linear"),
-            textureHalfFloat: !!gl.getExtension("OES_texture_half_float"),
-            textureHalfFloatLinear: !!gl.getExtension("OES_texture_half_float_linear"),
+            textureHalfFloat: isWebGL2$1 || !!gl.getExtension("OES_texture_half_float"),
+            textureHalfFloatLinear: isWebGL2$1 || !!gl.getExtension("OES_texture_half_float_linear"),
             textureFilterAnisotropic: !!gl.getExtension("EXT_texture_filter_anisotropic"),
-            disjointTimerQuery: !!(gl.getExtension("EXT_disjoint_timer_query_webgl2") || gl.getExtension("EXT_disjoint_timer_query"))
+            sRGB: isWebGL2$1 || !!gl.getExtension("EXT_sRGB"),
+            disjointTimerQuery: !!(gl.getExtension("EXT_disjoint_timer_query_webgl2") || gl.getExtension("EXT_disjoint_timer_query")),
+            // Note: supported color buffer types vary
+            colorBufferFloat: isWebGL2$1 ? !!gl.getExtension("EXT_color_buffer_float") : !!gl.getExtension("WEBGL_color_buffer_float"),
+            colorBufferHalfFloat: !!gl.getExtension("EXT_color_buffer_half_float"),
+            floatBlend: !!gl.getExtension("EXT_float_blend"),
+            multiDraw: !!gl.getExtension("WEBGL_multi_draw"),
+            drawInstancedBase: !!gl.getExtension("WEBGL_draw_instanced_base_vertex_base_instance"),
+            multiDrawInstancedBase: !!gl.getExtension("WEBGL_multi_draw_instanced_base_vertex_base_instance")
         },
         /**
      * Getter for `gl.drawingBufferWidth`
      * @memberof ctx
+     * @returns {number}
      */ get width () {
             return gl.drawingBufferWidth;
         },
         /**
      * Getter for `gl.drawingBufferHeight`
      * @memberof ctx
+     * @returns {number}
      */ get height () {
             return gl.drawingBufferHeight;
         }
@@ -1669,9 +1845,27 @@ const allowedCommandProps = [
             gl.drawingBufferHeight
         ],
         scissor: null,
-        count: 0
+        count: 0,
+        framebuffer: undefined,
+        indexBuffer: undefined,
+        activeAttributes: undefined,
+        activeTextures: undefined,
+        vertexArray: undefined,
+        vertexLayout: undefined,
+        program: undefined,
+        cullFace: undefined,
+        cullFaceMode: undefined,
+        blend: undefined,
+        blendSrcRGBFactor: undefined,
+        blendSrcAlphaFactor: undefined,
+        blendDstRGBFactor: undefined,
+        blendDstAlphaFactor: undefined,
+        depthFunc: undefined,
+        depthTest: undefined,
+        depthWrite: undefined
     };
     Object.assign(ctx, {
+        isDisposed: false,
         debugMode: false,
         debugCommands: [],
         resources: [],
@@ -1733,7 +1927,7 @@ const allowedCommandProps = [
      * @memberof ctx
      * @param {import("./types.js").PexContextSetOptions} options
      */ set (param) {
-            let { pixelRatio , width , height  } = param;
+            let { pixelRatio, width, height } = param;
             if (pixelRatio) {
                 this.updatePixelRatio = Math.min(pixelRatio, window.devicePixelRatio);
             }
@@ -1786,7 +1980,7 @@ const allowedCommandProps = [
                     this.defaultState.pass.framebuffer.height = gl.drawingBufferHeight;
                     gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
                 }
-                if (cb() === false) return; // interrupt render loop
+                if (this.isDisposed || cb() === false) return; // interrupt render loop
                 if (this.queries.length) {
                     this.queries = this.queries.filter((q)=>!q._available(this, q));
                 }
@@ -1846,7 +2040,7 @@ const allowedCommandProps = [
      *
      * @memberof ctx
      * @param {import("./types.js").PexCommand} cmd
-     * @param {import("./types.js").PexCommand | import("./types.js").PexCommand[]} [optsBatchesOrSubCommand]
+     * @param {import("./types.js").PexCommand | import("./types.js").PexCommand[]} [batches]
      * @param {import("./types.js").PexCommand} [subCommand]
      */ submit (cmd, batches, subCommand) {
             const prevFramebufferId = this.state.framebuffer?.id;
@@ -1901,7 +2095,7 @@ const allowedCommandProps = [
             this.checkError();
         },
         program (opts) {
-            console.debug(NAMESPACE, "program", opts);
+            if (this.debugMode) console.debug(NAMESPACE, "program", opts);
             return this.resource(createProgram(this, opts));
         },
         /**
@@ -1917,15 +2111,17 @@ const allowedCommandProps = [
      *   color: [Texture2D, ...]
      *   color: [{ texture: Texture2D | TextureCube, target: CubemapFace }, ...]
      *   depth: Texture2D
-     *   clearColor: Array,
+     *   clearColor: Array | Array[],
      *   clearDepth: number,
      * })
      * ```
      */ pass (opts) {
-            console.debug(NAMESPACE, "pass", opts, opts.color?.map((param)=>{
-                let { texture , info  } = param;
-                return texture?.info || info;
-            }) || "");
+            if (this.debugMode) {
+                console.debug(NAMESPACE, "pass", opts, opts.color?.map((param)=>{
+                    let { texture, info } = param;
+                    return texture?.info || info;
+                }) || "");
+            }
             return this.resource(createPass(this, opts));
         },
         /**
@@ -1937,24 +2133,24 @@ const allowedCommandProps = [
      *  @example
      * ```js
      * const pipeline = ctx.pipeline({
-     *   vert: String,
-     *   frag: String,
-     *   depthWrite: Boolean,
-     *   depthTest: Boolean,
+     *   vert: string,
+     *   frag: string,
+     *   depthWrite: boolean,
+     *   depthTest: boolean,
      *   depthFunc: DepthFunc,
-     *   blend: Boolean,
+     *   blend: boolean,
      *   blendSrcRGBFactor: BlendFactor,
      *   blendSrcAlphaFactor: BlendFactor,
      *   blendDstRGBFactor: BlendFactor,
      *   blendDstAlphaFactor: BlendFactor,
-     *   cullFace: Boolean,
+     *   cullFace: boolean,
      *   cullFaceMode: Face,
      *   colorMask: Array,
      *   primitive: Primitive
      * })
      * ```
      */ pipeline (opts) {
-            console.debug(NAMESPACE, "pipeline", opts);
+            if (this.debugMode) console.debug(NAMESPACE, "pipeline", opts);
             return this.resource(createPipeline(this, opts));
         },
         /**
@@ -1987,8 +2183,26 @@ const allowedCommandProps = [
      * };
      * ```
      */ vertexArray (opts) {
-            console.debug(NAMESPACE, "vertexArray", opts);
+            if (this.debugMode) console.debug(NAMESPACE, "vertexArray", opts);
             return this.resource(createVertexArray(this, opts));
+        },
+        /**
+     * Create a transform feedback
+     * @memberof ctx
+     * @param {import("./transform-feedback.js").TransformFeedbackOptions} opts
+     * @returns {import("./types.js").PexResource}
+     *
+     * @example
+     * ```js
+     * const tex = ctx.transformFeedback({
+     *   varyings: {
+     *     outPosition: positionsBuf,
+     *   },
+     * })
+     * ```
+     */ transformFeedback (opts) {
+            if (this.debugMode) console.debug(NAMESPACE, "transformFeedback", opts);
+            return this.resource(createTransformFeedback(this, opts));
         },
         /**
      * Create a 2D Texture resource.
@@ -2008,14 +2222,31 @@ const allowedCommandProps = [
      * })
      * ```
      */ texture2D (opts) {
-            console.debug(NAMESPACE, "texture2D", opts);
+            if (this.debugMode) console.debug(NAMESPACE, "texture2D", opts);
             opts.target = gl.TEXTURE_2D;
+            return this.resource(createTexture(this, opts));
+        },
+        /**
+     * Create a 2D Texture Array resource.
+     * @memberof ctx
+     * @param {HTMLImageElement[] | HTMLVideoElement[] | HTMLCanvasElement[] | import("./texture.js").TextureOptions} opts
+     * @returns {import("./types.js").PexResource}
+     *
+     * @example
+     * ```js
+     * const tex = ctx.texture2DArray({
+     *   data: [img, img, img],
+     * })
+     * ```
+     */ texture2DArray (opts) {
+            if (this.debugMode) console.debug(NAMESPACE, "texture2DArray", opts);
+            opts.target = gl.TEXTURE_2D_ARRAY;
             return this.resource(createTexture(this, opts));
         },
         /**
      * Create a 2D Texture cube resource.
      * @memberof ctx
-     * @param {HTMLImageElement | import("./texture.js").TextureOptions} opts
+     * @param {import("./texture.js").TextureCubeOptions} opts
      * @returns {import("./types.js").PexResource}
      *
      * @example
@@ -2027,14 +2258,14 @@ const allowedCommandProps = [
      * ])
      * ```
      */ textureCube (opts) {
-            console.debug(NAMESPACE, "textureCube", opts);
+            if (this.debugMode) console.debug(NAMESPACE, "textureCube", opts);
             opts.target = gl.TEXTURE_CUBE_MAP;
             return this.resource(createTexture(this, opts));
         },
         // framebuffer({ color: [ Texture2D, .. ], depth: Texture2D }
         // framebuffer({ color: [ { texture: Texture2D, target: Enum, level: int }, .. ], depth: { texture: Texture2D }})
         framebuffer (opts) {
-            console.debug(NAMESPACE, "framebuffer", opts);
+            if (this.debugMode) console.debug(NAMESPACE, "framebuffer", opts);
             return this.resource(createFramebuffer(this, opts));
         },
         /**
@@ -2052,7 +2283,7 @@ const allowedCommandProps = [
      * })
      * ```
      */ renderbuffer (opts) {
-            console.debug(NAMESPACE, "renderbuffer", opts);
+            if (this.debugMode) console.debug(NAMESPACE, "renderbuffer", opts);
             return this.resource(createRenderbuffer(this, opts));
         },
         // TODO: Should we have named versions or generic 'ctx.buffer' command?
@@ -2073,7 +2304,7 @@ const allowedCommandProps = [
      * const vertexBuffer = ctx.vertexBuffer({ data: Array|TypedArray|ArrayBuffer })
      * ```
      */ vertexBuffer (opts) {
-            console.debug(NAMESPACE, "vertexBuffer", opts);
+            if (this.debugMode) console.debug(NAMESPACE, "vertexBuffer", opts);
             if (opts.length) opts = {
                 data: opts
             };
@@ -2091,7 +2322,7 @@ const allowedCommandProps = [
      * const indexBuffer = ctx.vertexBuffer({ data: Array|TypedArray|ArrayBuffer })
      * ```
      */ indexBuffer (opts) {
-            console.debug(NAMESPACE, "indexBuffer", opts);
+            if (this.debugMode) console.debug(NAMESPACE, "indexBuffer", opts);
             if (opts.length) opts = {
                 data: opts
             };
@@ -2111,7 +2342,7 @@ const allowedCommandProps = [
      * })
      * ```
      */ query (opts) {
-            console.debug(NAMESPACE, "query", opts);
+            if (this.debugMode) console.debug(NAMESPACE, "query", opts);
             return this.resource(createQuery(this, opts));
         },
         /**
@@ -2142,7 +2373,7 @@ const allowedCommandProps = [
      * @param {{ x: number, y: number, width: number, height: number }} viewport
      * @returns {Uint8Array}
      */ readPixels (param) {
-            let { x =0 , y =0 , width , height  } = param;
+            let { x = 0, y = 0, width, height } = param;
             const pixels = new Uint8Array(width * height * 4);
             gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
             return pixels;
@@ -2151,7 +2382,7 @@ const allowedCommandProps = [
      * Update a resource.
      * @memberof ctx
      * @param {import("./types.js").PexResource} resource
-     * @param {Object} opts
+     * @param {object} opts
      *
      * @example
      * ```js
@@ -2202,6 +2433,7 @@ const allowedCommandProps = [
                 this.stats[resource.class].alive--;
                 resource._dispose();
             } else {
+                this.isDisposed = true;
                 while(this.resources.length){
                     this.dispose(this.resources[0]);
                 }
@@ -2245,7 +2477,6 @@ const allowedCommandProps = [
             return newCmd;
         },
         applyPass (pass) {
-            const gl = this.gl;
             const state = this.state;
             // Need to find reliable way of deciding if i should update framebuffer
             // 1. If pass has fbo, bind it
@@ -2284,22 +2515,56 @@ const allowedCommandProps = [
                     gl.bindFramebuffer(framebuffer.target, framebuffer.handle);
                 }
             }
+            this.checkError();
+        },
+        applyViewport (viewport) {
+            if (viewport && viewport !== this.state.viewport) {
+                this.state.viewport = viewport;
+                gl.viewport(this.state.viewport[0], this.state.viewport[1], this.state.viewport[2], this.state.viewport[3]);
+            }
+            this.checkError();
+        },
+        applyScissor (scissor) {
+            if (scissor) {
+                if (scissor !== this.state.scissor) {
+                    this.state.scissor = scissor;
+                    gl.enable(gl.SCISSOR_TEST);
+                    gl.scissor(this.state.scissor[0], this.state.scissor[1], this.state.scissor[2], this.state.scissor[3]);
+                }
+            } else {
+                if (scissor !== this.state.scissor) {
+                    this.state.scissor = scissor;
+                    gl.disable(gl.SCISSOR_TEST);
+                }
+            }
+            this.checkError();
+        },
+        applyClear (pass) {
             let clearBits = 0;
             if (pass.clearColor !== undefined) {
                 if (this.debugMode) {
                     console.debug(NAMESPACE, "clearing color", pass.clearColor);
                 }
-                clearBits |= gl.COLOR_BUFFER_BIT;
-                // TODO this might be unnecesary but we don't know because we don't store the clearColor in state
-                gl.clearColor(pass.clearColor[0], pass.clearColor[1], pass.clearColor[2], pass.clearColor[3]);
+                const clearValues = pass.clearColor;
+                const isClearBufferArray = is2DArray(clearValues);
+                if (isWebGL2$1 && isClearBufferArray) {
+                    for(let i = 0; i < clearValues.length; i++){
+                        const color = clearValues[i];
+                        if (color) gl.clearBufferfv(gl.COLOR, i, color);
+                    }
+                } else {
+                    clearBits |= gl.COLOR_BUFFER_BIT;
+                    // TODO this might be unnecesary but we don't know because we don't store the clearColor in state
+                    gl.clearColor(...isClearBufferArray ? clearValues[0] : clearValues); // Fallback in WebGL1 clearing all buffers
+                }
             }
             if (pass.clearDepth !== undefined) {
                 if (this.debugMode) {
                     console.debug(NAMESPACE, "clearing depth", pass.clearDepth);
                 }
                 clearBits |= gl.DEPTH_BUFFER_BIT;
-                if (!state.depthWrite) {
-                    state.depthWrite = true;
+                if (!this.state.depthWrite) {
+                    this.state.depthWrite = true;
                     gl.depthMask(true);
                 }
                 // TODO this might be unnecesary but we don't know because we don't store the clearDepth in state
@@ -2309,7 +2574,6 @@ const allowedCommandProps = [
             this.checkError();
         },
         applyPipeline (pipeline) {
-            const gl = this.gl;
             const state = this.state;
             if (pipeline.depthWrite !== state.depthWrite) {
                 state.depthWrite = pipeline.depthWrite;
@@ -2356,12 +2620,14 @@ const allowedCommandProps = [
             if (pipeline.vertexLayout) state.vertexLayout = pipeline.vertexLayout;
             this.checkError();
         },
-        applyUniforms (uniforms, cmd) {
-            const gl = this.gl;
-            const { program , activeTextures  } = this.state;
-            if (!program) {
+        checkActiveProgram () {
+            if (!this.state.program) {
                 throw new Error("Trying to draw without an active program");
             }
+        },
+        applyUniforms (uniforms, cmd) {
+            this.checkActiveProgram();
+            const { program, activeTextures } = this.state;
             let numTextures = 0;
             const requiredUniforms = this.debugMode ? Object.keys(program.uniforms) : null;
             for(const name in uniforms){
@@ -2401,7 +2667,7 @@ const allowedCommandProps = [
                     }
                 } else if (!value.length && typeof value === "object") {
                     if (this.debugMode) console.debug(NAMESPACE, "invalid command", cmd);
-                    throw new Error(`Can set uniform "${name}" with an Object value`);
+                    throw new Error(`Can't set uniform "${name}" with an Object value`);
                 } else {
                     program.setUniform(name, value);
                     if (this.debugMode) {
@@ -2415,16 +2681,26 @@ const allowedCommandProps = [
             }
             this.checkError();
         },
-        drawVertexData (cmd) {
-            const { vertexLayout , program , vertexArray  } = this.state;
-            if (!program) {
-                throw new Error("Trying to draw without an active program");
+        applyTransformFeedback (transformFeedback) {
+            const { program } = this.state;
+            if (!program.varyings) {
+                program.varyings = Object.keys(transformFeedback.varyings);
+                gl.transformFeedbackVaryings(program.handle, program.varyings, transformFeedback.bufferMode);
+                gl.linkProgram(program.handle);
+                Object.keys(program.uniforms).forEach((name)=>{
+                    program.uniforms[name].location = getUniformLocation(gl, program, name);
+                });
+                this.checkError();
             }
+        },
+        drawVertexData (cmd) {
+            this.checkActiveProgram();
+            const { vertexLayout, program, vertexArray } = this.state;
             if (this.debugMode) {
                 // TODO: can vertex layout be ever different if it's derived from pipeline's shader?
                 if (Object.keys(vertexLayout).length !== Object.keys(program.attributes).length) {
                     console.debug(NAMESPACE, "Invalid vertex layout not matching the shader", vertexLayout, program.attributes, cmd);
-                    throw new Error("Invalid vertex layout not matching the shader");
+                    throw new Error("Invalid vertex layout not matching the shader. Is any attribute not used in the shader?");
                 }
             }
             if (cmd.vertexArray) {
@@ -2457,27 +2733,16 @@ const allowedCommandProps = [
                 // Sets ctx.state.indexBuffer and ctx.state.activeAttributes
                 enableVertexData(ctx, vertexLayout, cmd, true);
             }
-            const instanced = Object.values(cmd.attributes || cmd.vertexArray.attributes).some((attrib)=>attrib.divisor);
-            const primitive = cmd.pipeline.primitive;
-            if (cmd.indices || cmd.vertexArray?.indices) {
-                // TODO: is that always correct
-                const count = cmd.count || this.state.indexBuffer.length;
-                const offset = cmd.indices?.offset || cmd.vertexArray?.indices?.offset || 0;
-                const type = cmd.indices?.type || cmd.vertexArray?.indices?.offset || this.state.indexBuffer.type;
-                if (instanced) {
-                    gl.drawElementsInstanced(primitive, count, type, offset, cmd.instances);
-                } else {
-                    gl.drawElements(primitive, count, type, offset);
-                }
-            } else if (cmd.count) {
-                const first = 0;
-                if (instanced) {
-                    gl.drawArraysInstanced(primitive, first, cmd.count, cmd.instances);
-                } else {
-                    gl.drawArrays(primitive, first, cmd.count);
-                }
-            } else {
-                throw new Error("Vertex arrays requires elements or count to draw");
+            if (cmd.transformFeedback) {
+                gl.enable(gl.RASTERIZER_DISCARD);
+                gl.bindTransformFeedback(gl.TRANSFORM_FEEDBACK, cmd.transformFeedback.handle);
+                gl.beginTransformFeedback(cmd.transformFeedback.primitiveMode);
+            }
+            draw(ctx, cmd);
+            if (cmd.transformFeedback) {
+                gl.endTransformFeedback();
+                gl.bindTransformFeedback(gl.TRANSFORM_FEEDBACK, null);
+                gl.disable(gl.RASTERIZER_DISCARD);
             }
             this.checkError();
         },
@@ -2491,25 +2756,15 @@ const allowedCommandProps = [
                 });
             }
             this.checkError();
-            if (cmd.scissor) {
-                if (cmd.scissor !== this.state.scissor) {
-                    this.state.scissor = cmd.scissor;
-                    gl.enable(gl.SCISSOR_TEST);
-                    gl.scissor(this.state.scissor[0], this.state.scissor[1], this.state.scissor[2], this.state.scissor[3]);
-                }
-            } else {
-                if (cmd.scissor !== this.state.scissor) {
-                    this.state.scissor = cmd.scissor;
-                    gl.disable(gl.SCISSOR_TEST);
-                }
-            }
             if (cmd.pass) this.applyPass(cmd.pass);
+            this.applyViewport(cmd.viewport);
+            this.applyScissor(cmd.scissor);
+            if (cmd.pass) this.applyClear(cmd.pass);
             if (cmd.pipeline) this.applyPipeline(cmd.pipeline);
-            if (cmd.uniforms) this.applyUniforms(cmd.uniforms);
-            if (cmd.viewport && cmd.viewport !== this.state.viewport) {
-                this.state.viewport = cmd.viewport;
-                gl.viewport(this.state.viewport[0], this.state.viewport[1], this.state.viewport[2], this.state.viewport[3]);
+            if (cmd.transformFeedback) {
+                this.applyTransformFeedback(cmd.transformFeedback);
             }
+            if (cmd.uniforms) this.applyUniforms(cmd.uniforms);
             if (cmd.attributes || cmd.vertexArray) this.drawVertexData(cmd);
         }
     });

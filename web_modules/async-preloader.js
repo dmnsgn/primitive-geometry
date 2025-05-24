@@ -34,7 +34,7 @@ function _objectSpread(target) {
     for(var i = 1; i < arguments.length; i++){
         var source = arguments[i] != null ? arguments[i] : {};
         var ownKeys = Object.keys(source);
-        if (typeof Object.getOwnPropertySymbols === "function") {
+        if (typeof Object.getOwnPropertySymbols === 'function') {
             ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function(sym) {
                 return Object.getOwnPropertyDescriptor(source, sym).enumerable;
             }));
@@ -474,72 +474,6 @@ const isSafari = /^((?!chrome|android).)*safari/i.test(globalThis.navigator?.use
  * ```
  * if you need more than one instance.
  */ class AsyncPreloader {
-    // Utils
-    /**
-     * Fetch wrapper for LoadItem
-     *
-     * @param item Item to fetch
-     * @returns Fetch response
-     */ static fetchItem(item) {
-        return fetch(item.src, item.options || {});
-    }
-    /**
-     * Get an object property by its path in the form 'a[0].b.c' or ['a', '0', 'b', 'c'].
-     * Similar to [lodash.get](https://lodash.com/docs/4.17.5#get).
-     *
-     * @param object Object with nested properties
-     * @param path Path to the desired property
-     * @returns The returned object property
-     */ static getProp(object, path) {
-        const p = Array.isArray(path) ? path : path.split(".").filter((index)=>index.length);
-        if (!p.length) return object;
-        return AsyncPreloader.getProp(object[p.shift()], p);
-    }
-    /**
-     * Get file extension
-     *
-     * @param path
-     * @returns
-     */ static getFileExtension(path) {
-        return (path?.match(/[^\\/]\.([^.\\/]+)$/) || [
-            null
-        ]).pop();
-    }
-    /**
-     * Get file base name
-     *
-     * @param path
-     * @returns
-     */ static getFileBaseName(path) {
-        return path.split(/[\\/]/).pop();
-    }
-    /**
-     * Get file name
-     *
-     * @param path
-     * @returns
-     */ static getFileName(path) {
-        return AsyncPreloader.getFileBaseName(path).split(".").slice(0, -1).join(".") || path;
-    }
-    /**
-     * Retrieve loader key from extension (when the loader option isn't specified in the LoadItem)
-     *
-     * @param extension
-     * @returns
-     */ static getLoaderKey(extension) {
-        const loader = Array.from(AsyncPreloader.loaders).find((loader)=>loader[1].extensions.includes(extension));
-        return loader ? loader[0] : LoaderKey.Text;
-    }
-    /**
-     * Retrieve mime type from extension
-     *
-     * @param loaderKey
-     * @param extension
-     * @returns
-     */ static getMimeType(loaderKey, extension) {
-        const loader = AsyncPreloader.loaders.get(loaderKey);
-        return loader.mimeType[extension] || loader.defaultMimeType;
-    }
     constructor(){
         // Properties
         /**
@@ -776,6 +710,72 @@ const isSafari = /^((?!chrome|android).)*safari/i.test(globalThis.navigator?.use
                 return font;
             });
         };
+    }
+    // Utils
+    /**
+     * Fetch wrapper for LoadItem
+     *
+     * @param item Item to fetch
+     * @returns Fetch response
+     */ static fetchItem(item) {
+        return fetch(item.src, item.options || {});
+    }
+    /**
+     * Get an object property by its path in the form 'a[0].b.c' or ['a', '0', 'b', 'c'].
+     * Similar to [lodash.get](https://lodash.com/docs/4.17.5#get).
+     *
+     * @param object Object with nested properties
+     * @param path Path to the desired property
+     * @returns The returned object property
+     */ static getProp(object, path) {
+        const p = Array.isArray(path) ? path : path.split(".").filter((index)=>index.length);
+        if (!p.length) return object;
+        return AsyncPreloader.getProp(object[p.shift()], p);
+    }
+    /**
+     * Get file extension
+     *
+     * @param path
+     * @returns
+     */ static getFileExtension(path) {
+        return (path?.match(/[^\\/]\.([^.\\/]+)$/) || [
+            null
+        ]).pop();
+    }
+    /**
+     * Get file base name
+     *
+     * @param path
+     * @returns
+     */ static getFileBaseName(path) {
+        return path.split(/[\\/]/).pop();
+    }
+    /**
+     * Get file name
+     *
+     * @param path
+     * @returns
+     */ static getFileName(path) {
+        return AsyncPreloader.getFileBaseName(path).split(".").slice(0, -1).join(".") || path;
+    }
+    /**
+     * Retrieve loader key from extension (when the loader option isn't specified in the LoadItem)
+     *
+     * @param extension
+     * @returns
+     */ static getLoaderKey(extension) {
+        const loader = Array.from(AsyncPreloader.loaders).find((loader)=>loader[1].extensions.includes(extension));
+        return loader ? loader[0] : LoaderKey.Text;
+    }
+    /**
+     * Retrieve mime type from extension
+     *
+     * @param loaderKey
+     * @param extension
+     * @returns
+     */ static getMimeType(loaderKey, extension) {
+        const loader = AsyncPreloader.loaders.get(loaderKey);
+        return loader.mimeType[extension] || loader.defaultMimeType;
     }
 }
 /**

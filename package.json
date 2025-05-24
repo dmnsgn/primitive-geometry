@@ -65,17 +65,18 @@
     "dev": "npx snowdev dev"
   },
   "devDependencies": {
-    "async-preloader": "^8.0.3",
+    "async-preloader": "^8.0.4",
     "cameras": "^3.1.1",
-    "es-module-shims": "^1.8.2",
+    "es-module-shims": "^2.5.1",
     "gl-matrix": "^3.4.3",
-    "pex-context": "^3.0.0-alpha.1",
-    "pex-geom": "^3.0.0-alpha.3",
-    "tweakpane": "^4.0.3",
-    "typed-array-interleave": "^2.0.0"
+    "pex-context": "^3.2.0",
+    "pex-geom": "^3.0.2",
+    "tweakpane": "^4.0.5",
+    "typed-array-interleave": "^2.0.1"
   },
   "engines": {
-    "node": ">=15.0.0",
-    "npm": ">=7.0.0"
+    "node": ">=22.0.0",
+    "npm": ">=10.5.1",
+    "snowdev": ">=2.3.x"
   }
 }

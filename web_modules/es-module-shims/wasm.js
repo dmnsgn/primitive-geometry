@@ -1,102 +1,225 @@
-import { B as Buffer } from '../_chunks/polyfills-uWK2zS7F.js';
+import { B as Buffer } from '../_chunks/polyfills-BwRuO6W0.js';
 
-/* ES Module Shims Wasm 1.8.2 */ (function() {
-    const hasWindow = typeof window !== "undefined";
-    const hasDocument = typeof document !== "undefined";
+/** ES Module Shims Wasm @version 2.5.1 */ (function() {
+    let invalidate;
+    const hotReload$1 = (url)=>invalidate(new URL(url, baseUrl).href);
+    const initHotReload = ()=>{
+        let _importHook = importHook, _resolveHook = resolveHook, _metaHook = metaHook;
+        let defaultResolve;
+        let hotResolveHook = (id, parent, _defaultResolve)=>{
+            if (!defaultResolve) defaultResolve = _defaultResolve;
+            const originalParent = stripVersion(parent);
+            const url = stripVersion(defaultResolve(id, originalParent));
+            const hotState = getHotState(url);
+            const parents = hotState.p;
+            if (!parents.includes(originalParent)) parents.push(originalParent);
+            return toVersioned(url, hotState);
+        };
+        const hotImportHook = (url, _, __, source, sourceType)=>{
+            const hotState = getHotState(url);
+            hotState.e = typeof source === 'string' ? source : true;
+            hotState.t = sourceType;
+        };
+        const hotMetaHook = (metaObj, url)=>{
+            metaObj.hot = new Hot(url);
+        };
+        const Hot = class Hot {
+            constructor(url){
+                this.data = getHotState(this.url = stripVersion(url)).d;
+            }
+            accept(deps, cb) {
+                if (typeof deps === 'function') {
+                    cb = deps;
+                    deps = null;
+                }
+                const hotState = getHotState(this.url);
+                if (!hotState.A) return;
+                (hotState.a = hotState.a || []).push([
+                    typeof deps === 'string' ? defaultResolve(deps, this.url) : deps ? deps.map((d)=>defaultResolve(d, this.url)) : null,
+                    cb
+                ]);
+            }
+            dispose(cb) {
+                getHotState(this.url).u = cb;
+            }
+            invalidate() {
+                const hotState = getHotState(this.url);
+                hotState.a = null;
+                hotState.A = true;
+                const seen = [
+                    this.url
+                ];
+                for (const p of hotState.p)invalidate(p, this.url, seen);
+            }
+        };
+        const versionedRegEx = /\?v=\d+$/;
+        const stripVersion = (url)=>{
+            const versionMatch = url.match(versionedRegEx);
+            return versionMatch ? url.slice(0, -versionMatch[0].length) : url;
+        };
+        const toVersioned = (url, hotState)=>{
+            const { v } = hotState;
+            return url + (v ? '?v=' + v : '');
+        };
+        let hotRegistry = {}, curInvalidationRoots = new Set(), curInvalidationInterval;
+        const getHotState = (url)=>hotRegistry[url] || (hotRegistry[url] = {
+                // version
+                v: 0,
+                // accept list ([deps, cb] pairs)
+                a: null,
+                // accepting acceptors
+                A: true,
+                // unload callback
+                u: null,
+                // entry point or inline script source
+                e: false,
+                // hot data
+                d: {},
+                // parents
+                p: [],
+                // source type
+                t: undefined
+            });
+        invalidate = (url, fromUrl, seen)=>{
+            if (seen === void 0) seen = [];
+            const hotState = hotRegistry[url];
+            if (!hotState || seen.includes(url)) return false;
+            seen.push(url);
+            hotState.A = false;
+            if (fromUrl && hotState.a && hotState.a.some((param)=>{
+                let [d] = param;
+                return d && (typeof d === 'string' ? d === fromUrl : d.includes(fromUrl));
+            })) {
+                curInvalidationRoots.add(fromUrl);
+            } else {
+                if (hotState.e || hotState.a) curInvalidationRoots.add(url);
+                hotState.v++;
+                if (!hotState.a) for (const parent of hotState.p)invalidate(parent, url, seen);
+            }
+            if (!curInvalidationInterval) curInvalidationInterval = setTimeout(handleInvalidations, hotReloadInterval);
+            return true;
+        };
+        const handleInvalidations = ()=>{
+            curInvalidationInterval = null;
+            const earlyRoots = new Set();
+            for (const root of curInvalidationRoots){
+                const hotState = hotRegistry[root];
+                topLevelLoad(toVersioned(root, hotState), baseUrl, defaultFetchOpts, typeof hotState.e === 'string' ? hotState.e : undefined, false, undefined, hotState.t).then((m)=>{
+                    if (hotState.a) {
+                        hotState.a.every((param)=>{
+                            let [d, c] = param;
+                            return d === null && !earlyRoots.has(c) && c(m);
+                        });
+                        // unload should be the latest unload handler from the just loaded module
+                        if (hotState.u) {
+                            hotState.u(hotState.d);
+                            hotState.u = null;
+                        }
+                    }
+                    for (const parent of hotState.p){
+                        const hotState = hotRegistry[parent];
+                        if (hotState && hotState.a) hotState.a.every(async (param)=>{
+                            let [d, c] = param;
+                            return d && !earlyRoots.has(c) && (typeof d === 'string' ? d === root && c(m) : c(await Promise.all(d.map((d)=>(earlyRoots.push(c), importShim(toVersioned(d, getHotState(d))))))));
+                        });
+                    }
+                }, throwError);
+            }
+            curInvalidationRoots = new Set();
+        };
+        return [
+            _importHook ? chain(_importHook, hotImportHook) : hotImportHook,
+            _resolveHook ? (id, parent, defaultResolve)=>hotResolveHook(id, parent, (id, parent)=>_resolveHook(id, parent, defaultResolve)) : hotResolveHook,
+            _metaHook ? chain(_metaHook, hotMetaHook) : hotMetaHook
+        ];
+    };
+    const hasDocument = typeof document !== 'undefined';
     const noop = ()=>{};
-    const optionsScript = hasDocument ? document.querySelector("script[type=esms-options]") : undefined;
+    const dynamicImport = (u, errUrl)=>import(u);
+    const defineValue = (obj, prop, value)=>Object.defineProperty(obj, prop, {
+            writable: false,
+            configurable: false,
+            value
+        });
+    const optionsScript = hasDocument ? document.querySelector('script[type=esms-options]') : undefined;
     const esmsInitOptions = optionsScript ? JSON.parse(optionsScript.innerHTML) : {};
     Object.assign(esmsInitOptions, self.esmsInitOptions || {});
-    let shimMode = hasDocument ? !!esmsInitOptions.shimMode : true;
-    const importHook = globalHook(shimMode && esmsInitOptions.onimport);
-    const resolveHook = globalHook(shimMode && esmsInitOptions.resolve);
-    let fetchHook = esmsInitOptions.fetch ? globalHook(esmsInitOptions.fetch) : fetch;
-    const metaHook = esmsInitOptions.meta ? globalHook(shimMode && esmsInitOptions.meta) : noop;
+    const version = "2.5.1";
+    const r = esmsInitOptions.version;
+    if (self.importShim || r && r !== version) {
+        return;
+    }
+    // shim mode is determined on initialization, no late shim mode
+    const shimMode = esmsInitOptions.shimMode || hasDocument && document.querySelectorAll('script[type=module-shim],script[type=importmap-shim],link[rel=modulepreload-shim]').length > 0;
+    let importHook, resolveHook, fetchHook = fetch, metaHook, tsTransform = esmsInitOptions.tsTransform || hasDocument && document.currentScript && document.currentScript.src.replace(/(\.\w+)?\.js$/, '-typescript.js') || './es-module-shims-typescript.js';
+    const defaultFetchOpts = {
+        credentials: 'same-origin'
+    };
+    const { revokeBlobURLs, noLoadEventRetriggers, enforceIntegrity, hotReload, hotReloadInterval = 100, nativePassthrough = !hotReload } = esmsInitOptions;
+    const globalHook = (name)=>typeof name === 'string' ? self[name] : name;
+    if (esmsInitOptions.onimport) importHook = globalHook(esmsInitOptions.onimport);
+    if (esmsInitOptions.resolve) resolveHook = globalHook(esmsInitOptions.resolve);
+    if (esmsInitOptions.fetch) fetchHook = globalHook(esmsInitOptions.fetch);
+    if (esmsInitOptions.meta) metaHook = globalHook(esmsInitOptions.meta);
+    if (hotReload) [importHook, resolveHook, metaHook] = initHotReload();
     const mapOverrides = esmsInitOptions.mapOverrides;
     let nonce = esmsInitOptions.nonce;
     if (!nonce && hasDocument) {
-        const nonceElement = document.querySelector("script[nonce]");
-        if (nonceElement) nonce = nonceElement.nonce || nonceElement.getAttribute("nonce");
+        const nonceElement = document.querySelector('script[nonce]');
+        if (nonceElement) nonce = nonceElement.nonce || nonceElement.getAttribute('nonce');
     }
-    const onerror = globalHook(esmsInitOptions.onerror || noop);
-    const onpolyfill = esmsInitOptions.onpolyfill ? globalHook(esmsInitOptions.onpolyfill) : ()=>{
-        console.log("%c^^ Module TypeError above is polyfilled and can be ignored ^^", "font-weight:900;color:#391");
-    };
-    const { revokeBlobURLs , noLoadEventRetriggers , enforceIntegrity  } = esmsInitOptions;
-    function globalHook(name) {
-        return typeof name === "string" ? self[name] : name;
-    }
+    const onerror = globalHook(esmsInitOptions.onerror || console.error.bind(console));
     const enable = Array.isArray(esmsInitOptions.polyfillEnable) ? esmsInitOptions.polyfillEnable : [];
-    const cssModulesEnabled = enable.includes("css-modules");
-    const jsonModulesEnabled = enable.includes("json-modules");
-    const edge = !navigator.userAgentData && !!navigator.userAgent.match(/Edge\/\d+\.\d+/);
-    const baseUrl = hasDocument ? document.baseURI : `${location.protocol}//${location.host}${location.pathname.includes("/") ? location.pathname.slice(0, location.pathname.lastIndexOf("/") + 1) : location.pathname}`;
+    const enableAll = esmsInitOptions.polyfillEnable === 'all' || enable.includes('all');
+    const wasmInstancePhaseEnabled = enable.includes('wasm-modules') || enable.includes('wasm-module-instances') || enableAll;
+    const wasmSourcePhaseEnabled = enable.includes('wasm-modules') || enable.includes('wasm-module-sources') || enableAll;
+    const deferPhaseEnabled = enable.includes('import-defer') || enableAll;
+    const onpolyfill = esmsInitOptions.onpolyfill ? globalHook(esmsInitOptions.onpolyfill) : ()=>{
+        console.log(`%c^^ Module error above is polyfilled and can be ignored ^^`, 'font-weight:900;color:#391');
+    };
+    const baseUrl = hasDocument ? document.baseURI : `${location.protocol}//${location.host}${location.pathname.includes('/') ? location.pathname.slice(0, location.pathname.lastIndexOf('/') + 1) : location.pathname}`;
     const createBlob = (source, type)=>{
-        if (type === void 0) type = "text/javascript";
+        if (type === void 0) type = 'text/javascript';
         return URL.createObjectURL(new Blob([
             source
         ], {
             type
         }));
     };
-    let { skip  } = esmsInitOptions;
+    let { skip } = esmsInitOptions;
     if (Array.isArray(skip)) {
         const l = skip.map((s)=>new URL(s, baseUrl).href);
-        skip = (s)=>l.some((i)=>i[i.length - 1] === "/" && s.startsWith(i) || s === i);
-    } else if (typeof skip === "string") {
+        skip = (s)=>l.some((i)=>i[i.length - 1] === '/' && s.startsWith(i) || s === i);
+    } else if (typeof skip === 'string') {
         const r = new RegExp(skip);
         skip = (s)=>r.test(s);
     } else if (skip instanceof RegExp) {
         skip = (s)=>skip.test(s);
     }
-    const eoop = (err)=>setTimeout(()=>{
-            throw err;
-        });
+    const dispatchError = (error)=>self.dispatchEvent(Object.assign(new Event('error'), {
+            error
+        }));
     const throwError = (err)=>{
-        (self.reportError || hasWindow && window.safari && console.error || eoop)(err), void onerror(err);
+        (self.reportError || dispatchError)(err), void onerror(err);
     };
-    function fromParent(parent) {
-        return parent ? ` imported from ${parent}` : "";
-    }
-    let importMapSrcOrLazy = false;
-    function setImportMapSrcOrLazy() {
-        importMapSrcOrLazy = true;
-    }
-    // shim mode is determined on initialization, no late shim mode
-    if (!shimMode) {
-        if (document.querySelectorAll("script[type=module-shim],script[type=importmap-shim],link[rel=modulepreload-shim]").length) {
-            shimMode = true;
-        } else {
-            let seenScript = false;
-            for (const script of document.querySelectorAll("script[type=module],script[type=importmap]")){
-                if (!seenScript) {
-                    if (script.type === "module" && !script.ep) seenScript = true;
-                } else if (script.type === "importmap" && seenScript) {
-                    importMapSrcOrLazy = true;
-                    break;
-                }
-            }
-        }
-    }
+    const fromParent = (parent)=>parent ? ` imported from ${parent}` : '';
     const backslashRegEx = /\\/g;
-    function asURL(url) {
+    const asURL = (url)=>{
         try {
-            if (url.indexOf(":") !== -1) return new URL(url).href;
+            if (url.indexOf(':') !== -1) return new URL(url).href;
         } catch (_) {}
-    }
-    function resolveUrl(relUrl, parentUrl) {
-        return resolveIfNotPlainOrUrl(relUrl, parentUrl) || asURL(relUrl) || resolveIfNotPlainOrUrl("./" + relUrl, parentUrl);
-    }
-    function resolveIfNotPlainOrUrl(relUrl, parentUrl) {
-        const hIdx = parentUrl.indexOf("#"), qIdx = parentUrl.indexOf("?");
+    };
+    const resolveUrl = (relUrl, parentUrl)=>resolveIfNotPlainOrUrl(relUrl, parentUrl) || asURL(relUrl) || resolveIfNotPlainOrUrl('./' + relUrl, parentUrl);
+    const resolveIfNotPlainOrUrl = (relUrl, parentUrl)=>{
+        const hIdx = parentUrl.indexOf('#'), qIdx = parentUrl.indexOf('?');
         if (hIdx + qIdx > -2) parentUrl = parentUrl.slice(0, hIdx === -1 ? qIdx : qIdx === -1 || qIdx > hIdx ? hIdx : qIdx);
-        if (relUrl.indexOf("\\") !== -1) relUrl = relUrl.replace(backslashRegEx, "/");
+        if (relUrl.indexOf('\\') !== -1) relUrl = relUrl.replace(backslashRegEx, '/');
         // protocol-relative
-        if (relUrl[0] === "/" && relUrl[1] === "/") {
-            return parentUrl.slice(0, parentUrl.indexOf(":") + 1) + relUrl;
-        } else if (relUrl[0] === "." && (relUrl[1] === "/" || relUrl[1] === "." && (relUrl[2] === "/" || relUrl.length === 2 && (relUrl += "/")) || relUrl.length === 1 && (relUrl += "/")) || relUrl[0] === "/") {
-            const parentProtocol = parentUrl.slice(0, parentUrl.indexOf(":") + 1);
-            if (parentProtocol === "blob:") {
+        if (relUrl[0] === '/' && relUrl[1] === '/') {
+            return parentUrl.slice(0, parentUrl.indexOf(':') + 1) + relUrl;
+        } else if (relUrl[0] === '.' && (relUrl[1] === '/' || relUrl[1] === '.' && (relUrl[2] === '/' || relUrl.length === 2 && (relUrl += '/')) || relUrl.length === 1 && (relUrl += '/')) || relUrl[0] === '/') {
+            const parentProtocol = parentUrl.slice(0, parentUrl.indexOf(':') + 1);
+            if (parentProtocol === 'blob:') {
                 throw new TypeError(`Failed to resolve module specifier "${relUrl}". Invalid relative url or base scheme isn't hierarchical.`);
             }
             // Disabled, but these cases will give inconsistent results for deep backtracking
@@ -105,184 +228,165 @@ import { B as Buffer } from '../_chunks/polyfills-uWK2zS7F.js';
             // read pathname from parent URL
             // pathname taken to be part after leading "/"
             let pathname;
-            if (parentUrl[parentProtocol.length + 1] === "/") {
+            if (parentUrl[parentProtocol.length + 1] === '/') {
                 // resolving to a :// so we need to read out the auth and host
-                if (parentProtocol !== "file:") {
+                if (parentProtocol !== 'file:') {
                     pathname = parentUrl.slice(parentProtocol.length + 2);
-                    pathname = pathname.slice(pathname.indexOf("/") + 1);
+                    pathname = pathname.slice(pathname.indexOf('/') + 1);
                 } else {
                     pathname = parentUrl.slice(8);
                 }
             } else {
                 // resolving to :/ so pathname is the /... part
-                pathname = parentUrl.slice(parentProtocol.length + (parentUrl[parentProtocol.length] === "/"));
+                pathname = parentUrl.slice(parentProtocol.length + (parentUrl[parentProtocol.length] === '/'));
             }
-            if (relUrl[0] === "/") return parentUrl.slice(0, parentUrl.length - pathname.length - 1) + relUrl;
+            if (relUrl[0] === '/') return parentUrl.slice(0, parentUrl.length - pathname.length - 1) + relUrl;
             // join together and split for removal of .. and . segments
             // looping the string instead of anything fancy for perf reasons
             // '../../../../../z' resolved to 'x/y' is just 'z'
-            const segmented = pathname.slice(0, pathname.lastIndexOf("/") + 1) + relUrl;
+            const segmented = pathname.slice(0, pathname.lastIndexOf('/') + 1) + relUrl;
             const output = [];
             let segmentIndex = -1;
             for(let i = 0; i < segmented.length; i++){
                 // busy reading a segment - only terminate on '/'
                 if (segmentIndex !== -1) {
-                    if (segmented[i] === "/") {
+                    if (segmented[i] === '/') {
                         output.push(segmented.slice(segmentIndex, i + 1));
                         segmentIndex = -1;
                     }
                     continue;
-                } else if (segmented[i] === ".") {
+                } else if (segmented[i] === '.') {
                     // ../ segment
-                    if (segmented[i + 1] === "." && (segmented[i + 2] === "/" || i + 2 === segmented.length)) {
+                    if (segmented[i + 1] === '.' && (segmented[i + 2] === '/' || i + 2 === segmented.length)) {
                         output.pop();
                         i += 2;
                         continue;
-                    } else if (segmented[i + 1] === "/" || i + 1 === segmented.length) {
+                    } else if (segmented[i + 1] === '/' || i + 1 === segmented.length) {
                         i += 1;
                         continue;
                     }
                 }
                 // it is the start of a new segment
-                while(segmented[i] === "/")i++;
+                while(segmented[i] === '/')i++;
                 segmentIndex = i;
             }
             // finish reading out the last segment
             if (segmentIndex !== -1) output.push(segmented.slice(segmentIndex));
-            return parentUrl.slice(0, parentUrl.length - pathname.length) + output.join("");
+            return parentUrl.slice(0, parentUrl.length - pathname.length) + output.join('');
         }
-    }
-    function resolveAndComposeImportMap(json, baseUrl, parentMap) {
+    };
+    const resolveAndComposeImportMap = (json, baseUrl, parentMap)=>{
         const outMap = {
-            imports: Object.assign({}, parentMap.imports),
-            scopes: Object.assign({}, parentMap.scopes)
+            imports: {
+                ...parentMap.imports
+            },
+            scopes: {
+                ...parentMap.scopes
+            },
+            integrity: {
+                ...parentMap.integrity
+            }
         };
         if (json.imports) resolveAndComposePackages(json.imports, outMap.imports, baseUrl, parentMap);
         if (json.scopes) for(let s in json.scopes){
             const resolvedScope = resolveUrl(s, baseUrl);
             resolveAndComposePackages(json.scopes[s], outMap.scopes[resolvedScope] || (outMap.scopes[resolvedScope] = {}), baseUrl, parentMap);
         }
+        if (json.integrity) resolveAndComposeIntegrity(json.integrity, outMap.integrity, baseUrl);
         return outMap;
-    }
-    function getMatch(path, matchObj) {
+    };
+    const getMatch = (path, matchObj)=>{
         if (matchObj[path]) return path;
         let sepIndex = path.length;
         do {
             const segment = path.slice(0, sepIndex + 1);
             if (segment in matchObj) return segment;
-        }while ((sepIndex = path.lastIndexOf("/", sepIndex - 1)) !== -1);
-    }
-    function applyPackages(id, packages) {
+        }while ((sepIndex = path.lastIndexOf('/', sepIndex - 1)) !== -1);
+    };
+    const applyPackages = (id, packages)=>{
         const pkgName = getMatch(id, packages);
         if (pkgName) {
             const pkg = packages[pkgName];
             if (pkg === null) return;
             return pkg + id.slice(pkgName.length);
         }
-    }
-    function resolveImportMap(importMap, resolvedOrPlain, parentUrl) {
+    };
+    const resolveImportMap = (importMap, resolvedOrPlain, parentUrl)=>{
         let scopeUrl = parentUrl && getMatch(parentUrl, importMap.scopes);
         while(scopeUrl){
             const packageResolution = applyPackages(resolvedOrPlain, importMap.scopes[scopeUrl]);
             if (packageResolution) return packageResolution;
-            scopeUrl = getMatch(scopeUrl.slice(0, scopeUrl.lastIndexOf("/")), importMap.scopes);
+            scopeUrl = getMatch(scopeUrl.slice(0, scopeUrl.lastIndexOf('/')), importMap.scopes);
         }
-        return applyPackages(resolvedOrPlain, importMap.imports) || resolvedOrPlain.indexOf(":") !== -1 && resolvedOrPlain;
-    }
-    function resolveAndComposePackages(packages, outPackages, baseUrl, parentMap) {
+        return applyPackages(resolvedOrPlain, importMap.imports) || resolvedOrPlain.indexOf(':') !== -1 && resolvedOrPlain;
+    };
+    const resolveAndComposePackages = (packages, outPackages, baseUrl, parentMap)=>{
         for(let p in packages){
             const resolvedLhs = resolveIfNotPlainOrUrl(p, baseUrl) || p;
             if ((!shimMode || !mapOverrides) && outPackages[resolvedLhs] && outPackages[resolvedLhs] !== packages[resolvedLhs]) {
-                throw Error(`Rejected map override "${resolvedLhs}" from ${outPackages[resolvedLhs]} to ${packages[resolvedLhs]}.`);
+                console.warn(`es-module-shims: Rejected map override "${resolvedLhs}" from ${outPackages[resolvedLhs]} to ${packages[resolvedLhs]}.`);
+                continue;
             }
             let target = packages[p];
-            if (typeof target !== "string") continue;
+            if (typeof target !== 'string') continue;
             const mapped = resolveImportMap(parentMap, resolveIfNotPlainOrUrl(target, baseUrl) || target, baseUrl);
             if (mapped) {
                 outPackages[resolvedLhs] = mapped;
                 continue;
             }
-            console.warn(`Mapping "${p}" -> "${packages[p]}" does not resolve`);
+            console.warn(`es-module-shims: Mapping "${p}" -> "${packages[p]}" does not resolve`);
         }
-    }
-    let dynamicImport = !hasDocument && (0, eval)("u=>import(u)");
-    let supportsDynamicImport;
-    const dynamicImportCheck = hasDocument && new Promise((resolve)=>{
-        const s = Object.assign(document.createElement("script"), {
-            src: createBlob("self._d=u=>import(u)"),
-            ep: true
-        });
-        s.setAttribute("nonce", nonce);
-        s.addEventListener("load", ()=>{
-            if (!(supportsDynamicImport = !!(dynamicImport = self._d))) {
-                let err;
-                window.addEventListener("error", (_err)=>err = _err);
-                dynamicImport = (url, opts)=>new Promise((resolve, reject)=>{
-                        const s = Object.assign(document.createElement("script"), {
-                            type: "module",
-                            src: createBlob(`import*as m from'${url}';self._esmsi=m`)
-                        });
-                        err = undefined;
-                        s.ep = true;
-                        if (nonce) s.setAttribute("nonce", nonce);
-                        // Safari is unique in supporting module script error events
-                        s.addEventListener("error", cb);
-                        s.addEventListener("load", cb);
-                        function cb(_err) {
-                            document.head.removeChild(s);
-                            if (self._esmsi) {
-                                resolve(self._esmsi, baseUrl);
-                                self._esmsi = undefined;
-                            } else {
-                                reject(!(_err instanceof Event) && _err || err && err.error || new Error(`Error loading ${opts && opts.errUrl || url} (${s.src}).`));
-                                err = undefined;
-                            }
-                        }
-                        document.head.appendChild(s);
-                    });
+    };
+    const resolveAndComposeIntegrity = (integrity, outIntegrity, baseUrl)=>{
+        for(let p in integrity){
+            const resolvedLhs = resolveIfNotPlainOrUrl(p, baseUrl) || p;
+            if ((!shimMode || !mapOverrides) && outIntegrity[resolvedLhs] && outIntegrity[resolvedLhs] !== integrity[resolvedLhs]) {
+                console.warn(`es-module-shims: Rejected map integrity override "${resolvedLhs}" from ${outIntegrity[resolvedLhs]} to ${integrity[resolvedLhs]}.`);
             }
-            document.head.removeChild(s);
-            delete self._d;
-            resolve();
-        });
-        document.head.appendChild(s);
-    });
+            outIntegrity[resolvedLhs] = integrity[p];
+        }
+    };
     // support browsers without dynamic import support (eg Firefox 6x)
-    let supportsJsonAssertions = false;
-    let supportsCssAssertions = false;
+    let supportsJsonType = false;
+    let supportsCssType = false;
     const supports = hasDocument && HTMLScriptElement.supports;
-    let supportsImportMaps = supports && supports.name === "supports" && supports("importmap");
-    let supportsImportMeta = supportsDynamicImport;
-    const importMetaCheck = "import.meta";
-    const cssModulesCheck = `import"x"assert{type:"css"}`;
-    const jsonModulesCheck = `import"x"assert{type:"json"}`;
-    let featureDetectionPromise = Promise.resolve(dynamicImportCheck).then(()=>{
-        if (!supportsDynamicImport) return;
+    let supportsImportMaps = supports && supports.name === 'supports' && supports('importmap');
+    let supportsWasmInstancePhase = false;
+    let supportsWasmSourcePhase = false;
+    let supportsMultipleImportMaps = false;
+    const wasmBytes = [
+        0,
+        97,
+        115,
+        109,
+        1,
+        0,
+        0,
+        0
+    ];
+    let featureDetectionPromise = async function() {
         if (!hasDocument) return Promise.all([
-            supportsImportMaps || dynamicImport(createBlob(importMetaCheck)).then(()=>supportsImportMeta = true, noop),
-            cssModulesEnabled && dynamicImport(createBlob(cssModulesCheck.replace("x", createBlob("", "text/css")))).then(()=>supportsCssAssertions = true, noop),
-            jsonModulesEnabled && dynamicImport(createBlob(jsonModulescheck.replace("x", createBlob("{}", "text/json")))).then(()=>supportsJsonAssertions = true, noop)
+            import(createBlob(`import"${createBlob('{}', 'text/json')}"with{type:"json"}`)).then(()=>(supportsJsonType = true, import(createBlob(`import"${createBlob('', 'text/css')}"with{type:"css"}`)).then(()=>supportsCssType = true, noop)), noop),
+            wasmInstancePhaseEnabled && import(createBlob(`import"${createBlob(new Uint8Array(wasmBytes), 'application/wasm')}"`)).then(()=>supportsWasmInstancePhase = true, noop),
+            wasmSourcePhaseEnabled && import(createBlob(`import source x from"${createBlob(new Uint8Array(wasmBytes), 'application/wasm')}"`)).then(()=>supportsWasmSourcePhase = true, noop)
         ]);
+        const msgTag = `s${version}`;
         return new Promise((resolve)=>{
-            const iframe = document.createElement("iframe");
-            iframe.style.display = "none";
-            iframe.setAttribute("nonce", nonce);
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.setAttribute('nonce', nonce);
             function cb(param) {
-                let { data  } = param;
-                const isFeatureDetectionMessage = Array.isArray(data) && data[0] === "esms";
-                if (!isFeatureDetectionMessage) {
-                    return;
-                }
-                supportsImportMaps = data[1];
-                supportsImportMeta = data[2];
-                supportsCssAssertions = data[3];
-                supportsJsonAssertions = data[4];
+                let { data } = param;
+                const isFeatureDetectionMessage = Array.isArray(data) && data[0] === msgTag;
+                if (!isFeatureDetectionMessage) return;
+                [, supportsImportMaps, supportsMultipleImportMaps, supportsJsonType, supportsCssType, supportsWasmSourcePhase, supportsWasmInstancePhase] = data;
                 resolve();
                 document.head.removeChild(iframe);
-                window.removeEventListener("message", cb, false);
+                window.removeEventListener('message', cb, false);
             }
-            window.addEventListener("message", cb, false);
-            const importMapTest = `<script nonce=${nonce || ""}>b=(s,type='text/javascript')=>URL.createObjectURL(new Blob([s],{type}));document.head.appendChild(Object.assign(document.createElement('script'),{type:'importmap',nonce:"${nonce}",innerText:\`{"imports":{"x":"\${b('')}"}}\`}));Promise.all([${supportsImportMaps ? "true,true" : `'x',b('${importMetaCheck}')`}, ${cssModulesEnabled ? `b('${cssModulesCheck}'.replace('x',b('','text/css')))` : "false"}, ${jsonModulesEnabled ? `b('${jsonModulesCheck}'.replace('x',b('{}','text/json')))` : "false"}].map(x =>typeof x==='string'?import(x).then(x =>!!x,()=>false):x)).then(a=>parent.postMessage(['esms'].concat(a),'*'))<${""}/script>`;
+            window.addEventListener('message', cb, false);
+            // Feature checking with careful avoidance of unnecessary work - all gated on initial import map supports check. CSS gates on JSON feature check, Wasm instance phase gates on wasm source phase check.
+            const importMapTest = `<script nonce=${nonce || ''}>b=(s,type='text/javascript')=>URL.createObjectURL(new Blob([s],{type}));c=u=>import(u).then(()=>true,()=>false);i=innerText=>document.head.appendChild(Object.assign(document.createElement('script'),{type:'importmap',nonce:"${nonce}",innerText}));i(\`{"imports":{"x":"\${b('')}"}}\`);i(\`{"imports":{"y":"\${b('')}"}}\`);cm=${supportsImportMaps ? `c(b(\`import"\${b('{}','text/json')}"with{type:"json"}\`))` : 'false'};sp=${supportsImportMaps && wasmSourcePhaseEnabled ? `c(b(\`import source x from "\${b(new Uint8Array(${JSON.stringify(wasmBytes)}),'application/wasm')\}"\`))` : 'false'};Promise.all([${supportsImportMaps ? 'true' : "c('x')"},${supportsImportMaps ? "c('y')" : false},cm,${supportsImportMaps ? `cm.then(s=>s?c(b(\`import"\${b('','text/css')\}"with{type:"css"}\`)):false)` : 'false'},sp,${supportsImportMaps && wasmInstancePhaseEnabled ? `${wasmSourcePhaseEnabled ? 'sp.then(s=>s?' : ''}c(b(\`import"\${b(new Uint8Array(${JSON.stringify(wasmBytes)}),'application/wasm')\}"\`))${wasmSourcePhaseEnabled ? ':false)' : ''}` : 'false'}]).then(a=>parent.postMessage(['${msgTag}'].concat(a),'*'))<${''}/script>`;
             // Safari will call onload eagerly on head injection, but we don't want the Wechat
             // path to trigger before setting srcdoc, therefore we track the timing
             let readyForOnload = false, onloadCalledWhileNotReady = false;
@@ -295,8 +399,8 @@ import { B as Buffer } from '../_chunks/polyfills-uWK2zS7F.js';
                 // But iframe sandboxes don't support contentDocument so we do this as a fallback
                 const doc = iframe.contentDocument;
                 if (doc && doc.head.childNodes.length === 0) {
-                    const s = doc.createElement("script");
-                    if (nonce) s.setAttribute("nonce", nonce);
+                    const s = doc.createElement('script');
+                    if (nonce) s.setAttribute('nonce', nonce);
                     s.innerHTML = importMapTest.slice(15 + (nonce ? nonce.length : 0), -9);
                     doc.head.appendChild(s);
                 }
@@ -308,50 +412,55 @@ import { B as Buffer } from '../_chunks/polyfills-uWK2zS7F.js';
             // setting src to a blob URL results in a navigation event in webviews
             // document.write gives usability warnings
             readyForOnload = true;
-            if ("srcdoc" in iframe) iframe.srcdoc = importMapTest;
+            if ('srcdoc' in iframe) iframe.srcdoc = importMapTest;
             else iframe.contentDocument.write(importMapTest);
             // retrigger onload for Safari only if necessary
             if (onloadCalledWhileNotReady) doOnload();
         });
-    });
-    /* es-module-lexer 1.4.1 */ const A = 1 === new Uint8Array(new Uint16Array([
+    }();
+    /* es-module-lexer 1.7.0 */ var ImportType;
+    !function(A) {
+        A[A.Static = 1] = "Static", A[A.Dynamic = 2] = "Dynamic", A[A.ImportMeta = 3] = "ImportMeta", A[A.StaticSourcePhase = 4] = "StaticSourcePhase", A[A.DynamicSourcePhase = 5] = "DynamicSourcePhase", A[A.StaticDeferPhase = 6] = "StaticDeferPhase", A[A.DynamicDeferPhase = 7] = "DynamicDeferPhase";
+    }(ImportType || (ImportType = {}));
+    const A = 1 === new Uint8Array(new Uint16Array([
         1
     ]).buffer)[0];
     function parse(E, g) {
         if (g === void 0) g = "@";
         if (!C) return init.then(()=>parse(E));
-        const I = E.length + 1, k = (C.__heap_base.value || C.__heap_base) + 4 * I - C.memory.buffer.byteLength;
-        k > 0 && C.memory.grow(Math.ceil(k / 65536));
+        const I = E.length + 1, w = (C.__heap_base.value || C.__heap_base) + 4 * I - C.memory.buffer.byteLength;
+        w > 0 && C.memory.grow(Math.ceil(w / 65536));
         const K = C.sa(I - 1);
         if ((A ? B : Q)(E, new Uint16Array(C.memory.buffer, K, I)), !C.parse()) throw Object.assign(new Error(`Parse error ${g}:${E.slice(0, C.e()).split("\n").length}:${C.e() - E.lastIndexOf("\n", C.e() - 1)}`), {
             idx: C.e()
         });
         const o = [], D = [];
         for(; C.ri();){
-            const A = C.is(), Q = C.ie(), B = C.ai(), g = C.id(), I = C.ss(), k = C.se();
-            let K;
-            C.ip() && (K = w(E.slice(-1 === g ? A - 1 : A, -1 === g ? Q + 1 : Q))), o.push({
-                n: K,
+            const A = C.is(), Q = C.ie(), B = C.it(), g = C.ai(), I = C.id(), w = C.ss(), K = C.se();
+            let D;
+            C.ip() && (D = k(E.slice(-1 === I ? A - 1 : A, -1 === I ? Q + 1 : Q))), o.push({
+                n: D,
+                t: B,
                 s: A,
                 e: Q,
-                ss: I,
-                se: k,
-                d: g,
-                a: B
+                ss: w,
+                se: K,
+                d: I,
+                a: g
             });
         }
         for(; C.re();){
-            const A = C.es(), Q = C.ee(), B = C.els(), g = C.ele(), I = E.slice(A, Q), k = I[0], K = B < 0 ? void 0 : E.slice(B, g), o = K ? K[0] : "";
+            const A = C.es(), Q = C.ee(), B = C.els(), g = C.ele(), I = E.slice(A, Q), w = I[0], K = B < 0 ? void 0 : E.slice(B, g), o = K ? K[0] : "";
             D.push({
                 s: A,
                 e: Q,
                 ls: B,
                 le: g,
-                n: '"' === k || "'" === k ? w(I) : I,
-                ln: '"' === o || "'" === o ? w(K) : K
+                n: '"' === w || "'" === w ? k(I) : I,
+                ln: '"' === o || "'" === o ? k(K) : K
             });
         }
-        function w(A) {
+        function k(A) {
             try {
                 return (0, eval)(A);
             } catch (A) {}
@@ -377,269 +486,379 @@ import { B as Buffer } from '../_chunks/polyfills-uWK2zS7F.js';
         for(; C < B;)Q[C] = A.charCodeAt(C++);
     }
     let C;
-    const init = WebAssembly.compile((E = "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", "undefined" != typeof Buffer ? Buffer.from(E, "base64") : Uint8Array.from(atob(E), (A)=>A.charCodeAt(0)))).then(WebAssembly.instantiate).then((param)=>{
-        let { exports: A  } = param;
+    const E = ()=>{
+        return A = "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GzYCHAtBAEEAKAKwCkECajYCsAoCQAJAAkACQEEAECkiAUHhAEYNACABQfcARg0BQQAoArAKIQEMAgtBACgCsAoiAUECakHACEEKEC8NAUEGIQIMAgtBACgCsAoiAS8BAkHpAEcNACABLwEEQfQARw0AQQQhAiABLwEGQegARg0BC0EAIAFBfmo2ArAKDwtBACABIAJBAXRqNgKwCgJAQQEQKUH7AEYNAEEAIAE2ArAKDwtBACgCsAoiACECA0BBACACQQJqNgKwCgJAAkACQEEBECkiAkEiRg0AIAJBJ0cNAUEnEBpBAEEAKAKwCkECajYCsApBARApIQIMAgtBIhAaQQBBACgCsApBAmo2ArAKQQEQKSECDAELIAIQLCECCwJAIAJBOkYNAEEAIAE2ArAKDwtBAEEAKAKwCkECajYCsAoCQEEBECkiAkEiRg0AIAJBJ0YNAEEAIAE2ArAKDwsgAhAaQQBBACgCsApBAmo2ArAKAkACQEEBECkiAkEsRg0AIAJB/QBGDQFBACABNgKwCg8LQQBBACgCsApBAmo2ArAKQQEQKUH9AEYNAEEAKAKwCiECDAELC0EAKALwCSIBIAA2AhAgAUEAKAKwCkECajYCDAttAQJ/AkACQANAAkAgAEH//wNxIgFBd2oiAkEXSw0AQQEgAnRBn4CABHENAgsgAUGgAUYNASAAIQIgARAoDQJBACECQQBBACgCsAoiAEECajYCsAogAC8BAiIADQAMAgsLIAAhAgsgAkH//wNxC6sBAQR/AkACQEEAKAKwCiICLwEAIgNB4QBGDQAgASEEIAAhBQwBC0EAIAJBBGo2ArAKQQEQKSECQQAoArAKIQUCQAJAIAJBIkYNACACQSdGDQAgAhAsGkEAKAKwCiEEDAELIAIQGkEAQQAoArAKQQJqIgQ2ArAKC0EBECkhA0EAKAKwCiECCwJAIAIgBUYNACAFIARBACAAIAAgAUYiAhtBACABIAIbEAILIAMLcgEEf0EAKAKwCiEAQQAoArQKIQECQAJAA0AgAEECaiECIAAgAU8NAQJAAkAgAi8BACIDQaR/ag4CAQQACyACIQAgA0F2ag4EAgEBAgELIABBBGohAAwACwtBACACNgKwChAlQQAPC0EAIAI2ArAKQd0AC0kBA39BACEDAkAgAkUNAAJAA0AgAC0AACIEIAEtAAAiBUcNASABQQFqIQEgAEEBaiEAIAJBf2oiAg0ADAILCyAEIAVrIQMLIAMLC+wBAgBBgAgLzgEAAHgAcABvAHIAdABtAHAAbwByAHQAZgBvAHIAZQB0AGEAbwB1AHIAYwBlAHIAbwBtAHUAbgBjAHQAaQBvAG4AcwBzAGUAcgB0AHYAbwB5AGkAZQBkAGUAbABlAGMAbwBuAHQAaQBuAGkAbgBzAHQAYQBuAHQAeQBiAHIAZQBhAHIAZQB0AHUAcgBkAGUAYgB1AGcAZwBlAGEAdwBhAGkAdABoAHIAdwBoAGkAbABlAGkAZgBjAGEAdABjAGYAaQBuAGEAbABsAGUAbABzAABB0AkLEAEAAAACAAAAAAQAAEA5AAA=", "undefined" != typeof Buffer ? Buffer.from(A, "base64") : Uint8Array.from(atob(A), (A)=>A.charCodeAt(0));
+        var A;
+    };
+    const init = WebAssembly.compile(E()).then(WebAssembly.instantiate).then((param)=>{
+        let { exports: A } = param;
         C = A;
     });
-    var E;
-    async function _resolve(id, parentUrl) {
+    const _resolve = (id, parentUrl)=>{
+        if (parentUrl === void 0) parentUrl = baseUrl;
         const urlResolved = resolveIfNotPlainOrUrl(id, parentUrl) || asURL(id);
+        const firstResolved = firstImportMap && resolveImportMap(firstImportMap, urlResolved || id, parentUrl);
+        const composedResolved = composedImportMap === firstImportMap ? firstResolved : resolveImportMap(composedImportMap, urlResolved || id, parentUrl);
+        const resolved = composedResolved || firstResolved || throwUnresolved(id, parentUrl);
+        // needsShim, shouldShim per load record to set on parent
+        let n = false, N = false;
+        if (!supportsImportMaps) {
+            // bare specifier -> needs shim
+            if (!urlResolved) n = true;
+            else if (urlResolved !== resolved) N = true;
+        } else if (!supportsMultipleImportMaps) {
+            // bare specifier and not resolved by first import map -> needs shim
+            if (!urlResolved && !firstResolved) n = true;
+            // resolution doesn't match first import map -> should shim
+            if (firstResolved && resolved !== firstResolved) N = true;
+        }
         return {
-            r: resolveImportMap(importMap, urlResolved || id, parentUrl) || throwUnresolved(id, parentUrl),
-            // b = bare specifier
-            b: !urlResolved && !asURL(id)
+            r: resolved,
+            n,
+            N
         };
-    }
-    const resolve = resolveHook ? async (id, parentUrl)=>{
-        let result = resolveHook(id, parentUrl, defaultResolve);
-        // will be deprecated in next major
-        if (result && result.then) result = await result;
+    };
+    const resolve = (id, parentUrl)=>{
+        if (!resolveHook) return _resolve(id, parentUrl);
+        const result = resolveHook(id, parentUrl, defaultResolve);
         return result ? {
             r: result,
-            b: !resolveIfNotPlainOrUrl(id, parentUrl) && !asURL(id)
+            n: true,
+            N: true
         } : _resolve(id, parentUrl);
-    } : _resolve;
-    // importShim('mod');
-    // importShim('mod', { opts });
-    // importShim('mod', { opts }, parentUrl);
-    // importShim('mod', parentUrl);
-    async function importShim(id) {
-        for(var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++){
-            args[_key - 1] = arguments[_key];
+    };
+    // import()
+    async function importShim$1(id, opts, parentUrl) {
+        if (typeof opts === 'string') {
+            parentUrl = opts;
+            opts = undefined;
         }
-        // parentUrl if present will be the last argument
-        let parentUrl = args[args.length - 1];
-        if (typeof parentUrl !== "string") parentUrl = baseUrl;
-        // needed for shim check
-        await initPromise;
-        if (importHook) await importHook(id, typeof args[1] !== "string" ? args[1] : {}, parentUrl);
-        if (acceptingImportMaps || shimMode || !baselinePassthrough) {
-            if (hasDocument) processScriptsAndPreloads(true);
-            if (!shimMode) acceptingImportMaps = false;
+        await initPromise; // needed for shim check
+        if (shimMode || !baselinePassthrough) {
+            if (hasDocument) processScriptsAndPreloads();
+            legacyAcceptingImportMaps = false;
         }
-        await importMapPromise;
-        return topLevelLoad((await resolve(id, parentUrl)).r, {
-            credentials: "same-origin"
-        });
-    }
-    self.importShim = importShim;
-    function defaultResolve(id, parentUrl) {
-        return resolveImportMap(importMap, resolveIfNotPlainOrUrl(id, parentUrl) || id, parentUrl) || throwUnresolved(id, parentUrl);
-    }
-    function throwUnresolved(id, parentUrl) {
-        throw Error(`Unable to resolve specifier '${id}'${fromParent(parentUrl)}`);
-    }
-    const resolveSync = (id, parentUrl)=>{
-        if (parentUrl === void 0) parentUrl = baseUrl;
-        parentUrl = `${parentUrl}`;
-        const result = resolveHook && resolveHook(id, parentUrl, defaultResolve);
-        return result && !result.then ? result : defaultResolve(id, parentUrl);
-    };
-    function metaResolve(id, parentUrl) {
-        if (parentUrl === void 0) parentUrl = this.url;
-        return resolveSync(id, parentUrl);
-    }
-    importShim.resolve = resolveSync;
-    importShim.getImportMap = ()=>JSON.parse(JSON.stringify(importMap));
-    importShim.addImportMap = (importMapIn)=>{
-        if (!shimMode) throw new Error("Unsupported in polyfill mode.");
-        importMap = resolveAndComposeImportMap(importMapIn, baseUrl, importMap);
-    };
-    const registry = importShim._r = {};
-    importShim._w = {};
-    async function loadAll(load, seen) {
-        if (load.b || seen[load.u]) return;
-        seen[load.u] = 1;
-        await load.L;
-        await Promise.all(load.d.map((dep)=>loadAll(dep, seen)));
-        if (!load.n) load.n = load.d.some((dep)=>dep.n);
-    }
-    let importMap = {
-        imports: {},
-        scopes: {}
-    };
-    let baselinePassthrough;
-    const initPromise = featureDetectionPromise.then(()=>{
-        baselinePassthrough = esmsInitOptions.polyfillEnable !== true && supportsDynamicImport && supportsImportMeta && supportsImportMaps && (!jsonModulesEnabled || supportsJsonAssertions) && (!cssModulesEnabled || supportsCssAssertions) && !importMapSrcOrLazy;
-        if (hasDocument) {
-            if (!supportsImportMaps) {
-                const supports = HTMLScriptElement.supports || ((type)=>type === "classic" || type === "module");
-                HTMLScriptElement.supports = (type)=>type === "importmap" || supports(type);
-            }
-            if (shimMode || !baselinePassthrough) {
-                new MutationObserver((mutations)=>{
-                    for (const mutation of mutations){
-                        if (mutation.type !== "childList") continue;
-                        for (const node of mutation.addedNodes){
-                            if (node.tagName === "SCRIPT") {
-                                if (node.type === (shimMode ? "module-shim" : "module")) processScript(node, true);
-                                if (node.type === (shimMode ? "importmap-shim" : "importmap")) processImportMap(node, true);
-                            } else if (node.tagName === "LINK" && node.rel === (shimMode ? "modulepreload-shim" : "modulepreload")) {
-                                processPreload(node);
-                            }
-                        }
-                    }
-                }).observe(document, {
-                    childList: true,
-                    subtree: true
-                });
-                processScriptsAndPreloads();
-                if (document.readyState === "complete") {
-                    readyStateCompleteCheck();
-                } else {
-                    async function readyListener() {
-                        await initPromise;
-                        processScriptsAndPreloads();
-                        if (document.readyState === "complete") {
-                            readyStateCompleteCheck();
-                            document.removeEventListener("readystatechange", readyListener);
-                        }
-                    }
-                    document.addEventListener("readystatechange", readyListener);
-                }
+        let sourceType = undefined;
+        if (typeof opts === 'object') {
+            if (opts.lang === 'ts') sourceType = 'ts';
+            if (typeof opts.with === 'object' && typeof opts.with.type === 'string') {
+                sourceType = opts.with.type;
             }
         }
-        return init;
-    });
-    let importMapPromise = initPromise;
-    let firstPolyfillLoad = true;
-    let acceptingImportMaps = true;
-    async function topLevelLoad(url, fetchOpts, source, nativelyLoaded, lastStaticLoadPromise) {
-        if (!shimMode) acceptingImportMaps = false;
-        await initPromise;
+        return topLevelLoad(id, parentUrl || baseUrl, defaultFetchOpts, undefined, undefined, undefined, sourceType);
+    }
+    // import.source()
+    // (opts not currently supported as no use cases yet)
+    if (shimMode || wasmSourcePhaseEnabled) importShim$1.source = async (id, opts, parentUrl)=>{
+        if (typeof opts === 'string') {
+            parentUrl = opts;
+            opts = undefined;
+        }
+        await initPromise; // needed for shim check
+        if (shimMode || !baselinePassthrough) {
+            if (hasDocument) processScriptsAndPreloads();
+            legacyAcceptingImportMaps = false;
+        }
         await importMapPromise;
-        if (importHook) await importHook(url, typeof fetchOpts !== "string" ? fetchOpts : {}, "");
-        // early analysis opt-out - no need to even fetch if we have feature support
-        if (!shimMode && baselinePassthrough) {
-            // for polyfill case, only dynamic import needs a return value here, and dynamic import will never pass nativelyLoaded
-            if (nativelyLoaded) return null;
-            await lastStaticLoadPromise;
-            return dynamicImport(source ? createBlob(source) : url, {
-                errUrl: url || source
-            });
-        }
-        const load = getOrCreateLoad(url, fetchOpts, null, source);
-        const seen = {};
-        await loadAll(load, seen);
-        lastLoad = undefined;
-        resolveDeps(load, seen);
-        await lastStaticLoadPromise;
-        if (source && !shimMode && !load.n) {
-            if (nativelyLoaded) return;
-            if (revokeBlobURLs) revokeObjectURLs(Object.keys(seen));
-            return await dynamicImport(createBlob(source), {
-                errUrl: source
-            });
-        }
+        const url = resolve(id, parentUrl || baseUrl).r;
+        const load = getOrCreateLoad(url, defaultFetchOpts, undefined, undefined);
         if (firstPolyfillLoad && !shimMode && load.n && nativelyLoaded) {
             onpolyfill();
             firstPolyfillLoad = false;
         }
-        const module = await dynamicImport(!shimMode && !load.n && nativelyLoaded ? load.u : load.b, {
-            errUrl: load.u
-        });
-        // if the top-level load is a shell, run its update function
-        if (load.s) (await dynamicImport(load.s)).u$_(module);
-        if (revokeBlobURLs) revokeObjectURLs(Object.keys(seen));
-        // when tla is supported, this should return the tla promise as an actual handle
-        // so readystate can still correspond to the sync subgraph exec completions
-        return module;
-    }
-    function revokeObjectURLs(registryKeys) {
-        let batch = 0;
-        const keysLength = registryKeys.length;
-        const schedule = self.requestIdleCallback ? self.requestIdleCallback : self.requestAnimationFrame;
-        schedule(cleanup);
-        function cleanup() {
-            const batchStartIndex = batch * 100;
-            if (batchStartIndex > keysLength) return;
-            for (const key of registryKeys.slice(batchStartIndex, batchStartIndex + 100)){
-                const load = registry[key];
-                if (load) URL.revokeObjectURL(load.b);
+        await load.f;
+        return importShim$1._s[load.r];
+    };
+    // import.defer() is just a proxy for import(), since we can't actually defer
+    if (shimMode || deferPhaseEnabled) importShim$1.defer = importShim$1;
+    if (hotReload) importShim$1.hotReload = hotReload$1;
+    const defaultResolve = (id, parentUrl)=>{
+        return resolveImportMap(composedImportMap, resolveIfNotPlainOrUrl(id, parentUrl) || id, parentUrl) || throwUnresolved(id, parentUrl);
+    };
+    const throwUnresolved = (id, parentUrl)=>{
+        throw Error(`Unable to resolve specifier '${id}'${fromParent(parentUrl)}`);
+    };
+    const metaResolve = function(id, parentUrl) {
+        if (parentUrl === void 0) parentUrl = this.url;
+        return resolve(id, `${parentUrl}`).r;
+    };
+    importShim$1.resolve = (id, parentUrl)=>resolve(id, parentUrl).r;
+    importShim$1.getImportMap = ()=>JSON.parse(JSON.stringify(composedImportMap));
+    importShim$1.addImportMap = (importMapIn)=>{
+        if (!shimMode) throw new Error('Unsupported in polyfill mode.');
+        composedImportMap = resolveAndComposeImportMap(importMapIn, baseUrl, composedImportMap);
+    };
+    importShim$1.version = version;
+    const registry = importShim$1._r = {};
+    // Wasm caches
+    const sourceCache = importShim$1._s = {};
+    importShim$1._i = new WeakMap();
+    // Ensure this version is the only version
+    defineValue(self, 'importShim', Object.freeze(importShim$1));
+    const shimModeOptions = {
+        ...esmsInitOptions,
+        shimMode: true
+    };
+    if (optionsScript) optionsScript.innerHTML = JSON.stringify(shimModeOptions);
+    self.esmsInitOptions = shimModeOptions;
+    const loadAll = async (load, seen)=>{
+        seen[load.u] = 1;
+        await load.L;
+        await Promise.all(load.d.map((param)=>{
+            let { l: dep, s: sourcePhase } = param;
+            if (dep.b || seen[dep.u]) return;
+            if (sourcePhase) return dep.f;
+            return loadAll(dep, seen);
+        }));
+    };
+    let importMapSrc = false;
+    let multipleImportMaps = false;
+    let firstImportMap = null;
+    // To support polyfilling multiple import maps, we separately track the composed import map from the first import map
+    let composedImportMap = {
+        imports: {},
+        scopes: {},
+        integrity: {}
+    };
+    let baselinePassthrough;
+    const initPromise = featureDetectionPromise.then(()=>{
+        baselinePassthrough = esmsInitOptions.polyfillEnable !== true && supportsImportMaps && supportsJsonType && supportsCssType && (!wasmInstancePhaseEnabled || supportsWasmInstancePhase) && (!wasmSourcePhaseEnabled || supportsWasmSourcePhase) && !deferPhaseEnabled && (!multipleImportMaps || supportsMultipleImportMaps) && !importMapSrc;
+        if (!shimMode && typeof WebAssembly !== 'undefined') {
+            if (wasmSourcePhaseEnabled && !Object.getPrototypeOf(WebAssembly.Module).name) {
+                const s = Symbol();
+                const brand = (m)=>defineValue(m, s, 'WebAssembly.Module');
+                class AbstractModuleSource {
+                    get [Symbol.toStringTag]() {
+                        if (this[s]) return this[s];
+                        throw new TypeError('Not an AbstractModuleSource');
+                    }
+                }
+                const { Module: wasmModule, compile: wasmCompile, compileStreaming: wasmCompileStreaming } = WebAssembly;
+                WebAssembly.Module = Object.setPrototypeOf(Object.assign(function Module() {
+                    for(var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++){
+                        args[_key] = arguments[_key];
+                    }
+                    return brand(new wasmModule(...args));
+                }, wasmModule), AbstractModuleSource);
+                WebAssembly.Module.prototype = Object.setPrototypeOf(wasmModule.prototype, AbstractModuleSource.prototype);
+                WebAssembly.compile = function compile() {
+                    for(var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++){
+                        args[_key] = arguments[_key];
+                    }
+                    return wasmCompile(...args).then(brand);
+                };
+                WebAssembly.compileStreaming = function compileStreaming() {
+                    for(var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++){
+                        args[_key] = arguments[_key];
+                    }
+                    return wasmCompileStreaming(...args).then(brand);
+                };
             }
-            batch++;
-            schedule(cleanup);
         }
-    }
-    function urlJsString(url) {
-        return `'${url.replace(/'/g, "\\'")}'`;
-    }
-    let lastLoad;
-    function resolveDeps(load, seen) {
+        if (hasDocument) {
+            if (!supportsImportMaps) {
+                const supports = HTMLScriptElement.supports || ((type)=>type === 'classic' || type === 'module');
+                HTMLScriptElement.supports = (type)=>type === 'importmap' || supports(type);
+            }
+            if (shimMode || !baselinePassthrough) {
+                attachMutationObserver();
+                if (document.readyState === 'complete') {
+                    readyStateCompleteCheck();
+                } else {
+                    document.addEventListener('readystatechange', readyListener);
+                }
+            }
+            processScriptsAndPreloads();
+        }
+        return init;
+    });
+    const attachMutationObserver = ()=>{
+        const observer = new MutationObserver((mutations)=>{
+            for (const mutation of mutations){
+                if (mutation.type !== 'childList') continue;
+                for (const node of mutation.addedNodes){
+                    if (node.tagName === 'SCRIPT') {
+                        if (node.type === (shimMode ? 'module-shim' : 'module') && !node.ep) processScript(node, true);
+                        if (node.type === (shimMode ? 'importmap-shim' : 'importmap') && !node.ep) processImportMap(node, true);
+                    } else if (node.tagName === 'LINK' && node.rel === (shimMode ? 'modulepreload-shim' : 'modulepreload') && !node.ep) {
+                        processPreload(node);
+                    }
+                }
+            }
+        });
+        observer.observe(document, {
+            childList: true
+        });
+        observer.observe(document.head, {
+            childList: true
+        });
+        processScriptsAndPreloads();
+    };
+    let importMapPromise = initPromise;
+    let firstPolyfillLoad = true;
+    let legacyAcceptingImportMaps = true;
+    const topLevelLoad = async (url, parentUrl, fetchOpts, source, nativelyLoaded1, lastStaticLoadPromise, sourceType)=>{
+        await initPromise;
+        await importMapPromise;
+        url = (await resolve(url, parentUrl)).r;
+        // we mock import('./x.css', { with: { type: 'css' }}) support via an inline static reexport
+        // because we can't syntactically pass through to dynamic import with a second argument
+        if (sourceType === 'css' || sourceType === 'json') {
+            // Direct reexport for hot reloading skipped due to Firefox bug https://bugzilla.mozilla.org/show_bug.cgi?id=1965620
+            source = `import m from'${url}'with{type:"${sourceType}"};export default m;`;
+            url += '?entry';
+        }
+        if (importHook) await importHook(url, typeof fetchOpts !== 'string' ? fetchOpts : {}, parentUrl, source, sourceType);
+        // early analysis opt-out - no need to even fetch if we have feature support
+        if (!shimMode && baselinePassthrough && nativePassthrough && sourceType !== 'ts') {
+            // for polyfill case, only dynamic import needs a return value here, and dynamic import will never pass nativelyLoaded
+            if (nativelyLoaded1) return null;
+            await lastStaticLoadPromise;
+            return dynamicImport(source ? createBlob(source) : url);
+        }
+        const load = getOrCreateLoad(url, fetchOpts, undefined, source);
+        linkLoad(load, fetchOpts);
+        const seen = {};
+        await loadAll(load, seen);
+        resolveDeps(load, seen);
+        await lastStaticLoadPromise;
+        if (!shimMode && !load.n) {
+            if (nativelyLoaded1) {
+                return;
+            }
+            if (source) {
+                return await dynamicImport(createBlob(source));
+            }
+        }
+        if (firstPolyfillLoad && !shimMode && load.n && nativelyLoaded1) {
+            onpolyfill();
+            firstPolyfillLoad = false;
+        }
+        const module = await (shimMode || load.n || load.N || !nativePassthrough || !nativelyLoaded1 && source ? dynamicImport(load.b, load.u) : import(load.u));
+        // if the top-level load is a shell, run its update function
+        if (load.s) (await dynamicImport(load.s, load.u)).u$_(module);
+        if (revokeBlobURLs) revokeObjectURLs(Object.keys(seen));
+        return module;
+    };
+    const revokeObjectURLs = (registryKeys)=>{
+        let curIdx = 0;
+        const handler = self.requestIdleCallback || self.requestAnimationFrame;
+        handler(cleanup);
+        function cleanup() {
+            for (const key of registryKeys.slice(curIdx, curIdx += 100)){
+                const load = registry[key];
+                if (load && load.b && load.b !== load.u) URL.revokeObjectURL(load.b);
+            }
+            if (curIdx < registryKeys.length) handler(cleanup);
+        }
+    };
+    const urlJsString = (url)=>`'${url.replace(/'/g, "\\'")}'`;
+    let resolvedSource, lastIndex;
+    const pushStringTo = (load, originalIndex, dynamicImportEndStack)=>{
+        while(dynamicImportEndStack[dynamicImportEndStack.length - 1] < originalIndex){
+            const dynamicImportEnd = dynamicImportEndStack.pop();
+            resolvedSource += `${load.S.slice(lastIndex, dynamicImportEnd)}, ${urlJsString(load.r)}`;
+            lastIndex = dynamicImportEnd;
+        }
+        resolvedSource += load.S.slice(lastIndex, originalIndex);
+        lastIndex = originalIndex;
+    };
+    const pushSourceURL = (load, commentPrefix, commentStart, dynamicImportEndStack)=>{
+        const urlStart = commentStart + commentPrefix.length;
+        const commentEnd = load.S.indexOf('\n', urlStart);
+        const urlEnd = commentEnd !== -1 ? commentEnd : load.S.length;
+        let sourceUrl = load.S.slice(urlStart, urlEnd);
+        try {
+            sourceUrl = new URL(sourceUrl, load.r).href;
+        } catch  {}
+        pushStringTo(load, urlStart, dynamicImportEndStack);
+        resolvedSource += sourceUrl;
+        lastIndex = urlEnd;
+    };
+    const resolveDeps = (load, seen)=>{
         if (load.b || !seen[load.u]) return;
         seen[load.u] = 0;
-        for (const dep of load.d)resolveDeps(dep, seen);
+        for (const { l: dep, s: sourcePhase } of load.d){
+            if (!sourcePhase) resolveDeps(dep, seen);
+        }
+        if (!load.n) load.n = load.d.some((dep)=>dep.l.n);
+        if (!load.N) load.N = load.d.some((dep)=>dep.l.N);
+        // use native loader whenever possible (n = needs shim) via executable subgraph passthrough
+        // so long as the module doesn't use dynamic import or unsupported URL mappings (N = should shim)
+        if (nativePassthrough && !shimMode && !load.n && !load.N) {
+            load.b = load.u;
+            load.S = undefined;
+            return;
+        }
         const [imports, exports] = load.a;
         // "execution"
-        const source = load.S;
-        // edge doesnt execute sibling in order, so we fix this up by ensuring all previous executions are explicit dependencies
-        let resolvedSource = edge && lastLoad ? `import '${lastLoad}';` : "";
+        let source = load.S, depIndex = 0, dynamicImportEndStack = [];
         // once all deps have loaded we can inline the dependency resolution blobs
         // and define this blob
-        let lastIndex = 0, depIndex = 0, dynamicImportEndStack = [];
-        function pushStringTo(originalIndex) {
-            while(dynamicImportEndStack[dynamicImportEndStack.length - 1] < originalIndex){
-                const dynamicImportEnd = dynamicImportEndStack.pop();
-                resolvedSource += `${source.slice(lastIndex, dynamicImportEnd)}, ${urlJsString(load.r)}`;
-                lastIndex = dynamicImportEnd;
-            }
-            resolvedSource += source.slice(lastIndex, originalIndex);
-            lastIndex = originalIndex;
-        }
-        for (const { s: start , ss: statementStart , se: statementEnd , d: dynamicImportIndex  } of imports){
-            // dependency source replacements
-            if (dynamicImportIndex === -1) {
-                let depLoad = load.d[depIndex++], blobUrl = depLoad.b, cycleShell = !blobUrl;
+        resolvedSource = '', lastIndex = 0;
+        for (const { s: start, e: end, ss: statementStart, se: statementEnd, d: dynamicImportIndex, t, a } of imports){
+            // source phase
+            if (t === 4) {
+                let { l: depLoad } = load.d[depIndex++];
+                pushStringTo(load, statementStart, dynamicImportEndStack);
+                resolvedSource += `${source.slice(statementStart, start - 1).replace('source', '')}/*${source.slice(start - 1, end + 1)}*/'${createBlob(`export default importShim._s[${urlJsString(depLoad.r)}]`)}'`;
+                lastIndex = end + 1;
+            } else if (dynamicImportIndex === -1) {
+                let keepAssertion = false;
+                if (a > 0 && !shimMode) {
+                    const assertion = source.slice(a, statementEnd - 1);
+                    // strip assertions only when unsupported in polyfill mode
+                    keepAssertion = nativePassthrough && (supportsJsonType && assertion.includes('json') || supportsCssType && assertion.includes('css'));
+                }
+                // defer phase stripping
+                if (t === 6) {
+                    pushStringTo(load, statementStart, dynamicImportEndStack);
+                    resolvedSource += source.slice(statementStart, start - 1).replace('defer', '');
+                    lastIndex = start;
+                }
+                let { l: depLoad } = load.d[depIndex++], blobUrl = depLoad.b, cycleShell = !blobUrl;
                 if (cycleShell) {
                     // circular shell creation
                     if (!(blobUrl = depLoad.s)) {
                         blobUrl = depLoad.s = createBlob(`export function u$_(m){${depLoad.a[1].map((param, i)=>{
-                            let { s , e  } = param;
+                            let { s, e } = param;
                             const q = depLoad.S[s] === '"' || depLoad.S[s] === "'";
-                            return `e$_${i}=m${q ? `[` : "."}${depLoad.S.slice(s, e)}${q ? `]` : ""}`;
-                        }).join(",")}}${depLoad.a[1].length ? `let ${depLoad.a[1].map((_, i)=>`e$_${i}`).join(",")};` : ""}export {${depLoad.a[1].map((param, i)=>{
-                            let { s , e  } = param;
+                            return `e$_${i}=m${q ? `[` : '.'}${depLoad.S.slice(s, e)}${q ? `]` : ''}`;
+                        }).join(',')}}${depLoad.a[1].length ? `let ${depLoad.a[1].map((_, i)=>`e$_${i}`).join(',')};` : ''}export {${depLoad.a[1].map((param, i)=>{
+                            let { s, e } = param;
                             return `e$_${i} as ${depLoad.S.slice(s, e)}`;
-                        }).join(",")}}\n//# sourceURL=${depLoad.r}?cycle`);
+                        }).join(',')}}\n//# sourceURL=${depLoad.r}?cycle`);
                     }
                 }
-                pushStringTo(start - 1);
-                resolvedSource += `/*${source.slice(start - 1, statementEnd)}*/${urlJsString(blobUrl)}`;
+                pushStringTo(load, start - 1, dynamicImportEndStack);
+                resolvedSource += `/*${source.slice(start - 1, end + 1)}*/'${blobUrl}'`;
                 // circular shell execution
                 if (!cycleShell && depLoad.s) {
                     resolvedSource += `;import*as m$_${depIndex} from'${depLoad.b}';import{u$_ as u$_${depIndex}}from'${depLoad.s}';u$_${depIndex}(m$_${depIndex})`;
                     depLoad.s = undefined;
                 }
-                lastIndex = statementEnd;
+                lastIndex = keepAssertion ? end + 1 : statementEnd;
             } else if (dynamicImportIndex === -2) {
                 load.m = {
                     url: load.r,
                     resolve: metaResolve
                 };
-                metaHook(load.m, load.u);
-                pushStringTo(start);
+                if (metaHook) metaHook(load.m, load.u);
+                pushStringTo(load, start, dynamicImportEndStack);
                 resolvedSource += `importShim._r[${urlJsString(load.u)}].m`;
                 lastIndex = statementEnd;
             } else {
-                pushStringTo(statementStart + 6);
-                resolvedSource += `Shim(`;
+                pushStringTo(load, statementStart + 6, dynamicImportEndStack);
+                resolvedSource += `Shim${t === 5 ? '.source' : ''}(`;
                 dynamicImportEndStack.push(statementEnd - 1);
                 lastIndex = start;
             }
         }
         // support progressive cycle binding updates (try statement avoids tdz errors)
-        if (load.s) resolvedSource += `\n;import{u$_}from'${load.s}';try{u$_({${exports.filter((e)=>e.ln).map((param)=>{
-            let { s , e , ln  } = param;
+        if (load.s && (imports.length === 0 || imports[imports.length - 1].d === -1)) resolvedSource += `\n;import{u$_}from'${load.s}';try{u$_({${exports.filter((e)=>e.ln).map((param)=>{
+            let { s, e, ln } = param;
             return `${source.slice(s, e)}:${ln}`;
-        }).join(",")}})}catch(_){};\n`;
-        function pushSourceURL(commentPrefix, commentStart) {
-            const urlStart = commentStart + commentPrefix.length;
-            const commentEnd = source.indexOf("\n", urlStart);
-            const urlEnd = commentEnd !== -1 ? commentEnd : source.length;
-            pushStringTo(urlStart);
-            resolvedSource += new URL(source.slice(urlStart, urlEnd), load.r).href;
-            lastIndex = urlEnd;
-        }
+        }).join(',')}})}catch(_){};\n`;
         let sourceURLCommentStart = source.lastIndexOf(sourceURLCommentPrefix);
         let sourceMapURLCommentStart = source.lastIndexOf(sourceMapURLCommentPrefix);
         // ignore sourceMap comments before already spliced code
@@ -647,37 +866,38 @@ import { B as Buffer } from '../_chunks/polyfills-uWK2zS7F.js';
         if (sourceMapURLCommentStart < lastIndex) sourceMapURLCommentStart = -1;
         // sourceURL first / only
         if (sourceURLCommentStart !== -1 && (sourceMapURLCommentStart === -1 || sourceMapURLCommentStart > sourceURLCommentStart)) {
-            pushSourceURL(sourceURLCommentPrefix, sourceURLCommentStart);
+            pushSourceURL(load, sourceURLCommentPrefix, sourceURLCommentStart, dynamicImportEndStack);
         }
         // sourceMappingURL
         if (sourceMapURLCommentStart !== -1) {
-            pushSourceURL(sourceMapURLCommentPrefix, sourceMapURLCommentStart);
+            pushSourceURL(load, sourceMapURLCommentPrefix, sourceMapURLCommentStart, dynamicImportEndStack);
             // sourceURL last
-            if (sourceURLCommentStart !== -1 && sourceURLCommentStart > sourceMapURLCommentStart) pushSourceURL(sourceURLCommentPrefix, sourceURLCommentStart);
+            if (sourceURLCommentStart !== -1 && sourceURLCommentStart > sourceMapURLCommentStart) pushSourceURL(load, sourceURLCommentPrefix, sourceURLCommentStart, dynamicImportEndStack);
         }
-        pushStringTo(source.length);
+        pushStringTo(load, source.length, dynamicImportEndStack);
         if (sourceURLCommentStart === -1) resolvedSource += sourceURLCommentPrefix + load.r;
-        load.b = lastLoad = createBlob(resolvedSource);
-        load.S = undefined;
-    }
-    const sourceURLCommentPrefix = "\n//# sourceURL=";
-    const sourceMapURLCommentPrefix = "\n//# sourceMappingURL=";
+        load.b = createBlob(resolvedSource);
+        load.S = resolvedSource = undefined;
+    };
+    const sourceURLCommentPrefix = '\n//# sourceURL=';
+    const sourceMapURLCommentPrefix = '\n//# sourceMappingURL=';
     const jsContentType = /^(text|application)\/(x-)?javascript(;|$)/;
-    const wasmContentType = /^(application)\/wasm(;|$)/;
+    const wasmContentType = /^application\/wasm(;|$)/;
     const jsonContentType = /^(text|application)\/json(;|$)/;
     const cssContentType = /^(text|application)\/css(;|$)/;
+    const tsContentType = /^application\/typescript(;|$)|/;
     const cssUrlRegEx = /url\(\s*(?:(["'])((?:\\.|[^\n\\"'])+)\1|((?:\\.|[^\s,"'()\\])+))\s*\)/g;
     // restrict in-flight fetches to a pool of 100
     let p = [];
     let c = 0;
-    function pushFetchPool() {
+    const pushFetchPool = ()=>{
         if (++c > 100) return new Promise((r)=>p.push(r));
-    }
-    function popFetchPool() {
+    };
+    const popFetchPool = ()=>{
         c--;
         if (p.length) p.shift()();
-    }
-    async function doFetch(url, fetchOpts, parent) {
+    };
+    const doFetch = async (url, fetchOpts, parent)=>{
         if (enforceIntegrity && !fetchOpts.integrity) throw Error(`No integrity for ${url}${fromParent(parent)}.`);
         const poolQueue = pushFetchPool();
         if (poolQueue) await poolQueue;
@@ -695,53 +915,90 @@ import { B as Buffer } from '../_chunks/polyfills-uWK2zS7F.js';
             throw error;
         }
         return res;
-    }
-    async function fetchModule(url, fetchOpts, parent) {
-        const res = await doFetch(url, fetchOpts, parent);
-        const contentType = res.headers.get("content-type");
+    };
+    let esmsTsTransform;
+    const initTs = async ()=>{
+        const m = await import(tsTransform);
+        if (!esmsTsTransform) esmsTsTransform = m.transform;
+    };
+    const hotPrefix = 'var h=import.meta.hot,';
+    const fetchModule = async (url, fetchOpts, parent)=>{
+        const mapIntegrity = composedImportMap.integrity[url];
+        const res = await doFetch(url, mapIntegrity && !fetchOpts.integrity ? {
+            ...fetchOpts,
+            integrity: mapIntegrity
+        } : fetchOpts, parent);
+        const r = res.url;
+        const contentType = res.headers.get('content-type');
         if (jsContentType.test(contentType)) return {
-            r: res.url,
+            r,
             s: await res.text(),
-            t: "js"
+            t: 'js'
         };
         else if (wasmContentType.test(contentType)) {
-            const module = importShim._w[url] = await WebAssembly.compileStreaming(res);
-            let s = "", i = 0, importObj = "";
-            for (const impt of WebAssembly.Module.imports(module)){
-                s += `import * as impt${i} from '${impt.module}';\n`;
-                importObj += `'${impt.module}':impt${i++},`;
+            const wasmModule = await (sourceCache[r] || (sourceCache[r] = WebAssembly.compileStreaming(res)));
+            const exports = WebAssembly.Module.exports(wasmModule);
+            sourceCache[r] = wasmModule;
+            const rStr = urlJsString(r);
+            let s = `import*as $_ns from${rStr};`, i = 0, obj = '';
+            for (const { module, kind } of WebAssembly.Module.imports(wasmModule)){
+                const specifier = urlJsString(module);
+                s += `import*as impt${i} from${specifier};\n`;
+                obj += `${specifier}:${kind === 'global' ? `importShim._i.get(impt${i})||impt${i++}` : `impt${i++}`},`;
             }
-            i = 0;
-            s += `const instance = await WebAssembly.instantiate(importShim._w['${url}'], {${importObj}});\n`;
-            for (const expt of WebAssembly.Module.exports(module)){
-                s += `const expt${i} = instance['${expt.name}'];\n`;
-                s += `export { expt${i++} as "${expt.name}" };\n`;
+            s += `${hotPrefix}i=await WebAssembly.instantiate(importShim._s[${rStr}],{${obj}});importShim._i.set($_ns,i);`;
+            obj = '';
+            for (const { name, kind } of exports){
+                s += `export let ${name}=i.exports['${name}'];`;
+                if (kind === 'global') s += `try{${name}=${name}.value}catch{${name}=undefined}`;
+                obj += `${name},`;
             }
+            s += `if(h)h.accept(m=>({${obj}}=m))`;
             return {
-                r: res.url,
+                r,
                 s,
-                t: "wasm"
+                t: 'wasm'
             };
         } else if (jsonContentType.test(contentType)) return {
-            r: res.url,
-            s: `export default ${await res.text()}`,
-            t: "json"
+            r,
+            s: `${hotPrefix}j=${await res.text()};export{j as default};if(h)h.accept(m=>j=m.default)`,
+            t: 'json'
         };
         else if (cssContentType.test(contentType)) {
             return {
-                r: res.url,
-                s: `var s=new CSSStyleSheet();s.replaceSync(${JSON.stringify((await res.text()).replace(cssUrlRegEx, (_match, quotes, relUrl1, relUrl2)=>{
-                    if (quotes === void 0) quotes = "";
+                r,
+                s: `${hotPrefix}s=h&&h.data.s||new CSSStyleSheet();s.replaceSync(${JSON.stringify((await res.text()).replace(cssUrlRegEx, (_match, quotes, relUrl1, relUrl2)=>{
+                    if (quotes === void 0) quotes = '';
                     return `url(${quotes}${resolveUrl(relUrl1 || relUrl2, url)}${quotes})`;
-                }))});export default s;`,
-                t: "css"
+                }))});if(h){h.data.s=s;h.accept(()=>{})}export default s`,
+                t: 'css'
+            };
+        } else if (tsContentType.test(contentType) || url.endsWith('.ts') || url.endsWith('.mts')) {
+            const source = await res.text();
+            if (!esmsTsTransform) await initTs();
+            const transformed = esmsTsTransform(source, url);
+            // even if the TypeScript is valid JavaScript, unless it was a top-level inline source, it wasn't served with
+            // a valid JS MIME here, so we must still polyfill it
+            return {
+                r,
+                s: transformed === undefined ? source : transformed,
+                t: 'ts'
             };
         } else throw Error(`Unsupported Content-Type "${contentType}" loading ${url}${fromParent(parent)}. Modules must be served with a valid MIME type like application/javascript.`);
-    }
-    function getOrCreateLoad(url, fetchOpts, parent, source) {
+    };
+    const isUnsupportedType = (type)=>{
+        if (type === 'wasm' && !wasmInstancePhaseEnabled && !wasmSourcePhaseEnabled) throw featErr(`wasm-modules`);
+        return type === 'css' && !supportsCssType || type === 'json' && !supportsJsonType || type === 'wasm' && !supportsWasmInstancePhase && !supportsWasmSourcePhase || type === 'ts';
+    };
+    const getOrCreateLoad = (url, fetchOpts, parent, source)=>{
+        if (source && registry[url]) {
+            let i = 0;
+            while(registry[url + '#' + ++i]);
+            url += '#' + i;
+        }
         let load = registry[url];
-        if (load && !source) return load;
-        load = {
+        if (load) return load;
+        registry[url] = load = {
             // url
             u: url,
             // response url
@@ -749,7 +1006,7 @@ import { B as Buffer } from '../_chunks/polyfills-uWK2zS7F.js';
             // fetchPromise
             f: undefined,
             // source
-            S: undefined,
+            S: source,
             // linkPromise
             L: undefined,
             // analysis
@@ -760,31 +1017,25 @@ import { B as Buffer } from '../_chunks/polyfills-uWK2zS7F.js';
             b: undefined,
             // shellUrl
             s: undefined,
-            // needsShim
+            // needsShim: does it fail execution in the current native loader?
             n: false,
+            // shouldShim: does it need to be loaded by the polyfill loader?
+            N: false,
             // type
             t: null,
             // meta
             m: null
         };
-        if (registry[url]) {
-            let i = 0;
-            while(registry[load.u + ++i]);
-            load.u += i;
-        }
-        registry[load.u] = load;
         load.f = (async ()=>{
-            if (!source) {
+            if (load.S === undefined) {
                 // preload fetch options override fetch options (race)
-                let t;
-                ({ r: load.r , s: source , t  } = await (fetchCache[url] || fetchModule(url, fetchOpts, parent)));
-                if (t && !shimMode) {
-                    if (t === "css" && !cssModulesEnabled || t === "json" && !jsonModulesEnabled) throw Error(`${t}-modules require <script type="esms-options">{ "polyfillEnable": ["${t}-modules"] }<${""}/script>`);
-                    if (t === "css" && !supportsCssAssertions || t === "json" && !supportsJsonAssertions) load.n = true;
+                ({ r: load.r, s: load.S, t: load.t } = await (fetchCache[url] || fetchModule(url, fetchOpts, parent)));
+                if (!load.n && load.t !== 'js' && !shimMode && isUnsupportedType(load.t)) {
+                    load.n = true;
                 }
             }
             try {
-                load.a = parse(source, load.u);
+                load.a = parse(load.S, load.u);
             } catch (e) {
                 throwError(e);
                 load.a = [
@@ -793,109 +1044,202 @@ import { B as Buffer } from '../_chunks/polyfills-uWK2zS7F.js';
                     false
                 ];
             }
-            load.S = source;
             return load;
         })();
+        return load;
+    };
+    const featErr = (feat)=>Error(`${feat} feature must be enabled via <script type="esms-options">{ "polyfillEnable": ["${feat}"] }<${''}/script>`);
+    const linkLoad = (load, fetchOpts)=>{
+        if (load.L) return;
         load.L = load.f.then(async ()=>{
             let childFetchOpts = fetchOpts;
-            load.d = (await Promise.all(load.a[0].map(async (param)=>{
-                let { n , d  } = param;
-                if (d >= 0 && !supportsDynamicImport || d === -2 && !supportsImportMeta) load.n = true;
+            load.d = load.a[0].map((param)=>{
+                let { n, d, t, a, se } = param;
+                const phaseImport = t >= 4;
+                const sourcePhase = phaseImport && t < 6;
+                if (phaseImport) {
+                    if (!shimMode && (sourcePhase ? !wasmSourcePhaseEnabled : !deferPhaseEnabled)) throw featErr(sourcePhase ? 'wasm-module-sources' : 'import-defer');
+                    if (!sourcePhase || !supportsWasmSourcePhase) load.n = true;
+                }
+                let source = undefined;
+                if (a > 0 && !shimMode && nativePassthrough) {
+                    const assertion = load.S.slice(a, se - 1);
+                    // no need to fetch JSON/CSS if supported, since it's a leaf node, we'll just strip the assertion syntax
+                    if (assertion.includes('json')) {
+                        if (supportsJsonType) source = '';
+                        else load.n = true;
+                    } else if (assertion.includes('css')) {
+                        if (supportsCssType) source = '';
+                        else load.n = true;
+                    }
+                }
                 if (d !== -1 || !n) return;
-                const { r , b  } = await resolve(n, load.r || load.u);
-                if (b && (!supportsImportMaps || importMapSrcOrLazy)) load.n = true;
+                const resolved = resolve(n, load.r || load.u);
+                if (resolved.n) load.n = true;
+                if (d >= 0 || resolved.N) load.N = true;
                 if (d !== -1) return;
-                if (skip && skip(r)) return {
-                    b: r
+                if (skip && skip(resolved.r) && !sourcePhase) return {
+                    l: {
+                        b: resolved.r
+                    },
+                    s: false
                 };
-                if (childFetchOpts.integrity) childFetchOpts = Object.assign({}, childFetchOpts, {
+                if (childFetchOpts.integrity) childFetchOpts = {
+                    ...childFetchOpts,
                     integrity: undefined
-                });
-                return getOrCreateLoad(r, childFetchOpts, load.r).f;
-            }))).filter((l)=>l);
+                };
+                const child = {
+                    l: getOrCreateLoad(resolved.r, childFetchOpts, load.r, source),
+                    s: sourcePhase
+                };
+                // assertion case -> inline the CSS / JSON URL directly
+                if (source === '') child.l.b = child.l.u;
+                if (!child.s) linkLoad(child.l, fetchOpts);
+                // load, sourcePhase
+                return child;
+            }).filter((l)=>l);
         });
-        return load;
-    }
-    function processScriptsAndPreloads(mapsOnly) {
-        if (mapsOnly === void 0) mapsOnly = false;
-        if (!mapsOnly) for (const link of document.querySelectorAll(shimMode ? "link[rel=modulepreload-shim]" : "link[rel=modulepreload]"))processPreload(link);
-        for (const script of document.querySelectorAll(shimMode ? "script[type=importmap-shim]" : "script[type=importmap]"))processImportMap(script);
-        if (!mapsOnly) for (const script of document.querySelectorAll(shimMode ? "script[type=module-shim]" : "script[type=module]"))processScript(script);
-    }
-    function getFetchOpts(script) {
+    };
+    const processScriptsAndPreloads = ()=>{
+        for (const link of document.querySelectorAll(shimMode ? 'link[rel=modulepreload-shim]' : 'link[rel=modulepreload]')){
+            if (!link.ep) processPreload(link);
+        }
+        for (const script of document.querySelectorAll('script[type]')){
+            if (script.type === 'importmap' + (shimMode ? '-shim' : '')) {
+                if (!script.ep) processImportMap(script);
+            } else if (script.type === 'module' + (shimMode ? '-shim' : '')) {
+                legacyAcceptingImportMaps = false;
+                if (!script.ep) processScript(script);
+            }
+        }
+    };
+    const getFetchOpts = (script)=>{
         const fetchOpts = {};
         if (script.integrity) fetchOpts.integrity = script.integrity;
         if (script.referrerPolicy) fetchOpts.referrerPolicy = script.referrerPolicy;
-        if (script.crossOrigin === "use-credentials") fetchOpts.credentials = "include";
-        else if (script.crossOrigin === "anonymous") fetchOpts.credentials = "omit";
-        else fetchOpts.credentials = "same-origin";
+        if (script.fetchPriority) fetchOpts.priority = script.fetchPriority;
+        if (script.crossOrigin === 'use-credentials') fetchOpts.credentials = 'include';
+        else if (script.crossOrigin === 'anonymous') fetchOpts.credentials = 'omit';
+        else fetchOpts.credentials = 'same-origin';
         return fetchOpts;
-    }
+    };
     let lastStaticLoadPromise = Promise.resolve();
+    let domContentLoaded = false;
     let domContentLoadedCnt = 1;
-    function domContentLoadedCheck() {
-        if (--domContentLoadedCnt === 0 && !noLoadEventRetriggers && (shimMode || !baselinePassthrough)) {
-            document.dispatchEvent(new Event("DOMContentLoaded"));
+    const domContentLoadedCheck = (m)=>{
+        if (m === undefined) {
+            if (domContentLoaded) return;
+            domContentLoaded = true;
+            domContentLoadedCnt--;
         }
-    }
+        if (--domContentLoadedCnt === 0 && !noLoadEventRetriggers && (shimMode || !baselinePassthrough)) {
+            document.removeEventListener('DOMContentLoaded', domContentLoadedEvent);
+            document.dispatchEvent(new Event('DOMContentLoaded'));
+        }
+    };
+    let loadCnt = 1;
+    const loadCheck = ()=>{
+        if (--loadCnt === 0 && !noLoadEventRetriggers && (shimMode || !baselinePassthrough)) {
+            window.removeEventListener('load', loadEvent);
+            window.dispatchEvent(new Event('load'));
+        }
+    };
+    const domContentLoadedEvent = async ()=>{
+        await initPromise;
+        domContentLoadedCheck();
+    };
+    const loadEvent = async ()=>{
+        await initPromise;
+        domContentLoadedCheck();
+        loadCheck();
+    };
     // this should always trigger because we assume es-module-shims is itself a domcontentloaded requirement
     if (hasDocument) {
-        document.addEventListener("DOMContentLoaded", async ()=>{
-            await initPromise;
-            domContentLoadedCheck();
-        });
+        document.addEventListener('DOMContentLoaded', domContentLoadedEvent);
+        window.addEventListener('load', loadEvent);
     }
-    let readyStateCompleteCnt = 1;
-    function readyStateCompleteCheck() {
-        if (--readyStateCompleteCnt === 0 && !noLoadEventRetriggers && (shimMode || !baselinePassthrough)) {
-            document.dispatchEvent(new Event("readystatechange"));
+    const readyListener = async ()=>{
+        await initPromise;
+        processScriptsAndPreloads();
+        if (document.readyState === 'complete') {
+            readyStateCompleteCheck();
         }
-    }
+    };
+    let readyStateCompleteCnt = 1;
+    const readyStateCompleteCheck = ()=>{
+        if (--readyStateCompleteCnt === 0) {
+            domContentLoadedCheck();
+            if (!noLoadEventRetriggers && (shimMode || !baselinePassthrough)) {
+                document.removeEventListener('readystatechange', readyListener);
+                document.dispatchEvent(new Event('readystatechange'));
+            }
+        }
+    };
     const hasNext = (script)=>script.nextSibling || script.parentNode && hasNext(script.parentNode);
-    const epCheck = (script, ready)=>script.ep || !ready && (!script.src && !script.innerHTML || !hasNext(script)) || script.getAttribute("noshim") !== null || !(script.ep = true);
-    function processImportMap(script, ready) {
+    const epCheck = (script, ready)=>script.ep || !ready && (!script.src && !script.innerHTML || !hasNext(script)) || script.getAttribute('noshim') !== null || !(script.ep = true);
+    const processImportMap = (script, ready)=>{
         if (ready === void 0) ready = readyStateCompleteCnt > 0;
         if (epCheck(script, ready)) return;
-        // we dont currently support multiple, external or dynamic imports maps in polyfill mode to match native
+        // we dont currently support external import maps in polyfill mode to match native
         if (script.src) {
             if (!shimMode) return;
-            setImportMapSrcOrLazy();
+            importMapSrc = true;
         }
-        if (acceptingImportMaps) {
-            importMapPromise = importMapPromise.then(async ()=>{
-                importMap = resolveAndComposeImportMap(script.src ? await (await doFetch(script.src, getFetchOpts(script))).json() : JSON.parse(script.innerHTML), script.src || baseUrl, importMap);
-            }).catch((e)=>{
-                console.log(e);
-                if (e instanceof SyntaxError) e = new Error(`Unable to parse import map ${e.message} in: ${script.src || script.innerHTML}`);
-                throwError(e);
-            });
-            if (!shimMode) acceptingImportMaps = false;
+        importMapPromise = importMapPromise.then(async ()=>{
+            composedImportMap = resolveAndComposeImportMap(script.src ? await (await doFetch(script.src, getFetchOpts(script))).json() : JSON.parse(script.innerHTML), script.src || baseUrl, composedImportMap);
+        }).catch((e)=>{
+            if (e instanceof SyntaxError) e = new Error(`Unable to parse import map ${e.message} in: ${script.src || script.innerHTML}`);
+            throwError(e);
+        });
+        if (!firstImportMap && legacyAcceptingImportMaps) importMapPromise.then(()=>firstImportMap = composedImportMap);
+        if (!legacyAcceptingImportMaps && !multipleImportMaps) {
+            multipleImportMaps = true;
+            if (!shimMode && baselinePassthrough && !supportsMultipleImportMaps) {
+                baselinePassthrough = false;
+                if (hasDocument) attachMutationObserver();
+            }
         }
-    }
-    function processScript(script, ready) {
+        legacyAcceptingImportMaps = false;
+    };
+    const processScript = (script, ready)=>{
         if (ready === void 0) ready = readyStateCompleteCnt > 0;
         if (epCheck(script, ready)) return;
         // does this load block readystate complete
-        const isBlockingReadyScript = script.getAttribute("async") === null && readyStateCompleteCnt > 0;
+        const isBlockingReadyScript = script.getAttribute('async') === null && readyStateCompleteCnt > 0;
         // does this load block DOMContentLoaded
         const isDomContentLoadedScript = domContentLoadedCnt > 0;
+        const isLoadScript = loadCnt > 0;
+        if (isLoadScript) loadCnt++;
         if (isBlockingReadyScript) readyStateCompleteCnt++;
         if (isDomContentLoadedScript) domContentLoadedCnt++;
-        const loadPromise = topLevelLoad(script.src || baseUrl, getFetchOpts(script), !script.src && script.innerHTML, !shimMode, isBlockingReadyScript && lastStaticLoadPromise).then(()=>{
-            // if the type of the script tag "module-shim", browser does not dispatch a "load" event
-            // see https://github.com/guybedford/es-module-shims/issues/346
-            if (shimMode) {
-                script.dispatchEvent(new Event("load"));
-            }
-        }).catch(throwError);
-        if (isBlockingReadyScript) lastStaticLoadPromise = loadPromise.then(readyStateCompleteCheck);
+        let loadPromise;
+        const ts = script.lang === 'ts';
+        if (ts && !script.src) {
+            loadPromise = Promise.resolve(esmsTsTransform || initTs()).then(()=>{
+                const transformed = esmsTsTransform(script.innerHTML, baseUrl);
+                if (transformed !== undefined) {
+                    onpolyfill();
+                    firstPolyfillLoad = false;
+                }
+                return topLevelLoad(script.src || baseUrl, baseUrl, getFetchOpts(script), transformed === undefined ? script.innerHTML : transformed, !shimMode && transformed === undefined, isBlockingReadyScript && lastStaticLoadPromise, 'ts');
+            }).catch(throwError);
+        } else {
+            loadPromise = topLevelLoad(script.src || baseUrl, baseUrl, getFetchOpts(script), !script.src ? script.innerHTML : undefined, !shimMode, isBlockingReadyScript && lastStaticLoadPromise, ts ? 'ts' : undefined).catch(throwError);
+        }
+        if (!noLoadEventRetriggers) loadPromise.then(()=>script.dispatchEvent(new Event('load')));
+        if (isBlockingReadyScript && !ts) {
+            lastStaticLoadPromise = loadPromise.then(readyStateCompleteCheck);
+        }
         if (isDomContentLoadedScript) loadPromise.then(domContentLoadedCheck);
-    }
+        if (isLoadScript) loadPromise.then(loadCheck);
+    };
     const fetchCache = {};
-    function processPreload(link) {
-        if (link.ep) return;
+    const processPreload = (link)=>{
         link.ep = true;
-        if (fetchCache[link.href]) return;
-        fetchCache[link.href] = fetchModule(link.href, getFetchOpts(link));
-    }
+        initPromise.then(()=>{
+            if (baselinePassthrough && !shimMode) return;
+            if (fetchCache[link.href]) return;
+            fetchCache[link.href] = fetchModule(link.href, getFetchOpts(link));
+        });
+    };
 })();
