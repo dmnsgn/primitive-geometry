@@ -7,51 +7,56 @@ const params = new URLSearchParams(window.location.search);
 // I don't like performances, just give me the biggest you've got
 // Primitives.utils.setTypedArrayType(Uint32Array);
 
-const box = Primitives.box();
+const named = (name, geometry) => Object.assign(geometry, { name });
+
+const box = named("box", Primitives.box());
 box.edges = computeEdges(box.positions, box.cells, 4);
 
-const quadsPlane = Primitives.plane({ nx: 10, quads: true });
+const quadsPlane = named(
+  "plane (quads)",
+  Primitives.plane({ nx: 10, quads: true }),
+);
 quadsPlane.edges = computeEdges(quadsPlane.positions, quadsPlane.cells, 4);
 quadsPlane.quads = true;
 
-const circle = Primitives.circle({ closed: true });
+const circle = named("circle", Primitives.circle({ closed: true }));
 circle.edges = circle.cells;
 
 // Box and plane of quads are rendered as lines
 const geometries =
   params.has("geometry") && Primitives[params.get("geometry")]
-    ? [Primitives[params.get("geometry")]()]
+    ? [named(params.get("geometry"), Primitives[params.get("geometry")]())]
     : [
         box,
         circle,
         quadsPlane,
-        Primitives.quad(),
+        named("quad", Primitives.quad()),
         null,
-        Primitives.plane(),
-        Primitives.roundedRectangle(),
-        Primitives.stadium(),
+        named("plane", Primitives.plane()),
+        named("roundedRectangle", Primitives.roundedRectangle()),
+        named("stadium", Primitives.stadium()),
         null,
-        Primitives.ellipse(),
-        Primitives.disc(),
-        Primitives.superellipse(),
-        Primitives.squircle(),
-        Primitives.annulus(),
-        Primitives.reuleux(),
+        named("ellipse", Primitives.ellipse()),
+        named("disc", Primitives.disc()),
+        named("superellipse", Primitives.superellipse()),
+        named("squircle", Primitives.squircle()),
+        named("annulus", Primitives.annulus()),
+        named("reuleux", Primitives.reuleux()),
         null,
-        Primitives.cube(),
-        Primitives.roundedCube(),
+        named("cube", Primitives.cube()),
+        named("roundedCube", Primitives.roundedCube()),
         null,
-        Primitives.sphere(),
-        Primitives.icosphere(),
-        Primitives.ellipsoid(),
+        named("sphere", Primitives.sphere()),
+        named("icosphere", Primitives.icosphere()),
+        named("ellipsoid", Primitives.ellipsoid()),
         null,
-        Primitives.cylinder(),
-        Primitives.cone(),
-        Primitives.capsule(),
-        Primitives.torus(),
+        named("cylinder", Primitives.cylinder()),
+        named("cone", Primitives.cone()),
+        named("capsule", Primitives.capsule()),
+        named("torus", Primitives.torus()),
         null,
-        Primitives.tetrahedron(),
-        Primitives.icosahedron(),
+        named("tetrahedron", Primitives.tetrahedron()),
+        named("icosahedron", Primitives.icosahedron()),
       ];
 
 setGeometries(geometries);

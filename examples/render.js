@@ -49,7 +49,8 @@ const CONFIG = {
   cycle: false,
   axes: true,
   bbox: params.get("mode") === "bbox",
-  normals: true,
+  normals: params.get("normals") !== "false",
+  seams: params.get("seams") !== "false",
 };
 const pane = new Pane();
 pane.addBinding(CONFIG, "mode", {
@@ -61,6 +62,7 @@ pane.addBinding(CONFIG, "mode", {
 pane.addBinding(CONFIG, "cycle");
 pane.addBinding(CONFIG, "bbox");
 pane.addBinding(CONFIG, "normals");
+pane.addBinding(CONFIG, "seams");
 
 setInterval(() => {
   if (CONFIG.cycle) {
@@ -390,6 +392,18 @@ ctx.frame(() => {
       });
     }
 
+    if (CONFIG.seams && mesh.seams) {
+      ctx.submit(drawLinesCmd, {
+        attributes: mesh.seams.attributes,
+        indices: mesh.seams.indices,
+        uniforms: {
+          uProjectionMatrix: camera.projectionMatrix,
+          uViewMatrix: camera.viewMatrix,
+          uModelMatrix: mesh.modelMatrix,
+        },
+      });
+    }
+
     ctx.submit(!isLine ? drawCmd : drawLinesCmd, {
       attributes: mesh.attributes,
       indices: isLine ? mesh.edges : mesh.indices,
@@ -404,6 +418,92 @@ ctx.frame(() => {
     });
   });
 });
+
+// Classify edges to visualise discontinuities:
+// - boundary (cyan): edge used by a single cell with no coincident partner,
+//   expected on open shapes (theta/phi arcs, plane...)
+// - seam (yellow): coincident duplicated edges, bit-identical positions,
+//   expected where attributes differ on purpose (UV atlas/wrap...)
+// - crack (magenta): coincident duplicated edges with non-identical positions,
+//   always a defect
+function computeDiscontinuities(geometry, epsilon = 1e-4) {
+  const { positions, normals, cells } = geometry;
+  const vertexCount = positions.length / 3;
+
+  const edgeCounts = new Map();
+  for (let i = 0; i < cells.length; i += 3) {
+    for (let j = 0; j < 3; j++) {
+      const a = cells[i + j];
+      const b = cells[i + ((j + 1) % 3)];
+      if (a === b) continue;
+      const key = a < b ? a * vertexCount + b : b * vertexCount + a;
+      edgeCounts.set(key, (edgeCounts.get(key) || 0) + 1);
+    }
+  }
+
+  const quantize = (index) =>
+    [0, 1, 2]
+      .map((i) => Math.round(positions[index * 3 + i] / epsilon))
+      .join(",");
+  const equals = (a, b) =>
+    positions[a * 3] === positions[b * 3] &&
+    positions[a * 3 + 1] === positions[b * 3 + 1] &&
+    positions[a * 3 + 2] === positions[b * 3 + 2];
+
+  const groups = new Map();
+  for (const [key, count] of edgeCounts) {
+    if (count !== 1) continue;
+    const a = Math.floor(key / vertexCount);
+    const b = key % vertexCount;
+    const ka = quantize(a);
+    const kb = quantize(b);
+    const groupKey = ka < kb ? `${ka}|${kb}` : `${kb}|${ka}`;
+    if (!groups.has(groupKey)) groups.set(groupKey, []);
+    groups.get(groupKey).push([a, b]);
+  }
+
+  const TYPE_COLORS = [
+    [0, 1, 1],
+    [1, 1, 0],
+    [1, 0, 1],
+  ];
+  const stats = { boundaries: 0, seams: 0, cracks: 0 };
+  const lines = [];
+
+  for (const edges of groups.values()) {
+    let type = 0;
+    if (edges.length > 1) {
+      const [ra, rb] = edges[0];
+      const isCrack = edges
+        .slice(1)
+        .some(
+          ([a, b]) =>
+            !(equals(a, ra) || equals(a, rb)) ||
+            !(equals(b, ra) || equals(b, rb)),
+        );
+      type = isCrack ? 2 : 1;
+    }
+    stats[type === 0 ? "boundaries" : type === 1 ? "seams" : "cracks"] +=
+      edges.length;
+    for (const edge of edges) lines.push([edge, type]);
+  }
+
+  const linePositions = new Float32Array(lines.length * 2 * 3);
+  const lineColors = new Float32Array(lines.length * 2 * 3);
+  lines.forEach(([[a, b], type], index) => {
+    [a, b].forEach((v, end) => {
+      const offset = (index * 2 + end) * 3;
+      for (let i = 0; i < 3; i++) {
+        // Nudge along the normal to avoid z-fighting with the surface
+        linePositions[offset + i] =
+          positions[v * 3 + i] + (normals?.[v * 3 + i] || 0) * 2e-3;
+        lineColors[offset + i] = TYPE_COLORS[type][i];
+      }
+    });
+  });
+
+  return { positions: linePositions, colors: lineColors, stats };
+}
 
 function computeEdges(positions, cells, stride = 3) {
   const edges = new (Primitives.utils.getCellsTypedArray(positions.length / 3))(
@@ -474,6 +574,34 @@ const setGeometries = (geometries) => {
   );
   console.log(meshes);
 
+  meshes.filter(Boolean).forEach((mesh) => {
+    const { geometry } = mesh;
+    if (!geometry.normals || geometry.quads) return;
+
+    const seams = computeDiscontinuities(geometry);
+    mesh.seamStats = seams.stats;
+
+    if (seams.positions.length) {
+      mesh.seams = {
+        attributes: {
+          aPosition: ctx.vertexBuffer(seams.positions),
+          aColor: ctx.vertexBuffer(seams.colors),
+        },
+        indices: ctx.indexBuffer(
+          new Uint32Array(seams.positions.length / 3).map((_, i) => i),
+        ),
+      };
+    }
+  });
+
+  console.table(
+    meshes.filter(Boolean).map(({ geometry, seamStats }) => ({
+      name: geometry.name,
+      vertices: geometry.positions.length / 3,
+      ...(seamStats || {}),
+    })),
+  );
+
   // Position them
   const offset = 1.5;
   const { gridSize } = meshes.reduce(
@@ -511,6 +639,7 @@ export {
   CONFIG,
   setGeometries,
   computeEdges,
+  computeDiscontinuities,
   modeOptions,
   pane,
   controls,
