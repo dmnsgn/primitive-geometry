@@ -33,10 +33,17 @@ function capsule({
 
   const size = ringsTotal * nx;
 
+  // Pole rings are collapsed to a point: fan with a single triangle per quad
+  // instead of two, skipping the degenerate one
+  const hasPoles = roundSegments > 0;
+  const fans = hasPoles ? 2 : 0;
+
   const positions = new Float32Array(size * 3);
   const normals = new Float32Array(size * 3);
   const uvs = new Float32Array(size * 2);
-  const cells = new (getCellsTypedArray(size))((ringsTotal - 1) * (nx - 1) * 6);
+  const cells = new (getCellsTypedArray(size))(
+    (ringsTotal - 1) * (nx - 1) * 6 - fans * (nx - 1) * 3,
+  );
 
   let vertexIndex = 0;
   let cellIndex = 0;
@@ -45,10 +52,14 @@ function capsule({
   const ringIncrement = 1 / (ringsCap - 1);
   const bodyIncrement = 1 / (ringsBody - 1);
 
+  // Wrap the last column to the exact first column angle for full revolutions
+  const wrap = phi % TAU === 0;
+
   function computeRing(r, y, dy) {
     for (let s = 0; s < nx; s++, vertexIndex++) {
-      const x = -Math.cos(s * segmentIncrement * phi) * r;
-      const z = Math.sin(s * segmentIncrement * phi) * r;
+      const p = (wrap && s === nx - 1 ? 0 : s * segmentIncrement) * phi;
+      const x = -Math.cos(p) * r;
+      const z = Math.sin(p) * r;
 
       const py = radius * y + height * dy;
 
@@ -79,7 +90,8 @@ function capsule({
 
   for (let r = roundSegments; r < ringsCap; r++) {
     computeRing(
-      Math.sin(Math.PI * r * ringIncrement),
+      // Ensure the apex ring welds exactly to a single point
+      r === ringsCap - 1 ? 0 : Math.sin(Math.PI * r * ringIncrement),
       Math.sin(Math.PI * (r * ringIncrement - 0.5)),
       0.5,
     );
@@ -90,15 +102,22 @@ function capsule({
       const a = r * nx;
       const b = (r + 1) * nx;
       const s1 = s + 1;
-      cells[cellIndex] = a + s;
-      cells[cellIndex + 1] = a + s1;
-      cells[cellIndex + 2] = b + s1;
 
-      cells[cellIndex + 3] = a + s;
-      cells[cellIndex + 4] = b + s1;
-      cells[cellIndex + 5] = b + s;
+      if (!(hasPoles && r === 0)) {
+        cells[cellIndex] = a + s;
+        cells[cellIndex + 1] = a + s1;
+        cells[cellIndex + 2] = b + s1;
 
-      cellIndex += 6;
+        cellIndex += 3;
+      }
+
+      if (!(hasPoles && r === ringsTotal - 2)) {
+        cells[cellIndex] = a + s;
+        cells[cellIndex + 1] = b + s1;
+        cells[cellIndex + 2] = b + s;
+
+        cellIndex += 3;
+      }
     }
   }
 

@@ -47,19 +47,23 @@ function torus({
   let vertexIndex = 0;
   let cellIndex = 0;
 
+  // Wrap the last column/ring to the exact first angle for full revolutions
+  const wrapPhi = phi % TAU === 0;
+  const wrapTheta = theta % TAU === 0;
+
   for (let j = 0; j <= minorSegments; j++) {
     const v = j / minorSegments;
+
+    const t = (wrapTheta && j === minorSegments ? 0 : v) * theta + thetaOffset;
+    const cosTheta = -Math.cos(t);
+    const sinTheta = Math.sin(t);
 
     for (let i = 0; i <= segments; i++, vertexIndex++) {
       const u = i / segments;
 
-      const p = u * phi + phiOffset;
+      const p = (wrapPhi && i === segments ? 0 : u) * phi + phiOffset;
       const cosPhi = -Math.cos(p);
       const sinPhi = Math.sin(p);
-
-      const t = v * theta + thetaOffset;
-      const cosTheta = -Math.cos(t);
-      const sinTheta = Math.sin(t);
 
       TMP[0] = (radius + minorRadius * cosTheta) * cosPhi;
       TMP[1] = (radius + minorRadius * cosTheta) * sinPhi;

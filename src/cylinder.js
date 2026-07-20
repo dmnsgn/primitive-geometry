@@ -49,10 +49,22 @@ function cylinder({
 
   const size = segments * slices + segments * 2 * capCount;
 
+  // Rings collapsed to a point (cone apex/base, cap centers) fan with a
+  // single triangle per quad instead of two, skipping the degenerate one
+  const apexFan = radiusApex === 0;
+  const baseFan = radius === 0;
+  const fans =
+    (apexFan ? 1 : 0) +
+    (baseFan ? 1 : 0) +
+    (capApex && capSegments > 0 ? 1 : 0) +
+    (capBase && capBaseSegments > 0 ? 1 : 0);
+
   const positions = new Float32Array(size * 3);
   const normals = new Float32Array(size * 3);
   const uvs = new Float32Array(size * 2);
-  const cells = new (getCellsTypedArray(size))((nx * ny + nx * capCount) * 6);
+  const cells = new (getCellsTypedArray(size))(
+    (nx * ny + nx * capCount) * 6 - fans * nx * 3,
+  );
 
   let vertexIndex = 0;
   let cellIndex = 0;
@@ -61,14 +73,17 @@ function cylinder({
   const segmentIncrement = 1 / (segments - 1);
   const ringIncrement = 1 / (slices - 1);
 
+  // Wrap the last column to the exact first column angle for full revolutions
+  const wrap = phi % TAU === 0;
+
   for (let i = 0; i < segments; i++) {
     const u = i * segmentIncrement;
+    const p = (wrap && i === segments - 1 ? 0 : u) * phi;
+    const cosPhi = -Math.cos(p);
+    const sinPhi = Math.sin(p);
 
     for (let j = 0; j < slices; j++) {
       const v = j * ringIncrement;
-      const p = u * phi;
-      const cosPhi = -Math.cos(p);
-      const sinPhi = Math.sin(p);
 
       const r = radius * (1 - v) + radiusApex * v;
       positions[vertexIndex * 3] = r * cosPhi;
@@ -93,15 +108,21 @@ function cylinder({
 
   for (let j = 0; j < slices - 1; j++) {
     for (let i = 0; i < segments - 1; i++) {
-      cells[cellIndex + 0] = (i + 0) * slices + (j + 0);
-      cells[cellIndex + 1] = (i + 1) * slices + (j + 0);
-      cells[cellIndex + 2] = (i + 1) * slices + (j + 1);
+      if (!(baseFan && j === 0)) {
+        cells[cellIndex] = (i + 0) * slices + (j + 0);
+        cells[cellIndex + 1] = (i + 1) * slices + (j + 0);
+        cells[cellIndex + 2] = (i + 1) * slices + (j + 1);
 
-      cells[cellIndex + 3] = (i + 0) * slices + (j + 0);
-      cells[cellIndex + 4] = (i + 1) * slices + (j + 1);
-      cells[cellIndex + 5] = (i + 0) * slices + (j + 1);
+        cellIndex += 3;
+      }
 
-      cellIndex += 6;
+      if (!(apexFan && j === slices - 2)) {
+        cells[cellIndex] = (i + 0) * slices + (j + 0);
+        cells[cellIndex + 1] = (i + 1) * slices + (j + 1);
+        cells[cellIndex + 2] = (i + 0) * slices + (j + 1);
+
+        cellIndex += 3;
+      }
     }
   }
 
@@ -111,7 +132,8 @@ function cylinder({
     const segmentIncrement = 1 / (segments - 1);
     for (let r = 0; r < capSegments; r++) {
       for (let i = 0; i < segments; i++) {
-        const p = i * segmentIncrement * phi;
+        const p =
+          (wrap && i === segments - 1 ? 0 : i * segmentIncrement) * phi;
         const cosPhi = -Math.cos(p);
         const sinPhi = Math.sin(p);
 
@@ -151,24 +173,31 @@ function cylinder({
         const c = n + 2;
         const d = n + 3;
 
+        // The innermost ring is collapsed at the center: fan with a single
+        // triangle, skipping the degenerate one
+        if (r > 0) {
+          if (flip === 1) {
+            cells[cellIndex] = a;
+            cells[cellIndex + 1] = c;
+            cells[cellIndex + 2] = d;
+          } else {
+            cells[cellIndex] = a;
+            cells[cellIndex + 1] = d;
+            cells[cellIndex + 2] = c;
+          }
+          cellIndex += 3;
+        }
+
         if (flip === 1) {
           cells[cellIndex] = a;
-          cells[cellIndex + 1] = c;
-          cells[cellIndex + 2] = d;
-
-          cells[cellIndex + 3] = a;
-          cells[cellIndex + 4] = d;
-          cells[cellIndex + 5] = b;
-        } else {
-          cells[cellIndex + 0] = a;
           cells[cellIndex + 1] = d;
-          cells[cellIndex + 2] = c;
-
-          cells[cellIndex + 3] = a;
-          cells[cellIndex + 4] = b;
-          cells[cellIndex + 5] = d;
+          cells[cellIndex + 2] = b;
+        } else {
+          cells[cellIndex] = a;
+          cells[cellIndex + 1] = b;
+          cells[cellIndex + 2] = d;
         }
-        cellIndex += 6;
+        cellIndex += 3;
       }
     }
   }
