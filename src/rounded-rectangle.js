@@ -7,164 +7,76 @@ import {
 } from "./utils.js";
 
 /**
- * @typedef {object} RoundedCubeOptions
+ * @typedef {object} RoundedRectangleOptions
  * @property {number} [sx=1]
  * @property {number} [sy=sx]
- * @property {number} [nx=1]
- * @property {number} [ny=nx]
  * @property {number} [radius=sx * 0.25]
  * @property {number} [roundSegments=8]
  * @property {number} [edgeSegments=1]
+ * @property {number} [nx=edgeSegments]
+ * @property {number} [ny=nx]
  */
 
 /**
+ * Built as a single welded grid so face, edges and corners share their
+ * boundary vertices: no duplicated seams nor T-junctions. nx/ny subdivide both
+ * the inner face and the straight edge sections (edgeSegments is their default
+ * for backwards compatibility).
  * @alias module:roundedRectangle
- * @param {RoundedCubeOptions} [options={}]
+ * @param {RoundedRectangleOptions} [options={}]
  * @returns {import("../types.js").SimplicialComplex}
  */
 function roundedRectangle({
   sx = 1,
   sy = sx,
-  nx = 1,
-  ny = nx,
   radius = sx * 0.25,
   roundSegments = 8,
   edgeSegments = 1,
+  nx = edgeSegments,
+  ny = nx,
 } = {}) {
   checkArguments(arguments);
-
-  const size =
-    (nx + 1) * (ny + 1) +
-    (roundSegments + 1) * (roundSegments + 1) * 4 +
-    (roundSegments + 1) * (edgeSegments + 1) * 4;
-
-  const geometry = {
-    positions: new Float32Array(size * 3),
-    normals: new Float32Array(size * 3),
-    uvs: new Float32Array(size * 2),
-    cells: new (getCellsTypedArray(size))(
-      (nx * ny +
-        roundSegments * roundSegments * 4 +
-        roundSegments * edgeSegments * 4) *
-        6,
-    ),
-  };
 
   const r2 = radius * 2;
   const widthX = sx - r2;
   const widthY = sy - r2;
 
-  const faceSX = widthX / sx;
-  const faceSY = widthY / sy;
+  // Collapse zero-size straight sections into a single welded column so they
+  // don't produce degenerate cells (eg. stadium)
+  if (widthX === 0) nx = 0;
+  if (widthY === 0) ny = 0;
 
-  const radiusSX = radius / sx;
-  const radiusSY = radius / sy;
+  const cols = 2 * roundSegments + nx;
+  const rows = 2 * roundSegments + ny;
+
+  const size = (cols + 1) * (rows + 1);
+
+  const geometry = {
+    positions: new Float32Array(size * 3),
+    normals: new Float32Array(size * 3),
+    uvs: new Float32Array(size * 2),
+    cells: new (getCellsTypedArray(size))(cols * rows * 6),
+  };
 
   const indices = { vertex: 0, cell: 0 };
 
-  const uvOffsetCorner = (su, sv) => [
-    [radius / (su + r2), 0],
-    [1 - radius / (su + r2), 0],
-    [1, 1 - radius / (sv + r2)],
-    [0, 1 - radius / (sv + r2)],
-  ];
-  const uvOffsetStart = (_, sv) => [0, radius / (sv + r2)];
-  const uvOffsetEnd = (su, sv) => [1 - radius / (su + r2), radius / (sv + r2)];
-
-  const [su, sv, nu, nv, direction, pw, uvScale, uvOffset, center] = [
+  computePlane(
+    geometry,
+    indices,
     widthX,
     widthY,
     nx,
     ny,
     "z",
     0,
-    [faceSX, faceSY],
-    [radiusSX, radiusSY],
-    (x, y) => [x, y, 0],
-  ];
-
-  // Plane face
-  computePlane(
-    geometry,
-    indices,
-    su,
-    sv,
-    nu,
-    nv,
-    direction,
-    pw,
     false,
-    uvScale,
-    uvOffset,
+    [1, 1],
+    [0, 0],
+    [0, 0, 0],
+    true,
+    radius,
+    roundSegments,
   );
-
-  // Corner order: ccw uv-like order and L/B (0) R/T (2)
-  // 0,1 -- 1,1
-  //  |  --  |
-  // 0,0 -- 1,0
-  for (let i = 0; i < 4; i++) {
-    const ceil = Math.ceil(i / 2) % 2;
-    const floor = Math.floor(i / 2) % 2;
-
-    const x = (ceil === 0 ? -1 : 1) * (su + radius) * 0.5;
-    const y = (floor === 0 ? -1 : 1) * (sv + radius) * 0.5;
-
-    // Flip for quad seams to be radial
-    const flip = i % 2 === 0;
-
-    // Corners
-    computePlane(
-      geometry,
-      indices,
-      radius,
-      radius,
-      roundSegments,
-      roundSegments,
-      flip ? "-z" : "z",
-      pw,
-      false,
-      [(flip ? -1 : 1) * (radius / (su + r2)), radius / (sv + r2)],
-      uvOffsetCorner(su, sv)[i],
-      center(x, y),
-      !flip,
-    );
-
-    // Edges
-    if (i === 0 || i === 2) {
-      // Left / Right
-      computePlane(
-        geometry,
-        indices,
-        radius,
-        sv,
-        roundSegments,
-        edgeSegments,
-        direction,
-        pw,
-        false,
-        [uvOffset[0], uvScale[1]],
-        ceil === 0 ? uvOffsetStart(su, sv) : uvOffsetEnd(su, sv),
-        center(x, 0),
-      );
-      // Bottom/Top
-      computePlane(
-        geometry,
-        indices,
-        su,
-        radius,
-        edgeSegments,
-        roundSegments,
-        direction,
-        pw,
-        false,
-        [uvScale[0], uvOffset[1]],
-        floor === 0
-          ? [...uvOffsetStart(sv, su)].reverse()
-          : [...uvOffsetEnd(sv, su)].reverse(),
-        center(0, y),
-      );
-    }
-  }
 
   const rx = widthX * 0.5;
   const ry = widthY * 0.5;
@@ -210,7 +122,7 @@ function roundedRectangle({
 
     if (needsRounding) {
       const x =
-        Math.sqrt(TMP[0] ** 2 + TMP[1] ** 2) /
+        Math.hypot(TMP[0], TMP[1]) /
         Math.max(Math.abs(TMP[0]), Math.abs(TMP[1]));
 
       geometry.positions[i] = position[0] + TMP[0] / x;

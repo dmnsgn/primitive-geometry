@@ -12,15 +12,19 @@ import {
  * @property {number} [sx=1]
  * @property {number} [sy=sx]
  * @property {number} [sz=sx]
- * @property {number} [nx=1]
- * @property {number} [ny=nx]
- * @property {number} [nz=nx]
  * @property {number} [radius=sx * 0.25]
  * @property {number} [roundSegments=8]
  * @property {number} [edgeSegments=1]
+ * @property {number} [nx=edgeSegments]
+ * @property {number} [ny=nx]
+ * @property {number} [nz=nx]
  */
 
 /**
+ * Each face is a single welded grid (face, edges and corners share their
+ * boundary vertices) so seams only remain between faces where UVs differ.
+ * nx/ny/nz subdivide both the inner faces and the straight edge sections
+ * (edgeSegments is their default for backwards compatibility).
  * @alias module:roundedCube
  * @param {RoundedCubeOptions} [options={}]
  * @returns {import("../types.js").SimplicialComplex}
@@ -29,33 +33,42 @@ function roundedCube({
   sx = 1,
   sy = sx,
   sz = sx,
-  nx = 1,
-  ny = nx,
-  nz = nx,
   radius = sx * 0.25,
   roundSegments = 8,
   edgeSegments = 1,
+  nx = edgeSegments,
+  ny = nx,
+  nz = nx,
 } = {}) {
   checkArguments(arguments);
 
+  const r2 = radius * 2;
+  const widthX = sx - r2;
+  const widthY = sy - r2;
+  const widthZ = sz - r2;
+
+  // Collapse zero-size straight sections into a single welded column so they
+  // don't produce degenerate cells (eg. radius = half size)
+  if (widthX === 0) nx = 0;
+  if (widthY === 0) ny = 0;
+  if (widthZ === 0) nz = 0;
+
+  const colsX = 2 * roundSegments + nx;
+  const colsY = 2 * roundSegments + ny;
+  const colsZ = 2 * roundSegments + nz;
+
   const size =
-    (nx + 1) * (ny + 1) * 2 +
-    (nx + 1) * (nz + 1) * 2 +
-    (nz + 1) * (ny + 1) * 2 +
-    (roundSegments + 1) * (roundSegments + 1) * 24 +
-    (roundSegments + 1) * (edgeSegments + 1) * 24;
+    ((colsX + 1) * (colsY + 1) +
+      (colsZ + 1) * (colsY + 1) +
+      (colsX + 1) * (colsZ + 1)) *
+    2;
 
   const geometry = {
     positions: new Float32Array(size * 3),
     normals: new Float32Array(size * 3),
     uvs: new Float32Array(size * 2),
     cells: new (getCellsTypedArray(size))(
-      (nx * ny * 2 +
-        nx * nz * 2 +
-        nz * ny * 2 +
-        roundSegments * roundSegments * 24 +
-        roundSegments * edgeSegments * 24) *
-        6,
+      (colsX * colsY + colsZ * colsY + colsX * colsZ) * 2 * 6,
     ),
   };
 
@@ -63,104 +76,20 @@ function roundedCube({
   const halfSY = sy * 0.5;
   const halfSZ = sz * 0.5;
 
-  const r2 = radius * 2;
-  const widthX = sx - r2;
-  const widthY = sy - r2;
-  const widthZ = sz - r2;
-
-  const faceSX = widthX / sx;
-  const faceSY = widthY / sy;
-  const faceSZ = widthZ / sz;
-
-  const radiusSX = radius / sx;
-  const radiusSY = radius / sy;
-  const radiusSZ = radius / sz;
-
   const indices = { vertex: 0, cell: 0 };
 
   const PLANES = [
-    [
-      widthX,
-      widthY,
-      nx,
-      ny,
-      "z",
-      halfSZ,
-      [faceSX, faceSY],
-      [radiusSX, radiusSY],
-      (x, y) => [x, y, 0],
-    ],
-    [
-      widthX,
-      widthY,
-      nx,
-      ny,
-      "-z",
-      -halfSZ,
-      [faceSX, faceSY],
-      [radiusSX, radiusSY],
-      (x, y) => [-x, y, 0],
-    ],
-    [
-      widthZ,
-      widthY,
-      nz,
-      ny,
-      "-x",
-      -halfSX,
-      [faceSZ, faceSY],
-      [radiusSZ, radiusSY],
-      (x, y) => [0, y, x],
-    ],
-    [
-      widthZ,
-      widthY,
-      nz,
-      ny,
-      "x",
-      halfSX,
-      [faceSZ, faceSY],
-      [radiusSZ, radiusSY],
-      (x, y) => [0, y, -x],
-    ],
-    [
-      widthX,
-      widthZ,
-      nx,
-      nz,
-      "y",
-      halfSY,
-      [faceSX, faceSZ],
-      [radiusSX, radiusSZ],
-      (x, y) => [x, 0, -y],
-    ],
-    [
-      widthX,
-      widthZ,
-      nx,
-      nz,
-      "-y",
-      -halfSY,
-      [faceSX, faceSZ],
-      [radiusSX, radiusSZ],
-      (x, y) => [x, 0, y],
-    ],
+    [widthX, widthY, nx, ny, "z", halfSZ],
+    [widthX, widthY, nx, ny, "-z", -halfSZ],
+    [widthZ, widthY, nz, ny, "-x", -halfSX],
+    [widthZ, widthY, nz, ny, "x", halfSX],
+    [widthX, widthZ, nx, nz, "y", halfSY],
+    [widthX, widthZ, nx, nz, "-y", -halfSY],
   ];
 
-  const uvOffsetCorner = (su, sv) => [
-    [0, 0],
-    [1 - radius / (su + r2), 0],
-    [1 - radius / (su + r2), 1 - radius / (sv + r2)],
-    [0, 1 - radius / (sv + r2)],
-  ];
-  const uvOffsetStart = (_, sv) => [0, radius / (sv + r2)];
-  const uvOffsetEnd = (su, sv) => [1 - radius / (su + r2), radius / (sv + r2)];
+  for (let i = 0; i < PLANES.length; i++) {
+    const [su, sv, nu, nv, direction, pw] = PLANES[i];
 
-  for (let j = 0; j < PLANES.length; j++) {
-    const [su, sv, nu, nv, direction, pw, uvScale, uvOffset, center] =
-      PLANES[j];
-
-    // Cube faces
     computePlane(
       geometry,
       indices,
@@ -171,73 +100,13 @@ function roundedCube({
       direction,
       pw,
       false,
-      uvScale,
-      uvOffset,
+      [1, 1],
+      [0, 0],
+      [0, 0, 0],
+      true,
+      radius,
+      roundSegments,
     );
-
-    // Corner order: ccw uv-like order and L/B (0) R/T (2)
-    // 0,1 -- 1,1
-    //  |  --  |
-    // 0,0 -- 1,0
-    for (let i = 0; i < 4; i++) {
-      const ceil = Math.ceil(i / 2) % 2;
-      const floor = Math.floor(i / 2) % 2;
-
-      const x = (ceil === 0 ? -1 : 1) * (su + radius) * 0.5;
-      const y = (floor === 0 ? -1 : 1) * (sv + radius) * 0.5;
-
-      // Corners
-      computePlane(
-        geometry,
-        indices,
-        radius,
-        radius,
-        roundSegments,
-        roundSegments,
-        direction,
-        pw,
-        false,
-        [radius / (su + r2), radius / (sv + r2)],
-        uvOffsetCorner(su, sv)[i],
-        center(x, y),
-      );
-
-      // Edges
-      if (i === 0 || i === 2) {
-        // Left / Right
-        computePlane(
-          geometry,
-          indices,
-          radius,
-          sv,
-          roundSegments,
-          edgeSegments,
-          direction,
-          pw,
-          false,
-          [uvOffset[0], uvScale[1]],
-          ceil === 0 ? uvOffsetStart(su, sv) : uvOffsetEnd(su, sv),
-          center(x, 0),
-        );
-        // Bottom/Top
-        computePlane(
-          geometry,
-          indices,
-          su,
-          radius,
-          edgeSegments,
-          roundSegments,
-          direction,
-          pw,
-          false,
-          [uvScale[0], uvOffset[1]],
-          floor === 0
-            ? [...uvOffsetStart(sv, su)].reverse()
-            : [...uvOffsetEnd(sv, su)].reverse(),
-          center(0, y),
-        );
-      }
-    }
   }
 
   const rx = widthX * 0.5;

@@ -84,6 +84,12 @@ export const PLANE_DIRECTIONS = {
 };
 
 /**
+ * Plane as a single welded grid, optionally with rounded corners
+ * (radius/roundSegments > 0): [roundSegments|nu|roundSegments] x
+ * [roundSegments|nv|roundSegments] so face, edges and corners share their
+ * boundary vertices, with radial diagonals in the corner quads. su/sv are the
+ * inner face sizes (full size minus 2 * radius) and collapse to the plain
+ * su/sv grid when radius/roundSegments are 0.
  * @private
  */
 export function computePlane(
@@ -100,45 +106,88 @@ export function computePlane(
   uvOffset = [0, 0],
   center = [0, 0, 0],
   ccw = true,
+  radius = 0,
+  roundSegments = 0,
 ) {
   const { positions, normals, uvs, cells } = geometry;
   const [u, v, w, flipU, flipV, normal] = PLANE_DIRECTIONS[direction];
 
+  const cols = 2 * roundSegments + nu;
+  const rows = 2 * roundSegments + nv;
+
+  const width = su + 2 * radius;
+  const height = sv + 2 * radius;
+
+  // Piecewise sampling so region boundaries are computed once and bit-exact;
+  // n = 0 collapses the straight section into a single welded column;
+  // collapses to a plain -size/2 + index * size/n grid when roundSegments = 0
+  const coordinate = (index, n, size) =>
+    index < roundSegments
+      ? -size / 2 - radius + (index * radius) / roundSegments
+      : index <= roundSegments + n
+        ? -size / 2 + (n ? ((index - roundSegments) * size) / n : 0)
+        : size / 2 + ((index - roundSegments - n) * radius) / roundSegments;
+
   const vertexOffset = indices.vertex;
 
-  for (let j = 0; j <= nv; j++) {
-    for (let i = 0; i <= nu; i++) {
-      positions[indices.vertex * 3 + u] =
-        (-su / 2 + (i * su) / nu) * flipU + center[u];
-      positions[indices.vertex * 3 + v] =
-        (-sv / 2 + (j * sv) / nv) * flipV + center[v];
+  for (let j = 0; j <= rows; j++) {
+    const y = coordinate(j, nv, sv);
+
+    for (let i = 0; i <= cols; i++) {
+      const x = coordinate(i, nu, su);
+
+      positions[indices.vertex * 3 + u] = x * flipU + center[u];
+      positions[indices.vertex * 3 + v] = y * flipV + center[v];
       positions[indices.vertex * 3 + w] = pw + center[w];
 
       normals[indices.vertex * 3 + w] = normal;
 
-      uvs[indices.vertex * 2] = (i / nu) * uvScale[0] + uvOffset[0];
-      uvs[indices.vertex * 2 + 1] = (1 - j / nv) * uvScale[1] + uvOffset[1];
+      uvs[indices.vertex * 2] =
+        ((x + width / 2) / width) * uvScale[0] + uvOffset[0];
+      uvs[indices.vertex * 2 + 1] =
+        (1 - (y + height / 2) / height) * uvScale[1] + uvOffset[1];
 
       indices.vertex++;
 
-      if (j < nv && i < nu) {
-        const n = vertexOffset + j * (nu + 1) + i;
+      if (j < rows && i < cols) {
+        const n = vertexOffset + j * (cols + 1) + i;
+        const o = n + cols + 1;
+
         if (quads) {
-          const o = vertexOffset + (j + 1) * (nu + 1) + i;
           cells[indices.cell] = n;
           cells[indices.cell + 1] = o;
           cells[indices.cell + 2] = o + 1;
           cells[indices.cell + 3] = n + 1;
+          indices.cell += 4;
+          continue;
+        }
+
+        const isCornerU = i < roundSegments || i >= roundSegments + nu;
+        const isCornerV = j < roundSegments || j >= roundSegments + nv;
+
+        if (
+          isCornerU &&
+          isCornerV &&
+          (i < roundSegments) !== (j < roundSegments)
+        ) {
+          // Anti-diagonal so corner quad seams are radial
+          cells[indices.cell] = n + 1;
+          cells[indices.cell + (ccw ? 1 : 2)] = n;
+          cells[indices.cell + (ccw ? 2 : 1)] = o;
+
+          cells[indices.cell + 3] = n + 1;
+          cells[indices.cell + (ccw ? 4 : 5)] = o;
+          cells[indices.cell + (ccw ? 5 : 4)] = o + 1;
         } else {
           cells[indices.cell] = n;
-          cells[indices.cell + (ccw ? 1 : 2)] = n + nu + 1;
-          cells[indices.cell + (ccw ? 2 : 1)] = n + nu + 2;
+          cells[indices.cell + (ccw ? 1 : 2)] = o;
+          cells[indices.cell + (ccw ? 2 : 1)] = o + 1;
 
           cells[indices.cell + 3] = n;
-          cells[indices.cell + (ccw ? 4 : 5)] = n + nu + 2;
+          cells[indices.cell + (ccw ? 4 : 5)] = o + 1;
           cells[indices.cell + (ccw ? 5 : 4)] = n + 1;
         }
-        indices.cell += quads ? 4 : 6;
+        indices.cell += 6;
       }
     }
   }
