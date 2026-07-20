@@ -65,21 +65,22 @@
   "scripts": {
     "build": "npx snowdev build",
     "deps": "npx snowdev install",
-    "dev": "npx snowdev dev"
+    "dev": "npx snowdev dev",
+    "test": "node --test"
   },
   "devDependencies": {
-    "async-preloader": "^8.0.4",
+    "async-preloader": "^9.0.0",
     "cameras": "^3.1.1",
-    "es-module-shims": "^2.5.1",
-    "gl-matrix": "^3.4.3",
-    "pex-context": "^3.2.0",
-    "pex-geom": "^3.0.2",
+    "es-module-shims": "^2.8.2",
+    "gl-matrix": "^3.4.4",
+    "pex-context": "^4.1.0",
+    "pex-geom": "^3.1.1",
     "tweakpane": "^4.0.5",
     "typed-array-interleave": "^2.0.1"
   },
   "engines": {
     "node": ">=22.0.0",
     "npm": ">=10.5.1",
-    "snowdev": ">=2.3.x"
+    "snowdev": "3.0.0-alpha.0"
   }
 }

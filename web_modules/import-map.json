@@ -10,6 +10,7 @@
     "pex-context": "./pex-context.js",
     "pex-geom": "./pex-geom.js",
     "tweakpane": "./tweakpane.js",
-    "typed-array-interleave": "./typed-array-interleave.js"
+    "typed-array-interleave": "./typed-array-interleave.js",
+    "primitive-geometry": "../index.js"
   }
 }
