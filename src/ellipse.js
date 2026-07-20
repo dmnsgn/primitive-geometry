@@ -16,6 +16,8 @@ import { checkArguments, getCellsTypedArray, TAU } from "./utils.js";
  */
 
 /**
+ * Closed for a full revolution (theta multiple of TAU): the last column of
+ * vertices is shared with the first so the wrap edge is welded.
  * @alias module:ellipse
  * @param {EllipseOptions} [options={}]
  * @returns {import("../types.js").SimplicialComplex}
@@ -35,9 +37,10 @@ function ellipse({
 } = {}) {
   checkArguments(arguments);
 
-  const size = mergeCentroid
-    ? 1 + (segments + 1) + (innerSegments - 1) * (segments + 1)
-    : (segments + 1) * (innerSegments + 1);
+  const closed = theta !== 0 && theta % TAU === 0;
+  const cols = segments + (closed ? 0 : 1);
+
+  const size = mergeCentroid ? 1 + innerSegments * cols : (innerSegments + 1) * cols;
 
   const positions = new Float32Array(size * 3);
   const normals = new Float32Array(size * 3);
@@ -45,7 +48,7 @@ function ellipse({
   const cells = new (getCellsTypedArray(size))(
     mergeCentroid
       ? segments * 3 + (innerSegments - 1) * segments * 6
-      : size * 6,
+      : innerSegments * segments * 6,
   );
 
   if (mergeCentroid) {
@@ -57,12 +60,14 @@ function ellipse({
   let vertexIndex = mergeCentroid ? 1 : 0;
   let cellIndex = 0;
 
-  for (let j = vertexIndex; j <= innerSegments; j++) {
+  for (let j = mergeCentroid ? 1 : 0; j <= innerSegments; j++) {
     const radiusRatio = j / innerSegments;
 
     const r = innerRadius + (radius - innerRadius) * radiusRatio;
 
-    for (let i = 0; i <= segments; i++, vertexIndex++) {
+    const ringOffset = vertexIndex;
+
+    for (let i = 0; i < cols; i++, vertexIndex++) {
       const thetaRatio = i / segments;
       const t = thetaOffset + thetaRatio * theta;
 
@@ -100,35 +105,29 @@ function ellipse({
       });
 
       if (i < segments) {
+        // Next column, sharing the first one on the wrap for closed shapes
+        const i1 = (i + 1) % cols;
+
         if (mergeCentroid && j === 1) {
-          cells[cellIndex] = i + 1;
-          cells[cellIndex + 1] = i + 2;
+          cells[cellIndex] = ringOffset + i;
+          cells[cellIndex + 1] = ringOffset + i1;
 
           cellIndex += 3;
-        } else {
-          let a;
+        } else if (j > (mergeCentroid ? 1 : 0)) {
+          const a = ringOffset - cols + i;
+          const b = ringOffset + i;
+          const c = ringOffset + i1;
+          const d = ringOffset - cols + i1;
 
-          if (mergeCentroid) {
-            a = 1 + (j - 2) * (segments + 1) + i;
-          } else if (j < innerSegments) {
-            a = j * (segments + 1) + i;
-          }
+          cells[cellIndex] = a;
+          cells[cellIndex + 1] = b;
+          cells[cellIndex + 2] = d;
 
-          if (a !== undefined) {
-            const b = a + segments + 1;
-            const c = a + segments + 2;
-            const d = a + 1;
+          cells[cellIndex + 3] = b;
+          cells[cellIndex + 4] = c;
+          cells[cellIndex + 5] = d;
 
-            cells[cellIndex] = a;
-            cells[cellIndex + 1] = b;
-            cells[cellIndex + 2] = d;
-
-            cells[cellIndex + 3] = b;
-            cells[cellIndex + 4] = c;
-            cells[cellIndex + 5] = d;
-
-            cellIndex += 6;
-          }
+          cellIndex += 6;
         }
       }
     }
