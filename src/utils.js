@@ -19,6 +19,12 @@ export const HALF_PI = Math.PI / 2;
 export const SQRT2 = Math.sqrt(2);
 
 /**
+ * Golden ratio: (1 + √5) / 2.
+ * @constant {number}
+ */
+export const PHI = (1 + Math.sqrt(5)) / 2;
+
+/**
  * Normalize a vector 3.
  * @param {number[]} v Vector 3 array
  * @returns {number[]} Normalized vector
@@ -165,11 +171,7 @@ export function computePlane(
         const isCornerU = i < roundSegments || i >= roundSegments + nu;
         const isCornerV = j < roundSegments || j >= roundSegments + nv;
 
-        if (
-          isCornerU &&
-          isCornerV &&
-          (i < roundSegments) !== (j < roundSegments)
-        ) {
+        if (isCornerU && isCornerV && i < roundSegments !== j < roundSegments) {
           // Anti-diagonal so corner quad seams are radial
           cells[indices.cell] = n + 1;
           cells[indices.cell + (ccw ? 1 : 2)] = n;

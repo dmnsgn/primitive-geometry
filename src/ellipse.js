@@ -40,7 +40,9 @@ function ellipse({
   const closed = theta !== 0 && theta % TAU === 0;
   const cols = segments + (closed ? 0 : 1);
 
-  const size = mergeCentroid ? 1 + innerSegments * cols : (innerSegments + 1) * cols;
+  const size = mergeCentroid
+    ? 1 + innerSegments * cols
+    : (innerSegments + 1) * cols;
 
   const positions = new Float32Array(size * 3);
   const normals = new Float32Array(size * 3);

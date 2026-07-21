@@ -81,8 +81,30 @@ const cases = [
     () => Primitives.torus({ segments: 15, minorSegments: 15 }),
   ],
 
-  ["tetrahedron", () => Primitives.tetrahedron(), { unused: 2 }],
-  ["icosahedron", () => Primitives.icosahedron()],
+  ["tetrahedron", () => Primitives.tetrahedron()],
+  ["octahedron", () => Primitives.octahedron()],
+  ["dodecahedron", () => Primitives.dodecahedron()],
+  [
+    "icosahedron subdivisions=0",
+    () => Primitives.icosahedron({ subdivisions: 0 }),
+  ],
+  ["icosahedron subdivided", () => Primitives.icosahedron()],
+
+  ["greatDodecahedron", () => Primitives.greatDodecahedron()],
+  ["greatIcosahedron", () => Primitives.greatIcosahedron()],
+  // Pentagram faces can't be fan-triangulated, so each is decomposed into 8
+  // triangles around new tip/inner vertices, welded across faces where they
+  // coincide (see src/polyhedra/regular/pentagram.js)
+  ["smallStellatedDodecahedron", () => Primitives.smallStellatedDodecahedron()],
+  ["greatStellatedDodecahedron", () => Primitives.greatStellatedDodecahedron()],
+
+  // tetrasphere/octasphere have a seed vertex exactly on a pole; the uv
+  // seam zipper duplicates every triangle's corner there with a
+  // locally-correct longitude, orphaning the original shared vertex
+  ["tetrasphere", () => Primitives.tetrasphere(), { unused: 2 }],
+  ["cubesphere", () => Primitives.cubesphere()],
+  ["octasphere", () => Primitives.octasphere(), { unused: 2 }],
+  ["dodecasphere", () => Primitives.dodecasphere()],
 ];
 
 describe("seams", () => {

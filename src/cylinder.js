@@ -132,8 +132,7 @@ function cylinder({
     const segmentIncrement = 1 / (segments - 1);
     for (let r = 0; r < capSegments; r++) {
       for (let i = 0; i < segments; i++) {
-        const p =
-          (wrap && i === segments - 1 ? 0 : i * segmentIncrement) * phi;
+        const p = (wrap && i === segments - 1 ? 0 : i * segmentIncrement) * phi;
         const cosPhi = -Math.cos(p);
         const sinPhi = Math.sin(p);
 

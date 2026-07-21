@@ -18,6 +18,12 @@ export function polar({ uvs, index, radiusRatio, thetaRatio }) {
   uvs[index + 1] = thetaRatio;
 }
 
+// Longitude/latitude from a normalized direction vector
+export function spherical({ uvs, index, nx, ny, nz }) {
+  uvs[index] = -Math.atan2(nz, nx) / TAU + 0.5;
+  uvs[index + 1] = Math.asin(Math.min(1, Math.max(-1, ny))) / Math.PI + 0.5;
+}
+
 // Basic
 export function radial({ uvs, index, u, v, radius }) {
   const x = safeDivide(

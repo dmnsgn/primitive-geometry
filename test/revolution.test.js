@@ -59,12 +59,6 @@ describe("cone", () => {
     assert.equal(result.cracks, 0);
     assert.equal(inwardTriangles(g), 0);
   });
-
-  it("tetrahedron reduces to 6 triangles", () => {
-    const g = Primitives.tetrahedron();
-    assert.equal(g.cells.length / 3, 6);
-    assert.equal(analyze(g).degenerate, 0);
-  });
 });
 
 describe("capsule", () => {

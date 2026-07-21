@@ -12,4 +12,12 @@
  * @property {(Uint8Array|Uint16Array|Uint32Array)} cells
  */
 
+/**
+ * @typedef {object} SimplicialComplexPolygon Geometry polygon definition.
+ * @property {Float32Array} positions
+ * @property {Float32Array} [normals]
+ * @property {Float32Array} [uvs]
+ * @property {Array<number[]|Uint8Array|Uint16Array|Uint32Array>} cells
+ */
+
 export {};

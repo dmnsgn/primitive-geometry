@@ -32,7 +32,7 @@ const controls = new Controls({
     : {
         phi: Math.PI / 3,
         theta: Math.PI / 4,
-        distance: 15 * (window.innerHeight / window.innerWidth),
+        distance: 25 * (window.innerHeight / window.innerWidth),
       }),
   element: ctx.gl.canvas,
   camera,
