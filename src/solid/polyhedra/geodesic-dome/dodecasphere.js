@@ -1,5 +1,5 @@
 /** @module dodecasphere */
-import polyhedron from "../polyhedron.js";
+import { polyhedron } from "../polyhedron.js";
 import { dodecahedronFaces } from "../regular/dodecahedron.js";
 import { checkArguments } from "../../../utils.js";
 
@@ -17,7 +17,7 @@ import { checkArguments } from "../../../utils.js";
  * @param {DodecasphereOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
  */
-function dodecasphere({
+export function dodecasphere({
   radius = 0.5,
   subdivisions = 2,
   projection,
@@ -33,5 +33,3 @@ function dodecasphere({
     mapping,
   });
 }
-
-export default dodecasphere;

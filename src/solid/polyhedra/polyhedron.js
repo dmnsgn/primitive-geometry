@@ -161,7 +161,7 @@ function edgePoint(seedPositions, a, b, k, S, slerped) {
  * @throws {Error} If subdivisions would produce more than 1e7 vertices
  * @private
  */
-function polyhedron(
+export function polyhedron(
   { positions: seedPositions, cells: seedCells },
   {
     radius = 0.5,
@@ -560,5 +560,3 @@ function polyhedron(
 
   return { positions, normals, uvs, cells };
 }
-
-export default polyhedron;

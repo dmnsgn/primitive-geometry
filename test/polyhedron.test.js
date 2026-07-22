@@ -2,7 +2,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
 import * as Primitives from "../index.js";
-import polyhedron from "../src/solid/polyhedra/polyhedron.js";
+import { polyhedron } from "../src/solid/polyhedra/polyhedron.js";
 import { rectangular } from "../src/mappings.js";
 import { analyze, inwardTriangles, uniquePositionCount } from "./helpers.js";
 

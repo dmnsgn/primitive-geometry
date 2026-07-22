@@ -1,5 +1,5 @@
 /** @module annulus */
-import ellipse from "./ellipse.js";
+import { ellipse } from "./ellipse.js";
 import { concentric } from "../../mappings.js";
 import { checkArguments, TAU } from "../../utils.js";
 
@@ -21,7 +21,7 @@ import { checkArguments, TAU } from "../../utils.js";
  * @param {AnnulusOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
  */
-function annulus({
+export function annulus({
   sx = 1,
   sy = 1,
   radius = 0.5,
@@ -47,5 +47,3 @@ function annulus({
     mapping,
   });
 }
-
-export default annulus;

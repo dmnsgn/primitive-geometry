@@ -1,5 +1,5 @@
 /** @module cubesphere */
-import polyhedron from "../polyhedron.js";
+import { polyhedron } from "../polyhedron.js";
 import { checkArguments } from "../../../utils.js";
 
 /**
@@ -17,7 +17,7 @@ import { checkArguments } from "../../../utils.js";
  * @param {CubesphereOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
  */
-function cubesphere({
+export function cubesphere({
   radius = 0.5,
   subdivisions = 2,
   projection,
@@ -50,5 +50,3 @@ function cubesphere({
     { radius, subdivisions, project: true, projection, mapping },
   );
 }
-
-export default cubesphere;

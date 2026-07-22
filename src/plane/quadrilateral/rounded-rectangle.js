@@ -26,7 +26,7 @@ import {
  * @param {RoundedRectangleOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
  */
-function roundedRectangle({
+export function roundedRectangle({
   sx = 1,
   sy = sx,
   radius = sx * 0.25,
@@ -132,5 +132,3 @@ function roundedRectangle({
 
   return geometry;
 }
-
-export default roundedRectangle;

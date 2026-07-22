@@ -78,7 +78,7 @@ export function box({ sx = 1, sy = sx, sz = sx } = {}) {
  * @param {CubeOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
  */
-function cube({ sx = 1, sy = sx, sz = sx, nx = 1, ny = nx, nz = nx } = {}) {
+export function cube({ sx = 1, sy = sx, sz = sx, nx = 1, ny = nx, nz = nx } = {}) {
   checkArguments(arguments);
 
   const size =
@@ -108,5 +108,3 @@ function cube({ sx = 1, sy = sx, sz = sx, nx = 1, ny = nx, nz = nx } = {}) {
 
   return geometry;
 }
-
-export default cube;

@@ -1,5 +1,5 @@
 /** @module octasphere */
-import polyhedron from "../polyhedron.js";
+import { polyhedron } from "../polyhedron.js";
 import { octahedronFaces } from "../regular/octahedron.js";
 import { checkArguments } from "../../../utils.js";
 
@@ -17,7 +17,7 @@ import { checkArguments } from "../../../utils.js";
  * @param {OctasphereOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
  */
-function octasphere({
+export function octasphere({
   radius = 0.5,
   subdivisions = 2,
   projection,
@@ -33,5 +33,3 @@ function octasphere({
     mapping,
   });
 }
-
-export default octasphere;

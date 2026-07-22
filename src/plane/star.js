@@ -1,5 +1,5 @@
 /** @module star */
-import ellipse from "./circular/ellipse.js";
+import { ellipse } from "./circular/ellipse.js";
 import { concentric } from "../mappings.js";
 import { checkArguments, computeStarRatio, TAU } from "../utils.js";
 
@@ -40,7 +40,7 @@ import { checkArguments, computeStarRatio, TAU } from "../utils.js";
  * @param {StarOptions} [options={}]
  * @returns {import("../../types.js").SimplicialComplex}
  */
-function star({
+export function star({
   points = 5,
   density = 2,
   radius = 0.5,
@@ -81,5 +81,3 @@ function star({
     },
   });
 }
-
-export default star;

@@ -1,5 +1,5 @@
 /** @module reuleux */
-import ellipse from "./circular/ellipse.js";
+import { ellipse } from "./circular/ellipse.js";
 import { concentric } from "../mappings.js";
 import { checkArguments, TAU } from "../utils.js";
 
@@ -22,7 +22,7 @@ import { checkArguments, TAU } from "../utils.js";
  * @param {ReuleuxOptions} [options={}]
  * @returns {import("../../types.js").SimplicialComplex}
  */
-function reuleux({
+export function reuleux({
   radius = 0.5,
   segments = 32,
   innerSegments = 16,
@@ -59,5 +59,3 @@ function reuleux({
     ],
   });
 }
-
-export default reuleux;

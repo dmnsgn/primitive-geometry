@@ -1,5 +1,5 @@
 /** @module superellipse */
-import ellipse from "./ellipse.js";
+import { ellipse } from "./ellipse.js";
 import { lamé } from "../../mappings.js";
 import { checkArguments, TAU } from "../../utils.js";
 
@@ -27,7 +27,7 @@ import { checkArguments, TAU } from "../../utils.js";
  * @param {SuperellipseOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
  */
-function superellipse({
+export function superellipse({
   sx = 1,
   sy = 0.5,
   radius = 0.5,
@@ -58,5 +58,3 @@ function superellipse({
     ],
   });
 }
-
-export default superellipse;

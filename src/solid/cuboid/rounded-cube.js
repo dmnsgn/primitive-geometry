@@ -29,7 +29,7 @@ import {
  * @param {RoundedCubeOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
  */
-function roundedCube({
+export function roundedCube({
   sx = 1,
   sy = sx,
   sz = sx,
@@ -158,5 +158,3 @@ function roundedCube({
 
   return geometry;
 }
-
-export default roundedCube;

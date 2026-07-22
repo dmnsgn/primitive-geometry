@@ -1,5 +1,5 @@
 /** @module sphere */
-import ellipsoid from "./ellipsoid.js";
+import { ellipsoid } from "./ellipsoid.js";
 import { checkArguments } from "../../utils.js";
 
 /**
@@ -18,7 +18,7 @@ import { checkArguments } from "../../utils.js";
  * @param {SphereOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
  */
-function sphere({
+export function sphere({
   radius = 0.5,
   nx = 32,
   ny = 16,
@@ -41,5 +41,3 @@ function sphere({
     ry: 1,
   });
 }
-
-export default sphere;

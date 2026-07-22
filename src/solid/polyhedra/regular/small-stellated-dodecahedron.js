@@ -1,7 +1,7 @@
 /** @module smallStellatedDodecahedron */
 import { greatDodecahedronFaces } from "./great-dodecahedron.js";
 import { assembleFaces, computePentagram } from "./pentagram.js";
-import polyhedron from "../polyhedron.js";
+import { polyhedron } from "../polyhedron.js";
 import { checkArguments } from "../../../utils.js";
 
 /**
@@ -42,7 +42,7 @@ export function smallStellatedDodecahedronFaces({ radius = 0.5 } = {}) {
  * @param {SmallStellatedDodecahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
  */
-function smallStellatedDodecahedron({
+export function smallStellatedDodecahedron({
   radius = 0.5,
   subdivisions = 0,
   mapping,
@@ -55,5 +55,3 @@ function smallStellatedDodecahedron({
     mapping,
   });
 }
-
-export default smallStellatedDodecahedron;

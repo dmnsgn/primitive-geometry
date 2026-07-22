@@ -39,7 +39,7 @@ See difference with v1 [here](#License).
 See the [example](https://dmnsgn.github.io/primitive-geometry/) and its [source](examples/index.js).
 
 ```js
-import Primitives from "primitive-geometry";
+import * as Primitives from "primitive-geometry";
 
 const quadGeometry = Primitives.quad({
   scale: 0.5,

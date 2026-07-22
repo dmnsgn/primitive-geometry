@@ -17,7 +17,7 @@ import { checkArguments, getCellsTypedArray, TAU } from "../../utils.js";
  * @returns {import("../../../types.js").SimplicialComplex}
  */
 
-function capsule({
+export function capsule({
   height = 0.5,
   radius = 0.25,
   nx = 16,
@@ -128,5 +128,3 @@ function capsule({
     cells,
   };
 }
-
-export default capsule;

@@ -27,7 +27,7 @@ import {
  * @param {EllipsoidOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
  */
-function ellipsoid({
+export function ellipsoid({
   radius = 1,
   nx = 32,
   ny = 16,
@@ -136,5 +136,3 @@ function ellipsoid({
     cells,
   };
 }
-
-export default ellipsoid;

@@ -21,7 +21,7 @@ import { checkArguments, computePlane, getCellsTypedArray } from "../../utils.js
  * @param {PlaneOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
  */
-function plane({
+export function plane({
   sx = 1,
   sy = sx,
   nx = 1,
@@ -50,5 +50,3 @@ function plane({
     quads,
   );
 }
-
-export default plane;

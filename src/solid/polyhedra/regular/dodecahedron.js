@@ -1,5 +1,5 @@
 /** @module dodecahedron */
-import polyhedron from "../polyhedron.js";
+import { polyhedron } from "../polyhedron.js";
 import { PHI, checkArguments } from "../../../utils.js";
 
 /**
@@ -72,7 +72,7 @@ export function dodecahedronFaces({ radius = 0.5 } = {}) {
  * @param {DodecahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
  */
-function dodecahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
+export function dodecahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
   checkArguments(arguments);
 
   return polyhedron(dodecahedronFaces({ radius }), {
@@ -81,5 +81,3 @@ function dodecahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
     mapping,
   });
 }
-
-export default dodecahedron;

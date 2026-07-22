@@ -1,5 +1,5 @@
 /** @module tetrasphere */
-import polyhedron from "../polyhedron.js";
+import { polyhedron } from "../polyhedron.js";
 import { tetrahedronFaces } from "../regular/tetrahedron.js";
 import { checkArguments } from "../../../utils.js";
 
@@ -17,7 +17,7 @@ import { checkArguments } from "../../../utils.js";
  * @param {TetrasphereOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
  */
-function tetrasphere({
+export function tetrasphere({
   radius = 0.5,
   subdivisions = 2,
   projection,
@@ -33,5 +33,3 @@ function tetrasphere({
     mapping,
   });
 }
-
-export default tetrasphere;

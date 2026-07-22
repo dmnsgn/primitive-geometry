@@ -22,7 +22,7 @@ import { checkArguments, getCellsTypedArray, TAU } from "../../utils.js";
  * @param {EllipseOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
  */
-function ellipse({
+export function ellipse({
   sx = 1,
   sy = 0.5,
   radius = 0.5,
@@ -137,5 +137,3 @@ function ellipse({
 
   return { positions, normals, uvs, cells };
 }
-
-export default ellipse;

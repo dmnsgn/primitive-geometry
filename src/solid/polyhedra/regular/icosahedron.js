@@ -1,5 +1,5 @@
 /** @module icosahedron */
-import polyhedron from "../polyhedron.js";
+import { polyhedron } from "../polyhedron.js";
 import { PHI, checkArguments } from "../../../utils.js";
 
 /**
@@ -71,7 +71,7 @@ export function icosahedronFaces({ radius = 0.5 } = {}) {
  * @param {IcosahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
  */
-function icosahedron({ radius = 0.5, subdivisions = 2, mapping } = {}) {
+export function icosahedron({ radius = 0.5, subdivisions = 2, mapping } = {}) {
   checkArguments(arguments);
 
   return polyhedron(icosahedronFaces({ radius }), {
@@ -80,5 +80,3 @@ function icosahedron({ radius = 0.5, subdivisions = 2, mapping } = {}) {
     mapping,
   });
 }
-
-export default icosahedron;

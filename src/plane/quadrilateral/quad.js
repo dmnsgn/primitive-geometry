@@ -36,7 +36,7 @@ export function quadFaces({ scale = 0.5 } = {}) {
  * @param {QuadOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
  */
-function quad({ scale = 0.5 } = {}) {
+export function quad({ scale = 0.5 } = {}) {
   checkArguments(arguments);
 
   const { positions, cells } = quadFaces({ scale });
@@ -60,5 +60,3 @@ function quad({ scale = 0.5 } = {}) {
     cells: triangulateFaces(cells, 4),
   };
 }
-
-export default quad;

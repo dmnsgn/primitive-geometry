@@ -1,5 +1,5 @@
 /** @module stadium */
-import roundedRectangle from "./rounded-rectangle.js";
+import { roundedRectangle } from "./rounded-rectangle.js";
 import { checkArguments } from "../../utils.js";
 
 /**
@@ -17,7 +17,7 @@ import { checkArguments } from "../../utils.js";
  * @param {StadiumOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
  */
-function stadium({
+export function stadium({
   sx = 1,
   sy = 0.5,
   nx,
@@ -37,5 +37,3 @@ function stadium({
     edgeSegments,
   });
 }
-
-export default stadium;

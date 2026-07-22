@@ -1,5 +1,5 @@
 /** @module cone */
-import cylinder from "./cylinder.js";
+import { cylinder } from "./cylinder.js";
 import { checkArguments } from "../../utils.js";
 
 /**
@@ -18,7 +18,7 @@ import { checkArguments } from "../../utils.js";
  * @param {ConeOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
  */
-function cone({ height, radius, nx, ny, capSegments, capBase, phi } = {}) {
+export function cone({ height, radius, nx, ny, capSegments, capBase, phi } = {}) {
   checkArguments(arguments);
 
   return cylinder({
@@ -34,5 +34,3 @@ function cone({ height, radius, nx, ny, capSegments, capBase, phi } = {}) {
     capApex: false,
   });
 }
-
-export default cone;

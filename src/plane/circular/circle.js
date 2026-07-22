@@ -17,7 +17,7 @@ import { checkArguments, TAU } from "../../utils.js";
  *   positions and a single path cell of `segments` indices (`segments + 1`,
  *   repeating index `0`, when `closed`)
  */
-function circle({
+export function circle({
   radius = 0.5,
   segments = 32,
   theta = TAU,
@@ -40,5 +40,3 @@ function circle({
 
   return { positions, cells: [path] };
 }
-
-export default circle;

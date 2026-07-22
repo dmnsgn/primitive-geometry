@@ -1,5 +1,5 @@
 /** @module tetrahedron */
-import polyhedron from "../polyhedron.js";
+import { polyhedron } from "../polyhedron.js";
 import { checkArguments } from "../../../utils.js";
 
 /**
@@ -46,7 +46,7 @@ export function tetrahedronFaces({ circumradius = 0.5 } = {}) {
  * @param {TetrahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
  */
-function tetrahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
+export function tetrahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
   checkArguments(arguments);
 
   // A tetrahedron has no center of symmetry, so its bounding box can't be
@@ -64,5 +64,3 @@ function tetrahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
 
   return polyhedron({ positions, cells }, { radius, subdivisions, mapping });
 }
-
-export default tetrahedron;

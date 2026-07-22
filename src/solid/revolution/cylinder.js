@@ -25,7 +25,7 @@ import {
  * @param {CylinderOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
  */
-function cylinder({
+export function cylinder({
   height = 1,
   radius = 0.25,
   nx = 16,
@@ -211,5 +211,3 @@ function cylinder({
     cells,
   };
 }
-
-export default cylinder;

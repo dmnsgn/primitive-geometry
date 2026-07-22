@@ -1,5 +1,5 @@
 /** @module disc */
-import ellipse from "./ellipse.js";
+import { ellipse } from "./ellipse.js";
 import { concentric } from "../../mappings.js";
 import { checkArguments, TAU } from "../../utils.js";
 
@@ -19,7 +19,7 @@ import { checkArguments, TAU } from "../../utils.js";
  * @param {DiscOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
  */
-function disc({
+export function disc({
   radius = 0.5,
   segments = 32,
   innerSegments = 16,
@@ -42,5 +42,3 @@ function disc({
     mapping,
   });
 }
-
-export default disc;

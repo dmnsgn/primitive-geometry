@@ -1,5 +1,5 @@
 /** @module squircle */
-import ellipse from "./ellipse.js";
+import { ellipse } from "./ellipse.js";
 import { fgSquircular } from "../../mappings.js";
 import { checkArguments, HALF_PI, SQRT2, TAU } from "../../utils.js";
 
@@ -25,7 +25,7 @@ import { checkArguments, HALF_PI, SQRT2, TAU } from "../../utils.js";
  * @param {SquircleOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
  */
-function squircle({
+export function squircle({
   sx = 1,
   sy = 1,
   radius = 0.5,
@@ -77,5 +77,3 @@ function squircle({
     },
   });
 }
-
-export default squircle;

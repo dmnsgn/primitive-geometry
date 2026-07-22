@@ -1,5 +1,5 @@
 /** @module octahedron */
-import polyhedron from "../polyhedron.js";
+import { polyhedron } from "../polyhedron.js";
 import { checkArguments } from "../../../utils.js";
 
 /**
@@ -50,7 +50,7 @@ export function octahedronFaces({ radius = 0.5 } = {}) {
  * @param {OctahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
  */
-function octahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
+export function octahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
   checkArguments(arguments);
 
   return polyhedron(octahedronFaces({ radius }), {
@@ -59,5 +59,3 @@ function octahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
     mapping,
   });
 }
-
-export default octahedron;

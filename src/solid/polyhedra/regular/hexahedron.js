@@ -1,5 +1,5 @@
 /** @module hexahedron */
-import polyhedron from "../polyhedron.js";
+import { polyhedron } from "../polyhedron.js";
 import { checkArguments } from "../../../utils.js";
 
 /**
@@ -52,7 +52,7 @@ export function hexahedronFaces({ radius = 0.5 } = {}) {
  * @param {HexahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
  */
-function hexahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
+export function hexahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
   checkArguments(arguments);
 
   return polyhedron(hexahedronFaces({ radius }), {
@@ -61,5 +61,3 @@ function hexahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
     mapping,
   });
 }
-
-export default hexahedron;

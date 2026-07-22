@@ -24,7 +24,7 @@ import {
  * @param {TorusOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
  */
-function torus({
+export function torus({
   radius = 0.4,
   segments = 64,
 
@@ -111,5 +111,3 @@ function torus({
     cells,
   };
 }
-
-export default torus;

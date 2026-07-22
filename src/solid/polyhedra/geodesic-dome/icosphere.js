@@ -1,5 +1,5 @@
 /** @module icosphere */
-import polyhedron from "../polyhedron.js";
+import { polyhedron } from "../polyhedron.js";
 import { icosahedronFaces } from "../regular/icosahedron.js";
 import { checkArguments } from "../../../utils.js";
 
@@ -17,7 +17,7 @@ import { checkArguments } from "../../../utils.js";
  * @param {IcosphereOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
  */
-function icosphere({
+export function icosphere({
   radius = 0.5,
   subdivisions = 2,
   projection,
@@ -33,5 +33,3 @@ function icosphere({
     mapping,
   });
 }
-
-export default icosphere;
