@@ -1,6 +1,10 @@
 /** @module greatStellatedDodecahedron */
 import { computeDodecahedron } from "./dodecahedron.js";
-import { assembleFaces, computeStarLayer } from "./pentagram.js";
+import {
+  assembleFaces,
+  computeStarLayer,
+  PENTAGRAM_RATIO,
+} from "./pentagram.js";
 import polyhedron from "../polyhedron.js";
 import { PHI, checkArguments } from "../../utils.js";
 
@@ -27,8 +31,8 @@ export function computeGreatStellatedDodecahedron(radius) {
   return assembleFaces(positions, pentagons, (vertices) => {
     const tips = vertices.map((v) => v.map((x) => x * PHI ** 3));
 
-    // Depth-1 ring at phi^2, this face's notches
-    const notches = computeStarLayer(vertices, PHI ** 2);
+    // Depth-1 ring at phi^2 (1 / PENTAGRAM_RATIO), this face's notches
+    const notches = computeStarLayer(vertices, 1 / PENTAGRAM_RATIO);
 
     // Tip i is flanked by notch i (between vertex i and i + 1) and notch
     // i - 1 (between vertex i - 1 and i)

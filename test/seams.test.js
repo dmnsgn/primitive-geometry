@@ -31,6 +31,14 @@ const cases = [
   ["annulus", () => Primitives.annulus()],
   ["annulus segments=15", () => Primitives.annulus({ segments: 15 })],
   ["reuleux", () => Primitives.reuleux()],
+  ["star", () => Primitives.star()],
+  ["star points=7 density=3", () => Primitives.star({ points: 7, density: 3 })],
+  ["star thetaOffset=0.5", () => Primitives.star({ thetaOffset: 0.5 })],
+  ["star innerRadius=0.1 (self-similar hole)", () => Primitives.star({ innerRadius: 0.1 })],
+  [
+    "star innerRadius=0.1 circularHole",
+    () => Primitives.star({ innerRadius: 0.1, circularHole: true }),
+  ],
 
   ["roundedRectangle", () => Primitives.roundedRectangle()],
   [

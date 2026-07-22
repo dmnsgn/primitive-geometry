@@ -17,6 +17,7 @@ export { default as superellipse } from "./src/superellipse.js";
 export { default as squircle } from "./src/squircle.js";
 export { default as annulus } from "./src/annulus.js";
 export { default as reuleux } from "./src/reuleux.js";
+export { default as star } from "./src/star.js";
 
 export { default as cube } from "./src/cube.js";
 export { default as roundedCube } from "./src/rounded-cube.js";

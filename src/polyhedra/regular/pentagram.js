@@ -1,14 +1,23 @@
 /** @module pentagram */
-import { PHI } from "../../utils.js";
+import { computeStarRatio } from "../../utils.js";
+
+/**
+ * The regular pentagram ({5/2} star polygon)'s inner (reflex) to outer (tip)
+ * radius ratio, `1 / PHI ** 2`. Also used by great-stellated-dodecahedron.js,
+ * whose own depth-1 notches sit at the same ratio's reciprocal.
+ * @private
+ */
+export const PENTAGRAM_RATIO = computeStarRatio(5, 2);
 
 /**
  * The 5 points of a regular pentagon's "other" star layer: point i sits
  * between the given points i and i + 1, along their bisector (the sum of the
  * two centroid-relative vectors, since they're 72° apart), at `ratio` times
- * the given points' distance from their centroid. `1 / PHI ** 2` yields the
- * inner (reflex) pentagon of a pentagram whose tips are given; `PHI ** 2`
- * yields the tips reached by extending the given pentagon's own edges until
- * they meet (one stellation step).
+ * the given points' distance from their centroid. `PENTAGRAM_RATIO` (the
+ * {5/2} star polygon's inner/outer radius ratio, `1 / PHI ** 2`) yields the
+ * inner (reflex) pentagon of a pentagram whose tips are given; its
+ * reciprocal (`PHI ** 2`) yields the tips reached by extending the given
+ * pentagon's own edges until they meet (one stellation step).
  * @param {number[][]} points 5 coplanar, equidistant-from-centroid points, in consecutive (not skip-2/star-path) cyclic order
  * @param {number} ratio
  * @returns {number[][]}
@@ -69,7 +78,10 @@ export function computeStarLayer(points, ratio) {
  * triangles, local indices
  */
 export function computePentagram(points, { stellate = false } = {}) {
-  const other = computeStarLayer(points, stellate ? PHI ** 2 : 1 / PHI ** 2);
+  const other = computeStarLayer(
+    points,
+    stellate ? 1 / PENTAGRAM_RATIO : PENTAGRAM_RATIO,
+  );
 
   // Point-triangle i's apex (index i) sits, by the bisector definition
   // above, between points i and i + 1 - so its flanking inner-layer corners

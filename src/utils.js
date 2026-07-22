@@ -25,6 +25,23 @@ export const SQRT2 = Math.sqrt(2);
 export const PHI = (1 + Math.sqrt(5)) / 2;
 
 /**
+ * Ratio of a regular star polygon {points/density}'s inner (notch) radius to
+ * its outer (tip) radius, ie. cos(density * PI / points) / cos((density - 1)
+ * * PI / points). `computeStarRatio(5, 2)` is `1 / PHI ** 2`, the pentagram's
+ * fixed ratio.
+ * @param {number} points
+ * @param {number} [density=2] Default is `2`
+ * @returns {number}
+ * @see [Wolfram MathWorld – Star Polygon]{@link https://mathworld.wolfram.com/StarPolygon.html}
+ */
+export function computeStarRatio(points, density = 2) {
+  return (
+    Math.cos((density * Math.PI) / points) /
+    Math.cos(((density - 1) * Math.PI) / points)
+  );
+}
+
+/**
  * Normalize a vector 3.
  * @param {number[]} v Vector 3 array
  * @returns {number[]} Normalized vector
