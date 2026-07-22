@@ -1,6 +1,6 @@
 /** @module icosphere */
 import polyhedron from "../polyhedron.js";
-import { computeIcosahedron } from "../regular/icosahedron.js";
+import { icosahedronFaces } from "../regular/icosahedron.js";
 import { checkArguments } from "../../../utils.js";
 
 /**
@@ -25,7 +25,7 @@ function icosphere({
 } = {}) {
   checkArguments(arguments);
 
-  return polyhedron(computeIcosahedron(radius), {
+  return polyhedron(icosahedronFaces({ radius }), {
     radius,
     subdivisions,
     project: true,

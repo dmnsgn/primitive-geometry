@@ -9,18 +9,22 @@ const params = new URLSearchParams(window.location.search);
 
 const named = (name, geometry) => Object.assign(geometry, { name });
 
-const box = named("box", Primitives.box());
-box.edges = computeEdges(box.positions, box.cells, 4);
+const cubeFaces = named("cubeFaces", Primitives.cubeFaces());
+cubeFaces.edges = computeEdges(cubeFaces.positions, cubeFaces.cells, {
+  stride: 4,
+});
 
 const quadsPlane = named(
   "plane (quads)",
   Primitives.plane({ nx: 10, quads: true }),
 );
-quadsPlane.edges = computeEdges(quadsPlane.positions, quadsPlane.cells, 4);
+quadsPlane.edges = computeEdges(quadsPlane.positions, quadsPlane.cells, {
+  stride: 4,
+});
 quadsPlane.quads = true;
 
 const circle = named("circle", Primitives.circle({ closed: true }));
-circle.edges = circle.cells;
+circle.edges = computeEdges(circle.positions, circle.cells, { path: true });
 
 // Box and plane of quads are rendered as lines
 const geometries = params.has("geometry")
@@ -33,7 +37,7 @@ const geometries = params.has("geometry")
       )
       .filter(Boolean)
   : [
-      box,
+      cubeFaces,
       circle,
       quadsPlane,
       named("quad", Primitives.quad()),
@@ -63,6 +67,7 @@ const geometries = params.has("geometry")
       named("torus", Primitives.torus()),
       null,
       named("tetrahedron", Primitives.tetrahedron()),
+      named("hexahedron", Primitives.hexahedron()),
       named("octahedron", Primitives.octahedron()),
       named("dodecahedron", Primitives.dodecahedron()),
       named("icosahedron", Primitives.icosahedron()),

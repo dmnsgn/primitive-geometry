@@ -1,5 +1,5 @@
 /** @module circle */
-import { checkArguments, getCellsTypedArray, TAU } from "../../utils.js";
+import { checkArguments, TAU } from "../../utils.js";
 
 /**
  * @typedef {object} CircleOptions
@@ -13,7 +13,9 @@ import { checkArguments, getCellsTypedArray, TAU } from "../../utils.js";
 /**
  * @alias module:circle
  * @param {CircleOptions} [options={}]
- * @returns {import("../../../types.js").BasicSimplicialComplex}
+ * @returns {import("../../../types.js").SimplicialComplexPath} `segments`
+ *   positions and a single path cell of `segments` indices (`segments + 1`,
+ *   repeating index `0`, when `closed`)
  */
 function circle({
   radius = 0.5,
@@ -25,27 +27,18 @@ function circle({
   checkArguments(arguments);
 
   const positions = new Float32Array(segments * 3);
-  const cells = new (getCellsTypedArray(segments))(
-    (segments - (closed ? 0 : 1)) * 2,
-  );
+  const path = Array.from({ length: segments + (closed ? 1 : 0) });
 
   for (let i = 0; i < segments; i++) {
     const t = (i / segments) * theta + thetaOffset;
     positions[i * 3] = radius * Math.cos(t);
     positions[i * 3 + 1] = radius * Math.sin(t);
-
-    if (i > 0) {
-      cells[(i - 1) * 2] = i - 1;
-      cells[(i - 1) * 2 + 1] = i;
-    }
+    path[i] = i;
   }
 
-  if (closed) {
-    cells[(segments - 1) * 2] = segments - 1;
-    cells[(segments - 1) * 2 + 1] = 0;
-  }
+  if (closed) path[segments] = 0;
 
-  return { positions, cells };
+  return { positions, cells: [path] };
 }
 
 export default circle;

@@ -1,6 +1,6 @@
 /** @module octasphere */
 import polyhedron from "../polyhedron.js";
-import { computeOctahedron } from "../regular/octahedron.js";
+import { octahedronFaces } from "../regular/octahedron.js";
 import { checkArguments } from "../../../utils.js";
 
 /**
@@ -25,7 +25,7 @@ function octasphere({
 } = {}) {
   checkArguments(arguments);
 
-  return polyhedron(computeOctahedron(radius), {
+  return polyhedron(octahedronFaces({ radius }), {
     radius,
     subdivisions,
     project: true,

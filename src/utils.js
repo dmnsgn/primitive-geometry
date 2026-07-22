@@ -90,6 +90,36 @@ export const getCellsTypedArray = (size) =>
   (size <= 255 ? Uint8Array : size <= 65535 ? Uint16Array : Uint32Array);
 
 /**
+ * Fan-triangulate a list of closed n-gon faces (a
+ * `SimplicialComplexPolygon`'s `cells`, e.g. `[0, 1, 2, 3]`) from each face's
+ * first corner into a flat, stride-3 `SimplicialComplex`-style typed array
+ * (e.g. `[0, 1, 2, 0, 2, 3]`). Only valid for convex, planar faces - the same
+ * assumption `polyhedron.js` makes for its own (subdivision/projection aware)
+ * fan triangulation.
+ * @param {Array<number[]|Uint8Array|Uint16Array|Uint32Array>} cells
+ * @param {number} numVertices Used to pick the returned typed array's element size
+ * @returns {(Uint8Array|Uint16Array|Uint32Array)}
+ */
+export function triangulateFaces(cells, numVertices) {
+  let numTriangles = 0;
+  for (const face of cells) numTriangles += face.length - 2;
+
+  const triangles = new (getCellsTypedArray(numVertices))(numTriangles * 3);
+
+  let index = 0;
+  for (const face of cells) {
+    for (let i = 1; i < face.length - 1; i++) {
+      triangles[index] = face[0];
+      triangles[index + 1] = face[i];
+      triangles[index + 2] = face[i + 1];
+      index += 3;
+    }
+  }
+
+  return triangles;
+}
+
+/**
  * @private
  */
 export const TMP = [0, 0, 0];

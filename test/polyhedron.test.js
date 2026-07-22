@@ -73,6 +73,7 @@ function normalsAtFirstDuplicatePosition(geometry) {
 describe("polyhedron (flat platonic solids)", () => {
   for (const [name, create] of [
     ["tetrahedron", () => Primitives.tetrahedron()],
+    ["hexahedron", () => Primitives.hexahedron()],
     ["octahedron", () => Primitives.octahedron()],
     ["dodecahedron", () => Primitives.dodecahedron()],
     ["icosahedron", () => Primitives.icosahedron({ subdivisions: 0 })],
@@ -95,8 +96,9 @@ describe("polyhedron (flat platonic solids)", () => {
     });
   }
 
-  it("tetrahedron/octahedron/dodecahedron/icosahedron have exactly one duplicate vertex per face-corner (no cross-face welding)", () => {
+  it("tetrahedron/hexahedron/octahedron/dodecahedron/icosahedron have exactly one duplicate vertex per face-corner (no cross-face welding)", () => {
     assert.equal(uniquePositionCount(Primitives.tetrahedron()), 4);
+    assert.equal(uniquePositionCount(Primitives.hexahedron()), 8);
     assert.equal(uniquePositionCount(Primitives.octahedron()), 6);
     assert.equal(uniquePositionCount(Primitives.dodecahedron()), 20);
     assert.equal(
@@ -105,11 +107,12 @@ describe("polyhedron (flat platonic solids)", () => {
     );
   });
 
-  it("octahedron/dodecahedron/icosahedron touch a radius-sized unit box on all 6 faces", () => {
+  it("hexahedron/octahedron/dodecahedron/icosahedron touch a radius-sized unit box on all 6 faces", () => {
     // Tetrahedron excluded: its apex-up construction doesn't have equal
     // bounding-box extents on all 3 axes (see its own test below).
     const radius = 0.5;
     for (const [name, create] of [
+      ["hexahedron", () => Primitives.hexahedron({ radius })],
       ["octahedron", () => Primitives.octahedron({ radius })],
       ["dodecahedron", () => Primitives.dodecahedron({ radius })],
       ["icosahedron", () => Primitives.icosahedron({ radius, subdivisions: 0 })],

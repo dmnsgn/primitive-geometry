@@ -211,7 +211,7 @@ const bboxCells = ctx.indexBuffer(
   ),
 );
 const unitBox = Primitives.box();
-unitBox.edges = computeEdges(unitBox.positions, unitBox.cells, 4);
+unitBox.edges = computeEdges(unitBox.positions, unitBox.cells);
 
 const drawAxesCmd = {
   ...drawLinesCmd,
@@ -505,22 +505,52 @@ function computeDiscontinuities(geometry, epsilon = 1e-4) {
   return { positions: linePositions, colors: lineColors, stats };
 }
 
-function computeEdges(positions, cells, stride = 3) {
+// `cells` is either a flat typed array of fixed-size groups (`stride` per
+// face, the SimplicialComplex convention), a SimplicialComplexPolygon-style
+// array of closed n-gon faces (self-describing, `stride` ignored, each face
+// implicitly wraps its last index back to its first), or - when `path` is
+// set - a SimplicialComplexPath-style array of open polylines (no
+// wraparound; a closed loop instead repeats its first index at the end).
+function computeEdges(positions, cells, { stride = 3, path = false } = {}) {
+  const isFlatArray = ArrayBuffer.isView(cells);
+
+  const edgeCount = isFlatArray
+    ? cells.length
+    : path
+      ? cells.reduce((sum, chain) => sum + chain.length - 1, 0)
+      : cells.reduce((sum, face) => sum + face.length, 0);
+
   const edges = new (Primitives.utils.getCellsTypedArray(positions.length / 3))(
-    cells.length * 2,
+    edgeCount * 2,
   );
 
   let cellIndex = 0;
+  const pushEdge = (a, b) => {
+    edges[cellIndex] = Math.min(a, b);
+    edges[cellIndex + 1] = Math.max(a, b);
+    cellIndex += 2;
+  };
 
-  for (let i = 0; i < cells.length; i += stride) {
-    for (let j = 0; j < stride; j++) {
-      const a = cells[i + j];
-      const b = cells[i + ((j + 1) % stride)];
-      edges[cellIndex] = Math.min(a, b);
-      edges[cellIndex + 1] = Math.max(a, b);
-      cellIndex += 2;
+  if (isFlatArray) {
+    for (let i = 0; i < cells.length; i += stride) {
+      for (let j = 0; j < stride; j++) {
+        pushEdge(cells[i + j], cells[i + ((j + 1) % stride)]);
+      }
+    }
+  } else if (path) {
+    for (const chain of cells) {
+      for (let j = 0; j < chain.length - 1; j++) {
+        pushEdge(chain[j], chain[j + 1]);
+      }
+    }
+  } else {
+    for (const face of cells) {
+      for (let j = 0; j < face.length; j++) {
+        pushEdge(face[j], face[(j + 1) % face.length]);
+      }
     }
   }
+
   return edges;
 }
 

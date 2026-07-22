@@ -1,8 +1,13 @@
 /** @module smallStellatedDodecahedron */
-import { computeGreatDodecahedron } from "./great-dodecahedron.js";
+import { greatDodecahedronFaces } from "./great-dodecahedron.js";
 import { assembleFaces, computePentagram } from "./pentagram.js";
 import polyhedron from "../polyhedron.js";
 import { checkArguments } from "../../../utils.js";
+
+/**
+ * @typedef {object} SmallStellatedDodecahedronFacesOptions
+ * @property {number} [radius=0.5] Radius of the shared icosahedron vertices
+ */
 
 /**
  * Small stellated dodecahedron: the same 12 vertices and pentagon groupings
@@ -12,12 +17,13 @@ import { checkArguments } from "../../../utils.js";
  * triangles around 5 computed inner vertices - mathematically shared across
  * faces (the icosahedron's vertex figures are vertex-transitive) but
  * computed independently per face, hence the welding in assembleFaces.
- * @private
- * @param {number} radius Radius of the shared icosahedron vertices
+ * @param {SmallStellatedDodecahedronFacesOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplexPolygon}
  */
-export function computeSmallStellatedDodecahedron(radius) {
-  const { positions, cells: pentagons } = computeGreatDodecahedron(radius);
+export function smallStellatedDodecahedronFaces({ radius = 0.5 } = {}) {
+  checkArguments(arguments);
+
+  const { positions, cells: pentagons } = greatDodecahedronFaces({ radius });
 
   return assembleFaces(positions, pentagons, (points) =>
     computePentagram(points),
@@ -43,7 +49,7 @@ function smallStellatedDodecahedron({
 } = {}) {
   checkArguments(arguments);
 
-  return polyhedron(computeSmallStellatedDodecahedron(radius), {
+  return polyhedron(smallStellatedDodecahedronFaces({ radius }), {
     radius,
     subdivisions,
     mapping,

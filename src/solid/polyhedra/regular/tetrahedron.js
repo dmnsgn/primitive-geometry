@@ -3,13 +3,19 @@ import polyhedron from "../polyhedron.js";
 import { checkArguments } from "../../../utils.js";
 
 /**
- * Apex-up tetrahedron, every vertex at exactly `circumradius` from the
- * origin (uncentered) - needed as-is wherever radial projection applies.
- * @private
- * @param {number} circumradius
+ * @typedef {object} TetrahedronFacesOptions
+ * @property {number} [circumradius=0.5]
+ */
+
+/**
+ * Regular tetrahedron, apex-up, every vertex at exactly `circumradius` from
+ * the origin (uncentered) - needed as-is wherever radial projection applies.
+ * @param {TetrahedronFacesOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplexPolygon}
  */
-export function computeTetrahedron(circumradius) {
+export function tetrahedronFaces({ circumradius = 0.5 } = {}) {
+  checkArguments(arguments);
+
   const r0 = (circumradius * 2 * Math.sqrt(2)) / 3;
   return {
     // prettier-ignore
@@ -46,7 +52,9 @@ function tetrahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
   // A tetrahedron has no center of symmetry, so its bounding box can't be
   // centered and touch the unit box on every axis; scaled so its tallest
   // axis touches, then shifted so the box is centered at the origin.
-  const { positions, cells } = computeTetrahedron((radius * Math.sqrt(6)) / 2);
+  const { positions, cells } = tetrahedronFaces({
+    circumradius: (radius * Math.sqrt(6)) / 2,
+  });
   const shiftX = positions[3] / 4; // base vertex x
   const shiftY = (positions[1] + positions[4]) / 2; // (apex y + base y) / 2
   for (let i = 0; i < positions.length; i += 3) {

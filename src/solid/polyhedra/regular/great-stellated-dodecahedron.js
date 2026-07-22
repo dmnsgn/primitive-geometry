@@ -1,5 +1,5 @@
 /** @module greatStellatedDodecahedron */
-import { computeDodecahedron } from "./dodecahedron.js";
+import { dodecahedronFaces } from "./dodecahedron.js";
 import {
   assembleFaces,
   computeStarLayer,
@@ -7,6 +7,11 @@ import {
 } from "./pentagram.js";
 import polyhedron from "../polyhedron.js";
 import { PHI, checkArguments } from "../../../utils.js";
+
+/**
+ * @typedef {object} GreatStellatedDodecahedronFacesOptions
+ * @property {number} [radius=0.5] Radius the star's tips touch (box half-extent)
+ */
 
 /**
  * Great stellated dodecahedron: the 3rd (outermost) stellation of the
@@ -18,15 +23,16 @@ import { PHI, checkArguments } from "../../../utils.js";
  * by the two depth-1 points nearest it, not by the dodecahedron's own
  * (unstellated) vertices; adjacent faces' shared depth-1 points are welded
  * by assembleFaces.
- * @private
- * @param {number} radius Radius the star's tips touch (box half-extent)
+ * @param {GreatStellatedDodecahedronFacesOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplexPolygon}
  */
-export function computeGreatStellatedDodecahedron(radius) {
+export function greatStellatedDodecahedronFaces({ radius = 0.5 } = {}) {
+  checkArguments(arguments);
+
   // The tips, not the dodecahedron's own vertices, are the outermost extent
-  const { positions, cells: pentagons } = computeDodecahedron(
-    radius / PHI ** 3,
-  );
+  const { positions, cells: pentagons } = dodecahedronFaces({
+    radius: radius / PHI ** 3,
+  });
 
   return assembleFaces(positions, pentagons, (vertices) => {
     const tips = vertices.map((v) => v.map((x) => x * PHI ** 3));
@@ -65,7 +71,7 @@ function greatStellatedDodecahedron({
 } = {}) {
   checkArguments(arguments);
 
-  return polyhedron(computeGreatStellatedDodecahedron(radius), {
+  return polyhedron(greatStellatedDodecahedronFaces({ radius }), {
     radius,
     subdivisions,
     mapping,

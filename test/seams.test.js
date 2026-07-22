@@ -90,6 +90,7 @@ const cases = [
   ],
 
   ["tetrahedron", () => Primitives.tetrahedron()],
+  ["hexahedron", () => Primitives.hexahedron()],
   ["octahedron", () => Primitives.octahedron()],
   ["dodecahedron", () => Primitives.dodecahedron()],
   [

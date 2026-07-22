@@ -1,6 +1,6 @@
 /** @module tetrasphere */
 import polyhedron from "../polyhedron.js";
-import { computeTetrahedron } from "../regular/tetrahedron.js";
+import { tetrahedronFaces } from "../regular/tetrahedron.js";
 import { checkArguments } from "../../../utils.js";
 
 /**
@@ -25,7 +25,7 @@ function tetrasphere({
 } = {}) {
   checkArguments(arguments);
 
-  return polyhedron(computeTetrahedron(radius), {
+  return polyhedron(tetrahedronFaces({ circumradius: radius }), {
     radius,
     subdivisions,
     project: true,

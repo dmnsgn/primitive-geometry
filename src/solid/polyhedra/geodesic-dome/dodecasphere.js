@@ -1,6 +1,6 @@
 /** @module dodecasphere */
 import polyhedron from "../polyhedron.js";
-import { computeDodecahedron } from "../regular/dodecahedron.js";
+import { dodecahedronFaces } from "../regular/dodecahedron.js";
 import { checkArguments } from "../../../utils.js";
 
 /**
@@ -25,7 +25,7 @@ function dodecasphere({
 } = {}) {
   checkArguments(arguments);
 
-  return polyhedron(computeDodecahedron(radius), {
+  return polyhedron(dodecahedronFaces({ radius }), {
     radius,
     subdivisions,
     project: true,

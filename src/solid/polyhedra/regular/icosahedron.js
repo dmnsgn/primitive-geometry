@@ -3,11 +3,18 @@ import polyhedron from "../polyhedron.js";
 import { PHI, checkArguments } from "../../../utils.js";
 
 /**
- * @private
- * @param {number} radius
+ * @typedef {object} IcosahedronFacesOptions
+ * @property {number} [radius=0.5]
+ */
+
+/**
+ * Regular icosahedron.
+ * @param {IcosahedronFacesOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplexPolygon}
  */
-export function computeIcosahedron(radius) {
+export function icosahedronFaces({ radius = 0.5 } = {}) {
+  checkArguments(arguments);
+
   const s = radius / PHI;
   const f = PHI * s;
 
@@ -67,7 +74,7 @@ export function computeIcosahedron(radius) {
 function icosahedron({ radius = 0.5, subdivisions = 2, mapping } = {}) {
   checkArguments(arguments);
 
-  return polyhedron(computeIcosahedron(radius), {
+  return polyhedron(icosahedronFaces({ radius }), {
     radius,
     subdivisions,
     mapping,

@@ -3,11 +3,18 @@ import polyhedron from "../polyhedron.js";
 import { PHI, checkArguments } from "../../../utils.js";
 
 /**
- * @private
- * @param {number} radius
+ * @typedef {object} DodecahedronFacesOptions
+ * @property {number} [radius=0.5]
+ */
+
+/**
+ * Regular dodecahedron.
+ * @param {DodecahedronFacesOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplexPolygon}
  */
-export function computeDodecahedron(radius) {
+export function dodecahedronFaces({ radius = 0.5 } = {}) {
+  checkArguments(arguments);
+
   const a = radius;
   const b = radius / PHI;
   const c = radius * (2 - PHI);
@@ -68,7 +75,7 @@ export function computeDodecahedron(radius) {
 function dodecahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
   checkArguments(arguments);
 
-  return polyhedron(computeDodecahedron(radius), {
+  return polyhedron(dodecahedronFaces({ radius }), {
     radius,
     subdivisions,
     mapping,

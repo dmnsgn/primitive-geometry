@@ -1,6 +1,30 @@
 /** @module quad */
 
-import { checkArguments, getCellsTypedArray } from "../../utils.js";
+import { checkArguments, triangulateFaces } from "../../utils.js";
+
+/**
+ * @typedef {object} QuadFacesOptions
+ * @property {number} [scale=0.5]
+ */
+
+/**
+ * @param {QuadFacesOptions} [options={}]
+ * @returns {import("../../../types.js").SimplicialComplexPolygon}
+ */
+export function quadFaces({ scale = 0.5 } = {}) {
+  checkArguments(arguments);
+
+  return {
+    // prettier-ignore
+    positions:  Float32Array.of(
+      -scale, -scale, 0,
+      scale, -scale, 0,
+      scale, scale, 0,
+      -scale, scale, 0,
+    ),
+    cells: [[0, 1, 2, 3]],
+  };
+}
 
 /**
  * @typedef {object} QuadOptions
@@ -15,14 +39,10 @@ import { checkArguments, getCellsTypedArray } from "../../utils.js";
 function quad({ scale = 0.5 } = {}) {
   checkArguments(arguments);
 
+  const { positions, cells } = quadFaces({ scale });
+
   return {
-    // prettier-ignore
-    positions:  Float32Array.of(
-      -scale, -scale, 0,
-      scale, -scale, 0,
-      scale, scale, 0,
-      -scale, scale, 0,
-    ),
+    positions,
     // prettier-ignore
     normals: Int8Array.of(
       0, 0, 1,
@@ -37,11 +57,7 @@ function quad({ scale = 0.5 } = {}) {
       1, 1,
       0, 1
     ),
-    // prettier-ignore
-    cells: (getCellsTypedArray(12)).of(
-      0, 1, 2,
-      2, 3, 0
-    ),
+    cells: triangulateFaces(cells, 4),
   };
 }
 
