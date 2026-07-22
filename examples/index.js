@@ -9,11 +9,6 @@ const params = new URLSearchParams(window.location.search);
 
 const named = (name, geometry) => Object.assign(geometry, { name });
 
-const cubeFaces = named("cubeFaces", Primitives.cubeFaces());
-cubeFaces.edges = computeEdges(cubeFaces.positions, cubeFaces.cells, {
-  stride: 4,
-});
-
 const quadsPlane = named(
   "plane (quads)",
   Primitives.plane({ nx: 10, quads: true }),
@@ -23,10 +18,6 @@ quadsPlane.edges = computeEdges(quadsPlane.positions, quadsPlane.cells, {
 });
 quadsPlane.quads = true;
 
-const circle = named("circle", Primitives.circle({ closed: true }));
-circle.edges = computeEdges(circle.positions, circle.cells, { path: true });
-
-// Box and plane of quads are rendered as lines
 const geometries = params.has("geometry")
   ? params
       .get("geometry")
@@ -37,10 +28,9 @@ const geometries = params.has("geometry")
       )
       .filter(Boolean)
   : [
-      cubeFaces,
-      circle,
-      quadsPlane,
-      named("quad", Primitives.quad()),
+      named("square", Primitives.square()),
+      named("circle", Primitives.circle()),
+      quadsPlane, // -> grid
       null,
       named("plane", Primitives.plane()),
       named("roundedRectangle", Primitives.roundedRectangle()),
@@ -57,6 +47,8 @@ const geometries = params.has("geometry")
       named("cube", Primitives.cube()),
       named("roundedCube", Primitives.roundedCube()),
       null,
+      named("cubeFaces", Primitives.cubeFaces()),
+      null,
       named("sphere", Primitives.sphere()),
       named("icosphere", Primitives.icosphere()),
       named("ellipsoid", Primitives.ellipsoid()),
@@ -72,6 +64,18 @@ const geometries = params.has("geometry")
       named("dodecahedron", Primitives.dodecahedron()),
       named("icosahedron", Primitives.icosahedron()),
       null,
+      named("tetrahedronFaces", Primitives.tetrahedronFaces()),
+      named("hexahedronFaces", Primitives.hexahedronFaces()),
+      named("octahedronFaces", Primitives.octahedronFaces()),
+      named("dodecahedronFaces", Primitives.dodecahedronFaces()),
+      named("icosahedronFaces", Primitives.icosahedronFaces()),
+      null,
+      named("tetrasphere", Primitives.tetrasphere()),
+      named("cubesphere", Primitives.cubesphere()),
+      named("octasphere", Primitives.octasphere()),
+      named("dodecasphere", Primitives.dodecasphere()),
+      named("icosphere", Primitives.icosphere()),
+      null,
       named("greatDodecahedron", Primitives.greatDodecahedron()),
       named("greatIcosahedron", Primitives.greatIcosahedron()),
       named(
@@ -83,11 +87,16 @@ const geometries = params.has("geometry")
         Primitives.greatStellatedDodecahedron(),
       ),
       null,
-      named("tetrasphere", Primitives.tetrasphere()),
-      named("cubesphere", Primitives.cubesphere()),
-      named("octasphere", Primitives.octasphere()),
-      named("dodecasphere", Primitives.dodecasphere()),
-      named("icosphere", Primitives.icosphere()),
+      named("greatDodecahedronFaces", Primitives.greatDodecahedronFaces()),
+      named("greatIcosahedronFaces", Primitives.greatIcosahedronFaces()),
+      named(
+        "smallStellatedDodecahedronFaces",
+        Primitives.smallStellatedDodecahedronFaces(),
+      ),
+      named(
+        "greatStellatedDodecahedronFaces",
+        Primitives.greatStellatedDodecahedronFaces(),
+      ),
     ];
 
 setGeometries(geometries);

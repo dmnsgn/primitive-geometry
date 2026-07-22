@@ -1,30 +1,7 @@
 /** @module quad */
 
+import { square } from "./square.js";
 import { checkArguments, triangulateFaces } from "../../utils.js";
-
-/**
- * @typedef {object} QuadFacesOptions
- * @property {number} [scale=0.5]
- */
-
-/**
- * @param {QuadFacesOptions} [options={}]
- * @returns {import("../../../types.js").SimplicialComplexPolygon}
- */
-export function quadFaces({ scale = 0.5 } = {}) {
-  checkArguments(arguments);
-
-  return {
-    // prettier-ignore
-    positions:  Float32Array.of(
-      -scale, -scale, 0,
-      scale, -scale, 0,
-      scale, scale, 0,
-      -scale, scale, 0,
-    ),
-    cells: [[0, 1, 2, 3]],
-  };
-}
 
 /**
  * @typedef {object} QuadOptions
@@ -39,7 +16,7 @@ export function quadFaces({ scale = 0.5 } = {}) {
 export function quad({ scale = 0.5 } = {}) {
   checkArguments(arguments);
 
-  const { positions, cells } = quadFaces({ scale });
+  const { positions, cells } = square({ scale });
 
   return {
     positions,

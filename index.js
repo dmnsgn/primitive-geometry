@@ -4,8 +4,9 @@
  */
 
 export { circle } from "./src/plane/circular/circle.js";
+export { square } from "./src/plane/quadrilateral/square.js";
 
-export { quad, quadFaces } from "./src/plane/quadrilateral/quad.js";
+export { quad } from "./src/plane/quadrilateral/quad.js";
 export { plane } from "./src/plane/quadrilateral/plane.js";
 export { roundedRectangle } from "./src/plane/quadrilateral/rounded-rectangle.js";
 export { stadium } from "./src/plane/quadrilateral/stadium.js";
