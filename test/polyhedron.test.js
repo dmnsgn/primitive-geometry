@@ -2,7 +2,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
 import * as Primitives from "../index.js";
-import polyhedron from "../src/polyhedra/polyhedron.js";
+import polyhedron from "../src/solid/polyhedra/polyhedron.js";
 import { rectangular } from "../src/mappings.js";
 import { analyze, inwardTriangles, uniquePositionCount } from "./helpers.js";
 
@@ -225,7 +225,7 @@ describe("Kepler-Poinsot solids", () => {
     // symmetry, so every pair of star faces that meet at a shared point
     // computes the exact same tip/notch independently - just not
     // bit-for-bit, since each comes from a different face's local centroid.
-    // weldNearDuplicates (src/polyhedra/regular/pentagram.js) snaps those
+    // weldNearDuplicates (src/solid/polyhedra/regular/pentagram.js) snaps those
     // together, closing the surface entirely.
     for (const create of [
       Primitives.smallStellatedDodecahedron,

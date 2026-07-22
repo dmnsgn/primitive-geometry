@@ -102,7 +102,7 @@ const cases = [
   ["greatIcosahedron", () => Primitives.greatIcosahedron()],
   // Pentagram faces can't be fan-triangulated, so each is decomposed into 8
   // triangles around new tip/inner vertices, welded across faces where they
-  // coincide (see src/polyhedra/regular/pentagram.js)
+  // coincide (see src/solid/polyhedra/regular/pentagram.js)
   ["smallStellatedDodecahedron", () => Primitives.smallStellatedDodecahedron()],
   ["greatStellatedDodecahedron", () => Primitives.greatStellatedDodecahedron()],
 
