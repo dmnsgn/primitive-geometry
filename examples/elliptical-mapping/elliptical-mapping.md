@@ -1,6 +1,6 @@
 # Elliptical mapping
 
-Based on the paper [Elliptification of Rectangular Imagery](https://arxiv.org/pdf/1709.07875.pdf) from Chamberlain Fong, I have implemented the mappings that can be used for the following geometries UVs generation: ellipse, disc, superellipse, squircle, annulus and reuleux geometries.
+Based on the paper [Elliptification of Rectangular Imagery](https://arxiv.org/pdf/1709.07875.pdf) from Chamberlain Fong, I have implemented the mappings that can be used for the following geometries UVs generation: ellipse, disc, superellipse, squircle, annulus and reuleaux geometries.
 
 ## All Mappings
 

@@ -15,7 +15,7 @@ export { disc } from "./src/plane/circular/disc.js";
 export { superellipse } from "./src/plane/circular/superellipse.js";
 export { squircle } from "./src/plane/circular/squircle.js";
 export { annulus } from "./src/plane/circular/annulus.js";
-export { reuleux } from "./src/plane/reuleux.js";
+export { reuleaux } from "./src/plane/reuleaux.js";
 export { star } from "./src/plane/star.js";
 
 export { cube, cubeFaces, box } from "./src/solid/cuboid/cube.js";

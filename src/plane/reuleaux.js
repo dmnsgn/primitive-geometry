@@ -1,10 +1,10 @@
-/** @module reuleux */
+/** @module reuleaux */
 import { ellipse } from "./circular/ellipse.js";
 import { concentric } from "../mappings.js";
 import { checkArguments, TAU } from "../utils.js";
 
 /**
- * @typedef {object} ReuleuxOptions
+ * @typedef {object} ReuleauxOptions
  * @property {number} [radius=0.5]
  * @property {number} [segments=32]
  * @property {number} [innerSegments=16]
@@ -18,11 +18,11 @@ import { checkArguments, TAU } from "../utils.js";
 /**
  * @see [Parametric equations for regular and Reuleaux polygons]{@link https://tpfto.wordpress.com/2011/09/15/parametric-equations-for-regular-and-reuleaux-polygons/}
  *
- * @alias module:reuleux
- * @param {ReuleuxOptions} [options={}]
+ * @alias module:reuleaux
+ * @param {ReuleauxOptions} [options={}]
  * @returns {import("../../types.js").SimplicialComplex}
  */
-export function reuleux({
+export function reuleaux({
   radius = 0.5,
   segments = 32,
   innerSegments = 16,

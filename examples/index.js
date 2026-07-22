@@ -51,7 +51,7 @@ const geometries = params.has("geometry")
       named("superellipse", Primitives.superellipse()),
       named("squircle", Primitives.squircle()),
       named("annulus", Primitives.annulus()),
-      named("reuleux", Primitives.reuleux()),
+      named("reuleaux", Primitives.reuleaux()),
       named("star", Primitives.star()),
       null,
       named("cube", Primitives.cube()),

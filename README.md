@@ -133,7 +133,7 @@ const annulus = Primitives.annulus({
   innerRadius: 0.25,
   mapping: mappings.concentric,
 });
-const reuleux = Primitives.reuleux({
+const reuleaux = Primitives.reuleaux({
   radius: 0.5,
   segments: 32,
   innerSegments: 16,

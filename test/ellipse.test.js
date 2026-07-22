@@ -89,8 +89,8 @@ describe("ellipse", () => {
     assert.equal(result.degenerate, 0);
   });
 
-  it("welds derived geometries with equation singularities (squircle, reuleux)", () => {
-    for (const g of [Primitives.squircle(), Primitives.reuleux()]) {
+  it("welds derived geometries with equation singularities (squircle, reuleaux)", () => {
+    for (const g of [Primitives.squircle(), Primitives.reuleaux()]) {
       const result = analyze(g);
       assert.equal(result.seams, 0);
       assert.equal(result.cracks, 0);

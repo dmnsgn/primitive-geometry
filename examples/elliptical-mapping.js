@@ -18,7 +18,7 @@ const update = (options) => {
           Primitives.annulus({ sy: 0.5, options }),
           null,
           Primitives.squircle(options),
-          Primitives.reuleux(options),
+          Primitives.reuleaux(options),
           null,
           Primitives.superellipse({
             m: 4,

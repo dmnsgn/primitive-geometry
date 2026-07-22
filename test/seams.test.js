@@ -30,7 +30,7 @@ const cases = [
   ["squircle", () => Primitives.squircle()],
   ["annulus", () => Primitives.annulus()],
   ["annulus segments=15", () => Primitives.annulus({ segments: 15 })],
-  ["reuleux", () => Primitives.reuleux()],
+  ["reuleaux", () => Primitives.reuleaux()],
   ["star", () => Primitives.star()],
   ["star points=7 density=3", () => Primitives.star({ points: 7, density: 3 })],
   ["star thetaOffset=0.5", () => Primitives.star({ thetaOffset: 0.5 })],
