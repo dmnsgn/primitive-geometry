@@ -1,6 +1,8 @@
 /** @module cylinder */
+import { rectangular } from "../../mappings.js";
 import {
   checkArguments,
+  computeCap,
   getCellsTypedArray,
   normalize,
   TAU,
@@ -18,6 +20,7 @@ import {
  * @property {boolean} [capApex=true]
  * @property {boolean} [capBase=true]
  * @property {number} [phi=TAU]
+ * @property {Function} [capMapping=mappings.rectangular]
  */
 
 /**
@@ -37,6 +40,7 @@ export function cylinder({
   capBase = true,
   capBaseSegments = capSegments,
   phi = TAU,
+  capMapping = rectangular,
 } = {}) {
   checkArguments(arguments);
 
@@ -126,88 +130,41 @@ export function cylinder({
     }
   }
 
-  function computeCap(flip, height, radius, capSegments) {
-    const index = vertexIndex;
+  const indices = { vertex: vertexIndex, cell: cellIndex };
 
-    const segmentIncrement = 1 / (segments - 1);
-    for (let r = 0; r < capSegments; r++) {
-      for (let i = 0; i < segments; i++) {
-        const p = (wrap && i === segments - 1 ? 0 : i * segmentIncrement) * phi;
-        const cosPhi = -Math.cos(p);
-        const sinPhi = Math.sin(p);
+  const angleAt = (i) => {
+    const u = i / nx;
+    const p = (wrap && i === nx ? 0 : u) * phi;
+    return { cos: -Math.cos(p), sin: Math.sin(p), t: p };
+  };
 
-        // inner point
-        positions[vertexIndex * 3] = (radius * cosPhi * r) / capSegments;
-        positions[vertexIndex * 3 + 1] = height;
-        positions[vertexIndex * 3 + 2] = (radius * sinPhi * r) / capSegments;
+  const geometry = { positions, normals, uvs, cells };
 
-        normals[vertexIndex * 3 + 1] = -flip;
-
-        uvs[vertexIndex * 2] = (0.5 * cosPhi * r) / capSegments + 0.5;
-        uvs[vertexIndex * 2 + 1] = (0.5 * sinPhi * r) / capSegments + 0.5;
-
-        vertexIndex++;
-
-        // outer point
-        positions[vertexIndex * 3] = (radius * cosPhi * (r + 1)) / capSegments;
-        positions[vertexIndex * 3 + 1] = height;
-        positions[vertexIndex * 3 + 2] =
-          (radius * sinPhi * (r + 1)) / capSegments;
-
-        normals[vertexIndex * 3 + 1] = -flip;
-
-        uvs[vertexIndex * 2] = (0.5 * (cosPhi * (r + 1))) / capSegments + 0.5;
-        uvs[vertexIndex * 2 + 1] =
-          (0.5 * (sinPhi * (r + 1))) / capSegments + 0.5;
-
-        vertexIndex++;
-      }
-    }
-
-    for (let r = 0; r < capSegments; r++) {
-      for (let i = 0; i < segments - 1; i++) {
-        const n = index + r * segments * 2 + i * 2;
-        const a = n + 0;
-        const b = n + 1;
-        const c = n + 2;
-        const d = n + 3;
-
-        // The innermost ring is collapsed at the center: fan with a single
-        // triangle, skipping the degenerate one
-        if (r > 0) {
-          if (flip === 1) {
-            cells[cellIndex] = a;
-            cells[cellIndex + 1] = c;
-            cells[cellIndex + 2] = d;
-          } else {
-            cells[cellIndex] = a;
-            cells[cellIndex + 1] = d;
-            cells[cellIndex + 2] = c;
-          }
-          cellIndex += 3;
-        }
-
-        if (flip === 1) {
-          cells[cellIndex] = a;
-          cells[cellIndex + 1] = d;
-          cells[cellIndex + 2] = b;
-        } else {
-          cells[cellIndex] = a;
-          cells[cellIndex + 1] = b;
-          cells[cellIndex + 2] = d;
-        }
-        cellIndex += 3;
-      }
-    }
+  if (capBase) {
+    computeCap(geometry, indices, {
+      ringSegments: nx,
+      capSegments: capBaseSegments,
+      capRadius: radius,
+      flip: 1,
+      angleAt,
+      point: (x, y) => [x, -halfHeight, y],
+      normal: [0, -1, 0],
+      mapping: capMapping,
+    });
   }
 
-  if (capBase) computeCap(1, -halfHeight, radius, capBaseSegments);
-  if (capApex) computeCap(-1, halfHeight, radiusApex, capSegments);
+  if (capApex) {
+    computeCap(geometry, indices, {
+      ringSegments: nx,
+      capSegments,
+      capRadius: radiusApex,
+      flip: -1,
+      angleAt,
+      point: (x, y) => [x, halfHeight, y],
+      normal: [0, 1, 0],
+      mapping: capMapping,
+    });
+  }
 
-  return {
-    positions,
-    normals,
-    uvs,
-    cells,
-  };
+  return geometry;
 }

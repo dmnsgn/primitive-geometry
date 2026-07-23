@@ -2,6 +2,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
 import * as Primitives from "../index.js";
+import { polar, rectangular } from "../src/mappings.js";
 import { analyze, inwardTriangles } from "./helpers.js";
 
 const TAU = Math.PI * 2;
@@ -161,5 +162,141 @@ describe("torus", () => {
       Primitives.torus({ phiOffset: 0.4, thetaOffset: 1.1 }),
     );
     assert.equal(result.cracks, 0);
+  });
+
+  it("fans cap centers with a single triangle per quad", () => {
+    const segments = 16;
+    const minorSegments = 8;
+    const capSegments = 3;
+    const g = Primitives.torus({
+      segments,
+      minorSegments,
+      phi: Math.PI,
+      capSegments,
+    });
+
+    // Body + two caps, minus one fan per cap innermost ring
+    assert.equal(
+      g.cells.length / 3,
+      minorSegments * segments * 2 +
+        2 * (minorSegments * capSegments * 2 - minorSegments),
+    );
+    assert.equal(analyze(g).degenerate, 0);
+  });
+
+  it("skips caps on a full phi revolution", () => {
+    const g = Primitives.torus({ segments: 16, minorSegments: 8 });
+    // capStart/capEnd default to true but there is no seam to close
+    assert.equal(g.cells.length / 3, 8 * 16 * 2);
+  });
+
+  it("caps independently via capStart/capEnd", () => {
+    const segments = 16;
+    const minorSegments = 8;
+    const both = Primitives.torus({ segments, minorSegments, phi: Math.PI });
+    const startOnly = Primitives.torus({
+      segments,
+      minorSegments,
+      phi: Math.PI,
+      capEnd: false,
+    });
+    const neither = Primitives.torus({
+      segments,
+      minorSegments,
+      phi: Math.PI,
+      capStart: false,
+      capEnd: false,
+    });
+
+    const bodyTris = minorSegments * segments * 2;
+    const capTris = minorSegments * 1 * 2 - minorSegments;
+    assert.equal(neither.cells.length / 3, bodyTris);
+    assert.equal(startOnly.cells.length / 3, bodyTris + capTris);
+    assert.equal(both.cells.length / 3, bodyTris + 2 * capTris);
+  });
+
+  it("winds triangles to match their vertex normals", () => {
+    // inwardTriangles assumes convexity around the origin, which a torus
+    // isn't (the inner equator legitimately faces the donut hole). Instead,
+    // check that each triangle's geometric winding agrees with the flat
+    // normal baked into its cap vertices.
+    const { positions, normals, cells } = Primitives.torus({
+      segments: 16,
+      minorSegments: 8,
+      phi: Math.PI,
+      capSegments: 2,
+    });
+
+    let flipped = 0;
+    for (let i = 0; i < cells.length; i += 3) {
+      const [a, b, c] = [cells[i], cells[i + 1], cells[i + 2]];
+      const ux = positions[b * 3] - positions[a * 3];
+      const uy = positions[b * 3 + 1] - positions[a * 3 + 1];
+      const uz = positions[b * 3 + 2] - positions[a * 3 + 2];
+      const vx = positions[c * 3] - positions[a * 3];
+      const vy = positions[c * 3 + 1] - positions[a * 3 + 1];
+      const vz = positions[c * 3 + 2] - positions[a * 3 + 2];
+      const faceNormal = [
+        uy * vz - uz * vy,
+        uz * vx - ux * vz,
+        ux * vy - uy * vx,
+      ];
+      const vertexNormal = [normals[a * 3], normals[a * 3 + 1], normals[a * 3 + 2]];
+      const dot =
+        faceNormal[0] * vertexNormal[0] +
+        faceNormal[1] * vertexNormal[1] +
+        faceNormal[2] * vertexNormal[2];
+      if (dot < 0) flipped++;
+    }
+    assert.equal(flipped, 0);
+  });
+});
+
+describe("capMapping", () => {
+  const cases = [
+    ["cylinder", (capMapping) => Primitives.cylinder({ nx: 8, capSegments: 2, capMapping })],
+    ["cone", (capMapping) => Primitives.cone({ nx: 8, capSegments: 2, capMapping })],
+    [
+      "torus",
+      (capMapping) =>
+        Primitives.torus({
+          segments: 8,
+          minorSegments: 6,
+          phi: Math.PI,
+          capSegments: 2,
+          capMapping,
+        }),
+    ],
+  ];
+
+  for (const [name, create] of cases) {
+    it(`${name}: reshapes cap uvs without affecting topology`, () => {
+      const withDefault = create(rectangular);
+      const withPolar = create(polar);
+
+      assert.notDeepEqual(Array.from(withPolar.uvs), Array.from(withDefault.uvs));
+      assert.deepEqual(
+        Array.from(withPolar.positions),
+        Array.from(withDefault.positions),
+      );
+      assert.deepEqual(Array.from(withPolar.cells), Array.from(withDefault.cells));
+
+      const result = analyze(withPolar);
+      assert.equal(result.cracks, 0);
+      assert.equal(result.degenerate, 0);
+    });
+  }
+
+  it("defaults to mappings.rectangular, matching the pre-option cap uv formula", () => {
+    const withDefault = Primitives.cylinder({ nx: 8, capSegments: 2 });
+    const withExplicitDefault = Primitives.cylinder({
+      nx: 8,
+      capSegments: 2,
+      capMapping: rectangular,
+    });
+    assert.deepEqual(
+      Array.from(withDefault.uvs),
+      Array.from(withExplicitDefault.uvs),
+    );
   });
 });

@@ -11,6 +11,7 @@ import { checkArguments } from "../../utils.js";
  * @property {number} [capSegments=1]
  * @property {boolean} [capBase=true]
  * @property {number} [phi=TAU]
+ * @property {Function} [capMapping=mappings.rectangular]
  */
 
 /**
@@ -18,7 +19,16 @@ import { checkArguments } from "../../utils.js";
  * @param {ConeOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
  */
-export function cone({ height, radius, nx, ny, capSegments, capBase, phi } = {}) {
+export function cone({
+  height,
+  radius,
+  nx,
+  ny,
+  capSegments,
+  capBase,
+  phi,
+  capMapping,
+} = {}) {
   checkArguments(arguments);
 
   return cylinder({
@@ -29,6 +39,7 @@ export function cone({ height, radius, nx, ny, capSegments, capBase, phi } = {})
     capSegments,
     capBase,
     phi,
+    capMapping,
 
     radiusApex: 0,
     capApex: false,

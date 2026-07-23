@@ -103,6 +103,16 @@ const cases = [
     "torus segments=15",
     () => Primitives.torus({ segments: 15, minorSegments: 15 }),
   ],
+  [
+    "torus phi=PI (capped)",
+    () => Primitives.torus({ phi: Math.PI }),
+    { unused: 2 },
+  ],
+  [
+    "torus phi=PI capSegments=3",
+    () => Primitives.torus({ phi: Math.PI, capSegments: 3 }),
+    { unused: 2 },
+  ],
 
   ["tetrahedron", () => Primitives.tetrahedron()],
   ["hexahedron", () => Primitives.hexahedron()],

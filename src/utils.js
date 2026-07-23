@@ -170,6 +170,110 @@ export function concatGeometries(geometries) {
 export const TMP = [0, 0, 0];
 
 /**
+ * Fan-triangulated flat disk cap shared by revolution solids (cylinder/cone,
+ * torus): capSegments concentric rings sampled at ringSegments + 1 angular
+ * positions, with the innermost ring collapsed to a point and fanned with a
+ * single triangle per quad instead of two, skipping the degenerate one.
+ *
+ * The disk is defined in the caller's own local 2D coordinates (x along the
+ * angular sample's cosine, y along its sine, both scaled by capRadius *
+ * radiusRatio); `point(x, y)` embeds those into the solid's 3D space and
+ * `normal` is that embedding's flat outward normal - both are the caller's
+ * responsibility since the two solids embed their cap plane differently
+ * (cylinder: axis-aligned; torus: offset and rotated by its phi angle).
+ * `flip` (1 or -1) selects which of a cap pair (base/apex, start/end) this
+ * is, driving winding order; `normal` must already have flip folded in so it
+ * points outward, ie. away from the solid.
+ * @private
+ */
+export function computeCap(
+  geometry,
+  indices,
+  { ringSegments, capSegments, capRadius, flip, angleAt, point, normal, mapping },
+) {
+  const { positions, normals, uvs, cells } = geometry;
+  const ringVertexOffset = indices.vertex;
+
+  const writeVertex = (radiusRatio, cos, sin, t, thetaRatio) => {
+    const x = capRadius * radiusRatio * cos;
+    const y = capRadius * radiusRatio * sin;
+    const [px, py, pz] = point(x, y);
+
+    const i = indices.vertex;
+
+    positions[i * 3] = px;
+    positions[i * 3 + 1] = py;
+    positions[i * 3 + 2] = pz;
+
+    normals[i * 3] = normal[0];
+    normals[i * 3 + 1] = normal[1];
+    normals[i * 3 + 2] = normal[2];
+
+    mapping({
+      uvs,
+      index: i * 2,
+      u: radiusRatio * cos,
+      v: radiusRatio * sin,
+      radius: capRadius,
+      radiusRatio,
+      thetaRatio,
+      t,
+      x,
+      y,
+    });
+
+    indices.vertex++;
+  };
+
+  for (let r = 0; r < capSegments; r++) {
+    for (let j = 0; j <= ringSegments; j++) {
+      const { cos, sin, t } = angleAt(j);
+      const thetaRatio = j / ringSegments;
+
+      writeVertex(r / capSegments, cos, sin, t, thetaRatio);
+      writeVertex((r + 1) / capSegments, cos, sin, t, thetaRatio);
+    }
+  }
+
+  const m = ringSegments + 1;
+  for (let r = 0; r < capSegments; r++) {
+    for (let j = 0; j < ringSegments; j++) {
+      const n = ringVertexOffset + r * m * 2 + j * 2;
+      const a = n;
+      const b = n + 1;
+      const c = n + 2;
+      const d = n + 3;
+
+      // The innermost ring is collapsed at the center: fan with a single
+      // triangle, skipping the degenerate one
+      if (r > 0) {
+        if (flip === 1) {
+          cells[indices.cell] = a;
+          cells[indices.cell + 1] = c;
+          cells[indices.cell + 2] = d;
+        } else {
+          cells[indices.cell] = a;
+          cells[indices.cell + 1] = d;
+          cells[indices.cell + 2] = c;
+        }
+        indices.cell += 3;
+      }
+
+      if (flip === 1) {
+        cells[indices.cell] = a;
+        cells[indices.cell + 1] = d;
+        cells[indices.cell + 2] = b;
+      } else {
+        cells[indices.cell] = a;
+        cells[indices.cell + 1] = b;
+        cells[indices.cell + 2] = d;
+      }
+      indices.cell += 3;
+    }
+  }
+}
+
+/**
  * @private
  */
 export const PLANE_DIRECTIONS = {
