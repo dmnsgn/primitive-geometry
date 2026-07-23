@@ -14,6 +14,17 @@ const positionsEqual = (positions, a, b) =>
   positions[a * 3 + 1] === positions[b * 3 + 1] &&
   positions[a * 3 + 2] === positions[b * 3 + 2];
 
+/** Unnormalized (b-a) x (c-a) face normal for a triangle's vertex indices */
+const triangleNormal = (positions, a, b, c) => {
+  const ux = positions[b * 3] - positions[a * 3];
+  const uy = positions[b * 3 + 1] - positions[a * 3 + 1];
+  const uz = positions[b * 3 + 2] - positions[a * 3 + 2];
+  const vx = positions[c * 3] - positions[a * 3];
+  const vy = positions[c * 3 + 1] - positions[a * 3 + 1];
+  const vz = positions[c * 3 + 2] - positions[a * 3 + 2];
+  return [uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx];
+};
+
 /**
  * Analyse a triangle mesh:
  * - nan/outOfBounds/degenerate/unused: allocation and cell defects
@@ -46,22 +57,8 @@ export function analyze(geometry, epsilon = EPSILON) {
     }
     referenced[a] = referenced[b] = referenced[c] = 1;
 
-    const ax = positions[a * 3];
-    const ay = positions[a * 3 + 1];
-    const az = positions[a * 3 + 2];
-    const ux = positions[b * 3] - ax;
-    const uy = positions[b * 3 + 1] - ay;
-    const uz = positions[b * 3 + 2] - az;
-    const vx = positions[c * 3] - ax;
-    const vy = positions[c * 3 + 1] - ay;
-    const vz = positions[c * 3 + 2] - az;
-
-    if (
-      Math.hypot(uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx) <
-      1e-12
-    ) {
-      degenerate++;
-    }
+    const [nx, ny, nz] = triangleNormal(positions, a, b, c);
+    if (Math.hypot(nx, ny, nz) < 1e-12) degenerate++;
   }
 
   const unused = referenced.reduce((sum, r) => sum + (1 - r), 0);
@@ -212,25 +209,39 @@ export function inwardTriangles(geometry) {
   let inward = 0;
   for (let i = 0; i < cells.length; i += 3) {
     const [a, b, c] = [cells[i], cells[i + 1], cells[i + 2]];
+    const [nx, ny, nz] = triangleNormal(positions, a, b, c);
+    if (Math.hypot(nx, ny, nz) < 1e-12) continue;
     const ax = positions[a * 3];
     const ay = positions[a * 3 + 1];
     const az = positions[a * 3 + 2];
-    const ux = positions[b * 3] - ax;
-    const uy = positions[b * 3 + 1] - ay;
-    const uz = positions[b * 3 + 2] - az;
-    const vx = positions[c * 3] - ax;
-    const vy = positions[c * 3 + 1] - ay;
-    const vz = positions[c * 3 + 2] - az;
-    const nx = uy * vz - uz * vy;
-    const ny = uz * vx - ux * vz;
-    const nz = ux * vy - uy * vx;
-    if (Math.hypot(nx, ny, nz) < 1e-12) continue;
     const cx = (ax + positions[b * 3] + positions[c * 3]) / 3;
     const cy = (ay + positions[b * 3 + 1] + positions[c * 3 + 1]) / 3;
     const cz = (az + positions[b * 3 + 2] + positions[c * 3 + 2]) / 3;
     if (nx * cx + ny * cy + nz * cz < 0) inward++;
   }
   return inward;
+}
+
+/**
+ * Number of triangles whose geometric winding disagrees with their own
+ * vertex normal (negative dot product between the two). Unlike
+ * inwardTriangles (which assumes convexity around the origin), this works
+ * for any shape - concave, elliptical, off-center - since it only checks
+ * that each triangle's winding is consistent with the normal already baked
+ * into its vertices. Degenerate triangles are ignored.
+ */
+export function flippedNormalTriangles(geometry) {
+  const { positions, normals, cells } = geometry;
+  let flipped = 0;
+  for (let i = 0; i < cells.length; i += 3) {
+    const [a, b, c] = [cells[i], cells[i + 1], cells[i + 2]];
+    const [nx, ny, nz] = triangleNormal(positions, a, b, c);
+    if (Math.hypot(nx, ny, nz) < 1e-12) continue;
+    const dot =
+      nx * normals[a * 3] + ny * normals[a * 3 + 1] + nz * normals[a * 3 + 2];
+    if (dot < 0) flipped++;
+  }
+  return flipped;
 }
 
 /**

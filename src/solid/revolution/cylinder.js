@@ -21,9 +21,17 @@ import {
  * @property {boolean} [capBase=true]
  * @property {number} [phi=TAU]
  * @property {Function} [capMapping=mappings.rectangular]
+ * @property {number} [sx=1] Base ring x scale, elliptical when != sz
+ * @property {number} [sz=1] Base ring z scale, elliptical when != sx
+ * @property {number} [sxApex=sx] Apex ring x scale, independent of the base
+ * @property {number} [szApex=sz] Apex ring z scale, independent of the base
  */
 
 /**
+ * Right circular cylinder by default. Other shapes fall out of the same
+ * parameters: a tube (capBase/capApex false, any radii), a frustum/cone
+ * (radiusApex != radius, 0 for a true cone apex), and an elliptical cylinder
+ * or frustum (sx != sz, optionally different per end via sxApex/szApex).
  * @alias module:cylinder
  * @param {CylinderOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -41,6 +49,11 @@ export function cylinder({
   capBaseSegments = capSegments,
   phi = TAU,
   capMapping = rectangular,
+
+  sx = 1,
+  sz = 1,
+  sxApex = sx,
+  szApex = sz,
 } = {}) {
   checkArguments(arguments);
 
@@ -80,6 +93,15 @@ export function cylinder({
   // Wrap the last column to the exact first column angle for full revolutions
   const wrap = phi % TAU === 0;
 
+  const lerp = (a, b, t) => a + (b - a) * t;
+
+  // Ellipse scale varies linearly with height like radius/radiusApex; the
+  // *Prime terms are their (constant) derivatives w.r.t. v, needed alongside
+  // r/rPrime for the tangent cross-product normal below (product rule)
+  const rPrime = radiusApex - radius;
+  const sxPrime = sxApex - sx;
+  const szPrime = szApex - sz;
+
   for (let i = 0; i < segments; i++) {
     const u = i * segmentIncrement;
     const p = (wrap && i === segments - 1 ? 0 : u) * phi;
@@ -89,14 +111,26 @@ export function cylinder({
     for (let j = 0; j < slices; j++) {
       const v = j * ringIncrement;
 
-      const r = radius * (1 - v) + radiusApex * v;
-      positions[vertexIndex * 3] = r * cosPhi;
-      positions[vertexIndex * 3 + 1] = height * v - halfHeight;
-      positions[vertexIndex * 3 + 2] = r * sinPhi;
+      const r = lerp(radius, radiusApex, v);
+      const sxV = lerp(sx, sxApex, v);
+      const szV = lerp(sz, szApex, v);
 
-      TMP[0] = height * cosPhi;
-      TMP[1] = radius - radiusApex;
-      TMP[2] = height * sinPhi;
+      positions[vertexIndex * 3] = r * sxV * cosPhi;
+      positions[vertexIndex * 3 + 1] = height * v - halfHeight;
+      positions[vertexIndex * 3 + 2] = r * szV * sinPhi;
+
+      // Tangent_v x Tangent_phi of the elliptical-frustum surface, with the
+      // common r factor divided out (harmless since normalize() erases
+      // positive scalar multiples, and it keeps this well-defined at r = 0,
+      // ie. a cone apex, same trick the sx = sz = 1 formula already relied
+      // on). Reduces to (height*cosPhi, radius-radiusApex, height*sinPhi)
+      // when sx = sz = sxApex = szApex = 1.
+      TMP[0] = height * szV * cosPhi;
+      TMP[1] = -(
+        rPrime * sxV * szV +
+        r * (sxPrime * szV * cosPhi * cosPhi + sxV * szPrime * sinPhi * sinPhi)
+      );
+      TMP[2] = height * sxV * sinPhi;
       normalize(TMP);
 
       normals[vertexIndex * 3] = TMP[0];
@@ -145,6 +179,8 @@ export function cylinder({
       ringSegments: nx,
       capSegments: capBaseSegments,
       capRadius: radius,
+      sx,
+      sy: sz,
       flip: 1,
       angleAt,
       point: (x, y) => [x, -halfHeight, y],
@@ -158,6 +194,8 @@ export function cylinder({
       ringSegments: nx,
       capSegments,
       capRadius: radiusApex,
+      sx: sxApex,
+      sy: szApex,
       flip: -1,
       angleAt,
       point: (x, y) => [x, halfHeight, y],

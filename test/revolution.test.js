@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 
 import * as Primitives from "../index.js";
 import { polar, rectangular } from "../src/mappings.js";
-import { analyze, inwardTriangles } from "./helpers.js";
+import { analyze, flippedNormalTriangles, inwardTriangles } from "./helpers.js";
 
 const TAU = Math.PI * 2;
 
@@ -164,6 +164,49 @@ describe("torus", () => {
     assert.equal(result.cracks, 0);
   });
 
+  it("caps point truly outward, not just self-consistently with their own winding", () => {
+    // flippedNormalTriangles only catches winding disagreeing with its own
+    // vertex normal - a normal that's coherently backward (mesh "inside out"
+    // but still internally consistent) slips through that check. Here we
+    // pin the normal against independent geometric ground truth: at
+    // phiOffset = 0 the capStart plane is exactly Y = 0, and the swept body
+    // for phi in (0, PI/2] lies entirely at Y >= 0, so the true outward
+    // capStart normal must have Y < 0 (and symmetrically for capEnd/X).
+    const segments = 8;
+    const minorSegments = 8;
+    const m = minorSegments + 1;
+    const mainSize = m * (segments + 1);
+    const outerRimAtTheta0 = mainSize + 1;
+
+    const start = Primitives.torus({
+      segments,
+      minorSegments,
+      phi: Math.PI / 2,
+      capStart: true,
+      capEnd: false,
+      capSegments: 1,
+    });
+    assert.ok(
+      start.positions.slice(0, mainSize * 3).every((_, i) => i % 3 !== 1 || start.positions[i] >= -1e-6),
+      "sanity: body should lie entirely at Y >= 0",
+    );
+    assert.ok(start.normals[outerRimAtTheta0 * 3 + 1] < 0);
+
+    const end = Primitives.torus({
+      segments,
+      minorSegments,
+      phi: Math.PI / 2,
+      capStart: false,
+      capEnd: true,
+      capSegments: 1,
+    });
+    assert.ok(
+      end.positions.slice(0, mainSize * 3).every((_, i) => i % 3 !== 0 || end.positions[i] <= 1e-6),
+      "sanity: body should lie entirely at X <= 0",
+    );
+    assert.ok(end.normals[outerRimAtTheta0 * 3] > 0);
+  });
+
   it("fans cap centers with a single triangle per quad", () => {
     const segments = 16;
     const minorSegments = 8;
@@ -220,35 +263,13 @@ describe("torus", () => {
     // isn't (the inner equator legitimately faces the donut hole). Instead,
     // check that each triangle's geometric winding agrees with the flat
     // normal baked into its cap vertices.
-    const { positions, normals, cells } = Primitives.torus({
+    const g = Primitives.torus({
       segments: 16,
       minorSegments: 8,
       phi: Math.PI,
       capSegments: 2,
     });
-
-    let flipped = 0;
-    for (let i = 0; i < cells.length; i += 3) {
-      const [a, b, c] = [cells[i], cells[i + 1], cells[i + 2]];
-      const ux = positions[b * 3] - positions[a * 3];
-      const uy = positions[b * 3 + 1] - positions[a * 3 + 1];
-      const uz = positions[b * 3 + 2] - positions[a * 3 + 2];
-      const vx = positions[c * 3] - positions[a * 3];
-      const vy = positions[c * 3 + 1] - positions[a * 3 + 1];
-      const vz = positions[c * 3 + 2] - positions[a * 3 + 2];
-      const faceNormal = [
-        uy * vz - uz * vy,
-        uz * vx - ux * vz,
-        ux * vy - uy * vx,
-      ];
-      const vertexNormal = [normals[a * 3], normals[a * 3 + 1], normals[a * 3 + 2]];
-      const dot =
-        faceNormal[0] * vertexNormal[0] +
-        faceNormal[1] * vertexNormal[1] +
-        faceNormal[2] * vertexNormal[2];
-      if (dot < 0) flipped++;
-    }
-    assert.equal(flipped, 0);
+    assert.equal(flippedNormalTriangles(g), 0);
   });
 });
 
@@ -298,5 +319,148 @@ describe("capMapping", () => {
       Array.from(withDefault.uvs),
       Array.from(withExplicitDefault.uvs),
     );
+  });
+});
+
+describe("elliptical revolution solids", () => {
+  describe("cylinder/cone", () => {
+    it("sx = sz = 1 is a no-op (matches the pre-ellipse output)", () => {
+      const plain = Primitives.cylinder({ nx: 16, ny: 3 });
+      const explicit = Primitives.cylinder({
+        nx: 16,
+        ny: 3,
+        sx: 1,
+        sz: 1,
+        sxApex: 1,
+        szApex: 1,
+      });
+      assert.deepEqual(
+        Array.from(plain.normals),
+        Array.from(explicit.normals),
+      );
+      assert.deepEqual(
+        Array.from(plain.positions),
+        Array.from(explicit.positions),
+      );
+    });
+
+    it("elliptical cylinder: watertight and correctly wound", () => {
+      const g = Primitives.cylinder({ nx: 32, ny: 4, sx: 2, sz: 0.5 });
+      const result = analyze(g);
+      assert.equal(result.cracks, 0);
+      assert.equal(result.degenerate, 0);
+      assert.equal(flippedNormalTriangles(g), 0);
+    });
+
+    it("elliptical frustum: independent per-end ellipse stays watertight and correctly wound", () => {
+      const g = Primitives.cylinder({
+        nx: 32,
+        ny: 6,
+        radiusApex: 0.15,
+        sx: 1,
+        sz: 1,
+        sxApex: 3,
+        szApex: 0.2,
+      });
+      const result = analyze(g);
+      assert.equal(result.cracks, 0);
+      assert.equal(result.degenerate, 0);
+      assert.equal(flippedNormalTriangles(g), 0);
+    });
+
+    it("elliptical cone: apex keeps non-degenerate per-column normals, correctly wound", () => {
+      const g = Primitives.cone({ nx: 16, ny: 4, sx: 2, sz: 0.5 });
+      const result = analyze(g);
+      assert.equal(result.cracks, 0);
+      assert.equal(result.degenerate, 0);
+      assert.equal(flippedNormalTriangles(g), 0);
+    });
+
+    it("elliptical + partial phi + caps: still watertight and correctly wound", () => {
+      const g = Primitives.cylinder({
+        nx: 32,
+        ny: 4,
+        sx: 2,
+        sz: 0.5,
+        phi: Math.PI,
+        capSegments: 2,
+      });
+      const result = analyze(g);
+      assert.equal(result.cracks, 0);
+      assert.equal(result.degenerate, 0);
+      assert.equal(flippedNormalTriangles(g), 0);
+    });
+
+    it("cone forwards sx/sz to cylinder (no apex-side ellipse params)", () => {
+      const plain = Primitives.cone({ nx: 16 });
+      const elliptical = Primitives.cone({ nx: 16, sx: 2, sz: 0.5 });
+      assert.notDeepEqual(
+        Array.from(elliptical.positions),
+        Array.from(plain.positions),
+      );
+    });
+  });
+
+  describe("torus", () => {
+    it("sx = sy = minorSx = minorSy = 1 is a no-op (matches the pre-ellipse output)", () => {
+      const plain = Primitives.torus({ segments: 16, minorSegments: 8 });
+      const explicit = Primitives.torus({
+        segments: 16,
+        minorSegments: 8,
+        sx: 1,
+        sy: 1,
+        minorSx: 1,
+        minorSy: 1,
+      });
+      assert.deepEqual(
+        Array.from(plain.normals),
+        Array.from(explicit.normals),
+      );
+      assert.deepEqual(
+        Array.from(plain.positions),
+        Array.from(explicit.positions),
+      );
+    });
+
+    it("elliptical footprint: watertight and correctly wound", () => {
+      const g = Primitives.torus({ segments: 32, minorSegments: 16, sx: 2, sy: 0.5 });
+      const result = analyze(g);
+      assert.equal(result.cracks, 0);
+      assert.equal(result.degenerate, 0);
+      assert.equal(flippedNormalTriangles(g), 0);
+    });
+
+    it("elliptical tube cross-section (either axis independently): watertight and correctly wound", () => {
+      for (const [minorSx, minorSy] of [
+        [0.2, 1], // radial-only squash
+        [1, 0.2], // z-only squash
+        [3, 1], // radial-only elongation
+        [0.4, 2.5], // both axes, asymmetric
+      ]) {
+        const g = Primitives.torus({ segments: 32, minorSegments: 16, minorSx, minorSy });
+        const result = analyze(g);
+        const label = `minorSx=${minorSx} minorSy=${minorSy}`;
+        assert.equal(result.cracks, 0, label);
+        assert.equal(result.degenerate, 0, label);
+        assert.equal(flippedNormalTriangles(g), 0, label);
+      }
+    });
+
+    it("combined footprint + tube + partial phi + caps: still watertight and correctly wound", () => {
+      const g = Primitives.torus({
+        segments: 32,
+        minorSegments: 16,
+        sx: 2,
+        sy: 0.5,
+        minorSx: 0.4,
+        minorSy: 2.5,
+        phi: Math.PI,
+        capSegments: 2,
+      });
+      const result = analyze(g);
+      assert.equal(result.cracks, 0);
+      assert.equal(result.degenerate, 0);
+      assert.equal(flippedNormalTriangles(g), 0);
+    });
   });
 });

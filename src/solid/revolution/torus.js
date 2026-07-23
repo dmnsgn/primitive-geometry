@@ -25,9 +25,20 @@ import {
  * @property {number} [capStartSegments=capSegments]
  * @property {number} [capEndSegments=capSegments]
  * @property {Function} [capMapping=mappings.rectangular]
+ * @property {number} [sx=1] Major sweep x scale (footprint), elliptical when != sy
+ * @property {number} [sy=1] Major sweep y scale (footprint), elliptical when != sx
+ * @property {number} [minorSx=1] Tube radial scale (meridian cross-section), elliptical when != minorSy
+ * @property {number} [minorSy=1] Tube z scale (meridian cross-section), elliptical when != minorSx
  */
 
 /**
+ * Ring torus by default. Other shapes fall out of the same parameters: a
+ * partial/open torus (phi < TAU, optionally capped via capStart/capEnd), an
+ * elliptical torus (sx != sy, an oval/racetrack footprint), and a tube with
+ * an elliptical cross-section (minorSx != minorSy, like a flattened or
+ * spindle-shaped bagel). Both pairs apply as a constant diagonal scale of
+ * the standard torus, so its usual normal direction just needs the matching
+ * inverse-scale correction (see the main loop below).
  * @alias module:torus
  * @param {TorusOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -49,6 +60,11 @@ export function torus({
   capStartSegments = capSegments,
   capEndSegments = capSegments,
   capMapping = rectangular,
+
+  sx = 1,
+  sy = 1,
+  minorSx = 1,
+  minorSy = 1,
 } = {}) {
   checkArguments(arguments);
 
@@ -97,16 +113,24 @@ export function torus({
       const cosPhi = -Math.cos(p);
       const sinPhi = Math.sin(p);
 
-      TMP[0] = (radius + minorRadius * cosTheta) * cosPhi;
-      TMP[1] = (radius + minorRadius * cosTheta) * sinPhi;
-      TMP[2] = minorRadius * sinTheta;
+      const radial = radius + minorRadius * minorSx * cosTheta;
 
-      positions[vertexIndex * 3] = TMP[0];
-      positions[vertexIndex * 3 + 1] = TMP[1];
-      positions[vertexIndex * 3 + 2] = TMP[2];
+      positions[vertexIndex * 3] = sx * radial * cosPhi;
+      positions[vertexIndex * 3 + 1] = sy * radial * sinPhi;
+      positions[vertexIndex * 3 + 2] = minorRadius * minorSy * sinTheta;
 
-      TMP[0] -= radius * cosPhi;
-      TMP[1] -= radius * sinPhi;
+      // sx/sy (footprint) and minorSx/minorSy (tube cross-section) together
+      // scale the standard torus by a constant diagonal matrix, so its
+      // normal (radially outward from the meridian's own center, ie.
+      // cosTheta*cosPhi, cosTheta*sinPhi, sinTheta) needs the matching
+      // inverse-scale correction; multiplying by the complementary pair
+      // (rather than dividing by the vertex's own scale) avoids a division
+      // by zero and is equivalent up to the positive common factor
+      // sx*sy*minorSx*minorSy. Reduces to the plain radial direction when
+      // sx = sy = minorSx = minorSy = 1.
+      TMP[0] = sy * minorSy * cosTheta * cosPhi;
+      TMP[1] = sx * minorSy * cosTheta * sinPhi;
+      TMP[2] = sx * sy * minorSx * sinTheta;
 
       normalize(TMP);
 
@@ -144,16 +168,24 @@ export function torus({
     return { cos: -Math.cos(t), sin: Math.sin(t), t };
   };
 
-  // Basis for the cap's local 2D plane at a fixed phi angle: x runs along
-  // the meridian's cos direction (rotated by phi), y along the torus axis
+  // Basis for the cap's local 2D plane at a fixed phi angle: local x runs
+  // along the meridian's radial (cos) direction, local y along the torus
+  // axis - both already scaled by minorSx/minorSy upstream, via computeCap's
+  // own sx/sy below. The footprint scale (sx, sy) only affects the final
+  // world X/Y, applied here as a constant linear map of that plane, so the
+  // cap stays flat.
   const capPoint = (pAngle) => {
     const cosPhi = -Math.cos(pAngle);
     const sinPhi = Math.sin(pAngle);
     return {
-      point: (x, y) => [(radius + x) * cosPhi, (radius + x) * sinPhi, y],
+      point: (x, y) => [
+        sx * (radius + x) * cosPhi,
+        sy * (radius + x) * sinPhi,
+        y,
+      ],
       // Outward normal of that plane (flip already folded in), derived from
-      // basisA x basisB with basisA = (cosPhi, sinPhi, 0), basisB = (0, 0, 1)
-      normalFor: (flip) => [sinPhi * flip, -cosPhi * flip, 0],
+      // basisA x basisB with basisA = (sx*cosPhi, sy*sinPhi, 0), basisB = (0, 0, 1)
+      normalFor: (flip) => [sy * sinPhi * flip, -sx * cosPhi * flip, 0],
     };
   };
 
@@ -165,10 +197,12 @@ export function torus({
       ringSegments: minorSegments,
       capSegments: capStartSegments,
       capRadius: minorRadius,
-      flip: 1,
+      sx: minorSx,
+      sy: minorSy,
+      flip: -1,
       angleAt,
       point,
-      normal: normalFor(1),
+      normal: normalFor(-1),
       mapping: capMapping,
     });
   }
@@ -179,10 +213,12 @@ export function torus({
       ringSegments: minorSegments,
       capSegments: capEndSegments,
       capRadius: minorRadius,
-      flip: -1,
+      sx: minorSx,
+      sy: minorSy,
+      flip: 1,
       angleAt,
       point,
-      normal: normalFor(-1),
+      normal: normalFor(1),
       mapping: capMapping,
     });
   }

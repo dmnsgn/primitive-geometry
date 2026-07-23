@@ -177,10 +177,13 @@ export const TMP = [0, 0, 0];
  *
  * The disk is defined in the caller's own local 2D coordinates (x along the
  * angular sample's cosine, y along its sine, both scaled by capRadius *
- * radiusRatio); `point(x, y)` embeds those into the solid's 3D space and
- * `normal` is that embedding's flat outward normal - both are the caller's
- * responsibility since the two solids embed their cap plane differently
- * (cylinder: axis-aligned; torus: offset and rotated by its phi angle).
+ * radiusRatio, then independently by sx/sy for an elliptical cap);
+ * `point(x, y)` embeds those into the solid's 3D space and `normal` is that
+ * embedding's flat outward normal - both are the caller's responsibility
+ * since the two solids embed their cap plane differently (cylinder:
+ * axis-aligned; torus: offset and rotated by its phi angle). A flat disk's
+ * normal only depends on the plane it sits in, not its in-plane shape, so
+ * sx/sy don't affect `normal` - only the position/uv scale.
  * `flip` (1 or -1) selects which of a cap pair (base/apex, start/end) this
  * is, driving winding order; `normal` must already have flip folded in so it
  * points outward, ie. away from the solid.
@@ -189,14 +192,25 @@ export const TMP = [0, 0, 0];
 export function computeCap(
   geometry,
   indices,
-  { ringSegments, capSegments, capRadius, flip, angleAt, point, normal, mapping },
+  {
+    ringSegments,
+    capSegments,
+    capRadius,
+    sx = 1,
+    sy = 1,
+    flip,
+    angleAt,
+    point,
+    normal,
+    mapping,
+  },
 ) {
   const { positions, normals, uvs, cells } = geometry;
   const ringVertexOffset = indices.vertex;
 
   const writeVertex = (radiusRatio, cos, sin, t, thetaRatio) => {
-    const x = capRadius * radiusRatio * cos;
-    const y = capRadius * radiusRatio * sin;
+    const x = capRadius * sx * radiusRatio * cos;
+    const y = capRadius * sy * radiusRatio * sin;
     const [px, py, pz] = point(x, y);
 
     const i = indices.vertex;
@@ -215,6 +229,8 @@ export function computeCap(
       u: radiusRatio * cos,
       v: radiusRatio * sin,
       radius: capRadius,
+      sx,
+      sy,
       radiusRatio,
       thetaRatio,
       t,
