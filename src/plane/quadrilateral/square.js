@@ -1,5 +1,6 @@
 /** @module square */
 
+import { rectangle } from "./rectangle.js";
 import { checkArguments } from "../../utils.js";
 
 /**
@@ -14,14 +15,5 @@ import { checkArguments } from "../../utils.js";
 export function square({ scale = 0.5 } = {}) {
   checkArguments(arguments);
 
-  return {
-    // prettier-ignore
-    positions:  Float32Array.of(
-      -scale, -scale, 0,
-      scale, -scale, 0,
-      scale, scale, 0,
-      -scale, scale, 0,
-    ),
-    cells: [[0, 1, 2, 3]],
-  };
+  return rectangle({ sx: scale * 2, sy: scale * 2 });
 }

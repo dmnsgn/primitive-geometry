@@ -29,6 +29,7 @@ const geometries = params.has("geometry")
       .filter(Boolean)
   : [
       named("square", Primitives.square()),
+      named("rectangle", Primitives.rectangle()),
       named("circle", Primitives.circle()),
       quadsPlane, // -> grid
       null,

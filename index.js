@@ -5,6 +5,7 @@
 
 export { circle } from "./src/plane/circular/circle.js";
 export { square } from "./src/plane/quadrilateral/square.js";
+export { rectangle } from "./src/plane/quadrilateral/rectangle.js";
 
 export { quad } from "./src/plane/quadrilateral/quad.js";
 export { plane } from "./src/plane/quadrilateral/plane.js";
