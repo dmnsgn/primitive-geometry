@@ -16,11 +16,17 @@ export { plane } from "./src/plane/quadrilateral/plane.js";
 export { roundedRectangle } from "./src/plane/quadrilateral/rounded-rectangle.js";
 export { stadium } from "./src/plane/quadrilateral/stadium.js";
 
+export { lens } from "./src/plane/arc/lens.js";
+export { lune } from "./src/plane/arc/lune.js";
+export { salinon } from "./src/plane/arc/salinon.js";
+export { yinYang } from "./src/plane/arc/yin-yang.js";
+
 export { ellipse } from "./src/plane/circular/ellipse.js";
 export { disc } from "./src/plane/circular/disc.js";
 export { superellipse } from "./src/plane/circular/superellipse.js";
 export { squircle } from "./src/plane/circular/squircle.js";
 export { annulus } from "./src/plane/circular/annulus.js";
+
 export { reuleaux } from "./src/plane/reuleaux.js";
 export { star } from "./src/plane/star.js";
 

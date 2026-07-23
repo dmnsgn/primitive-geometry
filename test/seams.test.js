@@ -40,6 +40,21 @@ const cases = [
     () => Primitives.star({ innerRadius: 0.1, circularHole: true }),
   ],
 
+  ["salinon", () => Primitives.salinon()],
+  ["salinon innerRadius=0.4", () => Primitives.salinon({ innerRadius: 0.4 })],
+  ["lens", () => Primitives.lens()],
+  ["lens asymmetric", () => Primitives.lens({ radius2: 0.3, distance: 0.4 })],
+  // Two independent sweeps split at y = 0; crack-free, not necessarily welded.
+  ["lune", () => Primitives.lune()],
+  ["lune innerRadius=0.45", () => Primitives.lune({ innerRadius: 0.45 })],
+  // Each band splits into 5 sub-sweeps around both dots' row ranges;
+  // collapsed columns at shared boundaries orphan a few vertices.
+  // "yin-yang" reuses this build twice, doubling the count.
+  ["yinYang", () => Primitives.yinYang(), { unused: 132 }],
+  ["yinYang part=yang", () => Primitives.yinYang({ part: "yang" }), { unused: 66 }],
+  ["yinYang part=yin", () => Primitives.yinYang({ part: "yin" }), { unused: 66 }],
+  ["yinYang dotRadius=0", () => Primitives.yinYang({ dotRadius: 0 }), { unused: 32 }],
+
   ["roundedRectangle", () => Primitives.roundedRectangle()],
   [
     "roundedRectangle mismatched subdivisions",

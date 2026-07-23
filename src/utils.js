@@ -126,6 +126,45 @@ export function triangulateFaces(cells, numVertices) {
 }
 
 /**
+ * Concatenate SimplicialComplex geometries into one, offsetting each one's
+ * cell indices by the running vertex count. Positions coincident across
+ * inputs (eg. two bands sharing a seam) stay as separate, unwelded vertices.
+ * @param {import("../types.js").SimplicialComplex[]} geometries
+ * @returns {import("../types.js").SimplicialComplex}
+ * @private
+ */
+export function concatGeometries(geometries) {
+  let vertexCount = 0;
+  let cellCount = 0;
+  for (const { positions, cells } of geometries) {
+    vertexCount += positions.length / 3;
+    cellCount += cells.length;
+  }
+
+  const positions = new Float32Array(vertexCount * 3);
+  const normals = new Float32Array(vertexCount * 3);
+  const uvs = new Float32Array(vertexCount * 2);
+  const cells = new (getCellsTypedArray(vertexCount))(cellCount);
+
+  let vertexOffset = 0;
+  let cellIndex = 0;
+
+  for (const geometry of geometries) {
+    positions.set(geometry.positions, vertexOffset * 3);
+    normals.set(geometry.normals, vertexOffset * 3);
+    uvs.set(geometry.uvs, vertexOffset * 2);
+
+    for (let i = 0; i < geometry.cells.length; i++, cellIndex++) {
+      cells[cellIndex] = geometry.cells[i] + vertexOffset;
+    }
+
+    vertexOffset += geometry.positions.length / 3;
+  }
+
+  return { positions, normals, uvs, cells };
+}
+
+/**
  * @private
  */
 export const TMP = [0, 0, 0];

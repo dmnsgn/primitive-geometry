@@ -93,7 +93,7 @@ const clearCmd = {
 const drawCmd = {
   pipeline: ctx.pipeline({
     depthTest: true,
-    cullFace: true,
+    cullFace: false,
     vert: /* glsl */ `#version 300 es
 precision mediump float;
 
