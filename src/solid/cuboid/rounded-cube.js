@@ -99,7 +99,6 @@ export function roundedCube({
       nv,
       direction,
       pw,
-      false,
       [1, 1],
       [0, 0],
       [0, 0, 0],

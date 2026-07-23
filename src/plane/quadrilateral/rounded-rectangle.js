@@ -69,7 +69,6 @@ export function roundedRectangle({
     ny,
     "z",
     0,
-    false,
     [1, 1],
     [0, 0],
     [0, 0, 0],

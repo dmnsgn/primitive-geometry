@@ -1,0 +1,46 @@
+/** @module quadGrid */
+
+import { checkArguments } from "../../utils.js";
+
+/**
+ * @typedef {object} QuadGridOptions
+ * @property {number} [sx=1]
+ * @property {number} [sy=sx]
+ * @property {number} [nx=10]
+ * @property {number} [ny=nx]
+ */
+
+/**
+ * Regular grid
+ * @alias module:quadGrid
+ * @param {QuadGridOptions} [options={}]
+ * @returns {import("../../../types.js").SimplicialComplexPolygon}
+ */
+export function quadGrid({ sx = 1, sy = sx, nx = 10, ny = nx } = {}) {
+  checkArguments(arguments);
+
+  const positions = new Float32Array((nx + 1) * (ny + 1) * 3);
+  const cells = [];
+
+  let vertexIndex = 0;
+
+  for (let row = 0; row <= ny; row++) {
+    const y = -sy / 2 + (row * sy) / ny;
+
+    for (let col = 0; col <= nx; col++) {
+      const x = -sx / 2 + (col * sx) / nx;
+
+      positions[vertexIndex * 3] = x;
+      positions[vertexIndex * 3 + 1] = y;
+
+      if (row < ny && col < nx) {
+        const o = vertexIndex + nx + 1;
+        cells.push([vertexIndex, vertexIndex + 1, o + 1, o]);
+      }
+
+      vertexIndex++;
+    }
+  }
+
+  return { positions, cells };
+}

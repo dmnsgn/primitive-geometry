@@ -1,6 +1,6 @@
 import * as Primitives from "../index.js";
 
-import { modeOptions, setGeometries, computeEdges } from "./render.js";
+import { modeOptions, setGeometries } from "./render.js";
 
 const params = new URLSearchParams(window.location.search);
 
@@ -8,15 +8,6 @@ const params = new URLSearchParams(window.location.search);
 // Primitives.utils.setTypedArrayType(Uint32Array);
 
 const named = (name, geometry) => Object.assign(geometry, { name });
-
-const quadsPlane = named(
-  "plane (quads)",
-  Primitives.plane({ nx: 10, quads: true }),
-);
-quadsPlane.edges = computeEdges(quadsPlane.positions, quadsPlane.cells, {
-  stride: 4,
-});
-quadsPlane.quads = true;
 
 const geometries = params.has("geometry")
   ? params
@@ -31,7 +22,10 @@ const geometries = params.has("geometry")
       named("square", Primitives.square()),
       named("rectangle", Primitives.rectangle()),
       named("circle", Primitives.circle()),
-      quadsPlane, // -> grid
+      null,
+      named("quadGrid", Primitives.quadGrid()),
+      named("triangularGrid", Primitives.triangularGrid()),
+      named("hexagonalGrid", Primitives.hexagonalGrid()),
       null,
       named("plane", Primitives.plane()),
       named("roundedRectangle", Primitives.roundedRectangle()),

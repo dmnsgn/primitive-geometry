@@ -19,6 +19,12 @@ export const HALF_PI = Math.PI / 2;
 export const SQRT2 = Math.sqrt(2);
 
 /**
+ * Square root of 3.
+ * @constant {number}
+ */
+export const SQRT3 = Math.sqrt(3);
+
+/**
  * Golden ratio: (1 + √5) / 2.
  * @constant {number}
  */
@@ -154,7 +160,6 @@ export function computePlane(
   nv,
   direction = "z",
   pw = 0,
-  quads = false,
   uvScale = [1, 1],
   uvOffset = [0, 0],
   center = [0, 0, 0],
@@ -205,15 +210,6 @@ export function computePlane(
       if (j < rows && i < cols) {
         const n = vertexOffset + j * (cols + 1) + i;
         const o = n + cols + 1;
-
-        if (quads) {
-          cells[indices.cell] = n;
-          cells[indices.cell + 1] = o;
-          cells[indices.cell + 2] = o + 1;
-          cells[indices.cell + 3] = n + 1;
-          indices.cell += 4;
-          continue;
-        }
 
         const isCornerU = i < roundSegments || i >= roundSegments + nu;
         const isCornerV = j < roundSegments || j >= roundSegments + nv;

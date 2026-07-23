@@ -1,6 +1,6 @@
 /** @module tetrahedron */
 import { polyhedron } from "../polyhedron.js";
-import { checkArguments } from "../../../utils.js";
+import { checkArguments, SQRT2, SQRT3 } from "../../../utils.js";
 
 /**
  * @typedef {object} TetrahedronFacesOptions
@@ -16,14 +16,14 @@ import { checkArguments } from "../../../utils.js";
 export function tetrahedronFaces({ circumradius = 0.5 } = {}) {
   checkArguments(arguments);
 
-  const r0 = (circumradius * 2 * Math.sqrt(2)) / 3;
+  const r0 = (circumradius * 2 * SQRT2) / 3;
   return {
     // prettier-ignore
     positions: Float32Array.of(
       0, circumradius, 0,
       r0, -circumradius / 3, 0,
-      -r0 / 2, -circumradius / 3, (r0 * Math.sqrt(3)) / 2,
-      -r0 / 2, -circumradius / 3, -(r0 * Math.sqrt(3)) / 2,
+      -r0 / 2, -circumradius / 3, (r0 * SQRT3) / 2,
+      -r0 / 2, -circumradius / 3, -(r0 * SQRT3) / 2,
     ),
     cells: [
       [0, 2, 1],
