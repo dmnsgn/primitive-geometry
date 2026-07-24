@@ -3,9 +3,9 @@
  * @module index
  */
 
-export { square } from "./src/plane/quadrilateral/square.js";
-export { rectangle } from "./src/plane/quadrilateral/rectangle.js";
-export { circle } from "./src/plane/circular/circle.js";
+export { rectanglePath } from "./src/plane/quadrilateral/rectangle-path.js";
+export { squarePath } from "./src/plane/quadrilateral/square-path.js";
+export { circlePath } from "./src/plane/circular/circle-path.js";
 
 export { quadGrid } from "./src/plane/grid/quad-grid.js";
 export { triangularGrid } from "./src/plane/grid/triangular-grid.js";

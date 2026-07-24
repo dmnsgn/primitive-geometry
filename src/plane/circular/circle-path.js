@@ -1,8 +1,8 @@
-/** @module circle */
+/** @module circlePath */
 import { checkArguments, TAU } from "../../utils.js";
 
 /**
- * @typedef {object} CircleOptions
+ * @typedef {object} CirclePathOptions
  * @property {number} [radius=0.5]
  * @property {number} [segments=32]
  * @property {number} [theta=TAU]
@@ -11,13 +11,13 @@ import { checkArguments, TAU } from "../../utils.js";
  */
 
 /**
- * @alias module:circle
- * @param {CircleOptions} [options={}]
+ * @alias module:circlePath
+ * @param {CirclePathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath} `segments`
  *   positions and a single path cell of `segments` indices (`segments + 1`,
  *   repeating index `0`, when `closed`)
  */
-export function circle({
+export function circlePath({
   radius = 0.5,
   segments = 32,
   theta = TAU,

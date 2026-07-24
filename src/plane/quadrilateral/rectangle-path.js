@@ -1,9 +1,9 @@
-/** @module rectangle */
+/** @module rectanglePath */
 
 import { checkArguments } from "../../utils.js";
 
 /**
- * @typedef {object} RectangleOptions
+ * @typedef {object} RectanglePathOptions
  * @property {number} [sx=1]
  * @property {number} [sy=0.5]
  * @property {number} [nx=1] Segments along the bottom/top edges
@@ -11,11 +11,11 @@ import { checkArguments } from "../../utils.js";
  */
 
 /**
- * @alias module:rectangle
- * @param {RectangleOptions} [options={}]
+ * @alias module:rectanglePath
+ * @param {RectanglePathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
  */
-export function rectangle({ sx = 1, sy = 0.5, nx = 1, ny = nx } = {}) {
+export function rectanglePath({ sx = 1, sy = 0.5, nx = 1, ny = nx } = {}) {
   checkArguments(arguments);
 
   const x = sx * 0.5;

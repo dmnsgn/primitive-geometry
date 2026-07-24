@@ -19,9 +19,9 @@ const geometries = params.has("geometry")
       )
       .filter(Boolean)
   : [
-      named("square", Primitives.square()),
-      named("rectangle", Primitives.rectangle()),
-      named("circle", Primitives.circle()),
+      named("rectanglePath", Primitives.rectanglePath()),
+      named("squarePath", Primitives.squarePath()),
+      named("circlePath", Primitives.circlePath()),
       null,
       named("quadGrid", Primitives.quadGrid()),
       named("triangularGrid", Primitives.triangularGrid()),

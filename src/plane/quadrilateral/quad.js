@@ -1,6 +1,6 @@
 /** @module quad */
 
-import { square } from "./square.js";
+import { squarePath } from "./square-path.js";
 import { checkArguments, triangulateFaces } from "../../utils.js";
 
 /**
@@ -16,7 +16,7 @@ import { checkArguments, triangulateFaces } from "../../utils.js";
 export function quad({ scale = 0.5 } = {}) {
   checkArguments(arguments);
 
-  const { positions, cells } = square({ scale });
+  const { positions, cells } = squarePath({ scale });
 
   return {
     positions,
