@@ -6,6 +6,10 @@ import {
 } from "../../utils.js";
 
 /**
+ * @typedef {"top-left" | "top-right" | "bottom-right" | "bottom-left"} RoundedRectangleCorner
+ */
+
+/**
  * @typedef {object} RoundedRectangleOptions
  * @property {number} [sx=1]
  * @property {number} [sy=sx]
@@ -14,7 +18,10 @@ import {
  * @property {number} [edgeSegments=1]
  * @property {number} [nx=edgeSegments]
  * @property {number} [ny=nx]
+ * @property {RoundedRectangleCorner[]} [roundedCorners=["top-left", "top-right", "bottom-right", "bottom-left"]]
  */
+
+const CORNER_ORDER = ["top-left", "top-right", "bottom-right", "bottom-left"];
 
 /**
  * Built as a single welded grid so face, edges and corners share their
@@ -33,6 +40,7 @@ export function roundedRectangle({
   edgeSegments = 1,
   nx = edgeSegments,
   ny = nx,
+  roundedCorners = CORNER_ORDER,
 } = {}) {
   checkArguments(arguments);
 
@@ -74,7 +82,7 @@ export function roundedRectangle({
     true,
     radius,
     roundSegments,
-    true,
+    CORNER_ORDER.map((corner) => roundedCorners.includes(corner)),
   );
 
   return geometry;

@@ -31,7 +31,6 @@ export { reuleaux } from "./src/plane/reuleaux.js";
 export { star } from "./src/plane/star.js";
 
 export { cube, cubeFaces, box } from "./src/solid/cuboid/cube.js";
-
 export { roundedCube } from "./src/solid/cuboid/rounded-cube.js";
 
 export { sphere } from "./src/solid/revolution/sphere.js";

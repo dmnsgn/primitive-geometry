@@ -4,8 +4,14 @@ import {
   computePlane,
   getCellsTypedArray,
   normalize,
+  getPlaneCoordinate,
+  PLANE_DIRECTIONS,
   TMP,
 } from "../../utils.js";
+
+/**
+ * @typedef {"all" | "x" | "y" | "z"} RoundedCubeDirection
+ */
 
 /**
  * @typedef {object} RoundedCubeOptions
@@ -18,6 +24,7 @@ import {
  * @property {number} [nx=edgeSegments]
  * @property {number} [ny=nx]
  * @property {number} [nz=nx]
+ * @property {RoundedCubeDirection} [roundDirection="all"]
  */
 
 /**
@@ -39,6 +46,7 @@ export function roundedCube({
   nx = edgeSegments,
   ny = nx,
   nz = nx,
+  roundDirection = "all",
 } = {}) {
   checkArguments(arguments);
 
@@ -78,6 +86,11 @@ export function roundedCube({
 
   const indices = { vertex: 0, cell: 0 };
 
+  // -1 when roundDirection is "all" (nothing excluded, matches no axis index)
+  const excludedAxis =
+    roundDirection === "all" ? -1 : "xyz".indexOf(roundDirection);
+  const bounds = [widthX * 0.5, widthY * 0.5, widthZ * 0.5];
+
   const PLANES = [
     [widthX, widthY, nx, ny, "z", halfSZ],
     [widthX, widthY, nx, ny, "-z", -halfSZ],
@@ -89,6 +102,13 @@ export function roundedCube({
 
   for (let i = 0; i < PLANES.length; i++) {
     const [su, sv, nu, nv, direction, pw] = PLANES[i];
+    const [u, v, w, flipU, flipV] = PLANE_DIRECTIONS[direction];
+    const startVertex = indices.vertex;
+
+    // False when this face's own (out-of-plane) axis is the excluded one: the
+    // face is flat along it, so its corners are rounded by computePlane's 2D
+    // corner mapping instead of the 3D blend below.
+    const axisActive = w !== excludedAxis;
 
     computePlane(
       geometry,
@@ -105,54 +125,61 @@ export function roundedCube({
       true,
       radius,
       roundSegments,
+      !axisActive,
     );
-  }
 
-  const rx = widthX * 0.5;
-  const ry = widthY * 0.5;
-  const rz = widthZ * 0.5;
+    if (axisActive) {
+      const cols = 2 * roundSegments + nu;
+      const rows = 2 * roundSegments + nv;
 
-  for (let i = 0; i < geometry.positions.length; i += 3) {
-    const position = [
-      geometry.positions[i],
-      geometry.positions[i + 1],
-      geometry.positions[i + 2],
-    ];
-    TMP[0] = position[0];
-    TMP[1] = position[1];
-    TMP[2] = position[2];
+      for (let j = 0; j <= rows; j++) {
+        const y0 = getPlaneCoordinate(j, nv, sv, radius, roundSegments);
 
-    if (position[0] < -rx) {
-      position[0] = -rx;
-    } else if (position[0] > rx) {
-      position[0] = rx;
+        for (let x = 0; x <= cols; x++) {
+          const x0 = getPlaneCoordinate(x, nu, su, radius, roundSegments);
+
+          // Recomputed in double precision, not read back from the
+          // Float32Array, so this vertex stays bit-identical to the matching
+          // corner vertex on a neighboring face rounded by computePlane's 2D
+          // corners - reading the rounded value back would drift by ~1 ULP
+          // and crack their shared boundary.
+          const position = [0, 0, 0];
+          position[u] = x0 * flipU;
+          position[v] = y0 * flipV;
+          position[w] = pw;
+
+          TMP[0] = position[0];
+          TMP[1] = position[1];
+          TMP[2] = position[2];
+
+          for (let k = 0; k < 3; k++) {
+            if (k === excludedAxis) continue;
+            const bound = bounds[k];
+            if (position[k] < -bound) {
+              position[k] = -bound;
+            } else if (position[k] > bound) {
+              position[k] = bound;
+            }
+          }
+
+          for (let k = 0; k < 3; k++) {
+            TMP[k] = k === excludedAxis ? 0 : TMP[k] - position[k];
+          }
+
+          normalize(TMP);
+
+          const vertexIndex = (startVertex + j * (cols + 1) + x) * 3;
+
+          geometry.normals[vertexIndex] = TMP[0];
+          geometry.normals[vertexIndex + 1] = TMP[1];
+          geometry.normals[vertexIndex + 2] = TMP[2];
+
+          geometry.positions[vertexIndex] = position[0] + radius * TMP[0];
+          geometry.positions[vertexIndex + 1] = position[1] + radius * TMP[1];
+          geometry.positions[vertexIndex + 2] = position[2] + radius * TMP[2];
+        }
+      }
     }
-
-    if (position[1] < -ry) {
-      position[1] = -ry;
-    } else if (position[1] > ry) {
-      position[1] = ry;
-    }
-
-    if (position[2] < -rz) {
-      position[2] = -rz;
-    } else if (position[2] > rz) {
-      position[2] = rz;
-    }
-
-    TMP[0] -= position[0];
-    TMP[1] -= position[1];
-    TMP[2] -= position[2];
-
-    normalize(TMP);
-
-    geometry.normals[i] = TMP[0];
-    geometry.normals[i + 1] = TMP[1];
-    geometry.normals[i + 2] = TMP[2];
-
-    geometry.positions[i] = position[0] + radius * TMP[0];
-    geometry.positions[i + 1] = position[1] + radius * TMP[1];
-    geometry.positions[i + 2] = position[2] + radius * TMP[2];
   }
 
   return geometry;

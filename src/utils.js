@@ -99,7 +99,7 @@ export function setTypedArrayType(type) {
  */
 export const getCellsTypedArray = (size) =>
   TYPED_ARRAY_TYPE ||
-  (size <= 255 ? Uint8Array : size <= 65535 ? Uint16Array : Uint32Array);
+  (size <= 255 ? Uint8Array : size <= 65_535 ? Uint16Array : Uint32Array);
 
 /**
  * Fan-triangulate a list of closed n-gon faces (a
@@ -308,12 +308,82 @@ export const PLANE_DIRECTIONS = {
 };
 
 /**
+ * Piecewise sampling so region boundaries are computed once and bit-exact.
+ * n = 0 collapses the straight section to a single column; cornerSegments = 0
+ * collapses to a plain -size/2 + index * size/n grid.
+ * @private
+ */
+export function getPlaneCoordinate(
+  index,
+  n,
+  size,
+  cornerRadius,
+  cornerSegments,
+) {
+  return index < cornerSegments
+    ? -size / 2 - cornerRadius + (index * cornerRadius) / cornerSegments
+    : index <= cornerSegments + n
+      ? -size / 2 + (n ? ((index - cornerSegments) * size) / n : 0)
+      : size / 2 +
+        ((index - cornerSegments - n) * cornerRadius) / cornerSegments;
+}
+
+/**
+ * Remap a 2D offset from a corner reference point onto the true circular arc
+ * of the same radius: preserves the offset's angle and rescales its distance
+ * from Chebyshev (the flat square grid extension) to Euclidean (the circle).
+ * @param {number} dx
+ * @param {number} dy
+ * @returns {[number, number]}
+ * @private
+ */
+export function remapCornerOffset(dx, dy) {
+  const scale = Math.max(Math.abs(dx), Math.abs(dy)) / Math.hypot(dx, dy);
+  return [dx * scale, dy * scale];
+}
+
+/**
+ * Whether a plane grid index falls in the rounded-corner range (before 0 or
+ * after n), given cornerSegments straight-section columns/rows on each side.
+ * @private
+ */
+export function isPlaneCorner(index, n, cornerSegments) {
+  return index < cornerSegments || index >= cornerSegments + n;
+}
+
+/**
+ * Reference corner coordinate a rounded value is beyond, or null when it
+ * sits within the straight [-half, half] span (no rounding needed there).
+ * @private
+ */
+export function getPlaneCornerReference(value, half) {
+  return value < -half ? -half : value > half ? half : null;
+}
+
+/**
+ * Whether the corner a value pair [cx, cy] sits in (relative to plane
+ * center, by sign) is selected by roundCorners: a uniform true/false, or a
+ * 4-item boolean array indexing [-u-v, +u-v, +u+v, -u+v]. False when either
+ * is null (getPlaneCornerReference's sentinel for "not in a corner").
+ * @private
+ */
+export function isPlaneCornerRounded(cx, cy, roundCorners) {
+  if (cx === null || cy === null) return false;
+  if (roundCorners === true || roundCorners === false) return roundCorners;
+  const index = cx < 0 ? (cy < 0 ? 0 : 3) : cy < 0 ? 1 : 2;
+  return roundCorners[index];
+}
+
+/**
  * Plane as a single welded grid, optionally with rounded corners
  * (cornerRadius/cornerSegments > 0): [cornerSegments|nu|cornerSegments] x
  * [cornerSegments|nv|cornerSegments] so face, edges and corners share their
  * boundary vertices, with radial diagonals in the corner quads. su/sv are the
  * inner face sizes (full size minus 2 * cornerRadius) and collapse to the
- * plain su/sv grid when cornerRadius/cornerSegments are 0.
+ * plain su/sv grid when cornerRadius/cornerSegments are 0. roundCorners is
+ * false (none rounded), true (all 4 rounded) or a 4-item boolean array
+ * selecting which of [-u-v, +u-v, +u+v, -u+v] round; unselected corners stay
+ * flat/square (their raw grid extension left as-is).
  * @private
  */
 export function computePlane(
@@ -342,52 +412,33 @@ export function computePlane(
   const width = su + 2 * cornerRadius;
   const height = sv + 2 * cornerRadius;
 
-  // Piecewise sampling so region boundaries are computed once and bit-exact;
-  // n = 0 collapses the straight section into a single welded column;
-  // collapses to a plain -size/2 + index * size/n grid when cornerSegments = 0
-  const coordinate = (index, n, size) =>
-    index < cornerSegments
-      ? -size / 2 - cornerRadius + (index * cornerRadius) / cornerSegments
-      : index <= cornerSegments + n
-        ? -size / 2 + (n ? ((index - cornerSegments) * size) / n : 0)
-        : size / 2 + ((index - cornerSegments - n) * cornerRadius) / cornerSegments;
-
-  const isCorner = (index, n) =>
-    index < cornerSegments || index >= cornerSegments + n;
-
-  // Reference corner coordinate a rounded value is beyond, or null when it
-  // sits within the straight [-half, half] span (no rounding needed there)
-  const cornerReference = (value, half) =>
-    value < -half ? -half : value > half ? half : null;
-
   const vertexOffset = indices.vertex;
 
   for (let j = 0; j <= rows; j++) {
-    const y0 = coordinate(j, nv, sv);
-    const cornerV = isCorner(j, nv);
+    const y0 = getPlaneCoordinate(j, nv, sv, cornerRadius, cornerSegments);
+    const cornerV = isPlaneCorner(j, nv, cornerSegments);
 
     for (let i = 0; i <= cols; i++) {
-      const x0 = coordinate(i, nu, su);
-      const cornerU = isCorner(i, nu);
+      const x0 = getPlaneCoordinate(i, nu, su, cornerRadius, cornerSegments);
+      const cornerU = isPlaneCorner(i, nu, cornerSegments);
 
       let x = x0;
       let y = y0;
 
       // Corner quad: remap the flat square extension onto the true circular
       // arc, preserving angle from the inner corner and scaling its distance
-      // from Chebyshev (square) to Euclidean (circle). Only where the raw
-      // coordinate is strictly beyond both straight spans (cx/cy non-null),
-      // so dx/dy are guaranteed non-zero - no 0/0 divide.
-      if (roundCorners && cornerRadius > 0) {
-        const cx = cornerReference(x0, su / 2);
-        const cy = cornerReference(y0, sv / 2);
+      // from Chebyshev (square) to Euclidean (circle). isPlaneCornerRounded
+      // is false unless the raw coordinate is strictly beyond both straight
+      // spans (cx/cy non-null), so dx/dy below are guaranteed non-zero - no
+      // 0/0 divide.
+      if (cornerRadius > 0) {
+        const cx = getPlaneCornerReference(x0, su / 2);
+        const cy = getPlaneCornerReference(y0, sv / 2);
 
-        if (cx !== null && cy !== null) {
-          const dx = x0 - cx;
-          const dy = y0 - cy;
-          const scale = Math.max(Math.abs(dx), Math.abs(dy)) / Math.hypot(dx, dy);
-          x = cx + dx * scale;
-          y = cy + dy * scale;
+        if (isPlaneCornerRounded(cx, cy, roundCorners)) {
+          const [dx, dy] = remapCornerOffset(x0 - cx, y0 - cy);
+          x = cx + dx;
+          y = cy + dy;
         }
       }
 
