@@ -293,10 +293,10 @@ describe("Kepler-Poinsot solids", () => {
   });
 });
 
-describe("tetrasphere / cubesphere / octasphere / dodecasphere / icosphere", () => {
+describe("tetrasphere / hexasphere / octasphere / dodecasphere / icosphere", () => {
   for (const [name, create] of [
     ["tetrasphere", Primitives.tetrasphere],
-    ["cubesphere", Primitives.cubesphere],
+    ["hexasphere", Primitives.hexasphere],
     ["octasphere", Primitives.octasphere],
     ["dodecasphere", Primitives.dodecasphere],
     ["icosphere", Primitives.icosphere],
@@ -352,7 +352,7 @@ describe("tetrasphere / cubesphere / octasphere / dodecasphere / icosphere", () 
   it("projection=spherical reduces triangle-size distortion compared to gnomonic", () => {
     for (const [name, create] of [
       ["tetrasphere", Primitives.tetrasphere],
-      ["cubesphere", Primitives.cubesphere],
+      ["hexasphere", Primitives.hexasphere],
       ["octasphere", Primitives.octasphere],
       ["dodecasphere", Primitives.dodecasphere],
       ["icosphere", Primitives.icosphere],
@@ -389,7 +389,7 @@ describe("tetrasphere / cubesphere / octasphere / dodecasphere / icosphere", () 
       4,
     );
     assert.equal(
-      Primitives.cubesphere({ subdivisions: 0, mapping }).positions.length /
+      Primitives.hexasphere({ subdivisions: 0, mapping }).positions.length /
         3,
       8,
     );
@@ -416,7 +416,7 @@ describe("tetrasphere / cubesphere / octasphere / dodecasphere / icosphere", () 
     // no per-vertex uv duplication can fix (only splitting the triangle
     // itself would) - see the comment above the zipper in polyhedron.js.
     for (const [name, create] of [
-      ["cubesphere", () => Primitives.cubesphere({ subdivisions: 3 })],
+      ["hexasphere", () => Primitives.hexasphere({ subdivisions: 3 })],
       ["octasphere", () => Primitives.octasphere({ subdivisions: 3 })],
       ["dodecasphere", () => Primitives.dodecasphere({ subdivisions: 2 })],
       ["icosphere", () => Primitives.icosphere({ subdivisions: 3 })],

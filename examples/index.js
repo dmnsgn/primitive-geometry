@@ -73,7 +73,7 @@ const geometries = params.has("geometry")
       named("icosahedronFaces", Primitives.icosahedronFaces()),
       null,
       named("tetrasphere", Primitives.tetrasphere()),
-      named("cubesphere", Primitives.cubesphere()),
+      named("hexasphere", Primitives.hexasphere()),
       named("octasphere", Primitives.octasphere()),
       named("dodecasphere", Primitives.dodecasphere()),
       named("icosphere", Primitives.icosphere()),

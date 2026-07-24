@@ -166,7 +166,7 @@ const cases = [
   // seam zipper duplicates every triangle's corner there with a
   // locally-correct longitude, orphaning the original shared vertex
   ["tetrasphere", () => Primitives.tetrasphere(), { unused: 2 }],
-  ["cubesphere", () => Primitives.cubesphere()],
+  ["hexasphere", () => Primitives.hexasphere()],
   ["octasphere", () => Primitives.octasphere(), { unused: 2 }],
   ["dodecasphere", () => Primitives.dodecasphere()],
 ];

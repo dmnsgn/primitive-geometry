@@ -81,7 +81,7 @@ export {
 } from "./src/solid/polyhedra/regular/great-stellated-dodecahedron.js";
 
 export { tetrasphere } from "./src/solid/polyhedra/geodesic-dome/tetrasphere.js";
-export { cubesphere } from "./src/solid/polyhedra/geodesic-dome/cubesphere.js";
+export { hexasphere } from "./src/solid/polyhedra/geodesic-dome/hexasphere.js";
 export { octasphere } from "./src/solid/polyhedra/geodesic-dome/octasphere.js";
 export { dodecasphere } from "./src/solid/polyhedra/geodesic-dome/dodecasphere.js";
 export { icosphere } from "./src/solid/polyhedra/geodesic-dome/icosphere.js";

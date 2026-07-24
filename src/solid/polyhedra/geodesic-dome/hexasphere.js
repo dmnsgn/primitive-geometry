@@ -1,0 +1,37 @@
+/** @module hexasphere */
+import { polyhedron } from "../polyhedron.js";
+import { hexahedronFaces } from "../regular/hexahedron.js";
+import { checkArguments } from "../../../utils.js";
+
+/**
+ * @typedef {object} HexasphereOptions
+ * @property {number} [radius=0.5]
+ * @property {number} [subdivisions=2]
+ * @property {"gnomonic"|"spherical"} [projection="gnomonic"]
+ * @property {Function} [mapping=mappings.spherical]
+ */
+
+/**
+ * A geodesic sphere built by radially projecting and welding a subdivided
+ * hexahedron (cube) - an alternative to icosphere's topology, with
+ * cubemap-friendly UVs.
+ * @alias module:hexasphere
+ * @param {HexasphereOptions} [options={}]
+ * @returns {import("../../../../types.js").SimplicialComplex}
+ */
+export function hexasphere({
+  radius = 0.5,
+  subdivisions = 2,
+  projection,
+  mapping,
+} = {}) {
+  checkArguments(arguments);
+
+  return polyhedron(hexahedronFaces({ radius }), {
+    radius,
+    subdivisions,
+    project: true,
+    projection,
+    mapping,
+  });
+}
