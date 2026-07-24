@@ -48,7 +48,7 @@ const CONFIG = {
   mode: params.get("mode") || "texture",
   cycle: false,
   axes: true,
-  bbox: params.get("mode") === "bbox",
+  bbox: params.get("bbox") !== "false",
   normals: params.get("normals") !== "false",
   seams: params.get("seams") !== "false",
 };

@@ -25,6 +25,12 @@ export const SQRT2 = Math.sqrt(2);
 export const SQRT3 = Math.sqrt(3);
 
 /**
+ * Square root of 6.
+ * @constant {number}
+ */
+export const SQRT6 = Math.sqrt(6);
+
+/**
  * Golden ratio: (1 + √5) / 2.
  * @constant {number}
  */

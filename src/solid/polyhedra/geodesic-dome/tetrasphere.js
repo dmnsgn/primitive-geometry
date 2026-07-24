@@ -25,7 +25,7 @@ export function tetrasphere({
 } = {}) {
   checkArguments(arguments);
 
-  return polyhedron(tetrahedronFaces({ circumradius: radius }), {
+  return polyhedron(tetrahedronFaces({ radius, center: false }), {
     radius,
     subdivisions,
     project: true,
