@@ -3,7 +3,6 @@ import {
   checkArguments,
   computePlane,
   getCellsTypedArray,
-  TMP,
 } from "../../utils.js";
 
 /**
@@ -75,59 +74,8 @@ export function roundedRectangle({
     true,
     radius,
     roundSegments,
+    true,
   );
-
-  const rx = widthX * 0.5;
-  const ry = widthY * 0.5;
-
-  for (let i = 0; i < geometry.positions.length; i += 3) {
-    const position = [
-      geometry.positions[i],
-      geometry.positions[i + 1],
-      geometry.positions[i + 2],
-    ];
-    TMP[0] = position[0];
-    TMP[1] = position[1];
-    TMP[2] = position[2];
-
-    let needsRounding = false;
-
-    if (position[0] < -rx) {
-      if (position[1] < -ry) {
-        position[0] = -rx;
-        position[1] = -ry;
-        needsRounding = true;
-      } else if (position[1] > ry) {
-        position[0] = -rx;
-        position[1] = ry;
-        needsRounding = true;
-      }
-    } else if (position[0] > rx) {
-      if (position[1] < -ry) {
-        position[0] = rx;
-        position[1] = -ry;
-        needsRounding = true;
-      } else if (position[1] > ry) {
-        position[0] = rx;
-        position[1] = ry;
-        needsRounding = true;
-      }
-    }
-
-    TMP[0] -= position[0];
-    TMP[1] -= position[1];
-
-    geometry.normals[i + 2] = 1;
-
-    if (needsRounding) {
-      const x =
-        Math.hypot(TMP[0], TMP[1]) /
-        Math.max(Math.abs(TMP[0]), Math.abs(TMP[1]));
-
-      geometry.positions[i] = position[0] + TMP[0] / x;
-      geometry.positions[i + 1] = position[1] + TMP[1] / x;
-    }
-  }
 
   return geometry;
 }

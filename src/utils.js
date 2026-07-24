@@ -309,11 +309,11 @@ export const PLANE_DIRECTIONS = {
 
 /**
  * Plane as a single welded grid, optionally with rounded corners
- * (radius/roundSegments > 0): [roundSegments|nu|roundSegments] x
- * [roundSegments|nv|roundSegments] so face, edges and corners share their
+ * (cornerRadius/cornerSegments > 0): [cornerSegments|nu|cornerSegments] x
+ * [cornerSegments|nv|cornerSegments] so face, edges and corners share their
  * boundary vertices, with radial diagonals in the corner quads. su/sv are the
- * inner face sizes (full size minus 2 * radius) and collapse to the plain
- * su/sv grid when radius/roundSegments are 0.
+ * inner face sizes (full size minus 2 * cornerRadius) and collapse to the
+ * plain su/sv grid when cornerRadius/cornerSegments are 0.
  * @private
  */
 export function computePlane(
@@ -329,35 +329,67 @@ export function computePlane(
   uvOffset = [0, 0],
   center = [0, 0, 0],
   ccw = true,
-  radius = 0,
-  roundSegments = 0,
+  cornerRadius = 0,
+  cornerSegments = 0,
+  roundCorners = false,
 ) {
   const { positions, normals, uvs, cells } = geometry;
   const [u, v, w, flipU, flipV, normal] = PLANE_DIRECTIONS[direction];
 
-  const cols = 2 * roundSegments + nu;
-  const rows = 2 * roundSegments + nv;
+  const cols = 2 * cornerSegments + nu;
+  const rows = 2 * cornerSegments + nv;
 
-  const width = su + 2 * radius;
-  const height = sv + 2 * radius;
+  const width = su + 2 * cornerRadius;
+  const height = sv + 2 * cornerRadius;
 
   // Piecewise sampling so region boundaries are computed once and bit-exact;
   // n = 0 collapses the straight section into a single welded column;
-  // collapses to a plain -size/2 + index * size/n grid when roundSegments = 0
+  // collapses to a plain -size/2 + index * size/n grid when cornerSegments = 0
   const coordinate = (index, n, size) =>
-    index < roundSegments
-      ? -size / 2 - radius + (index * radius) / roundSegments
-      : index <= roundSegments + n
-        ? -size / 2 + (n ? ((index - roundSegments) * size) / n : 0)
-        : size / 2 + ((index - roundSegments - n) * radius) / roundSegments;
+    index < cornerSegments
+      ? -size / 2 - cornerRadius + (index * cornerRadius) / cornerSegments
+      : index <= cornerSegments + n
+        ? -size / 2 + (n ? ((index - cornerSegments) * size) / n : 0)
+        : size / 2 + ((index - cornerSegments - n) * cornerRadius) / cornerSegments;
+
+  const isCorner = (index, n) =>
+    index < cornerSegments || index >= cornerSegments + n;
+
+  // Reference corner coordinate a rounded value is beyond, or null when it
+  // sits within the straight [-half, half] span (no rounding needed there)
+  const cornerReference = (value, half) =>
+    value < -half ? -half : value > half ? half : null;
 
   const vertexOffset = indices.vertex;
 
   for (let j = 0; j <= rows; j++) {
-    const y = coordinate(j, nv, sv);
+    const y0 = coordinate(j, nv, sv);
+    const cornerV = isCorner(j, nv);
 
     for (let i = 0; i <= cols; i++) {
-      const x = coordinate(i, nu, su);
+      const x0 = coordinate(i, nu, su);
+      const cornerU = isCorner(i, nu);
+
+      let x = x0;
+      let y = y0;
+
+      // Corner quad: remap the flat square extension onto the true circular
+      // arc, preserving angle from the inner corner and scaling its distance
+      // from Chebyshev (square) to Euclidean (circle). Only where the raw
+      // coordinate is strictly beyond both straight spans (cx/cy non-null),
+      // so dx/dy are guaranteed non-zero - no 0/0 divide.
+      if (roundCorners && cornerRadius > 0) {
+        const cx = cornerReference(x0, su / 2);
+        const cy = cornerReference(y0, sv / 2);
+
+        if (cx !== null && cy !== null) {
+          const dx = x0 - cx;
+          const dy = y0 - cy;
+          const scale = Math.max(Math.abs(dx), Math.abs(dy)) / Math.hypot(dx, dy);
+          x = cx + dx * scale;
+          y = cy + dy * scale;
+        }
+      }
 
       positions[indices.vertex * 3 + u] = x * flipU + center[u];
       positions[indices.vertex * 3 + v] = y * flipV + center[v];
@@ -366,9 +398,9 @@ export function computePlane(
       normals[indices.vertex * 3 + w] = normal;
 
       uvs[indices.vertex * 2] =
-        ((x + width / 2) / width) * uvScale[0] + uvOffset[0];
+        ((x0 + width / 2) / width) * uvScale[0] + uvOffset[0];
       uvs[indices.vertex * 2 + 1] =
-        (1 - (y + height / 2) / height) * uvScale[1] + uvOffset[1];
+        (1 - (y0 + height / 2) / height) * uvScale[1] + uvOffset[1];
 
       indices.vertex++;
 
@@ -376,10 +408,7 @@ export function computePlane(
         const n = vertexOffset + j * (cols + 1) + i;
         const o = n + cols + 1;
 
-        const isCornerU = i < roundSegments || i >= roundSegments + nu;
-        const isCornerV = j < roundSegments || j >= roundSegments + nv;
-
-        if (isCornerU && isCornerV && i < roundSegments !== j < roundSegments) {
+        if (cornerU && cornerV && i < cornerSegments !== j < cornerSegments) {
           // Anti-diagonal so corner quad seams are radial
           cells[indices.cell] = n + 1;
           cells[indices.cell + (ccw ? 1 : 2)] = n;
