@@ -9,6 +9,7 @@ import { checkArguments, getCellsTypedArray, TAU } from "../../utils.js";
  * @property {number} [ny=1]
  * @property {number} [roundSegments=32]
  * @property {number} [phi=TAU]
+ * @property {number} [phiOffset=0]
  */
 
 /**
@@ -24,6 +25,7 @@ export function capsule({
   ny = 1,
   roundSegments = 16,
   phi = TAU,
+  phiOffset = 0,
 } = {}) {
   checkArguments(arguments);
 
@@ -57,7 +59,8 @@ export function capsule({
 
   function computeRing(r, y, dy) {
     for (let s = 0; s < nx; s++, vertexIndex++) {
-      const p = (wrap && s === nx - 1 ? 0 : s * segmentIncrement) * phi;
+      const p =
+        (wrap && s === nx - 1 ? 0 : s * segmentIncrement) * phi + phiOffset;
       const x = -Math.cos(p) * r;
       const z = Math.sin(p) * r;
 

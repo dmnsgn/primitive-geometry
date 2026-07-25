@@ -11,6 +11,7 @@ import { checkArguments } from "../../utils.js";
  * @property {number} [capSegments=1]
  * @property {boolean} [capBase=true]
  * @property {number} [phi=TAU]
+ * @property {number} [phiOffset=0]
  * @property {Function} [capMapping=mappings.rectangular]
  * @property {number} [sx=1] Base ring x scale, elliptical when != sz
  * @property {number} [sz=1] Base ring z scale, elliptical when != sx
@@ -33,6 +34,7 @@ export function cone({
   capSegments,
   capBase,
   phi,
+  phiOffset,
   capMapping,
   sx,
   sz,
@@ -47,6 +49,7 @@ export function cone({
     capSegments,
     capBase,
     phi,
+    phiOffset,
     capMapping,
     sx,
     sz,

@@ -20,6 +20,7 @@ import {
  * @property {boolean} [capApex=true]
  * @property {boolean} [capBase=true]
  * @property {number} [phi=TAU]
+ * @property {number} [phiOffset=0]
  * @property {Function} [capMapping=mappings.rectangular]
  * @property {number} [sx=1] Base ring x scale, elliptical when != sz
  * @property {number} [sz=1] Base ring z scale, elliptical when != sx
@@ -48,6 +49,7 @@ export function cylinder({
   capBase = true,
   capBaseSegments = capSegments,
   phi = TAU,
+  phiOffset = 0,
   capMapping = rectangular,
 
   sx = 1,
@@ -104,7 +106,7 @@ export function cylinder({
 
   for (let i = 0; i < segments; i++) {
     const u = i * segmentIncrement;
-    const p = (wrap && i === segments - 1 ? 0 : u) * phi;
+    const p = (wrap && i === segments - 1 ? 0 : u) * phi + phiOffset;
     const cosPhi = -Math.cos(p);
     const sinPhi = Math.sin(p);
 
@@ -168,7 +170,7 @@ export function cylinder({
 
   const angleAt = (i) => {
     const u = i / nx;
-    const p = (wrap && i === nx ? 0 : u) * phi;
+    const p = (wrap && i === nx ? 0 : u) * phi + phiOffset;
     return { cos: -Math.cos(p), sin: Math.sin(p), t: p };
   };
 

@@ -3,7 +3,12 @@ import assert from "node:assert/strict";
 
 import * as Primitives from "../index.js";
 import { polar, rectangular } from "../src/mappings.js";
-import { analyze, flippedNormalTriangles, inwardTriangles } from "./helpers.js";
+import {
+  analyze,
+  flippedNormalTriangles,
+  inwardTriangles,
+  uvsOutOfRange,
+} from "./helpers.js";
 
 const TAU = Math.PI * 2;
 
@@ -270,6 +275,70 @@ describe("torus", () => {
       capSegments: 2,
     });
     assert.equal(flippedNormalTriangles(g), 0);
+  });
+});
+
+describe("phiOffset", () => {
+  const nx = 16;
+  const ny = 1;
+  // Body uv is a plain index fraction (u, v), unaffected by phiOffset. Only
+  // cylinder/cone additionally have caps whose default rectangular mapping
+  // projects the cap's actual (rotated) x/z onto a square, so cap uvs -
+  // unlike the body's - legitimately shift with phiOffset; bodyUvLength
+  // limits the uv-invariance check to the body prefix for those two.
+  const cases = [
+    [
+      "cylinder",
+      (phiOffset) => Primitives.cylinder({ nx, ny, phiOffset }),
+      (nx + 1) * (ny + 1) * 2,
+    ],
+    [
+      "cone",
+      (phiOffset) => Primitives.cone({ nx, ny, phiOffset }),
+      (nx + 1) * (ny + 1) * 2,
+    ],
+    ["capsule", (phiOffset) => Primitives.capsule({ nx, ny, phiOffset })],
+    [
+      "ellipsoid",
+      (phiOffset) => Primitives.ellipsoid({ nx: 16, ny: 8, phiOffset }),
+    ],
+    ["sphere", (phiOffset) => Primitives.sphere({ nx: 16, ny: 8, phiOffset })],
+  ];
+
+  for (const [name, create, bodyUvLength] of cases) {
+    it(`${name}: rotates positions/normals without affecting body uvs or topology, stays watertight and correctly wound`, () => {
+      const plain = create(0);
+      const offset = create(0.7);
+
+      const plainUvs = Array.from(plain.uvs);
+      const offsetUvs = Array.from(offset.uvs);
+      assert.deepEqual(
+        plainUvs.slice(0, bodyUvLength),
+        offsetUvs.slice(0, bodyUvLength),
+      );
+      assert.equal(uvsOutOfRange(offset), 0, name);
+
+      assert.deepEqual(Array.from(plain.cells), Array.from(offset.cells));
+      assert.notDeepEqual(
+        Array.from(plain.positions),
+        Array.from(offset.positions),
+      );
+
+      const result = analyze(offset);
+      assert.equal(result.cracks, 0, name);
+      assert.equal(result.degenerate, 0, name);
+      assert.equal(inwardTriangles(offset), 0, name);
+    });
+  }
+
+  it("cylinder/capsule: wrap column stays bit-exactly welded regardless of phiOffset", () => {
+    for (const create of [
+      (phiOffset) => Primitives.cylinder({ nx: 15, phiOffset }),
+      (phiOffset) => Primitives.capsule({ nx: 15, phiOffset }),
+    ]) {
+      const result = analyze(create(1.3));
+      assert.equal(result.cracks, 0);
+    }
   });
 });
 
