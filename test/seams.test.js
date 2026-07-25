@@ -69,6 +69,17 @@ const cases = [
   ["stadium", () => Primitives.stadium()],
   ["stadium sx=sy", () => Primitives.stadium({ sy: 1 })],
 
+  ["polygon", () => Primitives.polygon()],
+  ["polygon sides=5 edgeSegments=3", () => Primitives.polygon({ sides: 5, edgeSegments: 3 })],
+  ["rhombus", () => Primitives.rhombus()],
+  ["rhombus thetaOffset=0.5", () => Primitives.rhombus({ thetaOffset: 0.5 })],
+  ["rhombus edgeSegments=3", () => Primitives.rhombus({ edgeSegments: 3 })],
+  ["kite", () => Primitives.kite()],
+  ["kite ratio=0.9", () => Primitives.kite({ ratio: 0.9 })],
+  ["kite edgeSegments=3", () => Primitives.kite({ edgeSegments: 3 })],
+  ["lozenge", () => Primitives.lozenge()],
+  ["lozenge edgeSegments=3", () => Primitives.lozenge({ edgeSegments: 3 })],
+
   ["cube", () => Primitives.cube()],
   ["roundedCube", () => Primitives.roundedCube()],
   [

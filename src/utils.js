@@ -609,3 +609,44 @@ export function computePolarGeometry({
   return { positions, normals, uvs, cells };
 }
 
+/**
+ * A point on a straight-edged polygon's boundary at angle t: splits the
+ * circle into cornerCount equal sectors starting at thetaOffset, finds which
+ * one t falls in, and linearly interpolates between its two corners. Each
+ * corner sits at (rx * cos(angle), ry * sin(angle)), independently scaled by
+ * xFactor/negativeXFactor (cos positive/negative) and yFactor/
+ * negativeYFactor (sin positive/negative) - all default to 1, a regular
+ * polygon.
+ * @private
+ */
+export function computePolygonEdge(
+  thetaOffset,
+  cornerCount,
+  rx,
+  ry,
+  t,
+  xFactor = 1,
+  negativeXFactor = 1,
+  yFactor = 1,
+  negativeYFactor = 1,
+) {
+  const sector = TAU / cornerCount;
+  const local = (t - thetaOffset) / sector;
+  const corner = Math.floor(local);
+  const frac = local - corner;
+
+  const angle0 = thetaOffset + corner * sector;
+  const angle1 = angle0 + sector;
+
+  const x0 =
+    rx * (Math.cos(angle0) >= 0 ? xFactor : negativeXFactor) * Math.cos(angle0);
+  const x1 =
+    rx * (Math.cos(angle1) >= 0 ? xFactor : negativeXFactor) * Math.cos(angle1);
+
+  const y0 =
+    ry * (Math.sin(angle0) >= 0 ? yFactor : negativeYFactor) * Math.sin(angle0);
+  const y1 =
+    ry * (Math.sin(angle1) >= 0 ? yFactor : negativeYFactor) * Math.sin(angle1);
+
+  return [x0 + (x1 - x0) * frac, y0 + (y1 - y0) * frac];
+}
