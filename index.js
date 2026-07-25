@@ -31,9 +31,10 @@ export { superellipse } from "./src/plane/circular/superellipse.js";
 export { squircle } from "./src/plane/circular/squircle.js";
 export { annulus } from "./src/plane/circular/annulus.js";
 
+export { polygon } from "./src/plane/polygon.js";
 export { reuleaux } from "./src/plane/reuleaux.js";
 export { star } from "./src/plane/star.js";
-export { polygon } from "./src/plane/polygon.js";
+export { cross } from "./src/plane/cross.js";
 
 export { cube, cubeFaces, box } from "./src/solid/cuboid/cube.js";
 export { roundedCube } from "./src/solid/cuboid/rounded-cube.js";

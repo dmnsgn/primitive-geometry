@@ -116,3 +116,128 @@ describe("polygon", () => {
     }
   });
 });
+
+describe("cross", () => {
+  it("is watertight with no seams or cracks across armWidth/segments/innerSegments variations", () => {
+    for (const options of [
+      {},
+      { armWidth: 0.1 },
+      { armWidth: 0.4 },
+      { segments: 3 },
+      { innerSegments: 1 },
+      { innerSegments: 4 },
+      { segments: 4, innerSegments: 8 },
+      { innerRadius: 0.1 },
+      { innerRadius: 0.2, segments: 3 },
+    ]) {
+      const result = analyze(Primitives.cross(options));
+      assert.equal(result.seams, 0, JSON.stringify(options));
+      assert.equal(result.cracks, 0, JSON.stringify(options));
+      assert.equal(result.nonManifold, 0, JSON.stringify(options));
+      assert.equal(result.degenerate, 0, JSON.stringify(options));
+    }
+  });
+
+  it("innerRadius drills a self-similar hole (scaled copy of the outer outline)", () => {
+    const radius = 0.5;
+    const ratio = 0.4;
+    const g = Primitives.cross({
+      radius,
+      innerRadius: radius * ratio,
+      segments: 1,
+      innerSegments: 1,
+    });
+
+    // With mergeCentroid=false and a single ring, the mesh is exactly the
+    // inner loop (12 verts) followed by the outer loop (12 verts).
+    const inner = Array.from({ length: 12 }, (_, i) => [
+      g.positions[i * 3],
+      g.positions[i * 3 + 1],
+    ]);
+    const outer = Array.from({ length: 12 }, (_, i) => [
+      g.positions[(i + 12) * 3],
+      g.positions[(i + 12) * 3 + 1],
+    ]);
+
+    for (let i = 0; i < 12; i++) {
+      assertClose(inner[i], [outer[i][0] * ratio, outer[i][1] * ratio]);
+    }
+  });
+
+  it("winds every triangle CCW, facing +z", () => {
+    assert.equal(flippedTriangles2D(Primitives.cross()), 0);
+  });
+
+  it("defaults armWidth to radius/3, the 5-equal-squares Greek cross", () => {
+    const radius = 0.5;
+    const g = Primitives.cross({ radius });
+
+    function bbox({ positions }) {
+      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      for (let i = 0; i < positions.length; i += 3) {
+        minX = Math.min(minX, positions[i]);
+        maxX = Math.max(maxX, positions[i]);
+        minY = Math.min(minY, positions[i + 1]);
+        maxY = Math.max(maxY, positions[i + 1]);
+      }
+      return { minX, maxX, minY, maxY };
+    }
+
+    const { minX, maxX, minY, maxY } = bbox(g);
+    assertClose([minX, maxX, minY, maxY], [-radius, radius, -radius, radius]);
+
+    // Area of a Greek cross (5 equal squares of side 2*armWidth): 5 * (2w)^2
+    function area({ positions, cells }) {
+      let a = 0;
+      for (let i = 0; i < cells.length; i += 3) {
+        const [p, q, r] = [cells[i], cells[i + 1], cells[i + 2]];
+        const ax = positions[p * 3];
+        const ay = positions[p * 3 + 1];
+        const bx = positions[q * 3];
+        const by = positions[q * 3 + 1];
+        const cx = positions[r * 3];
+        const cy = positions[r * 3 + 1];
+        a += (bx - ax) * (cy - ay) - (cx - ax) * (by - ay);
+      }
+      return Math.abs(a) / 2;
+    }
+
+    const armWidth = radius / 3;
+    const expected = 5 * (2 * armWidth) ** 2;
+    assert.ok(Math.abs(area(g) - expected) < 1e-6);
+  });
+
+  it("area is exact regardless of segments/innerSegments (straight edges, no curvature to approximate)", () => {
+    function area({ positions, cells }) {
+      let a = 0;
+      for (let i = 0; i < cells.length; i += 3) {
+        const [p, q, r] = [cells[i], cells[i + 1], cells[i + 2]];
+        const ax = positions[p * 3];
+        const ay = positions[p * 3 + 1];
+        const bx = positions[q * 3];
+        const by = positions[q * 3 + 1];
+        const cx = positions[r * 3];
+        const cy = positions[r * 3 + 1];
+        a += (bx - ax) * (cy - ay) - (cx - ax) * (by - ay);
+      }
+      return Math.abs(a) / 2;
+    }
+
+    const radius = 0.5;
+    const armWidth = radius / 3;
+    const expected = 5 * (2 * armWidth) ** 2;
+
+    for (const options of [
+      { segments: 1, innerSegments: 1 },
+      { segments: 3, innerSegments: 1 },
+      { segments: 1, innerSegments: 5 },
+      { segments: 4, innerSegments: 8 },
+    ]) {
+      const g = Primitives.cross({ radius, ...options });
+      assert.ok(
+        Math.abs(area(g) - expected) < 1e-5,
+        `${JSON.stringify(options)}: got ${area(g)}, expected ${expected}`,
+      );
+    }
+  });
+});

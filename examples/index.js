@@ -50,6 +50,7 @@ const geometries = params.has("geometry")
       named("polygon", Primitives.polygon()),
       named("reuleaux", Primitives.reuleaux()),
       named("star", Primitives.star()),
+      named("cross", Primitives.cross()),
       null,
       [
         named("cube", Primitives.cube()),

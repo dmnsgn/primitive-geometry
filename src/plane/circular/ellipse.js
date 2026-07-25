@@ -11,7 +11,7 @@ import { checkArguments, computePolarGeometry, TAU } from "../../utils.js";
  * @property {number} [innerSegments=16]
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
- * @property {boolean} [mergeCentroid=true]
+ * @property {boolean} [mergeCentroid=innerRadius = 0]
  * @property {Function} [mapping=mappings.elliptical]
  */
 
@@ -31,7 +31,7 @@ export function ellipse({
   theta = TAU,
   thetaOffset = 0,
   innerRadius = 0,
-  mergeCentroid = true,
+  mergeCentroid = innerRadius === 0,
   mapping = elliptical,
   equation = ({ rx, ry, cosTheta, sinTheta }) => [rx * cosTheta, ry * sinTheta],
 } = {}) {
