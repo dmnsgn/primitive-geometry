@@ -1,7 +1,6 @@
 /** @module superellipse */
-import { ellipse } from "./ellipse.js";
 import { lamé } from "../../mappings.js";
-import { checkArguments, TAU } from "../../utils.js";
+import { checkArguments, computePolarGeometry, TAU } from "../../utils.js";
 
 /**
  * @typedef {object} SuperellipseOptions
@@ -42,7 +41,7 @@ export function superellipse({
 } = {}) {
   checkArguments(arguments);
 
-  return ellipse({
+  return computePolarGeometry({
     sx,
     sy,
     radius,

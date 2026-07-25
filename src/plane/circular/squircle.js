@@ -1,7 +1,12 @@
 /** @module squircle */
-import { ellipse } from "./ellipse.js";
 import { fgSquircular } from "../../mappings.js";
-import { checkArguments, HALF_PI, SQRT2, TAU } from "../../utils.js";
+import {
+  checkArguments,
+  computePolarGeometry,
+  HALF_PI,
+  SQRT2,
+  TAU,
+} from "../../utils.js";
 
 /**
  * @typedef {object} SquircleOptions
@@ -39,7 +44,7 @@ export function squircle({
 } = {}) {
   checkArguments(arguments);
 
-  return ellipse({
+  return computePolarGeometry({
     sx,
     sy,
     radius,

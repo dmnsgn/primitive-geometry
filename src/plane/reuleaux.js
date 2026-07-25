@@ -1,7 +1,6 @@
 /** @module reuleaux */
-import { ellipse } from "./circular/ellipse.js";
 import { concentric } from "../mappings.js";
-import { checkArguments, TAU } from "../utils.js";
+import { checkArguments, computePolarGeometry, TAU } from "../utils.js";
 
 /**
  * @typedef {object} ReuleauxOptions
@@ -37,7 +36,7 @@ export function reuleaux({
   const cosN = 2 * Math.cos(Math.PI / (2 * n));
   const PIoverN = Math.PI / n;
 
-  return ellipse({
+  return computePolarGeometry({
     sx: 1,
     sy: 1,
     radius,

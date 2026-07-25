@@ -1,7 +1,11 @@
 /** @module star */
-import { ellipse } from "./circular/ellipse.js";
 import { concentric } from "../mappings.js";
-import { checkArguments, computeStarRatio, TAU } from "../utils.js";
+import {
+  checkArguments,
+  computePolarGeometry,
+  computeStarRatio,
+  TAU,
+} from "../utils.js";
 
 /**
  * @typedef {object} StarOptions
@@ -58,7 +62,7 @@ export function star({
   const segments = points * 2;
   const notchScale = radius === 0 ? 0 : notchRadius / radius;
 
-  return ellipse({
+  return computePolarGeometry({
     sx: 1,
     sy: 1,
     radius,
