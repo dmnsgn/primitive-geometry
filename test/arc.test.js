@@ -206,6 +206,64 @@ describe("lune", () => {
   });
 });
 
+describe("triquetra", () => {
+  it("is watertight with no cracks or non-manifold edges (beyond the intentional core/petal seams)", () => {
+    for (const options of [
+      {},
+      { radius: 1 },
+      { segments: 8, innerSegments: 4 },
+      { segments: 64, innerSegments: 4 },
+    ]) {
+      const result = analyze(Primitives.triquetra(options));
+      assert.equal(result.degenerate, 0, JSON.stringify(options));
+      assert.equal(result.nonManifold, 0, JSON.stringify(options));
+      assert.equal(result.cracks, 0, JSON.stringify(options));
+    }
+  });
+
+  it("winds every triangle CCW, facing +z", () => {
+    assert.equal(flippedTriangles2D(Primitives.triquetra()), 0);
+  });
+
+  it("spans from the 2 outer circles to the 3rd petal's far cusp", () => {
+    const radius = 0.5;
+    const { minX, maxX, minY } = bbox(Primitives.triquetra({ radius }));
+    assert.ok(close(minX, -radius));
+    assert.ok(close(maxX, radius));
+    assert.ok(close(minY, (-2 * radius) / Math.sqrt(3)));
+  });
+
+  it("matches MathWorld's area: (2*pi - sqrt(3)) / 2 * radius ** 2", () => {
+    function meshArea({ positions, cells }) {
+      let a = 0;
+      for (let i = 0; i < cells.length; i += 3) {
+        const [p, q, r] = [cells[i], cells[i + 1], cells[i + 2]];
+        const ax = positions[p * 3];
+        const ay = positions[p * 3 + 1];
+        const bx = positions[q * 3];
+        const by = positions[q * 3 + 1];
+        const cx = positions[r * 3];
+        const cy = positions[r * 3 + 1];
+        a += (bx - ax) * (cy - ay) - (cx - ax) * (by - ay);
+      }
+      return Math.abs(a) / 2;
+    }
+
+    for (const radius of [0.5, 1, 0.3]) {
+      const g = Primitives.triquetra({
+        radius,
+        segments: 256,
+        innerSegments: 4,
+      });
+      const expected = ((2 * Math.PI - Math.sqrt(3)) / 2) * radius * radius;
+      assert.ok(
+        close(meshArea(g), expected, expected * 1e-3),
+        `radius=${radius}: got ${meshArea(g)}, expected ${expected}`,
+      );
+    }
+  });
+});
+
 describe("yinYang", () => {
   it("is watertight with no cracks or non-manifold edges", () => {
     for (const options of [

@@ -1,0 +1,198 @@
+/** @module triquetra */
+import { sweptArc } from "./swept-arc.js";
+import { rectangular } from "../../mappings.js";
+import {
+  checkArguments,
+  concatGeometries,
+  getCellsTypedArray,
+  TAU,
+} from "../../utils.js";
+
+/**
+ * @typedef {object} TriquetraOptions
+ * @property {number} [radius=0.5] Radius of each of the 3 circles, and the
+ *   side length of the equilateral triangle formed by their centers - a
+ *   canonical Triquetra has no separate spacing parameter.
+ * @property {number} [segments=32] Column count, swept angularly per wedge,
+ *   for both the core and the petals.
+ * @property {number} [innerSegments=16] Row count between the two
+ *   boundaries at each column.
+ * @property {Function} [mapping=mappings.rectangular] Uv mapping function.
+ *   Defaults to a flat, bounding-box-relative unwrap; pass a function using
+ *   `uRatio`/`vRatio` (the swept parametrization) to follow the arcs
+ *   instead.
+ */
+
+/**
+ * Triquetra: three mutually intersecting vesica piscis lenses, centered at
+ * the vertices of an equilateral triangle of side `radius`. Split into 6
+ * non-overlapping wedges, swept angularly from the centroid, so the mesh
+ * never double-covers area: 3 `core` wedges (together the Reuleaux triangle
+ * common to all 3 disks) and 3 `petal`s (each lens minus the core), 120deg
+ * apart.
+ *
+ * At angle `theta`, `seam(theta)` is the distance from the centroid to the
+ * "opposite" circle (the one not forming that petal) along the ray at that
+ * angle - the boundary a core wedge shares with its petal. Both pieces sweep
+ * the identical angle range and evaluate the identical formula, so the seam
+ * matches exactly. Wedge endpoints (the 3 circle centers, each shared by 2
+ * core wedges and 2 petals) reuse one precomputed vertex rather than
+ * re-deriving the same point from different rotated angles, since that can
+ * disagree in the last float bit and register as a crack.
+ * @see [Wolfram MathWorld – Triquetra]{@link https://mathworld.wolfram.com/Triquetra.html}
+ * @alias module:triquetra
+ * @param {TriquetraOptions} [options={}]
+ * @returns {import("../../../types.js").SimplicialComplex}
+ */
+export function triquetra({
+  radius = 0.5,
+  segments = 32,
+  innerSegments = 16,
+  mapping = rectangular,
+} = {}) {
+  checkArguments(arguments);
+
+  const r = radius;
+  const R = radius / Math.sqrt(3);
+
+  // Circle centers, at the equilateral triangle's vertices.
+  const angleC0 = (7 * Math.PI) / 6;
+  const angleC1 = (11 * Math.PI) / 6;
+  const angleC2 = Math.PI / 2;
+  const vertices = [angleC0, angleC1, angleC2].map((angle) => [
+    R * Math.cos(angle),
+    R * Math.sin(angle),
+  ]);
+  const offsets = [0, TAU / 3, (2 * TAU) / 3];
+
+  // Distance from the centroid to the circle centered at angle `alpha`,
+  // along the ray at angle `theta`.
+  const ray = (alpha, theta) => {
+    const d = theta - alpha;
+    return (
+      R * Math.cos(d) + Math.sqrt(Math.max(r * r - R * R * Math.sin(d) ** 2, 0))
+    );
+  };
+
+  const seam = (theta) => ray(angleC2, theta);
+  const outer = (theta) => Math.min(ray(angleC0, theta), ray(angleC1, theta));
+
+  const uMin = angleC0;
+  const uMax = angleC1;
+
+  // Shared bounding box, so a uv mapping stays continuous across pieces.
+  const center = [0, 0];
+  const sx = r;
+  const sy = 2 * R;
+
+  const petal = (k) => {
+    const offset = offsets[k];
+    const start = vertices[k];
+    const end = vertices[(k + 1) % 3];
+
+    return sweptArc({
+      segments,
+      innerSegments,
+      uMin,
+      uMax,
+      mapping,
+      center,
+      sx,
+      sy,
+      flip: true,
+      bounds: (theta) => [seam(theta), outer(theta)],
+      point: (theta, v) =>
+        theta === uMin
+          ? start
+          : theta === uMax
+            ? end
+            : [v * Math.cos(theta + offset), v * Math.sin(theta + offset)],
+    });
+  };
+
+  // A core wedge is a triangle fan from the centroid, not a 2-boundary
+  // strip: sweptArc has no vMin/vMax band here (vMin is always 0), so it's
+  // built directly instead, sharing sweptArc's own Chebyshev spacing to
+  // keep this boundary sampled at the exact same angles as the petals'.
+  const columnAngle = (i) =>
+    i === 0
+      ? uMin
+      : i === segments
+        ? uMax
+        : 2 * i === segments
+          ? (uMin + uMax) / 2
+          : uMin +
+            ((1 - Math.cos((Math.PI * i) / segments)) / 2) * (uMax - uMin);
+
+  const core = (k) => {
+    const offset = offsets[k];
+    const start = vertices[k];
+    const end = vertices[(k + 1) % 3];
+
+    const size = segments + 2;
+    const positions = new Float32Array(size * 3);
+    const normals = new Float32Array(size * 3);
+    const uvs = new Float32Array(size * 2);
+    const cells = new (getCellsTypedArray(size))(segments * 3);
+
+    normals[2] = 1;
+    mapping({
+      uvs,
+      index: 0,
+      x: 0,
+      y: 0,
+      radius: 1,
+      sx,
+      sy,
+      u: uMin,
+      v: 0,
+      uRatio: 0,
+      vRatio: 0,
+    });
+
+    for (let i = 0; i <= segments; i++) {
+      const theta = columnAngle(i);
+      const v = i === 0 || i === segments ? R : seam(theta);
+      const [x, y] =
+        i === 0
+          ? start
+          : i === segments
+            ? end
+            : [v * Math.cos(theta + offset), v * Math.sin(theta + offset)];
+      const index = i + 1;
+
+      positions[index * 3] = x;
+      positions[index * 3 + 1] = y;
+      normals[index * 3 + 2] = 1;
+
+      mapping({
+        uvs,
+        index: index * 2,
+        x,
+        y,
+        radius: 1,
+        sx,
+        sy,
+        u: theta,
+        v,
+        uRatio: i / segments,
+        vRatio: 1,
+      });
+    }
+
+    for (let i = 0; i < segments; i++) {
+      cells.set([0, i + 1, i + 2], i * 3);
+    }
+
+    return { positions, normals, uvs, cells };
+  };
+
+  return concatGeometries([
+    core(0),
+    core(1),
+    core(2),
+    petal(0),
+    petal(1),
+    petal(2),
+  ]);
+}

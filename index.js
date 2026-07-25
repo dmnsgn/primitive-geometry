@@ -22,6 +22,7 @@ export { lozenge } from "./src/plane/quadrilateral/lozenge.js";
 export { lens } from "./src/plane/arc/lens.js";
 export { lune } from "./src/plane/arc/lune.js";
 export { salinon } from "./src/plane/arc/salinon.js";
+export { triquetra } from "./src/plane/arc/triquetra.js";
 export { yinYang } from "./src/plane/arc/yin-yang.js";
 
 export { ellipse } from "./src/plane/circular/ellipse.js";

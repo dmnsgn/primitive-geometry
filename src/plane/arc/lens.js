@@ -26,7 +26,9 @@ import { checkArguments } from "../../utils.js";
  * intersection is always convex, so a straight top/bottom sweep between the
  * two arcs (the tighter of the two at every column) fills it directly, no
  * matter how `radius`/`radius2`/`distance` compare.
+ * Default to a Vesica Piscis.
  * @see [Wolfram MathWorld – Lens]{@link https://mathworld.wolfram.com/Lens.html}
+ * @see [Wolfram MathWorld – Vesica Piscis]{@link https://mathworld.wolfram.com/VesicaPiscis.html}
  * @alias module:lens
  * @param {LensOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}

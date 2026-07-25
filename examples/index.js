@@ -38,6 +38,7 @@ const geometries = params.has("geometry")
       named("lens", Primitives.lens()),
       named("lune", Primitives.lune()),
       named("salinon", Primitives.salinon()),
+      named("triquetra", Primitives.triquetra()),
       named("yinYang", Primitives.yinYang()),
       null,
       named("ellipse", Primitives.ellipse()),
