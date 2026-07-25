@@ -46,10 +46,12 @@ const geometries = params.has("geometry")
       named("reuleaux", Primitives.reuleaux()),
       named("star", Primitives.star()),
       null,
-      named("cube", Primitives.cube()),
+      [
+        named("cube", Primitives.cube()),
+        named("cubeFaces", Primitives.cubeFaces()),
+      ],
       named("roundedCube", Primitives.roundedCube()),
       null,
-      named("cubeFaces", Primitives.cubeFaces()),
       null,
       named("sphere", Primitives.sphere()),
       named("icosphere", Primitives.icosphere()),
@@ -60,17 +62,26 @@ const geometries = params.has("geometry")
       named("capsule", Primitives.capsule()),
       named("torus", Primitives.torus()),
       null,
-      named("tetrahedron", Primitives.tetrahedron()),
-      named("hexahedron", Primitives.hexahedron()),
-      named("octahedron", Primitives.octahedron()),
-      named("dodecahedron", Primitives.dodecahedron()),
-      named("icosahedron", Primitives.icosahedron()),
-      null,
-      named("tetrahedronFaces", Primitives.tetrahedronFaces()),
-      named("hexahedronFaces", Primitives.hexahedronFaces()),
-      named("octahedronFaces", Primitives.octahedronFaces()),
-      named("dodecahedronFaces", Primitives.dodecahedronFaces()),
-      named("icosahedronFaces", Primitives.icosahedronFaces()),
+      [
+        named("tetrahedron", Primitives.tetrahedron()),
+        named("tetrahedronFaces", Primitives.tetrahedronFaces()),
+      ],
+      [
+        named("hexahedron", Primitives.hexahedron()),
+        named("hexahedronFaces", Primitives.hexahedronFaces()),
+      ],
+      [
+        named("octahedron", Primitives.octahedron()),
+        named("octahedronFaces", Primitives.octahedronFaces()),
+      ],
+      [
+        named("dodecahedron", Primitives.dodecahedron()),
+        named("dodecahedronFaces", Primitives.dodecahedronFaces()),
+      ],
+      [
+        named("icosahedron", Primitives.icosahedron()),
+        named("icosahedronFaces", Primitives.icosahedronFaces()),
+      ],
       null,
       named("tetrasphere", Primitives.tetrasphere()),
       named("hexasphere", Primitives.hexasphere()),
@@ -78,27 +89,34 @@ const geometries = params.has("geometry")
       named("dodecasphere", Primitives.dodecasphere()),
       named("icosphere", Primitives.icosphere()),
       null,
-      named("greatDodecahedron", Primitives.greatDodecahedron()),
-      named("greatIcosahedron", Primitives.greatIcosahedron()),
-      named(
-        "smallStellatedDodecahedron",
-        Primitives.smallStellatedDodecahedron(),
-      ),
-      named(
-        "greatStellatedDodecahedron",
-        Primitives.greatStellatedDodecahedron(),
-      ),
-      null,
-      named("greatDodecahedronFaces", Primitives.greatDodecahedronFaces()),
-      named("greatIcosahedronFaces", Primitives.greatIcosahedronFaces()),
-      named(
-        "smallStellatedDodecahedronFaces",
-        Primitives.smallStellatedDodecahedronFaces(),
-      ),
-      named(
-        "greatStellatedDodecahedronFaces",
-        Primitives.greatStellatedDodecahedronFaces(),
-      ),
+      [
+        named("greatDodecahedron", Primitives.greatDodecahedron()),
+        named("greatDodecahedronFaces", Primitives.greatDodecahedronFaces()),
+      ],
+      [
+        named("greatIcosahedron", Primitives.greatIcosahedron()),
+        named("greatIcosahedronFaces", Primitives.greatIcosahedronFaces()),
+      ],
+      [
+        named(
+          "smallStellatedDodecahedron",
+          Primitives.smallStellatedDodecahedron(),
+        ),
+        named(
+          "smallStellatedDodecahedronFaces",
+          Primitives.smallStellatedDodecahedronFaces(),
+        ),
+      ],
+      [
+        named(
+          "greatStellatedDodecahedron",
+          Primitives.greatStellatedDodecahedron(),
+        ),
+        named(
+          "greatStellatedDodecahedronFaces",
+          Primitives.greatStellatedDodecahedronFaces(),
+        ),
+      ],
     ];
 
 setGeometries(geometries);

@@ -554,54 +554,56 @@ function computeEdges(positions, cells, { stride = 3, path = false } = {}) {
   return edges;
 }
 
+const createMesh = (geometry) => ({
+  modelMatrix: mat4.create(),
+  modelViewMatrix: mat4.create(),
+  normalMatrix: mat3.create(),
+  rotation: [0, 0, 0, 1],
+  translation: [0, 0, 0],
+  scale: [1, 1, 1],
+  geometry,
+  quads: geometry.quads,
+  bbox: aabb
+    .getCorners(
+      aabb.fromPoints(
+        aabb.create(),
+        Array.from({ length: geometry.positions.length / 3 }, (_, index) =>
+          geometry.positions.slice(index * 3, index * 3 + 3),
+        ),
+      ),
+    )
+    .flat(),
+  edges: ctx.indexBuffer(
+    geometry.edges || computeEdges(geometry.positions, geometry.cells),
+  ),
+  attributes: geometry.normals
+    ? {
+        aPosition: ctx.vertexBuffer(geometry.positions),
+        aNormal: ctx.vertexBuffer(geometry.normals),
+        aUv: ctx.vertexBuffer(geometry.uvs),
+        aColor: ctx.vertexBuffer(geometry.normals.map((p) => p * 0.5 + 0.5)),
+      }
+    : {
+        aPosition: ctx.vertexBuffer(geometry.positions),
+        aColor: ctx.vertexBuffer(
+          geometry.positions.map((p) => p * 0.5 + 0.5),
+        ),
+      },
+  indices: ctx.indexBuffer(geometry.cells),
+});
+
 const setGeometries = (geometries) => {
   console.table(geometries);
 
-  // Create the meshes for rendering
-  meshes = geometries.map(
-    (geometry) =>
-      geometry && {
-        modelMatrix: mat4.create(),
-        modelViewMatrix: mat4.create(),
-        normalMatrix: mat3.create(),
-        rotation: [0, 0, 0, 1],
-        translation: [0, 0, 0],
-        scale: [1, 1, 1],
-        geometry,
-        quads: geometry.quads,
-        bbox: aabb
-          .getCorners(
-            aabb.fromPoints(
-              aabb.create(),
-              Array.from(
-                { length: geometry.positions.length / 3 },
-                (_, index) =>
-                  geometry.positions.slice(index * 3, index * 3 + 3),
-              ),
-            ),
-          )
-          .flat(),
-        edges: ctx.indexBuffer(
-          geometry.edges || computeEdges(geometry.positions, geometry.cells),
-        ),
-        attributes: geometry.normals
-          ? {
-              aPosition: ctx.vertexBuffer(geometry.positions),
-              aNormal: ctx.vertexBuffer(geometry.normals),
-              aUv: ctx.vertexBuffer(geometry.uvs),
-              aColor: ctx.vertexBuffer(
-                geometry.normals.map((p) => p * 0.5 + 0.5),
-              ),
-            }
-          : {
-              aPosition: ctx.vertexBuffer(geometry.positions),
-              aColor: ctx.vertexBuffer(
-                geometry.positions.map((p) => p * 0.5 + 0.5),
-              ),
-            },
-        indices: ctx.indexBuffer(geometry.cells),
-      },
+  // Each entry is either null (grid break), a single geometry, or an array of
+  // geometries to stack on the y axis at the same x/z grid position.
+  const slots = geometries.map((entry) =>
+    entry === null ? null : Array.isArray(entry) ? entry : [entry],
   );
+
+  // Create the meshes for rendering, grouped by slot for positioning
+  const meshSlots = slots.map((slot) => slot && slot.map(createMesh));
+  meshes = meshSlots.flatMap((slot) => slot || [null]);
   console.log(meshes);
 
   meshes.filter(Boolean).forEach((mesh) => {
@@ -632,11 +634,11 @@ const setGeometries = (geometries) => {
     })),
   );
 
-  // Position them
+  // Position them on the x/z grid, one slot per grid cell
   const offset = 1.5;
-  const { gridSize } = meshes.reduce(
-    (current, mesh) => {
-      if (mesh) {
+  const { gridSize } = meshSlots.reduce(
+    (current, slot) => {
+      if (slot) {
         current.count++;
       } else {
         current.count = 0;
@@ -649,20 +651,25 @@ const setGeometries = (geometries) => {
 
   const halfSize = (gridSize - 1) * 0.5;
   let i = 0;
-  meshes.forEach((mesh) => {
-    if (!mesh) {
+  for (const slot of meshSlots) {
+    if (!slot) {
       if (i % gridSize !== 0) i += gridSize - (i % gridSize);
-      return;
+      continue;
     }
-    mesh.translation = [
-      (i % gridSize) * offset - halfSize * offset,
-      0,
-      ~~(i / gridSize) * offset,
-    ];
+    const x = (i % gridSize) * offset - halfSize * offset;
+    const z = Math.trunc(i / gridSize) * offset;
+    // Stack a slot's meshes on the y axis, starting at y = 0
+    for (const [level, mesh] of slot.entries()) {
+      mesh.translation = [x, -level * offset, z];
+    }
     i++;
-  });
-  const halfGridSize = meshes.at(-1).translation[2] * 0.5;
-  meshes.forEach((mesh) => mesh && (mesh.translation[2] -= halfGridSize));
+  }
+
+  const lastSlot = meshSlots.findLast(Boolean);
+  const halfGridSize = lastSlot.at(-1).translation[2] * 0.5;
+  for (const mesh of meshes) {
+    if (mesh) mesh.translation[2] -= halfGridSize;
+  }
 };
 
 export {
