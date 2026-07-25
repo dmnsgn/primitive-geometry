@@ -79,13 +79,23 @@ export function ellipsoid({
       const cosPhi = Math.cos(p);
       const sinPhi = Math.sin(p);
 
-      TMP[0] = -rx * cosPhi * sinTheta;
-      TMP[1] = -ry * cosTheta;
-      TMP[2] = rz * sinPhi * sinTheta;
+      const dx = -cosPhi * sinTheta;
+      const dy = -cosTheta;
+      const dz = sinPhi * sinTheta;
+
+      TMP[0] = rx * dx;
+      TMP[1] = ry * dy;
+      TMP[2] = rz * dz;
 
       positions[vertexIndex * 3] = radius * TMP[0];
       positions[vertexIndex * 3 + 1] = radius * TMP[1];
       positions[vertexIndex * 3 + 2] = radius * TMP[2];
+
+      // Ellipsoid normal is the gradient of x²/rx² + y²/ry² + z²/rz² = 1,
+      // i.e. inverse-square scaled, not the same scaling used for position.
+      TMP[0] = dx / rx;
+      TMP[1] = dy / ry;
+      TMP[2] = dz / rz;
 
       normalize(TMP);
 
