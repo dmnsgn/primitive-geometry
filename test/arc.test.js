@@ -90,6 +90,96 @@ describe("salinon", () => {
   });
 });
 
+describe("arbelos", () => {
+  it("is watertight with no cracks or non-manifold edges (beyond the intentional split-point seam)", () => {
+    for (const options of [
+      {},
+      { radius: 0.5, innerRadius: 0.1 },
+      { radius: 0.5, innerRadius: 0.4 },
+      { segments: 64, innerSegments: 4 },
+    ]) {
+      const result = analyze(Primitives.arbelos(options));
+      assert.equal(result.degenerate, 0, JSON.stringify(options));
+      assert.equal(result.nonManifold, 0, JSON.stringify(options));
+      assert.equal(result.cracks, 0, JSON.stringify(options));
+    }
+  });
+
+  it("winds every triangle CCW, facing +z", () => {
+    assert.equal(flippedTriangles2D(Primitives.arbelos()), 0);
+  });
+
+  it("dips exactly to the baseline at the 2 inner semicircles' shared tangent point, even at a coarse segment count", () => {
+    for (const segments of [4, 5, 7, 32]) {
+      const radius = 0.5;
+      const innerRadius = 0.125;
+      const splitX = -radius + 2 * innerRadius;
+      const g = Primitives.arbelos({
+        radius,
+        innerRadius,
+        segments,
+        innerSegments: 1,
+      });
+
+      let minYAtSplit = Infinity;
+      for (let i = 0; i < g.positions.length / 3; i++) {
+        if (Math.abs(g.positions[i * 3] - splitX) < 1e-6) {
+          minYAtSplit = Math.min(minYAtSplit, g.positions[i * 3 + 1]);
+        }
+      }
+      assert.ok(close(minYAtSplit, 0), `segments=${segments}: got ${minYAtSplit}`);
+    }
+  });
+
+  it("sits on the baseline, spanning the outer semicircle's width and height", () => {
+    const radius = 0.5;
+    const innerRadius = 0.15;
+    const { minX, maxX, minY, maxY } = bbox(
+      Primitives.arbelos({ radius, innerRadius }),
+    );
+    assert.ok(close(minX, -radius));
+    assert.ok(close(maxX, radius));
+    assert.ok(close(minY, 0));
+    assert.ok(close(maxY, radius));
+  });
+
+  it("matches the classic area theorem: pi * innerRadius * (radius - innerRadius)", () => {
+    function area({ positions, cells }) {
+      let a = 0;
+      for (let i = 0; i < cells.length; i += 3) {
+        const [p, q, r] = [cells[i], cells[i + 1], cells[i + 2]];
+        const ax = positions[p * 3];
+        const ay = positions[p * 3 + 1];
+        const bx = positions[q * 3];
+        const by = positions[q * 3 + 1];
+        const cx = positions[r * 3];
+        const cy = positions[r * 3 + 1];
+        a += (bx - ax) * (cy - ay) - (cx - ax) * (by - ay);
+      }
+      return Math.abs(a) / 2;
+    }
+
+    for (const [radius, innerRadius] of [
+      [0.5, 0.25],
+      [0.5, 0.1],
+      [0.5, 0.4],
+      [1, 0.3],
+    ]) {
+      const g = Primitives.arbelos({
+        radius,
+        innerRadius,
+        segments: 256,
+        innerSegments: 4,
+      });
+      const expected = Math.PI * innerRadius * (radius - innerRadius);
+      assert.ok(
+        close(area(g), expected, expected * 5e-3),
+        `radius=${radius} innerRadius=${innerRadius}: got ${area(g)}, expected ${expected}`,
+      );
+    }
+  });
+});
+
 describe("lens", () => {
   it("is watertight with no seams, cracks, or non-manifold edges", () => {
     for (const options of [

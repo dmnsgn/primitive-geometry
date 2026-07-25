@@ -35,6 +35,7 @@ const geometries = params.has("geometry")
       named("rhombus", Primitives.rhombus()),
       named("lozenge", Primitives.lozenge()),
       null,
+      named("arbelos", Primitives.arbelos()),
       named("lens", Primitives.lens()),
       named("lune", Primitives.lune()),
       named("salinon", Primitives.salinon()),

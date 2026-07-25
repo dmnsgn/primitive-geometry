@@ -42,6 +42,8 @@ const cases = [
 
   ["salinon", () => Primitives.salinon()],
   ["salinon innerRadius=0.4", () => Primitives.salinon({ innerRadius: 0.4 })],
+  ["arbelos", () => Primitives.arbelos()],
+  ["arbelos innerRadius=0.4", () => Primitives.arbelos({ innerRadius: 0.4 })],
   ["lens", () => Primitives.lens()],
   ["lens asymmetric", () => Primitives.lens({ radius2: 0.3, distance: 0.4 })],
   // Two independent sweeps split at y = 0; crack-free, not necessarily welded.

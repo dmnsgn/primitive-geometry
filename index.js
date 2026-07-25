@@ -19,6 +19,7 @@ export { kite } from "./src/plane/quadrilateral/kite.js";
 export { rhombus } from "./src/plane/quadrilateral/rhombus.js";
 export { lozenge } from "./src/plane/quadrilateral/lozenge.js";
 
+export { arbelos } from "./src/plane/arc/arbelos.js";
 export { lens } from "./src/plane/arc/lens.js";
 export { lune } from "./src/plane/arc/lune.js";
 export { salinon } from "./src/plane/arc/salinon.js";
