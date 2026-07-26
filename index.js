@@ -45,6 +45,8 @@ export { ellipsoid } from "./src/solid/revolution/ellipsoid.js";
 
 export { cylinder } from "./src/solid/revolution/cylinder.js";
 export { cone } from "./src/solid/revolution/cone.js";
+export { bicone } from "./src/solid/revolution/bicone.js";
+export { doubleCone } from "./src/solid/revolution/double-cone.js";
 export { capsule } from "./src/solid/revolution/capsule.js";
 export { torus } from "./src/solid/revolution/torus.js";
 

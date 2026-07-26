@@ -67,6 +67,70 @@ describe("cone", () => {
   });
 });
 
+describe("bicone", () => {
+  it("welds the wrap column exactly, including inexact 1/nx", () => {
+    for (const nx of [16, 15]) {
+      const result = analyze(Primitives.bicone({ nx }));
+      assert.equal(result.cracks, 0, `nx=${nx}`);
+      assert.equal(result.degenerate, 0, `nx=${nx}`);
+    }
+  });
+
+  it("fans both apexes with a single triangle per quad", () => {
+    const nx = 16;
+    const ny = 1;
+    const g = Primitives.bicone({ nx, ny });
+
+    // Two independent cone halves, each nx*ny quads fanned to nx triangles
+    assert.equal(g.cells.length / 3, 2 * (nx * ny * 2 - nx));
+    assert.equal(analyze(g).degenerate, 0);
+  });
+
+  it("faces outward, correctly wound on both halves", () => {
+    const g = Primitives.bicone();
+    assert.equal(flippedNormalTriangles(g), 0);
+    assert.equal(inwardTriangles(g), 0);
+  });
+});
+
+describe("doubleCone", () => {
+  it("welds the wrap column exactly, including inexact 1/nx", () => {
+    for (const nx of [16, 15]) {
+      const result = analyze(Primitives.doubleCone({ nx }));
+      assert.equal(result.cracks, 0, `nx=${nx}`);
+      assert.equal(result.degenerate, 0, `nx=${nx}`);
+    }
+  });
+
+  it("fans the waist with a single triangle per quad", () => {
+    const nx = 16;
+    const ny = 1;
+    const g = Primitives.doubleCone({ nx, ny, capBase: false, capApex: false });
+
+    assert.equal(g.cells.length / 3, 2 * (nx * ny * 2 - nx));
+    assert.equal(analyze(g).degenerate, 0);
+  });
+
+  it("caps independently via capBase/capApex", () => {
+    const both = Primitives.doubleCone();
+    const baseOnly = Primitives.doubleCone({ capApex: false });
+    const neither = Primitives.doubleCone({ capBase: false, capApex: false });
+
+    assert.ok(neither.cells.length < baseOnly.cells.length);
+    assert.ok(baseOnly.cells.length < both.cells.length);
+  });
+
+  it("faces outward, correctly wound with and without caps", () => {
+    for (const g of [
+      Primitives.doubleCone(),
+      Primitives.doubleCone({ capBase: false, capApex: false }),
+      Primitives.doubleCone({ sx: 2, sz: 0.5, capSegments: 3 }),
+    ]) {
+      assert.equal(flippedNormalTriangles(g), 0);
+    }
+  });
+});
+
 describe("capsule", () => {
   it("welds the wrap column and both poles", () => {
     for (const nx of [16, 15]) {
@@ -298,6 +362,7 @@ describe("phiOffset", () => {
       (nx + 1) * (ny + 1) * 2,
     ],
     ["capsule", (phiOffset) => Primitives.capsule({ nx, ny, phiOffset })],
+    ["bicone", (phiOffset) => Primitives.bicone({ nx, ny, phiOffset })],
     [
       "ellipsoid",
       (phiOffset) => Primitives.ellipsoid({ nx: 16, ny: 8, phiOffset }),
@@ -340,12 +405,35 @@ describe("phiOffset", () => {
       assert.equal(result.cracks, 0);
     }
   });
+
+  // doubleCone concatenates two independently-capped halves, so its body and
+  // cap uvs aren't a clean contiguous prefix like cylinder/cone's - just
+  // check it rotates and stays valid rather than slicing out the body uvs
+  it("doubleCone: rotates positions/normals, stays watertight and correctly wound", () => {
+    const plain = Primitives.doubleCone({ nx, ny });
+    const offset = Primitives.doubleCone({ nx, ny, phiOffset: 0.7 });
+
+    assert.deepEqual(Array.from(plain.cells), Array.from(offset.cells));
+    assert.notDeepEqual(
+      Array.from(plain.positions),
+      Array.from(offset.positions),
+    );
+
+    const result = analyze(offset);
+    assert.equal(result.cracks, 0);
+    assert.equal(result.degenerate, 0);
+    assert.equal(flippedNormalTriangles(offset), 0);
+  });
 });
 
 describe("capMapping", () => {
   const cases = [
     ["cylinder", (capMapping) => Primitives.cylinder({ nx: 8, capSegments: 2, capMapping })],
     ["cone", (capMapping) => Primitives.cone({ nx: 8, capSegments: 2, capMapping })],
+    [
+      "doubleCone",
+      (capMapping) => Primitives.doubleCone({ nx: 8, capSegments: 2, capMapping }),
+    ],
     [
       "torus",
       (capMapping) =>
