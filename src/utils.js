@@ -610,6 +610,181 @@ export function computePolarGeometry({
 }
 
 /**
+ * A grid of ny + 1 meridian rings (v = 0..1, row-major/outer) x nx + 1
+ * angular columns (phi, inner - wrapped and welded on the last column when
+ * phi is a multiple of TAU, same rule as the other revolution solids)
+ * revolved around the y-axis. `equation({ v, cosPhi, sinPhi })` computes a
+ * single vertex's analytic position/normal - already embedding whatever
+ * axis-scale or ellipse the caller needs (eg. cylinder's per-end sx/sz,
+ * ellipsoid's rx/ry/rz) - and whether the whole v-ring is pinched to a point
+ * on the axis (a pole or an apex). `collapsed` must depend on v only: it's
+ * probed once per row (at cosPhi = 1, sinPhi = 0) to size and fan-triangulate
+ * the mesh before the main fill, generalizing ellipsoid's original pole
+ * handling to any meridian curve, not just an ellipse's sin/cos one.
+ *
+ * capBase/capApex add a flat disk at v = 0/v = 1 (skip them when that end is
+ * already collapsed, ie. a true point apex - same convention cylinder/cone
+ * use today). Since position.x/z are always linear in (cosPhi, sinPhi) with
+ * no cross term for an axis-aligned surface of revolution (the defining
+ * property of this whole family), each cap's radius/ellipse-scale is
+ * reconstructed by probing `equation` at that end rather than requiring the
+ * caller to pass it separately: `equation(v, 1, 0).position` and
+ * `equation(v, 0, 1).position` give the rim's x/z extent directly, positive
+ * or negative depending on the shape's own internal sign convention (eg.
+ * cylinder's cosPhi = -cos(p)). capRadius is fixed at 1 and the sign is
+ * folded into a per-cap cos/sin flip instead of `Math.abs`-ing it away
+ * blindly, so the reconstructed rim still lands exactly on the body's own
+ * boundary ring (bit-identical, same "seam" convention as every other welded
+ * boundary in this codebase) while keeping the cap's sx/sy positive for
+ * mapping functions that divide by them (eg. `rectangular`).
+ * @private
+ */
+export function computeRevolutionGeometry({
+  nx = 32,
+  ny = 16,
+  phi = TAU,
+  phiOffset = 0,
+  capBase = false,
+  capApex = false,
+  capSegments = 1,
+  capBaseSegments = capSegments,
+  capApexSegments = capSegments,
+  capMapping,
+  equation,
+} = {}) {
+  const wrap = phi % TAU === 0;
+
+  // Rings collapsed to a point (poles, apexes) fan with a single triangle per
+  // quad instead of two, skipping the degenerate one
+  const collapsedAt = Array.from({ length: ny + 1 });
+  let fans = 0;
+  for (let y = 0; y <= ny; y++) {
+    collapsedAt[y] = equation({ v: y / ny, cosPhi: 1, sinPhi: 0 }).collapsed;
+    if (collapsedAt[y]) fans += y === 0 || y === ny ? 1 : 2;
+  }
+
+  const hasCapBase = capBase && !collapsedAt[0];
+  const hasCapApex = capApex && !collapsedAt[ny];
+  const capBaseCount = hasCapBase ? capBaseSegments : 0;
+  const capApexCount = hasCapApex ? capApexSegments : 0;
+  const capFans =
+    (hasCapBase && capBaseSegments > 0 ? 1 : 0) +
+    (hasCapApex && capApexSegments > 0 ? 1 : 0);
+
+  const size =
+    (ny + 1) * (nx + 1) + (nx + 1) * 2 * (capBaseCount + capApexCount);
+
+  const positions = new Float32Array(size * 3);
+  const normals = new Float32Array(size * 3);
+  const uvs = new Float32Array(size * 2);
+  const cells = new (getCellsTypedArray(size))(
+    ny * nx * 6 -
+      fans * nx * 3 +
+      (capBaseCount + capApexCount) * nx * 6 -
+      capFans * nx * 3,
+  );
+
+  let vertexIndex = 0;
+  let cellIndex = 0;
+
+  for (let y = 0; y <= ny; y++) {
+    const v = y / ny;
+
+    for (let x = 0; x <= nx; x++, vertexIndex++) {
+      const u = x / nx;
+      const p = (wrap && x === nx ? 0 : u) * phi + phiOffset;
+      const cosPhi = Math.cos(p);
+      const sinPhi = Math.sin(p);
+
+      const { position, normal } = equation({ v, cosPhi, sinPhi });
+
+      positions[vertexIndex * 3] = position[0];
+      positions[vertexIndex * 3 + 1] = position[1];
+      positions[vertexIndex * 3 + 2] = position[2];
+
+      TMP[0] = normal[0];
+      TMP[1] = normal[1];
+      TMP[2] = normal[2];
+      normalize(TMP);
+
+      normals[vertexIndex * 3] = TMP[0];
+      normals[vertexIndex * 3 + 1] = TMP[1];
+      normals[vertexIndex * 3 + 2] = TMP[2];
+
+      uvs[vertexIndex * 2] = u;
+      uvs[vertexIndex * 2 + 1] = v;
+    }
+
+    if (y > 0) {
+      const rowOffset = vertexIndex - 2 * (nx + 1);
+
+      for (let x = 0; x < nx; x++) {
+        const a = rowOffset + x;
+        const b = a + 1;
+        const c = a + nx + 1;
+        const d = a + nx + 2;
+
+        if (!collapsedAt[y - 1]) {
+          cells[cellIndex] = a;
+          cells[cellIndex + 1] = b;
+          cells[cellIndex + 2] = c;
+
+          cellIndex += 3;
+        }
+
+        if (!collapsedAt[y]) {
+          cells[cellIndex] = c;
+          cells[cellIndex + 1] = b;
+          cells[cellIndex + 2] = d;
+
+          cellIndex += 3;
+        }
+      }
+    }
+  }
+
+  const geometry = { positions, normals, uvs, cells };
+  const indices = { vertex: vertexIndex, cell: cellIndex };
+
+  if (hasCapBase || hasCapApex) {
+    const angleAt = (i) => {
+      const u = i / nx;
+      const p = (wrap && i === nx ? 0 : u) * phi + phiOffset;
+      return { cos: Math.cos(p), sin: Math.sin(p), t: p };
+    };
+
+    const addCap = (v, capSegments, flip, normalY) => {
+      const atCos = equation({ v, cosPhi: 1, sinPhi: 0 });
+      const atSin = equation({ v, cosPhi: 0, sinPhi: 1 });
+
+      const xSign = atCos.position[0] < 0 ? -1 : 1;
+      const zSign = atSin.position[2] < 0 ? -1 : 1;
+
+      computeCap(geometry, indices, {
+        ringSegments: nx,
+        capSegments,
+        capRadius: 1,
+        sx: xSign * atCos.position[0],
+        sy: zSign * atSin.position[2],
+        flip,
+        angleAt: (i) => {
+          const { cos, sin, t } = angleAt(i);
+          return { cos: xSign * cos, sin: zSign * sin, t };
+        },
+        point: (x, y) => [x, atCos.position[1], y],
+        normal: [0, normalY, 0],
+        mapping: capMapping,
+      });
+    };
+
+    if (hasCapBase) addCap(0, capBaseSegments, 1, -1);
+    if (hasCapApex) addCap(1, capApexSegments, -1, 1);
+  }
+
+  return { positions, normals, uvs, cells, indices };
+}
+
+/**
  * A point on a straight-edged polygon's boundary at angle t: splits the
  * circle into cornerCount equal sectors starting at thetaOffset, finds which
  * one t falls in, and linearly interpolates between its two corners. Each

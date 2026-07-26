@@ -1,11 +1,5 @@
 /** @module ellipsoid */
-import {
-  checkArguments,
-  getCellsTypedArray,
-  normalize,
-  TAU,
-  TMP,
-} from "../../utils.js";
+import { checkArguments, computeRevolutionGeometry, TAU } from "../../utils.js";
 
 /**
  * @typedef {object} EllipsoidOptions
@@ -41,108 +35,32 @@ export function ellipsoid({
 } = {}) {
   checkArguments(arguments);
 
-  const size = (ny + 1) * (nx + 1);
-
-  // Rows collapsed at a pole (multiples of PI) fan with a single triangle per
-  // quad instead of two, skipping the degenerate one
-  let fans = 0;
-  for (let y = 0; y <= ny; y++) {
-    if (((y / ny) * theta + thetaOffset) % Math.PI === 0) {
-      fans += y === 0 || y === ny ? 1 : 2;
-    }
-  }
-
-  const positions = new Float32Array(size * 3);
-  const normals = new Float32Array(size * 3);
-  const uvs = new Float32Array(size * 2);
-  const cells = new (getCellsTypedArray(size))(ny * nx * 6 - fans * nx * 3);
-
-  let vertexIndex = 0;
-  let cellIndex = 0;
-
-  // Wrap the last column to the exact first column angle for full revolutions
-  const wrap = phi % TAU === 0;
-
-  let prevCollapsed = false;
-
-  for (let y = 0; y <= ny; y++) {
-    const v = y / ny;
+  function equation({ v, cosPhi, sinPhi }) {
     const t = v * theta + thetaOffset;
     const cosTheta = Math.cos(t);
     // Ensure poles weld exactly at multiples of PI
     const sinTheta = t % Math.PI === 0 ? 0 : Math.sin(t);
-    const collapsed = sinTheta === 0;
 
-    for (let x = 0; x <= nx; x++) {
-      const u = x / nx;
-      const p = (wrap && x === nx ? 0 : u) * phi + phiOffset;
-      const cosPhi = Math.cos(p);
-      const sinPhi = Math.sin(p);
+    const dx = -cosPhi * sinTheta;
+    const dy = -cosTheta;
+    const dz = sinPhi * sinTheta;
 
-      const dx = -cosPhi * sinTheta;
-      const dy = -cosTheta;
-      const dz = sinPhi * sinTheta;
-
-      TMP[0] = rx * dx;
-      TMP[1] = ry * dy;
-      TMP[2] = rz * dz;
-
-      positions[vertexIndex * 3] = radius * TMP[0];
-      positions[vertexIndex * 3 + 1] = radius * TMP[1];
-      positions[vertexIndex * 3 + 2] = radius * TMP[2];
-
+    return {
+      position: [radius * rx * dx, radius * ry * dy, radius * rz * dz],
       // Ellipsoid normal is the gradient of x²/rx² + y²/ry² + z²/rz² = 1,
       // i.e. inverse-square scaled, not the same scaling used for position.
-      TMP[0] = dx / rx;
-      TMP[1] = dy / ry;
-      TMP[2] = dz / rz;
-
-      normalize(TMP);
-
-      normals[vertexIndex * 3] = TMP[0];
-      normals[vertexIndex * 3 + 1] = TMP[1];
-      normals[vertexIndex * 3 + 2] = TMP[2];
-
-      uvs[vertexIndex * 2] = u;
-      uvs[vertexIndex * 2 + 1] = v;
-
-      vertexIndex++;
-    }
-
-    if (y > 0) {
-      const rowOffset = vertexIndex - 2 * (nx + 1);
-
-      for (let x = 0; x < nx; x++) {
-        const a = rowOffset + x;
-        const b = a + 1;
-        const c = a + nx + 1;
-        const d = a + nx + 2;
-
-        if (!prevCollapsed) {
-          cells[cellIndex] = a;
-          cells[cellIndex + 1] = b;
-          cells[cellIndex + 2] = c;
-
-          cellIndex += 3;
-        }
-
-        if (!collapsed) {
-          cells[cellIndex] = c;
-          cells[cellIndex + 1] = b;
-          cells[cellIndex + 2] = d;
-
-          cellIndex += 3;
-        }
-      }
-    }
-
-    prevCollapsed = collapsed;
+      normal: [dx / rx, dy / ry, dz / rz],
+      collapsed: sinTheta === 0,
+    };
   }
 
-  return {
-    positions,
-    normals,
-    uvs,
-    cells,
-  };
+  const { positions, normals, uvs, cells } = computeRevolutionGeometry({
+    nx,
+    ny,
+    phi,
+    phiOffset,
+    equation,
+  });
+
+  return { positions, normals, uvs, cells };
 }
