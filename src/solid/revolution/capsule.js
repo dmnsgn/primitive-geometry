@@ -1,5 +1,10 @@
 /** @module capsule */
-import { checkArguments, getCellsTypedArray, TAU } from "../../utils.js";
+import {
+  checkArguments,
+  computeRevolutionGeometry,
+  snapToZero,
+  TAU,
+} from "../../utils.js";
 
 /**
  * @typedef {object} CapsuleOptions
@@ -7,17 +12,24 @@ import { checkArguments, getCellsTypedArray, TAU } from "../../utils.js";
  * @property {number} [radius=0.25]
  * @property {number} [nx=16]
  * @property {number} [ny=1]
- * @property {number} [roundSegments=32]
+ * @property {number} [roundSegments=16]
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
  */
 
 /**
+ * A cylindrical body capped with two hemispheres (a "pill" shape). The
+ * meridian sweep is piecewise (hemisphere/cylinder/hemisphere) but stays a
+ * single computeRevolutionGeometry call: a cylinder's side normal is already
+ * purely radial, matching a sphere's own normal at its equator, so both
+ * joins are C1-continuous and need no seam vertices - unlike bicone/
+ * doubleCone's genuinely kinked joins, which do need concatGeometries (see
+ * bicone.js). roundSegments = 0 collapses both hemispheres away, leaving an
+ * open tube.
  * @alias module:capsule
  * @param {CapsuleOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
  */
-
 export function capsule({
   height = 0.5,
   radius = 0.25,
@@ -29,105 +41,65 @@ export function capsule({
 } = {}) {
   checkArguments(arguments);
 
-  const ringsBody = ny + 1;
-  const ringsCap = roundSegments * 2;
-  const ringsTotal = ringsCap + ringsBody;
+  const halfHeight = height / 2;
+  const halfPi = Math.PI / 2;
 
-  const size = ringsTotal * nx;
+  // Row budget across the whole meridian: roundSegments rings per hemisphere,
+  // ny for the straight body - same proportions as the pre-refactor version.
+  const nyTotal = 2 * roundSegments + ny;
+  const bodyStart = roundSegments / nyTotal;
+  const bodyEnd = (roundSegments + ny) / nyTotal;
 
-  // Pole rings are collapsed to a point: fan with a single triangle per quad
-  // instead of two, skipping the degenerate one
-  const hasPoles = roundSegments > 0;
-  const fans = hasPoles ? 2 : 0;
+  // computeRevolutionGeometry's default uv v is the row-index fraction,
+  // which would stretch across whichever section (caps vs body) got more
+  // rows. Rederive it from the vertex's actual y instead, proportional to
+  // true position along the capsule's axis regardless of row allocation.
+  const axisExtent = 2 * radius + height;
 
-  const positions = new Float32Array(size * 3);
-  const normals = new Float32Array(size * 3);
-  const uvs = new Float32Array(size * 2);
-  const cells = new (getCellsTypedArray(size))(
-    (ringsTotal - 1) * (nx - 1) * 6 - fans * (nx - 1) * 3,
-  );
+  function equation({ v, cosPhi: rawCosPhi, sinPhi }) {
+    const cosPhi = -rawCosPhi;
 
-  let vertexIndex = 0;
-  let cellIndex = 0;
+    let r, y, normalRadial, normalY;
 
-  const segmentIncrement = 1 / (nx - 1);
-  const ringIncrement = 1 / (ringsCap - 1);
-  const bodyIncrement = 1 / (ringsBody - 1);
-
-  // Wrap the last column to the exact first column angle for full revolutions
-  const wrap = phi % TAU === 0;
-
-  function computeRing(r, y, dy) {
-    for (let s = 0; s < nx; s++, vertexIndex++) {
-      const p =
-        (wrap && s === nx - 1 ? 0 : s * segmentIncrement) * phi + phiOffset;
-      const x = -Math.cos(p) * r;
-      const z = Math.sin(p) * r;
-
-      const py = radius * y + height * dy;
-
-      positions[vertexIndex * 3] = radius * x;
-      positions[vertexIndex * 3 + 1] = py;
-      positions[vertexIndex * 3 + 2] = radius * z;
-
-      normals[vertexIndex * 3] = x;
-      normals[vertexIndex * 3 + 1] = y;
-      normals[vertexIndex * 3 + 2] = z;
-
-      uvs[vertexIndex * 2] = s * segmentIncrement;
-      uvs[vertexIndex * 2 + 1] = 1 - (0.5 - py / (2 * radius + height));
+    if (roundSegments > 0 && v <= bodyStart) {
+      const a = (v / bodyStart) * halfPi;
+      const sinA = snapToZero(Math.sin(a));
+      const cosA = snapToZero(Math.cos(a));
+      r = radius * sinA;
+      y = -halfHeight - radius * cosA;
+      normalRadial = sinA;
+      normalY = -cosA;
+    } else if (roundSegments > 0 && v >= bodyEnd) {
+      const a = (1 - (v - bodyEnd) / (1 - bodyEnd)) * halfPi;
+      const sinA = snapToZero(Math.sin(a));
+      const cosA = snapToZero(Math.cos(a));
+      r = radius * sinA;
+      y = halfHeight + radius * cosA;
+      normalRadial = sinA;
+      normalY = cosA;
+    } else {
+      const s = (v - bodyStart) / (bodyEnd - bodyStart);
+      r = radius;
+      y = -halfHeight + height * s;
+      normalRadial = 1;
+      normalY = 0;
     }
+
+    return {
+      position: [r * cosPhi, y, r * sinPhi],
+      normal: [normalRadial * cosPhi, normalY, normalRadial * sinPhi],
+      collapsed: r === 0,
+      v: 0.5 + y / axisExtent,
+    };
   }
 
-  for (let r = 0; r < roundSegments; r++) {
-    computeRing(
-      Math.sin(Math.PI * r * ringIncrement),
-      Math.sin(Math.PI * (r * ringIncrement - 0.5)),
-      -0.5,
-    );
-  }
+  const { positions, normals, uvs, cells } = computeRevolutionGeometry({
+    nx,
+    ny: nyTotal,
+    phi,
+    phiOffset,
+    equation,
+  });
 
-  for (let r = 0; r < ringsBody; r++) {
-    computeRing(1, 0, r * bodyIncrement - 0.5);
-  }
-
-  for (let r = roundSegments; r < ringsCap; r++) {
-    computeRing(
-      // Ensure the apex ring welds exactly to a single point
-      r === ringsCap - 1 ? 0 : Math.sin(Math.PI * r * ringIncrement),
-      Math.sin(Math.PI * (r * ringIncrement - 0.5)),
-      0.5,
-    );
-  }
-
-  for (let r = 0; r < ringsTotal - 1; r++) {
-    for (let s = 0; s < nx - 1; s++) {
-      const a = r * nx;
-      const b = (r + 1) * nx;
-      const s1 = s + 1;
-
-      if (!(hasPoles && r === 0)) {
-        cells[cellIndex] = a + s;
-        cells[cellIndex + 1] = a + s1;
-        cells[cellIndex + 2] = b + s1;
-
-        cellIndex += 3;
-      }
-
-      if (!(hasPoles && r === ringsTotal - 2)) {
-        cells[cellIndex] = a + s;
-        cells[cellIndex + 1] = b + s1;
-        cells[cellIndex + 2] = b + s;
-
-        cellIndex += 3;
-      }
-    }
-  }
-
-  return {
-    positions,
-    normals,
-    uvs,
-    cells,
-  };
+  return { positions, normals, uvs, cells };
 }

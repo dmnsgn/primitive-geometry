@@ -675,6 +675,16 @@ export function computePolarGeometry({
  * the axis anywhere in between (callers with a bounded theta/thetaOffset,
  * eg. ellipsoid, clamp them so their sweep can't).
  *
+ * The uv v-coordinate defaults to the row's structural v (row-index
+ * fraction), which distorts whenever a caller allocates rows non-uniformly
+ * across the meridian (eg. capsule.js packing more/fewer rows into its
+ * hemispheres than its cylindrical body) - the texture would stretch across
+ * whichever section got more rows instead of following actual surface
+ * position. `equation` may return its own `v` to override just the uv
+ * (structural v - row spacing, pole detection - is unaffected, since it's
+ * only ever read from the input parameter, never the return value).
+ *
+
  * capBase/capApex add a flat disk at v = 0/v = 1 (skip them when that end is
  * already collapsed, ie. a true point apex - same convention cylinder/cone
  * use today). Since position.x/z are always linear in (cosPhi, sinPhi) with
@@ -749,7 +759,11 @@ export function computeRevolutionGeometry({
       const cosPhi = Math.cos(p);
       const sinPhi = Math.sin(p);
 
-      const { position, normal } = equation({ v, cosPhi, sinPhi });
+      const {
+        position,
+        normal,
+        v: uvV = v,
+      } = equation({ v, cosPhi, sinPhi });
 
       positions[vertexIndex * 3] = position[0];
       positions[vertexIndex * 3 + 1] = position[1];
@@ -765,7 +779,7 @@ export function computeRevolutionGeometry({
       normals[vertexIndex * 3 + 2] = TMP[2];
 
       uvs[vertexIndex * 2] = u;
-      uvs[vertexIndex * 2 + 1] = v;
+      uvs[vertexIndex * 2 + 1] = uvV;
     }
 
     if (y > 0) {

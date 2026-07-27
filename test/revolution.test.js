@@ -146,11 +146,8 @@ describe("capsule", () => {
     const roundSegments = 16;
     const g = Primitives.capsule({ nx, ny, roundSegments });
 
-    const ringsTotal = roundSegments * 2 + ny + 1;
-    assert.equal(
-      g.cells.length / 3,
-      (ringsTotal - 1) * (nx - 1) * 2 - 2 * (nx - 1),
-    );
+    const nyTotal = roundSegments * 2 + ny;
+    assert.equal(g.cells.length / 3, nyTotal * nx * 2 - 2 * nx);
   });
 
   it("keeps a full grid without caps (roundSegments = 0)", () => {
@@ -158,7 +155,7 @@ describe("capsule", () => {
     const ny = 1;
     const g = Primitives.capsule({ nx, ny, roundSegments: 0 });
 
-    assert.equal(g.cells.length / 3, (ny + 1 - 1) * (nx - 1) * 2);
+    assert.equal(g.cells.length / 3, ny * nx * 2);
     const result = analyze(g);
     assert.equal(result.degenerate, 0);
     assert.equal(result.unused, 0);
