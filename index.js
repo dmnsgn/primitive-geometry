@@ -42,6 +42,8 @@ export { roundedCube } from "./src/solid/cuboid/rounded-cube.js";
 
 export { sphere } from "./src/solid/revolution/sphere.js";
 export { ellipsoid } from "./src/solid/revolution/ellipsoid.js";
+export { superellipsoid } from "./src/solid/revolution/superellipsoid.js";
+export { superegg } from "./src/solid/revolution/superegg.js";
 
 export { cylinder } from "./src/solid/revolution/cylinder.js";
 export { cone } from "./src/solid/revolution/cone.js";

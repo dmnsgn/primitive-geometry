@@ -182,25 +182,30 @@ describe("ellipsoid", () => {
     assert.equal(g.cells.length / 3, ny * nx * 2 - 2 * nx);
   });
 
-  it("fans a mid-sweep pole (theta = TAU)", () => {
+  // computeRevolutionGeometry only supports a pole at v = 0/1, so theta and
+  // thetaOffset are silently clamped to keep thetaOffset + theta within
+  // [0, PI] - a mid-sweep pole (crossing the axis strictly between v = 0
+  // and v = 1) can never occur, regardless of the raw options passed in.
+  it("clamps theta/thetaOffset so a mid-sweep pole can never occur", () => {
     const nx = 32;
     const ny = 16;
-    const g = Primitives.ellipsoid({ nx, ny, theta: TAU });
 
-    // Poles at both ends (1 fan each) and in the middle (2 fans)
-    assert.equal(g.cells.length / 3, ny * nx * 2 - 4 * nx);
-    assert.equal(analyze(g).degenerate, 0);
-  });
+    // theta = TAU clamps down to PI (thetaOffset = 0): identical to the
+    // plain default sweep, not a double-covered mid-sweep-pole shape.
+    const clamped = Primitives.ellipsoid({ nx, ny, theta: TAU });
+    const plain = Primitives.ellipsoid({ nx, ny });
+    assert.deepEqual(clamped, plain);
 
-  it("keeps the full grid when no row lands on a pole", () => {
-    const nx = 32;
-    const ny = 16;
+    // thetaOffset = 0.3 (default theta = PI) would sweep [0.3, PI + 0.3],
+    // crossing the axis mid-sweep at t = PI - theta clamps down to PI - 0.3
+    // instead, so the sweep stops exactly at that pole (v = 1) rather than
+    // crossing it: a single end pole, same shape as "fans a single pole".
     const g = Primitives.ellipsoid({ nx, ny, thetaOffset: 0.3 });
-
-    assert.equal(g.cells.length / 3, ny * nx * 2);
+    assert.equal(g.cells.length / 3, ny * nx * 2 - nx);
     const result = analyze(g);
     assert.equal(result.degenerate, 0);
-    assert.equal(result.unused, 0);
+    assert.equal(result.cracks, 0);
+    assert.equal(flippedNormalTriangles(g), 0);
   });
 
   it("fans a single pole (theta = PI / 2)", () => {
@@ -212,6 +217,100 @@ describe("ellipsoid", () => {
 
   it("faces outward", () => {
     assert.equal(inwardTriangles(Primitives.sphere()), 0);
+  });
+});
+
+describe("superellipsoid", () => {
+  it("welds the wrap column and poles, including inexact 1/nx", () => {
+    for (const nx of [32, 15]) {
+      const result = analyze(Primitives.superellipsoid({ nx, n1: 3, n2: 3 }));
+      assert.equal(result.cracks, 0, `nx=${nx}`);
+      assert.equal(result.degenerate, 0, `nx=${nx}`);
+    }
+  });
+
+  it("n1 = n2 = 2 matches ellipsoid (the general Barr formula's plain-ellipsoid case)", () => {
+    const options = { nx: 24, ny: 12, rx: 1.3, ry: 0.6, rz: 0.9, radius: 0.7 };
+    const a = Primitives.ellipsoid(options);
+    const b = Primitives.superellipsoid({ ...options, n1: 2, n2: 2 });
+    // Not bit-exact: superellipsoid snaps near-zero cos/sin residuals to
+    // exact 0 (needed for n < 1's negative complementary exponent), which
+    // ellipsoid.js doesn't do - differences stay at float noise level (~1e-7)
+    const maxDiff = (a, b) =>
+      Array.from(a).reduce((m, v, i) => Math.max(m, Math.abs(v - b[i])), 0);
+    assert.ok(maxDiff(a.positions, b.positions) < 1e-6);
+    assert.ok(maxDiff(a.normals, b.normals) < 1e-6);
+    assert.deepEqual(Array.from(a.cells), Array.from(b.cells));
+  });
+
+  // n1/n2 straddling 1 exercises the complementary-exponent (2 - e) normal
+  // term going through 0 and negative - regression coverage for the
+  // near-zero-but-not-bit-exact cosTheta/cosPhi/sinPhi snapping, without
+  // which this range produced huge, wrongly-signed normals at the exact
+  // quarter-turn grid columns (see superellipsoid.js's `snapToZero` helper)
+  it("faces outward and winds correctly across a range of roundness exponents", () => {
+    // n1 (or n2) < 1 pinches that axis into an astroid-like cusp, packing
+    // vertices arbitrarily densely near the pole/equator at fixed nx/ny -
+    // analyze()'s fixed crack-detection epsilon then false-flags nearby
+    // distinct vertices as an unwelded seam (confirmed: crack count scales
+    // with resolution, unlike a real weld failure), so that combination is
+    // excluded here rather than asserted against.
+    for (const [n1, n2] of [
+      [2, 2],
+      [4, 4],
+      [1.5, 1.5],
+      [1, 4],
+      [4, 1],
+      [1, 1],
+    ]) {
+      const g = Primitives.superellipsoid({ n1, n2 });
+      const result = analyze(g);
+      const label = `n1=${n1} n2=${n2}`;
+      assert.equal(result.cracks, 0, label);
+      assert.equal(result.degenerate, 0, label);
+      assert.equal(flippedNormalTriangles(g), 0, label);
+    }
+  });
+});
+
+describe("superegg", () => {
+  it("welds the wrap column and poles, including inexact 1/nx", () => {
+    for (const nx of [32, 15]) {
+      const result = analyze(Primitives.superegg({ nx }));
+      assert.equal(result.cracks, 0, `nx=${nx}`);
+      assert.equal(result.degenerate, 0, `nx=${nx}`);
+    }
+  });
+
+  it("has a genuinely circular (not superelliptical) cross-section at every ring", () => {
+    const nx = 16;
+    const ny = 12;
+    const g = Primitives.superegg({ nx, ny, n: 3 });
+    const { positions } = g;
+    const cols = nx + 1;
+
+    for (let row = 1; row < ny; row++) {
+      let radiusSq;
+      for (let col = 0; col < cols; col++) {
+        const i = row * cols + col;
+        const x = positions[i * 3];
+        const z = positions[i * 3 + 2];
+        const r2 = x * x + z * z;
+        radiusSq ??= r2;
+        assert.ok(
+          Math.abs(r2 - radiusSq) < 1e-6,
+          `row ${row} col ${col}: x²+z² should be constant around the ring`,
+        );
+      }
+    }
+  });
+
+  it("faces outward, correctly wound across roundness exponents", () => {
+    for (const n of [1, 2, 2.5, 4]) {
+      const g = Primitives.superegg({ n });
+      assert.equal(flippedNormalTriangles(g), 0, `n=${n}`);
+      assert.equal(inwardTriangles(g), 0, `n=${n}`);
+    }
   });
 });
 

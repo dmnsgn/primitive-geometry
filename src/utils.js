@@ -100,6 +100,22 @@ export function lerp(a, b, t) {
 export function snapToZero(x) {
   return Math.abs(x) < 1e-9 ? 0 : x;
 }
+
+/**
+ * x raised to a signed power: sign(x) * |x|^e. Used for superquadric/
+ * superellipse curves, where e can be a fraction (even < 1, a pinched cusp)
+ * and x negative - plain `x ** e` is only defined for non-negative x. x = 0
+ * short-circuits to 0, avoiding both `0 ** negative` (Infinity) and JS's
+ * `0 ** 0 = 1` quirk; the true tangent at a pinched pole is a genuine cusp
+ * with no well-defined direction anyway, so 0 is as good a fallback as any.
+ * @param {number} x
+ * @param {number} e
+ * @returns {number}
+ */
+export function signedPow(x, e) {
+  return x === 0 ? 0 : Math.sign(x) * Math.abs(x) ** e;
+}
+
 /**
  * Ensure first argument passed to the primitive functions is an object
  * @param {...*} args

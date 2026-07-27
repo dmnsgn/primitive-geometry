@@ -104,12 +104,36 @@ const cases = [
 
   ["sphere", () => Primitives.sphere(), { unused: 2 }],
   ["sphere nx=15", () => Primitives.sphere({ nx: 15 }), { unused: 2 }],
-  // theta > PI double-covers the surface: coincident sheets are not seams,
-  // see revolution.test.js for the mid-sweep pole coverage
   ["ellipsoid", () => Primitives.ellipsoid(), { unused: 2 }],
   [
     "ellipsoid thetaOffset=0.3",
     () => Primitives.ellipsoid({ thetaOffset: 0.3 }),
+    { unused: 1 },
+  ],
+  [
+    "superellipsoid",
+    () => Primitives.superellipsoid(),
+    { unused: 2 },
+  ],
+  [
+    "superellipsoid n1=n2=4 (pinched/star)",
+    () => Primitives.superellipsoid({ n1: 4, n2: 4 }),
+    { unused: 2 },
+  ],
+  [
+    "superellipsoid n1=1,n2=4 (meridian ridge)",
+    () => Primitives.superellipsoid({ n1: 1, n2: 4 }),
+    { unused: 2 },
+  ],
+  [
+    "superegg",
+    () => Primitives.superegg(),
+    { unused: 2 },
+  ],
+  [
+    "superegg n=4",
+    () => Primitives.superegg({ n: 4 }),
+    { unused: 2 },
   ],
   ["icosphere", () => Primitives.icosphere()],
 

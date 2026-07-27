@@ -63,6 +63,8 @@ const geometries = params.has("geometry")
       named("sphere", Primitives.sphere()),
       named("icosphere", Primitives.icosphere()),
       named("ellipsoid", Primitives.ellipsoid()),
+      named("superellipsoid", Primitives.superellipsoid()),
+      named("superegg", Primitives.superegg()),
       null,
       named("cylinder", Primitives.cylinder()),
       named("cone", Primitives.cone()),
