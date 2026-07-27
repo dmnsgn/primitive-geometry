@@ -151,6 +151,27 @@ const cases = [
       }),
     { unused: 2 },
   ],
+  ["roundedCylinder", () => Primitives.roundedCylinder(), { unused: 2 }],
+  [
+    "roundedCylinder nx=15",
+    () => Primitives.roundedCylinder({ nx: 15 }),
+    { unused: 2 },
+  ],
+  [
+    "roundedCylinder roundRadius=0 (plain cylinder)",
+    () => Primitives.roundedCylinder({ roundRadius: 0 }),
+    { unused: 2 },
+  ],
+  [
+    "roundedCylinder capsule limit (roundRadius=radius=height/2)",
+    () =>
+      Primitives.roundedCylinder({
+        radius: 0.25,
+        height: 0.5,
+        roundRadius: 0.25,
+      }),
+    { unused: 2 },
+  ],
   ["cone", () => Primitives.cone(), { unused: 2 }],
   [
     "cone elliptical",

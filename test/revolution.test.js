@@ -40,6 +40,113 @@ describe("cylinder", () => {
   });
 });
 
+describe("roundedCylinder", () => {
+  it("welds the wrap column and both poles, including inexact 1/nx", () => {
+    for (const nx of [16, 15]) {
+      const result = analyze(Primitives.roundedCylinder({ nx }));
+      assert.equal(result.cracks, 0, `nx=${nx}`);
+      assert.equal(result.degenerate, 0, `nx=${nx}`);
+      assert.equal(result.unused, 2, `nx=${nx}`);
+    }
+  });
+
+  it("faces outward, correctly wound across the fillet/flat-cap/side range", () => {
+    for (const g of [
+      Primitives.roundedCylinder(),
+      Primitives.roundedCylinder({ roundRadius: 0 }), // plain flat-capped cylinder
+      Primitives.roundedCylinder({ roundRadius: 0.25, radius: 0.25, height: 0.5 }), // capsule limit
+      Primitives.roundedCylinder({ roundRadius: 10 }), // clamped
+      Primitives.roundedCylinder({ ny: 4, roundSegments: 3, capSegments: 2 }),
+      Primitives.roundedCylinder({ phi: Math.PI }),
+    ]) {
+      const result = analyze(g);
+      assert.equal(result.cracks, 0);
+      assert.equal(result.degenerate, 0);
+      assert.equal(flippedNormalTriangles(g), 0);
+    }
+  });
+
+  it("matches the closed-form flat radius and rim height", () => {
+    const radius = 0.3;
+    const roundRadius = 0.1;
+    const height = 1;
+    const g = Primitives.roundedCylinder({ radius, roundRadius, height });
+
+    const { positions } = g;
+    let minY = Infinity;
+    let maxY = -Infinity;
+    let maxR = -Infinity;
+    for (let i = 0; i < positions.length / 3; i++) {
+      const y = positions[i * 3 + 1];
+      const r = Math.hypot(positions[i * 3], positions[i * 3 + 2]);
+      minY = Math.min(minY, y);
+      maxY = Math.max(maxY, y);
+      maxR = Math.max(maxR, r);
+    }
+    assert.ok(Math.abs(minY + height / 2) < 1e-6);
+    assert.ok(Math.abs(maxY - height / 2) < 1e-6);
+    assert.ok(Math.abs(maxR - radius) < 1e-6);
+  });
+
+  it("roundRadius = 0 has no fillet rows (plain flat-capped cylinder topology)", () => {
+    const nx = 16;
+    const ny = 1;
+    const capSegments = 1;
+    const g = Primitives.roundedCylinder({
+      nx,
+      ny,
+      capSegments,
+      roundRadius: 0,
+    });
+
+    // Same shape as a capBase/capApex cylinder: 2 flat-cap fans + straight side
+    const nyTotal = 2 * capSegments + ny;
+    assert.equal(g.cells.length / 3, nyTotal * nx * 2 - 2 * nx);
+  });
+
+  it("roundRadius = radius = height / 2 matches capsule's own bounding shape", () => {
+    const radius = 0.25;
+    const nx = 32;
+    const roundSegments = 32;
+    const rounded = Primitives.roundedCylinder({
+      radius,
+      height: radius * 2,
+      roundRadius: radius,
+      nx,
+      roundSegments,
+    });
+    const capsule = Primitives.capsule({
+      radius,
+      height: 0,
+      nx,
+      roundSegments,
+      ny: 1,
+    });
+
+    const bbox = (g) => {
+      const { positions } = g;
+      let minY = Infinity;
+      let maxY = -Infinity;
+      let maxR = -Infinity;
+      for (let i = 0; i < positions.length / 3; i++) {
+        minY = Math.min(minY, positions[i * 3 + 1]);
+        maxY = Math.max(maxY, positions[i * 3 + 1]);
+        maxR = Math.max(
+          maxR,
+          Math.hypot(positions[i * 3], positions[i * 3 + 2]),
+        );
+      }
+      return { minY, maxY, maxR };
+    };
+
+    const a = bbox(rounded);
+    const b = bbox(capsule);
+    assert.ok(Math.abs(a.minY - b.minY) < 1e-6);
+    assert.ok(Math.abs(a.maxY - b.maxY) < 1e-6);
+    assert.ok(Math.abs(a.maxR - b.maxR) < 1e-6);
+  });
+});
+
 describe("hyperboloid", () => {
   it("welds the wrap column exactly, including inexact 1/nx", () => {
     for (const nx of [32, 15]) {

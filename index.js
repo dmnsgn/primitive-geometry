@@ -46,6 +46,7 @@ export { superellipsoid } from "./src/solid/revolution/superellipsoid.js";
 export { superegg } from "./src/solid/revolution/superegg.js";
 
 export { cylinder } from "./src/solid/revolution/cylinder.js";
+export { roundedCylinder } from "./src/solid/revolution/rounded-cylinder.js";
 export { cone } from "./src/solid/revolution/cone.js";
 export { bicone } from "./src/solid/revolution/bicone.js";
 export { doubleCone } from "./src/solid/revolution/double-cone.js";
