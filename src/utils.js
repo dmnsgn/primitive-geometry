@@ -89,6 +89,18 @@ export function lerp(a, b, t) {
 }
 
 /**
+ * Snap a near-zero value to exact 0. Math.cos/sin of an exact multiple of
+ * PI/2 aren't bit-exact (eg. Math.cos(Math.PI / 2) is ~6e-17) - left as-is,
+ * that residual can make two vertices meant to be identical (a pole, a wrap
+ * seam) compare as distinct and read as a crack, or - raised to a negative
+ * signedPow exponent - explode into a huge, effectively-random-signed value.
+ * @param {number} x
+ * @returns {number}
+ */
+export function snapToZero(x) {
+  return Math.abs(x) < 1e-9 ? 0 : x;
+}
+/**
  * Ensure first argument passed to the primitive functions is an object
  * @param {...*} args
  */

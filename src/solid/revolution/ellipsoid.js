@@ -1,5 +1,11 @@
 /** @module ellipsoid */
-import { checkArguments, computeRevolutionGeometry, TAU } from "../../utils.js";
+import {
+  checkArguments,
+  clamp,
+  computeRevolutionGeometry,
+  snapToZero,
+  TAU,
+} from "../../utils.js";
 
 /**
  * @typedef {object} EllipsoidOptions
@@ -9,8 +15,12 @@ import { checkArguments, computeRevolutionGeometry, TAU } from "../../utils.js";
  * @property {number} [rx=1]
  * @property {number} [ry=0.5]
  * @property {number} [rz=ry]
- * @property {number} [theta=Math.PI]
- * @property {number} [thetaOffset=0]
+ * @property {number} [theta=Math.PI] Meridian sweep length. computeRevolutionGeometry
+ * only supports a pole at v = 0/1, so theta is silently clamped to
+ * [-thetaOffset, PI - thetaOffset] - the sweep can never cross the axis
+ * anywhere but its own start/end.
+ * @property {number} [thetaOffset=0] Meridian sweep start (0 = north pole),
+ * silently clamped to [0, PI] - see theta.
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
  */
@@ -35,11 +45,20 @@ export function ellipsoid({
 } = {}) {
   checkArguments(arguments);
 
+  const clampedThetaOffset = clamp(thetaOffset, 0, Math.PI);
+  const clampedTheta = clamp(
+    theta,
+    -clampedThetaOffset,
+    Math.PI - clampedThetaOffset,
+  );
+
   function equation({ v, cosPhi, sinPhi }) {
-    const t = v * theta + thetaOffset;
-    const cosTheta = Math.cos(t);
+    const t = v * clampedTheta + clampedThetaOffset;
+    const cosTheta = snapToZero(Math.cos(t));
     // Ensure poles weld exactly at multiples of PI
-    const sinTheta = t % Math.PI === 0 ? 0 : Math.sin(t);
+    const sinTheta = t % Math.PI === 0 ? 0 : snapToZero(Math.sin(t));
+    cosPhi = snapToZero(cosPhi);
+    sinPhi = snapToZero(sinPhi);
 
     const dx = -cosPhi * sinTheta;
     const dy = -cosTheta;
