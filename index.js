@@ -47,14 +47,18 @@ export { superegg } from "./src/solid/revolution/superegg.js";
 
 export { cylinder } from "./src/solid/revolution/cylinder.js";
 export { roundedCylinder } from "./src/solid/revolution/rounded-cylinder.js";
+
 export { cone } from "./src/solid/revolution/cone.js";
 export { bicone } from "./src/solid/revolution/bicone.js";
 export { doubleCone } from "./src/solid/revolution/double-cone.js";
 export { capsule } from "./src/solid/revolution/capsule.js";
+
 export { torus } from "./src/solid/revolution/torus.js";
 export { sphericalRing } from "./src/solid/revolution/spherical-ring.js";
+
 export { paraboloid } from "./src/solid/revolution/paraboloid.js";
 export { hyperboloid } from "./src/solid/revolution/hyperboloid.js";
+export { barrel } from "./src/solid/revolution/barrel.js";
 
 export {
   tetrahedron,

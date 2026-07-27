@@ -583,6 +583,57 @@ describe("superegg", () => {
   });
 });
 
+describe("barrel", () => {
+  it("welds the wrap column exactly, including inexact 1/nx", () => {
+    for (const nx of [32, 15]) {
+      const result = analyze(Primitives.barrel({ nx }));
+      assert.equal(result.cracks, 0, `nx=${nx}`);
+      assert.equal(result.degenerate, 0, `nx=${nx}`);
+    }
+  });
+
+  it("bulges to the belly radius at y = 0, tapers to endRadius at both rims", () => {
+    const radius = 0.5;
+    const endRadius = 0.3;
+    const g = Primitives.barrel({
+      radius,
+      endRadius,
+      capApex: false,
+      capBase: false,
+    });
+
+    const { positions } = g;
+    let minR = Infinity;
+    let maxR = -Infinity;
+    for (let i = 0; i < positions.length / 3; i++) {
+      const r = Math.hypot(positions[i * 3], positions[i * 3 + 2]);
+      minR = Math.min(minR, r);
+      maxR = Math.max(maxR, r);
+    }
+    assert.ok(Math.abs(minR - endRadius) < 1e-6);
+    assert.ok(Math.abs(maxR - radius) < 1e-6);
+  });
+
+  it("endRadius = radius degenerates to a plain cylinder", () => {
+    const g = Primitives.barrel({ endRadius: 0.5, radius: 0.5 });
+    const { positions } = g;
+    for (let i = 0; i < positions.length / 3; i++) {
+      const r = Math.hypot(positions[i * 3], positions[i * 3 + 2]);
+      assert.ok(r < 1e-6 || Math.abs(r - 0.5) < 1e-6);
+    }
+  });
+
+  it("faces outward, correctly wound with and without caps", () => {
+    for (const g of [
+      Primitives.barrel(),
+      Primitives.barrel({ capApex: false, capBase: false }),
+      Primitives.barrel({ endRadius: 0.6, radius: 0.5, capSegments: 3 }), // pinches inward
+    ]) {
+      assert.equal(flippedNormalTriangles(g), 0);
+    }
+  });
+});
+
 describe("torus", () => {
   it("welds both wrap seams, including inexact 1/segments", () => {
     for (const segments of [64, 15]) {

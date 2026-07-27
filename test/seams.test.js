@@ -135,6 +135,12 @@ const cases = [
     () => Primitives.superegg({ n: 4 }),
     { unused: 2 },
   ],
+  ["barrel", () => Primitives.barrel(), { unused: 2 }],
+  ["barrel nx=15", () => Primitives.barrel({ nx: 15 }), { unused: 2 }],
+  [
+    "barrel no caps",
+    () => Primitives.barrel({ capApex: false, capBase: false }),
+  ],
   ["icosphere", () => Primitives.icosphere()],
 
   ["cylinder", () => Primitives.cylinder(), { unused: 2 }],
