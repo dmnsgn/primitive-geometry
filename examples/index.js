@@ -74,6 +74,8 @@ const geometries = params.has("geometry")
       named("capsule", Primitives.capsule()),
       null,
       named("torus", Primitives.torus()),
+      named("apple", Primitives.apple()),
+      named("lemon", Primitives.lemon()),
       named("sphericalRing", Primitives.sphericalRing()),
       null,
       named("barrel", Primitives.barrel()),

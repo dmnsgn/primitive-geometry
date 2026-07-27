@@ -141,6 +141,30 @@ const cases = [
     "barrel no caps",
     () => Primitives.barrel({ capApex: false, capBase: false }),
   ],
+  ["apple", () => Primitives.apple(), { unused: 2 }],
+  ["apple nx=15", () => Primitives.apple({ nx: 15 }), { unused: 2 }],
+  [
+    "apple shallow dimple",
+    () => Primitives.apple({ height: 0.1 }),
+    { unused: 2 },
+  ],
+  [
+    "apple deep dimple (near height=2*radius limit)",
+    () => Primitives.apple({ height: 0.99 }),
+    { unused: 2 },
+  ],
+  ["lemon", () => Primitives.lemon(), { unused: 2 }],
+  ["lemon nx=15", () => Primitives.lemon({ nx: 15 }), { unused: 2 }],
+  [
+    "lemon near-sphere limit (height=2*radius)",
+    () => Primitives.lemon({ height: 1 }),
+    { unused: 2 },
+  ],
+  [
+    "lemon very slender",
+    () => Primitives.lemon({ height: 10 }),
+    { unused: 2 },
+  ],
   ["icosphere", () => Primitives.icosphere()],
 
   ["cylinder", () => Primitives.cylinder(), { unused: 2 }],

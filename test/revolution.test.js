@@ -634,6 +634,116 @@ describe("barrel", () => {
   });
 });
 
+describe("apple", () => {
+  it("welds the wrap column and both poles, including inexact 1/nx", () => {
+    for (const nx of [32, 15]) {
+      const result = analyze(Primitives.apple({ nx }));
+      assert.equal(result.cracks, 0, `nx=${nx}`);
+      assert.equal(result.degenerate, 0, `nx=${nx}`);
+    }
+  });
+
+  it("has a genuine concave dimple at each pole (surface dips past the pole's own y before curving out)", () => {
+    const radius = 0.5;
+    const height = 0.75;
+    const g = Primitives.apple({ radius, height, nx: 8, ny: 16 });
+
+    const { positions } = g;
+    const cols = 9;
+    const poleY = -height / 2;
+    // Row 1 (just off the bottom pole) should dip below the pole's own y,
+    // not rise smoothly away from it like a sphere/ellipsoid pole would
+    const row1Y = positions[cols * 3 + 1];
+    assert.ok(row1Y < poleY);
+  });
+
+  it("reaches its true max radius/extent at the equator (y = 0), matching radius", () => {
+    const radius = 0.5;
+    const g = Primitives.apple({ radius, height: 0.75 });
+
+    const { positions } = g;
+    let maxR = -Infinity;
+    let maxRIndex = -1;
+    for (let i = 0; i < positions.length / 3; i++) {
+      const r = Math.hypot(positions[i * 3], positions[i * 3 + 2]);
+      if (r > maxR) {
+        maxR = r;
+        maxRIndex = i;
+      }
+    }
+    assert.ok(Math.abs(maxR - radius) < 1e-6);
+    assert.ok(Math.abs(positions[maxRIndex * 3 + 1]) < 1e-6, "at y = 0");
+  });
+
+  it("faces outward, correctly wound across a range of dimple depths", () => {
+    for (const height of [0.1, 0.5, 0.75, 0.99]) {
+      const g = Primitives.apple({ height });
+      assert.equal(flippedNormalTriangles(g), 0, `height=${height}`);
+    }
+  });
+});
+
+describe("lemon", () => {
+  it("welds the wrap column and both poles, including inexact 1/nx", () => {
+    for (const nx of [32, 15]) {
+      const result = analyze(Primitives.lemon({ nx }));
+      assert.equal(result.cracks, 0, `nx=${nx}`);
+      assert.equal(result.degenerate, 0, `nx=${nx}`);
+    }
+  });
+
+  it("has a plain convex taper at each pole (y strictly monotonic, no apple-style dip)", () => {
+    const g = Primitives.lemon({ radius: 0.5, height: 1.5, nx: 8, ny: 16 });
+    const { positions } = g;
+    const cols = 9;
+    const rows = positions.length / 3 / cols;
+
+    let prevY = -Infinity;
+    for (let row = 0; row < rows; row++) {
+      const y = positions[row * cols * 3 + 1];
+      assert.ok(y >= prevY - 1e-9, `row ${row}: y should not decrease`);
+      prevY = y;
+    }
+  });
+
+  it("reaches its max radius at the equator (y = 0), matching radius", () => {
+    const radius = 0.5;
+    const g = Primitives.lemon({ radius, height: 1.5 });
+
+    const { positions } = g;
+    let maxR = -Infinity;
+    let maxRIndex = -1;
+    for (let i = 0; i < positions.length / 3; i++) {
+      const r = Math.hypot(positions[i * 3], positions[i * 3 + 2]);
+      if (r > maxR) {
+        maxR = r;
+        maxRIndex = i;
+      }
+    }
+    assert.ok(Math.abs(maxR - radius) < 1e-6);
+    assert.ok(Math.abs(positions[maxRIndex * 3 + 1]) < 1e-6, "at y = 0");
+  });
+
+  it("height = radius*2 degenerates to a plain sphere", () => {
+    const radius = 0.4;
+    const a = Primitives.lemon({ radius, height: radius * 2 });
+    const b = Primitives.sphere({ radius });
+    // +0 vs -0 (r * cosPhi/sinPhi at a pole, sign of cosPhi/sinPhi varies
+    // per column) is the same position, so compare with tolerance, not ===
+    assert.equal(a.positions.length, b.positions.length);
+    for (let i = 0; i < a.positions.length; i++) {
+      assert.ok(Math.abs(a.positions[i] - b.positions[i]) < 1e-9);
+    }
+  });
+
+  it("faces outward, correctly wound across a range of aspect ratios", () => {
+    for (const height of [1, 1.5, 3, 10]) {
+      const g = Primitives.lemon({ height });
+      assert.equal(flippedNormalTriangles(g), 0, `height=${height}`);
+    }
+  });
+});
+
 describe("torus", () => {
   it("welds both wrap seams, including inexact 1/segments", () => {
     for (const segments of [64, 15]) {
