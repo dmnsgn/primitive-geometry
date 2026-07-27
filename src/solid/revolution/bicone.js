@@ -1,10 +1,6 @@
 /** @module bicone */
-import {
-  checkArguments,
-  computeRevolutionGeometry,
-  concatGeometries,
-  TAU,
-} from "../../utils.js";
+import { checkArguments, concatGeometries, TAU } from "../../utils.js";
+import { computeConeSegment } from "./cone.js";
 
 /**
  * @typedef {object} BiconeOptions
@@ -47,32 +43,22 @@ export function bicone({
 
   const halfHeight = height / 2;
 
-  function cone(yFrom, yTo, rFrom, rTo) {
-    const rPrime = rTo - rFrom;
-    const yPrime = yTo - yFrom;
-
-    function equation({ v, cosPhi: rawCosPhi, sinPhi }) {
-      const cosPhi = -rawCosPhi;
-      const r = rFrom + rPrime * v;
-
-      return {
-        position: [r * sx * cosPhi, yFrom + yPrime * v, r * sz * sinPhi],
-        // Same r-factored tangent cross-product as cylinder's cone case,
-        // with sx/sz constant (no per-end ellipse - each end is a point)
-        normal: [
-          yPrime * sz * cosPhi,
-          -(rPrime * sx * sz),
-          yPrime * sx * sinPhi,
-        ],
-        collapsed: r === 0,
-      };
-    }
-
-    return computeRevolutionGeometry({ nx, ny, phi, phiOffset, equation });
-  }
+  const segment = (yFrom, yTo, rFrom, rTo) =>
+    computeConeSegment({
+      yFrom,
+      yTo,
+      rFrom,
+      rTo,
+      nx,
+      ny,
+      phi,
+      phiOffset,
+      sx,
+      sz,
+    });
 
   return concatGeometries([
-    cone(-halfHeight, 0, 0, radius),
-    cone(0, halfHeight, radius, 0),
+    segment(-halfHeight, 0, 0, radius),
+    segment(0, halfHeight, radius, 0),
   ]);
 }

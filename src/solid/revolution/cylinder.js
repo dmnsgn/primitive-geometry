@@ -1,6 +1,11 @@
 /** @module cylinder */
 import { rectangular } from "../../mappings.js";
-import { checkArguments, computeRevolutionGeometry, TAU } from "../../utils.js";
+import {
+  checkArguments,
+  computeRevolutionGeometry,
+  lerp,
+  TAU,
+} from "../../utils.js";
 
 /**
  * @typedef {object} CylinderOptions
@@ -53,7 +58,6 @@ export function cylinder({
   checkArguments(arguments);
 
   const halfHeight = height / 2;
-  const lerp = (a, b, t) => a + (b - a) * t;
 
   // Ellipse scale varies linearly with height like radius/radiusApex; the
   // *Prime terms are their (constant) derivatives w.r.t. v, needed alongside

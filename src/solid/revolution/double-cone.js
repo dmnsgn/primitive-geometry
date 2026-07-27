@@ -1,11 +1,7 @@
 /** @module doubleCone */
 import { rectangular } from "../../mappings.js";
-import {
-  checkArguments,
-  computeRevolutionGeometry,
-  concatGeometries,
-  TAU,
-} from "../../utils.js";
+import { checkArguments, concatGeometries, TAU } from "../../utils.js";
+import { computeConeSegment } from "./cone.js";
 
 /**
  * @typedef {object} DoubleConeOptions
@@ -54,38 +50,28 @@ export function doubleCone({
 
   const halfHeight = height / 2;
 
-  function cone(yFrom, yTo, rFrom, rTo, capOptions) {
-    const rPrime = rTo - rFrom;
-    const yPrime = yTo - yFrom;
-
-    function equation({ v, cosPhi: rawCosPhi, sinPhi }) {
-      const cosPhi = -rawCosPhi;
-      const r = rFrom + rPrime * v;
-
-      return {
-        position: [r * sx * cosPhi, yFrom + yPrime * v, r * sz * sinPhi],
-        normal: [
-          yPrime * sz * cosPhi,
-          -(rPrime * sx * sz),
-          yPrime * sx * sinPhi,
-        ],
-        collapsed: r === 0,
-      };
-    }
-
-    return computeRevolutionGeometry({
+  const segment = (yFrom, yTo, rFrom, rTo, capOptions) =>
+    computeConeSegment({
+      yFrom,
+      yTo,
+      rFrom,
+      rTo,
       nx,
       ny,
       phi,
       phiOffset,
-      equation,
-      ...capOptions,
+      sx,
+      sz,
+      capOptions,
     });
-  }
 
   return concatGeometries([
-    cone(-halfHeight, 0, radius, 0, { capBase, capBaseSegments, capMapping }),
-    cone(0, halfHeight, 0, radius, {
+    segment(-halfHeight, 0, radius, 0, {
+      capBase,
+      capBaseSegments,
+      capMapping,
+    }),
+    segment(0, halfHeight, 0, radius, {
       capApex,
       capApexSegments: capSegments,
       capMapping,

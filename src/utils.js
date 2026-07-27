@@ -67,6 +67,28 @@ export function normalize(v) {
 }
 
 /**
+ * Restrict a value to [min, max].
+ * @param {number} value
+ * @param {number} min
+ * @param {number} max
+ * @returns {number}
+ */
+export function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+/**
+ * Linear interpolation between a and b at t.
+ * @param {number} a
+ * @param {number} b
+ * @param {number} t
+ * @returns {number}
+ */
+export function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+
+/**
  * Ensure first argument passed to the primitive functions is an object
  * @param {...*} args
  */
@@ -610,17 +632,20 @@ export function computePolarGeometry({
 }
 
 /**
- * A grid of ny + 1 meridian rings (v = 0..1, row-major/outer) x nx + 1
- * angular columns (phi, inner - wrapped and welded on the last column when
- * phi is a multiple of TAU, same rule as the other revolution solids)
- * revolved around the y-axis. `equation({ v, cosPhi, sinPhi })` computes a
- * single vertex's analytic position/normal - already embedding whatever
- * axis-scale or ellipse the caller needs (eg. cylinder's per-end sx/sz,
- * ellipsoid's rx/ry/rz) - and whether the whole v-ring is pinched to a point
- * on the axis (a pole or an apex). `collapsed` must depend on v only: it's
- * probed once per row (at cosPhi = 1, sinPhi = 0) to size and fan-triangulate
- * the mesh before the main fill, generalizing ellipsoid's original pole
- * handling to any meridian curve, not just an ellipse's sin/cos one.
+ * A grid of meridian rings (v = 0..1, row-major/outer) x nx + 1 angular
+ * columns (phi, inner - wrapped and welded on the last column when phi is a
+ * multiple of TAU, same rule as the other revolution solids) revolved
+ * around the y-axis. `equation({ v, cosPhi, sinPhi })` computes a single
+ * vertex's analytic position/normal - already embedding whatever axis-scale
+ * or ellipse the caller needs (eg. cylinder's per-end sx/sz, ellipsoid's
+ * rx/ry/rz) - and whether the whole v-ring is pinched to a point on the
+ * axis (a pole or an apex). `collapsed` must depend on v only: it's probed
+ * once per row (at cosPhi = 1, sinPhi = 0) to size and fan-triangulate the
+ * mesh before the main fill, generalizing ellipsoid's original pole
+ * handling to any meridian curve, not just an ellipse's sin/cos one. A pole
+ * is only supported at v = 0 or v = 1: the meridian curve must not cross
+ * the axis anywhere in between (callers with a bounded theta/thetaOffset,
+ * eg. ellipsoid, clamp them so their sweep can't).
  *
  * capBase/capApex add a flat disk at v = 0/v = 1 (skip them when that end is
  * already collapsed, ie. a true point apex - same convention cylinder/cone
