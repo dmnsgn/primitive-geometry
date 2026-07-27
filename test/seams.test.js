@@ -183,6 +183,16 @@ const cases = [
   ["capsule", () => Primitives.capsule(), { unused: 2 }],
   ["capsule nx=15", () => Primitives.capsule({ nx: 15 }), { unused: 2 }],
   ["capsule roundSegments=0", () => Primitives.capsule({ roundSegments: 0 })],
+  ["sphericalRing", () => Primitives.sphericalRing()],
+  ["sphericalRing nx=15", () => Primitives.sphericalRing({ nx: 15 })],
+  [
+    "sphericalRing thin bore",
+    () => Primitives.sphericalRing({ innerRadius: 0.05 }),
+  ],
+  [
+    "sphericalRing wide bore",
+    () => Primitives.sphericalRing({ innerRadius: 0.45 }),
+  ],
   ["torus", () => Primitives.torus()],
   [
     "torus segments=15",

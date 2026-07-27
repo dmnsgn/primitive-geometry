@@ -162,6 +162,59 @@ describe("capsule", () => {
   });
 });
 
+describe("sphericalRing", () => {
+  it("welds the wrap column and both rim seams, including inexact 1/nx", () => {
+    for (const nx of [32, 15]) {
+      const result = analyze(Primitives.sphericalRing({ nx }));
+      assert.equal(result.cracks, 0, `nx=${nx}`);
+      assert.equal(result.degenerate, 0, `nx=${nx}`);
+      assert.equal(result.unused, 0, `nx=${nx}`);
+    }
+  });
+
+  it("faces outward on the sphere band and inward into the bore", () => {
+    const g = Primitives.sphericalRing({ innerRadius: 0.3 });
+    assert.equal(flippedNormalTriangles(g), 0);
+  });
+
+  it("allocates cells exactly: outer band quads + inner wall quads", () => {
+    const nx = 16;
+    const ny = 8;
+    const holeSegments = 3;
+    const g = Primitives.sphericalRing({ nx, ny, holeSegments });
+
+    assert.equal(g.cells.length / 3, nx * ny * 2 + nx * holeSegments * 2);
+  });
+
+  it("matches the closed-form rim height and radii", () => {
+    const radius = 0.5;
+    const innerRadius = 0.3;
+    const g = Primitives.sphericalRing({ radius, innerRadius });
+
+    const halfHeight = Math.sqrt(radius ** 2 - innerRadius ** 2);
+    const { positions } = g;
+    let minY = Infinity;
+    let maxY = -Infinity;
+    let minR = Infinity;
+    let maxR = -Infinity;
+    for (let i = 0; i < positions.length / 3; i++) {
+      const x = positions[i * 3];
+      const y = positions[i * 3 + 1];
+      const z = positions[i * 3 + 2];
+      minY = Math.min(minY, y);
+      maxY = Math.max(maxY, y);
+      const r = Math.hypot(x, z);
+      minR = Math.min(minR, r);
+      maxR = Math.max(maxR, r);
+    }
+
+    assert.ok(Math.abs(minY + halfHeight) < 1e-6);
+    assert.ok(Math.abs(maxY - halfHeight) < 1e-6);
+    assert.ok(Math.abs(minR - innerRadius) < 1e-6);
+    assert.ok(Math.abs(maxR - radius) < 1e-6);
+  });
+});
+
 describe("ellipsoid", () => {
   it("welds the wrap column and poles, including inexact 1/nx", () => {
     for (const nx of [32, 15]) {
