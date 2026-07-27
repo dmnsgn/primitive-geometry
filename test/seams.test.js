@@ -157,6 +157,27 @@ const cases = [
     () => Primitives.cone({ sx: 2, sz: 0.5 }),
     { unused: 2 },
   ],
+  ["hyperboloid", () => Primitives.hyperboloid(), { unused: 2 }],
+  [
+    "hyperboloid nx=15",
+    () => Primitives.hyperboloid({ nx: 15 }),
+    { unused: 2 },
+  ],
+  [
+    "hyperboloid no caps",
+    () => Primitives.hyperboloid({ capApex: false, capBase: false }),
+  ],
+  ["paraboloid", () => Primitives.paraboloid(), { unused: 2 }],
+  [
+    "paraboloid nx=15",
+    () => Primitives.paraboloid({ nx: 15 }),
+    { unused: 2 },
+  ],
+  [
+    "paraboloid no cap",
+    () => Primitives.paraboloid({ capBase: false }),
+    { unused: 1 },
+  ],
   ["bicone", () => Primitives.bicone(), { unused: 2 }],
   ["bicone nx=15", () => Primitives.bicone({ nx: 15 }), { unused: 2 }],
   [

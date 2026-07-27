@@ -52,6 +52,8 @@ export { doubleCone } from "./src/solid/revolution/double-cone.js";
 export { capsule } from "./src/solid/revolution/capsule.js";
 export { torus } from "./src/solid/revolution/torus.js";
 export { sphericalRing } from "./src/solid/revolution/spherical-ring.js";
+export { paraboloid } from "./src/solid/revolution/paraboloid.js";
+export { hyperboloid } from "./src/solid/revolution/hyperboloid.js";
 
 export {
   tetrahedron,

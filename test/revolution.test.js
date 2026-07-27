@@ -40,6 +40,57 @@ describe("cylinder", () => {
   });
 });
 
+describe("hyperboloid", () => {
+  it("welds the wrap column exactly, including inexact 1/nx", () => {
+    for (const nx of [32, 15]) {
+      const result = analyze(Primitives.hyperboloid({ nx }));
+      assert.equal(result.cracks, 0, `nx=${nx}`);
+      assert.equal(result.degenerate, 0, `nx=${nx}`);
+    }
+  });
+
+  it("pinches to the waist radius at y = 0, flares to radiusTop at both rims", () => {
+    const radius = 0.25;
+    const radiusTop = 0.5;
+    const g = Primitives.hyperboloid({
+      radius,
+      radiusTop,
+      capApex: false,
+      capBase: false,
+    });
+
+    const { positions } = g;
+    let minR = Infinity;
+    let maxR = -Infinity;
+    for (let i = 0; i < positions.length / 3; i++) {
+      const r = Math.hypot(positions[i * 3], positions[i * 3 + 2]);
+      minR = Math.min(minR, r);
+      maxR = Math.max(maxR, r);
+    }
+    assert.ok(Math.abs(minR - radius) < 1e-6);
+    assert.ok(Math.abs(maxR - radiusTop) < 1e-6);
+  });
+
+  it("radiusTop = radius degenerates to a plain cylinder", () => {
+    const g = Primitives.hyperboloid({ radiusTop: 0.25, radius: 0.25 });
+    const { positions } = g;
+    for (let i = 0; i < positions.length / 3; i++) {
+      const r = Math.hypot(positions[i * 3], positions[i * 3 + 2]);
+      assert.ok(r < 1e-6 || Math.abs(r - 0.25) < 1e-6);
+    }
+  });
+
+  it("faces outward, correctly wound with and without caps", () => {
+    for (const g of [
+      Primitives.hyperboloid(),
+      Primitives.hyperboloid({ capApex: false, capBase: false }),
+      Primitives.hyperboloid({ radiusTop: 0.1, radius: 0.25, capSegments: 3 }),
+    ]) {
+      assert.equal(flippedNormalTriangles(g), 0);
+    }
+  });
+});
+
 describe("cone", () => {
   it("fans the apex without merging its per-column normals and uvs", () => {
     const nx = 16;
@@ -64,6 +115,67 @@ describe("cone", () => {
     assert.equal(result.degenerate, 0);
     assert.equal(result.cracks, 0);
     assert.equal(inwardTriangles(g), 0);
+  });
+});
+
+describe("paraboloid", () => {
+  it("welds the wrap column exactly, including inexact 1/nx", () => {
+    for (const nx of [32, 15]) {
+      const result = analyze(Primitives.paraboloid({ nx }));
+      assert.equal(result.cracks, 0, `nx=${nx}`);
+      assert.equal(result.degenerate, 0, `nx=${nx}`);
+    }
+  });
+
+  it("apex has one shared normal across columns, unlike cone's per-column ones", () => {
+    const nx = 16;
+    const ny = 1;
+    const g = Primitives.paraboloid({ nx, ny });
+
+    const { normals, positions } = g;
+    const apex = [];
+    for (let i = 0; i < positions.length / 3; i++) {
+      if (positions[i * 3 + 1] === 0.5 && positions[i * 3] === 0) apex.push(i);
+    }
+    assert.ok(apex.length > 1, "apex duplicates are kept");
+    for (const i of apex) {
+      // +0 vs -0 (r * cosPhi at r = 0, sign of cosPhi varies per column) is
+      // the same normal direction, so compare with tolerance, not ===
+      assert.ok(Math.abs(normals[i * 3] - normals[apex[0] * 3]) < 1e-9);
+      assert.ok(
+        Math.abs(normals[i * 3 + 1] - normals[apex[0] * 3 + 1]) < 1e-9,
+      );
+      assert.ok(Math.abs(normals[i * 3 + 2] - normals[apex[0] * 3 + 2]) < 1e-9);
+    }
+
+    const result = analyze(g);
+    assert.equal(result.degenerate, 0);
+    assert.equal(result.cracks, 0);
+  });
+
+  it("radius grows as sqrt of depth from the apex", () => {
+    const height = 1;
+    const radius = 0.5;
+    const g = Primitives.paraboloid({ height, radius, capBase: false });
+
+    const { positions } = g;
+    for (let i = 0; i < positions.length / 3; i++) {
+      const y = positions[i * 3 + 1];
+      const r = Math.hypot(positions[i * 3], positions[i * 3 + 2]);
+      const depth = height / 2 - y;
+      const expectedR = radius * Math.sqrt(depth / height);
+      assert.ok(Math.abs(r - expectedR) < 1e-6);
+    }
+  });
+
+  it("faces outward, correctly wound with and without the cap", () => {
+    for (const g of [
+      Primitives.paraboloid(),
+      Primitives.paraboloid({ capBase: false }),
+      Primitives.paraboloid({ capSegments: 3, phi: Math.PI, capBase: true }),
+    ]) {
+      assert.equal(flippedNormalTriangles(g), 0);
+    }
   });
 });
 
