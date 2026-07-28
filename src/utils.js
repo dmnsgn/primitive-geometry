@@ -175,10 +175,15 @@ export const getCellsTypedArray = (size) =>
 /**
  * Fan-triangulate a list of closed n-gon faces (a
  * `SimplicialComplexPolygon`'s `cells`, e.g. `[0, 1, 2, 3]`) from each face's
- * first corner into a flat, stride-3 `SimplicialComplex`-style typed array
- * (e.g. `[0, 1, 2, 0, 2, 3]`). Only valid for convex, planar faces - the same
- * assumption `polyhedron.js` makes for its own (subdivision/projection aware)
- * fan triangulation.
+ * last corner into a flat, stride-3 `SimplicialComplex`-style typed array
+ * (e.g. `[3, 0, 1, 3, 1, 2]`). Anchoring on the last corner rather than the
+ * first is deliberate for quads: for the BL/BR/TR/TL winding used by eg.
+ * `rectanglePath`, it splits the quad along the same diagonal a row-major
+ * `TRIANGLE_STRIP` produces (and that `computePlane`/`computePolarGeometry`/
+ * `computeRevolutionGeometry` already use), so displacement in a vertex
+ * shader creases consistently across every primitive in this library. Only
+ * valid for convex, planar faces - the same assumption `polyhedron.js` makes
+ * for its own (subdivision/projection aware) fan triangulation.
  * @param {Array<number[]|Uint8Array|Uint16Array|Uint32Array>} cells
  * @param {number} numVertices Used to pick the returned typed array's element size
  * @returns {(Uint8Array|Uint16Array|Uint32Array)}
@@ -191,8 +196,9 @@ export function triangulateFaces(cells, numVertices) {
 
   let index = 0;
   for (const face of cells) {
-    for (let i = 1; i < face.length - 1; i++) {
-      triangles[index] = face[0];
+    const anchor = face[face.length - 1];
+    for (let i = 0; i < face.length - 2; i++) {
+      triangles[index] = anchor;
       triangles[index + 1] = face[i];
       triangles[index + 2] = face[i + 1];
       index += 3;
