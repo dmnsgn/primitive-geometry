@@ -1,7 +1,7 @@
 /** @module superegg */
 import {
   checkArguments,
-  clamp,
+  clampMeridianSweep,
   computeRevolutionGeometry,
   signedPow,
   snapToZero,
@@ -52,11 +52,9 @@ export function superegg({
 
   const e = 2 / n;
 
-  const clampedThetaOffset = clamp(thetaOffset, 0, Math.PI);
-  const clampedTheta = clamp(
+  const [clampedTheta, clampedThetaOffset] = clampMeridianSweep(
     theta,
-    -clampedThetaOffset,
-    Math.PI - clampedThetaOffset,
+    thetaOffset,
   );
 
   function equation({ v, cosPhi, sinPhi }) {

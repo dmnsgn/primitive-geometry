@@ -78,6 +78,27 @@ export function clamp(value, min, max) {
 }
 
 /**
+ * Clamp a theta/thetaOffset meridian sweep to [0, PI]: thetaOffset first (0 =
+ * north pole), then theta to whatever range keeps thetaOffset + theta inside
+ * [0, PI] too. Shared by every meridian-based revolution shape (ellipsoid,
+ * superellipsoid, superegg, hollowSphere's own cut caps) since
+ * `computeRevolutionGeometry` only supports a pole at v = 0/1 - the sweep can
+ * never cross the axis anywhere but its own start/end.
+ * @param {number} theta
+ * @param {number} thetaOffset
+ * @returns {[number, number]} [clampedTheta, clampedThetaOffset]
+ */
+export function clampMeridianSweep(theta, thetaOffset) {
+  const clampedThetaOffset = clamp(thetaOffset, 0, Math.PI);
+  const clampedTheta = clamp(
+    theta,
+    -clampedThetaOffset,
+    Math.PI - clampedThetaOffset,
+  );
+  return [clampedTheta, clampedThetaOffset];
+}
+
+/**
  * Linear interpolation between a and b at t.
  * @param {number} a
  * @param {number} b
@@ -218,6 +239,29 @@ export function concatGeometries(geometries) {
   }
 
   return { positions, normals, uvs, cells };
+}
+
+/**
+ * Flip a geometry inside-out: negate every normal and swap 2 of each
+ * triangle's 3 indices so winding stays consistent with the flipped normal.
+ * Used to turn an outward-facing surface (eg. a standalone sphere or
+ * cylinder) into the inward-facing wall of a shell around it.
+ * @param {import("../types.js").SimplicialComplex} geometry
+ * @returns {import("../types.js").SimplicialComplex}
+ * @private
+ */
+export function invert({ positions, normals, uvs, cells }) {
+  const invertedNormals = new Float32Array(normals.length);
+  for (let i = 0; i < normals.length; i++) invertedNormals[i] = -normals[i];
+
+  const invertedCells = cells.slice();
+  for (let i = 0; i < invertedCells.length; i += 3) {
+    const tmp = invertedCells[i + 1];
+    invertedCells[i + 1] = invertedCells[i + 2];
+    invertedCells[i + 2] = tmp;
+  }
+
+  return { positions, normals: invertedNormals, uvs, cells: invertedCells };
 }
 
 /**

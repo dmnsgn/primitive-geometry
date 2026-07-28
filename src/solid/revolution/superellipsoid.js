@@ -1,7 +1,7 @@
 /** @module superellipsoid */
 import {
   checkArguments,
-  clamp,
+  clampMeridianSweep,
   computeRevolutionGeometry,
   signedPow,
   snapToZero,
@@ -58,11 +58,9 @@ export function superellipsoid({
   const e1 = 2 / n1;
   const e2 = 2 / n2;
 
-  const clampedThetaOffset = clamp(thetaOffset, 0, Math.PI);
-  const clampedTheta = clamp(
+  const [clampedTheta, clampedThetaOffset] = clampMeridianSweep(
     theta,
-    -clampedThetaOffset,
-    Math.PI - clampedThetaOffset,
+    thetaOffset,
   );
 
   function equation({ v, cosPhi, sinPhi }) {

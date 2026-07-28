@@ -108,8 +108,53 @@ const cases = [
   ],
   ["roundedCube radius=half", () => Primitives.roundedCube({ radius: 0.5 })],
 
+  ["hollowCube", () => Primitives.hollowCube()],
+  [
+    "hollowCube non-uniform",
+    () => Primitives.hollowCube({ sy: 0.6, sz: 1.5, thickness: 0.1 }),
+  ],
+  [
+    "hollowCube thin walls",
+    () => Primitives.hollowCube({ thickness: 0.05 }),
+  ],
+
   ["sphere", () => Primitives.sphere(), { unused: 2 }],
   ["sphere nx=15", () => Primitives.sphere({ nx: 15 }), { unused: 2 }],
+  ["hollowSphere", () => Primitives.hollowSphere()],
+  ["hollowSphere nx=15", () => Primitives.hollowSphere({ nx: 15 })],
+  [
+    "hollowSphere thin wall (innerRadius near radius)",
+    () => Primitives.hollowSphere({ innerRadius: 0.45 }),
+  ],
+  [
+    "hollowSphere theta<PI (short of both poles, conical caps)",
+    () => Primitives.hollowSphere({ theta: Math.PI * 0.6, thetaOffset: 0.2 }),
+  ],
+  [
+    "hollowSphere phi<TAU (flat meridian caps)",
+    () => Primitives.hollowSphere({ phi: Math.PI }),
+  ],
+  [
+    "hollowSphere theta<PI and phi<TAU (both cap types, spherical wedge)",
+    () =>
+      Primitives.hollowSphere({
+        theta: Math.PI / 2,
+        thetaOffset: Math.PI / 4,
+        phi: Math.PI * 0.7,
+        phiOffset: 0.2,
+      }),
+  ],
+  [
+    "hollowSphere theta=PI,thetaOffset=0 with phi<TAU reaching a pole (phiCap's own pole row)",
+    () =>
+      Primitives.hollowSphere({
+        theta: Math.PI,
+        thetaOffset: 0,
+        phi: Math.PI * 0.6,
+        phiOffset: 0.1,
+      }),
+    { unused: 4 },
+  ],
   ["ellipsoid", () => Primitives.ellipsoid(), { unused: 2 }],
   [
     "ellipsoid thetaOffset=0.3",
@@ -212,6 +257,12 @@ const cases = [
         roundRadius: 0.25,
       }),
     { unused: 2 },
+  ],
+  ["hollowCylinder", () => Primitives.hollowCylinder()],
+  ["hollowCylinder nx=15", () => Primitives.hollowCylinder({ nx: 15 })],
+  [
+    "hollowCylinder thin wall (innerRadius near radius)",
+    () => Primitives.hollowCylinder({ innerRadius: 0.45 }),
   ],
   ["cone", () => Primitives.cone(), { unused: 2 }],
   [

@@ -39,15 +39,18 @@ export { star } from "./src/plane/star.js";
 export { cross } from "./src/plane/cross.js";
 
 export { cube, cubeFaces, box } from "./src/solid/cuboid/cube.js";
+export { hollowCube } from "./src/solid/cuboid/hollow-cube.js";
 export { roundedCube } from "./src/solid/cuboid/rounded-cube.js";
 
 export { sphere } from "./src/solid/revolution/sphere.js";
+export { hollowSphere } from "./src/solid/revolution/hollow-sphere.js";
 export { ellipsoid } from "./src/solid/revolution/ellipsoid.js";
 export { superellipsoid } from "./src/solid/revolution/superellipsoid.js";
 export { astroidalEllipsoid } from "./src/solid/revolution/astroidal-ellipsoid.js";
 export { superegg } from "./src/solid/revolution/superegg.js";
 
 export { cylinder } from "./src/solid/revolution/cylinder.js";
+export { hollowCylinder } from "./src/solid/revolution/hollow-cylinder.js";
 export { roundedCylinder } from "./src/solid/revolution/rounded-cylinder.js";
 
 export { cone } from "./src/solid/revolution/cone.js";
