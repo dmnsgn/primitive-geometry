@@ -15,6 +15,7 @@ import { checkArguments } from "../../utils.js";
  * @property {number} [radius=0.5]
  * @property {number} [edgeSegments=1]
  * @property {number} [innerSegments=16]
+ * @property {number} [innerRadius=0]
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
  * @property {boolean} [mergeCentroid=true]
@@ -35,6 +36,7 @@ export function parallelogram({
   radius,
   edgeSegments,
   innerSegments,
+  innerRadius,
   theta,
   thetaOffset,
   mergeCentroid,
@@ -50,6 +52,7 @@ export function parallelogram({
     radius,
     edgeSegments,
     innerSegments,
+    innerRadius,
     theta,
     thetaOffset,
     mergeCentroid,

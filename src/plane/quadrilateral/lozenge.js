@@ -9,6 +9,7 @@ import { checkArguments } from "../../utils.js";
  * @property {number} [radius=0.5]
  * @property {number} [edgeSegments=1]
  * @property {number} [innerSegments=16]
+ * @property {number} [innerRadius=0]
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=HALF_PI]
  * @property {boolean} [mergeCentroid=true]
@@ -28,6 +29,7 @@ export function lozenge({
   radius,
   edgeSegments,
   innerSegments,
+  innerRadius,
   theta,
   thetaOffset,
   mergeCentroid,
@@ -41,6 +43,7 @@ export function lozenge({
     radius,
     edgeSegments,
     innerSegments,
+    innerRadius,
     theta,
     thetaOffset,
     mergeCentroid,

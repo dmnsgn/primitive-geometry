@@ -108,11 +108,40 @@ describe("polygon", () => {
       { innerSegments: 1 },
       { edgeSegments: 3 },
       { sides: 5, edgeSegments: 3 },
+      { innerRadius: 0.1 },
+      { innerRadius: 0.2, sides: 5, edgeSegments: 3 },
     ]) {
       const result = analyze(Primitives.polygon(options));
       assert.equal(result.seams, 0, JSON.stringify(options));
       assert.equal(result.cracks, 0, JSON.stringify(options));
       assert.equal(result.nonManifold, 0, JSON.stringify(options));
+    }
+  });
+
+  it("innerRadius drills a self-similar hole (scaled copy of the outer outline)", () => {
+    const sides = 6;
+    const radius = 0.5;
+    const ratio = 0.4;
+    const g = Primitives.polygon({
+      sides,
+      radius,
+      innerRadius: radius * ratio,
+      innerSegments: 1,
+    });
+
+    // mergeCentroid defaults to false once innerRadius is set: a single ring
+    // is exactly the inner loop (sides verts) followed by the outer loop.
+    const inner = Array.from({ length: sides }, (_, i) => [
+      g.positions[i * 3],
+      g.positions[i * 3 + 1],
+    ]);
+    const outer = Array.from({ length: sides }, (_, i) => [
+      g.positions[(i + sides) * 3],
+      g.positions[(i + sides) * 3 + 1],
+    ]);
+
+    for (let i = 0; i < sides; i++) {
+      assertClose(inner[i], [outer[i][0] * ratio, outer[i][1] * ratio]);
     }
   });
 });

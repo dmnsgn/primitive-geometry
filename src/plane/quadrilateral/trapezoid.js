@@ -25,10 +25,11 @@ const CORNER_COUNT = 4;
  * @property {number} [radius=0.5]
  * @property {number} [edgeSegments=1]
  * @property {number} [innerSegments=16]
+ * @property {number} [innerRadius=0]
  * @property {number} [theta=TAU] Negative values aren't supported: the
  *   corner lookup assumes `t - thetaOffset` stays non-negative.
  * @property {number} [thetaOffset=0]
- * @property {boolean} [mergeCentroid=true]
+ * @property {boolean} [mergeCentroid=innerRadius === 0]
  * @property {Function} [mapping=mappings.rectangular] Uv mapping function.
  *   Defaults to a flat, bounding-box-relative unwrap.
  */
@@ -62,9 +63,10 @@ export function trapezoid({
   radius = 0.5,
   edgeSegments = 1,
   innerSegments = 16,
+  innerRadius = 0,
   theta = TAU,
   thetaOffset = 0,
-  mergeCentroid = true,
+  mergeCentroid = innerRadius === 0,
   mapping = rectangular,
 } = {}) {
   checkArguments(arguments);
@@ -87,6 +89,7 @@ export function trapezoid({
     radius,
     segments: edgeSegments * CORNER_COUNT,
     innerSegments,
+    innerRadius,
     theta,
     thetaOffset,
     mergeCentroid,

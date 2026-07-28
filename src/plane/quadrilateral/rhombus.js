@@ -10,9 +10,10 @@ import { checkArguments, HALF_PI, TAU } from "../../utils.js";
  * @property {number} [radius=0.5]
  * @property {number} [edgeSegments=1]
  * @property {number} [innerSegments=16]
+ * @property {number} [innerRadius=0]
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=HALF_PI]
- * @property {boolean} [mergeCentroid=true]
+ * @property {boolean} [mergeCentroid=innerRadius === 0]
  * @property {Function} [mapping=mappings.concentric]
  */
 
@@ -30,9 +31,10 @@ export function rhombus({
   radius = 0.5,
   edgeSegments = 1,
   innerSegments = 16,
+  innerRadius = 0,
   theta = TAU,
   thetaOffset = HALF_PI,
-  mergeCentroid = true,
+  mergeCentroid = innerRadius === 0,
   mapping = concentric,
 } = {}) {
   checkArguments(arguments);
@@ -44,6 +46,7 @@ export function rhombus({
     radius,
     edgeSegments,
     innerSegments,
+    innerRadius,
     theta,
     thetaOffset,
     mergeCentroid,

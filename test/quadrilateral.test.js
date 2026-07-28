@@ -93,11 +93,32 @@ describe("rhombus", () => {
       { innerSegments: 1 },
       { edgeSegments: 3 },
       { edgeSegments: 3, thetaOffset: 0.5 },
+      { innerRadius: 0.1 },
+      { innerRadius: 0.2, edgeSegments: 3 },
     ]) {
       const result = analyze(Primitives.rhombus(options));
       assert.equal(result.seams, 0, JSON.stringify(options));
       assert.equal(result.cracks, 0, JSON.stringify(options));
       assert.equal(result.nonManifold, 0, JSON.stringify(options));
+    }
+  });
+
+  it("innerRadius drills a self-similar hole (scaled copy of the outer outline)", () => {
+    const radius = 0.5;
+    const ratio = 0.4;
+    const g = Primitives.rhombus({
+      radius,
+      innerRadius: radius * ratio,
+      innerSegments: 1,
+    });
+    const inner = Array.from({ length: 4 }, (_, i) => [
+      g.positions[i * 3],
+      g.positions[i * 3 + 1],
+    ]);
+    const outer = outerRing(g);
+
+    for (let i = 0; i < 4; i++) {
+      assertClose(inner[i], [outer[i][0] * ratio, outer[i][1] * ratio]);
     }
   });
 });
@@ -178,11 +199,32 @@ describe("kite", () => {
       { innerSegments: 1 },
       { edgeSegments: 3 },
       { edgeSegments: 3, ratio: 0.1 },
+      { innerRadius: 0.1 },
+      { innerRadius: 0.2, ratio: 0.1 },
     ]) {
       const result = analyze(Primitives.kite(options));
       assert.equal(result.seams, 0, JSON.stringify(options));
       assert.equal(result.cracks, 0, JSON.stringify(options));
       assert.equal(result.nonManifold, 0, JSON.stringify(options));
+    }
+  });
+
+  it("innerRadius drills a self-similar hole (scaled copy of the outer outline)", () => {
+    const radius = 0.5;
+    const ratio = 0.4;
+    const g = Primitives.kite({
+      radius,
+      innerRadius: radius * ratio,
+      innerSegments: 1,
+    });
+    const inner = Array.from({ length: 4 }, (_, i) => [
+      g.positions[i * 3],
+      g.positions[i * 3 + 1],
+    ]);
+    const outer = outerRing(g);
+
+    for (let i = 0; i < 4; i++) {
+      assertClose(inner[i], [outer[i][0] * ratio, outer[i][1] * ratio]);
     }
   });
 });
@@ -203,6 +245,7 @@ describe("lozenge", () => {
       radius: 0.4,
       edgeSegments: 2,
       innerSegments: 1,
+      innerRadius: 0.1,
     };
     assert.deepEqual(Primitives.lozenge(options), Primitives.rhombus(options));
   });
@@ -349,6 +392,8 @@ describe("trapezoid", () => {
       { innerSegments: 1 },
       { edgeSegments: 3 },
       { edgeSegments: 3, topRatio: 0.1, topOffset: 0.1 },
+      { innerRadius: 0.1 },
+      { innerRadius: 0.2, topOffset: 0.6 },
     ]) {
       const result = analyze(Primitives.trapezoid(options));
       assert.equal(result.seams, 0, JSON.stringify(options));
@@ -356,11 +401,46 @@ describe("trapezoid", () => {
       assert.equal(result.nonManifold, 0, JSON.stringify(options));
     }
   });
+
+  it("innerRadius drills a self-similar hole even once topOffset recenters the fan", () => {
+    const radius = 0.5;
+    const ratio = 0.4;
+    const topOffset = 0.6;
+    const g = Primitives.trapezoid({
+      radius,
+      topOffset,
+      innerRadius: radius * ratio,
+      innerSegments: 1,
+    });
+    const inner = Array.from({ length: 4 }, (_, i) => [
+      g.positions[i * 3],
+      g.positions[i * 3 + 1],
+    ]);
+    const outer = outerRing(g);
+    // Self-similar about the outline's own center, not world origin: inner
+    // corner = center + ratio * (outer corner - center).
+    const [cx, cy] = outer
+      .reduce(([ax, ay], [x, y]) => [ax + x, ay + y], [0, 0])
+      .map((sum) => sum / 4);
+
+    for (let i = 0; i < 4; i++) {
+      assertClose(inner[i], [
+        cx + ratio * (outer[i][0] - cx),
+        cy + ratio * (outer[i][1] - cy),
+      ]);
+    }
+  });
 });
 
 describe("parallelogram", () => {
   it("delegates to trapezoid with topRatio=1 and topOffset=shear", () => {
-    const options = { sx: 0.6, sy: 0.4, shear: 0.25, innerSegments: 1 };
+    const options = {
+      sx: 0.6,
+      sy: 0.4,
+      shear: 0.25,
+      innerSegments: 1,
+      innerRadius: 0.1,
+    };
     const p = Primitives.parallelogram(options);
     const t = Primitives.trapezoid({
       sx: options.sx,
@@ -368,6 +448,7 @@ describe("parallelogram", () => {
       topRatio: 1,
       topOffset: options.shear,
       innerSegments: options.innerSegments,
+      innerRadius: options.innerRadius,
     });
     assert.deepEqual(p.positions, t.positions);
   });

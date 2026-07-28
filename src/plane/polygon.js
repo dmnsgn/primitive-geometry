@@ -15,9 +15,10 @@ import {
  * @property {number} [radius=0.5]
  * @property {number} [edgeSegments=1]
  * @property {number} [innerSegments=16]
+ * @property {number} [innerRadius=0]
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
- * @property {boolean} [mergeCentroid=true]
+ * @property {boolean} [mergeCentroid=innerRadius === 0]
  * @property {Function} [mapping=mappings.concentric]
  */
 
@@ -40,9 +41,10 @@ export function polygon({
   radius = 0.5,
   edgeSegments = 1,
   innerSegments = 16,
+  innerRadius = 0,
   theta = TAU,
   thetaOffset = 0,
-  mergeCentroid = true,
+  mergeCentroid = innerRadius === 0,
   mapping = concentric,
 } = {}) {
   checkArguments(arguments);
@@ -53,6 +55,7 @@ export function polygon({
     radius,
     segments: edgeSegments * sides,
     innerSegments,
+    innerRadius,
     theta,
     thetaOffset,
     mergeCentroid,
