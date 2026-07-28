@@ -35,6 +35,8 @@ export function reuleaux({
 
   const cosN = 2 * Math.cos(Math.PI / (2 * n));
   const PIoverN = Math.PI / n;
+  const cosOffset = Math.cos(thetaOffset);
+  const sinOffset = Math.sin(thetaOffset);
 
   return computePolarGeometry({
     sx: 1,
@@ -46,15 +48,16 @@ export function reuleaux({
     thetaOffset,
     mergeCentroid,
     mapping,
-    equation: ({ rx, ry, t }) => [
-      rx *
-        (cosN *
-          Math.cos(0.5 * (t + PIoverN * (2 * Math.floor((n * t) / TAU) + 1))) -
-          Math.cos(PIoverN * (2 * Math.floor((n * t) / TAU) + 1))),
-      ry *
-        (cosN *
-          Math.sin(0.5 * (t + PIoverN * (2 * Math.floor((n * t) / TAU) + 1))) -
-          Math.sin(PIoverN * (2 * Math.floor((n * t) / TAU) + 1))),
-    ],
+    equation: ({ rx, t }) => {
+      const s = t - thetaOffset;
+      const phi = PIoverN * (2 * Math.floor((n * s) / TAU) + 1);
+      const px = cosN * Math.cos(0.5 * (s + phi)) - Math.cos(phi);
+      const py = cosN * Math.sin(0.5 * (s + phi)) - Math.sin(phi);
+
+      return [
+        rx * (px * cosOffset - py * sinOffset),
+        rx * (px * sinOffset + py * cosOffset),
+      ];
+    },
   });
 }

@@ -29,7 +29,7 @@ const camera = new PerspectiveCamera({
 const controls = new Controls({
   ...(hasGeometry
     ? {
-        position: [0, 0, 2],
+        position: [0, 0, 4.16],
       }
     : {
         phi: Math.PI / 4,
