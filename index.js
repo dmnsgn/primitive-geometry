@@ -3,6 +3,7 @@
  * @module index
  */
 
+// Plane
 export { rectanglePath } from "./src/plane/quadrilateral/rectangle-path.js";
 export { squarePath } from "./src/plane/quadrilateral/square-path.js";
 export { circlePath } from "./src/plane/circular/circle-path.js";
@@ -41,6 +42,7 @@ export { reuleaux } from "./src/plane/reuleaux.js";
 export { star } from "./src/plane/star.js";
 export { cross } from "./src/plane/cross.js";
 
+// Solid
 export { cube, cubeFaces, box } from "./src/solid/cuboid/cube.js";
 export { hollowCube } from "./src/solid/cuboid/hollow-cube.js";
 export { roundedCube } from "./src/solid/cuboid/rounded-cube.js";
@@ -116,6 +118,7 @@ export { octasphere } from "./src/solid/polyhedra/geodesic-dome/octasphere.js";
 export { dodecasphere } from "./src/solid/polyhedra/geodesic-dome/dodecasphere.js";
 export { icosphere } from "./src/solid/polyhedra/geodesic-dome/icosphere.js";
 
+// Utils
 export * as mappings from "./src/mappings.js";
 
 export * as utils from "./src/utils.js";

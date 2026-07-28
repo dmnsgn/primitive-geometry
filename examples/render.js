@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/no-top-level-side-effects */
 import * as Primitives from "../index.js";
 
 import { mat3, mat4 } from "gl-matrix";
@@ -8,38 +9,38 @@ import typedArrayInterleave from "typed-array-interleave";
 import { PerspectiveCamera, Controls } from "cameras";
 import { Pane } from "tweakpane";
 
-const params = new URLSearchParams(window.location.search);
+const params = new URLSearchParams(location.search);
 
 // Setup
 const canvas = document.createElement("canvas");
-document.querySelector("main").appendChild(canvas);
+document.querySelector("main").append(canvas);
 const ctx = createContext({
   canvas,
   pixelRatio: devicePixelRatio,
 });
 
+const hasGeometry = params.has("geometry");
 const camera = new PerspectiveCamera({
-  fov: Math.PI / 4,
+  fov: Math.PI / 8,
   near: 0.1,
   far: 100,
   viewport: [0, 0, window.innerWidth, window.innerHeight],
 });
 const controls = new Controls({
-  ...(params.has("geometry") && Primitives[params.get("geometry")]
+  ...(hasGeometry
     ? {
         position: [0, 0, 2],
       }
     : {
-        phi: Math.PI / 3,
-        theta: Math.PI / 4,
-        distance: 25 * (window.innerHeight / window.innerWidth),
+        phi: Math.PI / 4,
+        theta: Math.PI / 8,
+        distance: 60 * (window.innerHeight / window.innerWidth),
       }),
   element: ctx.gl.canvas,
   camera,
   distanceBounds: [1, 100],
 });
 controls.updatePosition();
-controls.target = [0, 0, 0];
 
 // GUI
 const modeOptions = ["texture", "normal", "flat-shaded", "uv", "wireframe"];
@@ -65,14 +66,13 @@ pane.addBinding(CONFIG, "normals");
 pane.addBinding(CONFIG, "seams");
 
 setInterval(() => {
-  if (CONFIG.cycle) {
-    CONFIG.mode =
-      modeOptions[
-        (modeOptions.findIndex((m) => m === CONFIG.mode) + 1) %
-          modeOptions.length
-      ];
-    pane.refresh();
+  if (!CONFIG.cycle) {
+    return;
   }
+
+  CONFIG.mode =
+    modeOptions[(modeOptions.indexOf(CONFIG.mode) + 1) % modeOptions.length];
+  pane.refresh();
 }, 2000);
 
 // Assets
@@ -296,11 +296,11 @@ ctx.frame(() => {
 
     const isLine =
       !mesh.geometry.normals || mesh.quads || CONFIG.mode === "wireframe";
-    ctx.submit(!isLine ? drawCmd : drawLinesCmd, {
+    ctx.submit(isLine ? drawLinesCmd : drawCmd, {
       attributes: mesh.attributes,
       indices: isLine ? mesh.edges : mesh.indices,
       uniforms: {
-        uMode: modeOptions.findIndex((o) => o === CONFIG.mode),
+        uMode: modeOptions.indexOf(CONFIG.mode),
         uProjectionMatrix: camera.projectionMatrix,
         uViewMatrix: camera.viewMatrix,
         uInverseViewMatrix: camera.inverseViewMatrix,
@@ -321,7 +321,7 @@ ctx.frame(() => {
         indices: unitBox.indicesBuffer,
         uniforms: {
           uOpacity: 0.2,
-          uMode: modeOptions.findIndex((o) => o === CONFIG.mode),
+          uMode: modeOptions.indexOf(CONFIG.mode),
           uProjectionMatrix: camera.projectionMatrix,
           uViewMatrix: camera.viewMatrix,
           uInverseViewMatrix: camera.inverseViewMatrix,
@@ -340,7 +340,7 @@ ctx.frame(() => {
         },
         indices: bboxCells,
         uniforms: {
-          uMode: modeOptions.findIndex((o) => o === CONFIG.mode),
+          uMode: modeOptions.indexOf(CONFIG.mode),
           uProjectionMatrix: camera.projectionMatrix,
           uViewMatrix: camera.viewMatrix,
           uInverseViewMatrix: camera.inverseViewMatrix,
@@ -382,7 +382,7 @@ ctx.frame(() => {
         attributes: mesh.normalsAttributes,
         indices: mesh.normalsIndices,
         uniforms: {
-          uMode: modeOptions.findIndex((o) => o === CONFIG.mode),
+          uMode: modeOptions.indexOf(CONFIG.mode),
           uProjectionMatrix: camera.projectionMatrix,
           uViewMatrix: camera.viewMatrix,
           uInverseViewMatrix: camera.inverseViewMatrix,
@@ -404,11 +404,11 @@ ctx.frame(() => {
       });
     }
 
-    ctx.submit(!isLine ? drawCmd : drawLinesCmd, {
+    ctx.submit(isLine ? drawLinesCmd : drawCmd, {
       attributes: mesh.attributes,
       indices: isLine ? mesh.edges : mesh.indices,
       uniforms: {
-        uMode: modeOptions.findIndex((o) => o === CONFIG.mode),
+        uMode: modeOptions.indexOf(CONFIG.mode),
         uProjectionMatrix: camera.projectionMatrix,
         uViewMatrix: camera.viewMatrix,
         uInverseViewMatrix: camera.inverseViewMatrix,
@@ -490,8 +490,8 @@ function computeDiscontinuities(geometry, epsilon = 1e-4) {
 
   const linePositions = new Float32Array(lines.length * 2 * 3);
   const lineColors = new Float32Array(lines.length * 2 * 3);
-  lines.forEach(([[a, b], type], index) => {
-    [a, b].forEach((v, end) => {
+  for (const [index, [[a, b], type]] of lines.entries()) {
+    for (const [end, v] of [a, b].entries()) {
       const offset = (index * 2 + end) * 3;
       for (let i = 0; i < 3; i++) {
         // Nudge along the normal to avoid z-fighting with the surface
@@ -499,8 +499,8 @@ function computeDiscontinuities(geometry, epsilon = 1e-4) {
           positions[v * 3 + i] + (normals?.[v * 3 + i] || 0) * 2e-3;
         lineColors[offset + i] = TYPE_COLORS[type][i];
       }
-    });
-  });
+    }
+  }
 
   return { positions: linePositions, colors: lineColors, stats };
 }
@@ -585,25 +585,29 @@ const createMesh = (geometry) => ({
       }
     : {
         aPosition: ctx.vertexBuffer(geometry.positions),
-        aColor: ctx.vertexBuffer(
-          geometry.positions.map((p) => p * 0.5 + 0.5),
-        ),
+        aColor: ctx.vertexBuffer(geometry.positions.map((p) => p * 0.5 + 0.5)),
       },
   indices: ctx.indexBuffer(geometry.cells),
 });
 
-const setGeometries = (geometries) => {
-  console.table(geometries);
+const setGeometries = (geometryGroups) => {
+  console.table(geometryGroups);
 
   // Each entry is either null (grid break), a single geometry, or an array of
   // geometries to stack on the y axis at the same x/z grid position.
-  const slots = geometries.map((entry) =>
-    entry === null ? null : Array.isArray(entry) ? entry : [entry],
-  );
+  const toSlots = (entries) =>
+    entries.map((entry) =>
+      entry === null ? null : Array.isArray(entry) ? entry : [entry],
+    );
 
-  // Create the meshes for rendering, grouped by slot for positioning
-  const meshSlots = slots.map((slot) => slot && slot.map(createMesh));
-  meshes = meshSlots.flatMap((slot) => slot || [null]);
+  // Create the meshes for rendering, grouped by group then by slot for
+  // positioning
+  const groupMeshSlots = geometryGroups.map((entries) =>
+    toSlots(entries).map((slot) => slot && slot.map(createMesh)),
+  );
+  meshes = groupMeshSlots.flatMap((meshSlots) =>
+    meshSlots.flatMap((slot) => slot || [null]),
+  );
   console.log(meshes);
 
   meshes.filter(Boolean).forEach((mesh) => {
@@ -630,45 +634,61 @@ const setGeometries = (geometries) => {
     meshes.filter(Boolean).map(({ geometry, seamStats }) => ({
       name: geometry.name,
       vertices: geometry.positions.length / 3,
-      ...(seamStats || {}),
+      ...seamStats,
     })),
   );
 
-  // Position them on the x/z grid, one slot per grid cell
+  // Position each group on its own z-row grid, placed side by side along the
+  // x axis (each column reserves gridSize * offset, so groups never
+  // overlap), then center the whole arrangement around x = 0. Y stays 0 -
+  // only a slot's own nested meshes still stack on y.
   const offset = 1.5;
-  const { gridSize } = meshSlots.reduce(
-    (current, slot) => {
-      if (slot) {
-        current.count++;
-      } else {
-        current.count = 0;
-      }
-      current.gridSize = Math.max(current.gridSize, current.count);
-      return current;
-    },
-    { gridSize: 0, count: 0 },
+  const groupLayouts = groupMeshSlots.map((meshSlots) => {
+    const { gridSize } = meshSlots.reduce(
+      (current, slot) => {
+        if (slot) {
+          current.count++;
+        } else {
+          current.count = 0;
+        }
+        current.gridSize = Math.max(current.gridSize, current.count);
+        return current;
+      },
+      { gridSize: 0, count: 0 },
+    );
+    return { meshSlots, gridSize };
+  });
+
+  const totalWidth = groupLayouts.reduce(
+    (sum, { gridSize }) => sum + gridSize * offset,
+    0,
   );
+  let groupStartX = -totalWidth * 0.5 + offset * 0.5;
 
-  const halfSize = (gridSize - 1) * 0.5;
-  let i = 0;
-  for (const slot of meshSlots) {
-    if (!slot) {
-      if (i % gridSize !== 0) i += gridSize - (i % gridSize);
-      continue;
+  for (const { meshSlots, gridSize } of groupLayouts) {
+    let i = 0;
+    for (const slot of meshSlots) {
+      if (!slot) {
+        if (i % gridSize !== 0) i += gridSize - (i % gridSize);
+        continue;
+      }
+      const x = groupStartX + (i % gridSize) * offset;
+      const z = Math.trunc(i / gridSize) * offset;
+      // Stack a slot's meshes on the y axis, starting at y = 0
+      for (const [level, mesh] of slot.entries()) {
+        mesh.translation = [x, -level * offset, z];
+      }
+      i++;
     }
-    const x = (i % gridSize) * offset - halfSize * offset;
-    const z = Math.trunc(i / gridSize) * offset;
-    // Stack a slot's meshes on the y axis, starting at y = 0
-    for (const [level, mesh] of slot.entries()) {
-      mesh.translation = [x, -level * offset, z];
-    }
-    i++;
-  }
 
-  const lastSlot = meshSlots.findLast(Boolean);
-  const halfGridSize = lastSlot.at(-1).translation[2] * 0.5;
-  for (const mesh of meshes) {
-    if (mesh) mesh.translation[2] -= halfGridSize;
+    const lastSlot = meshSlots.findLast(Boolean);
+    const halfGridSize = lastSlot.at(-1).translation[2] * 0.5;
+    for (const slot of meshSlots) {
+      if (!slot) continue;
+      for (const mesh of slot) mesh.translation[2] -= halfGridSize;
+    }
+
+    groupStartX += gridSize * offset;
   }
 };
 

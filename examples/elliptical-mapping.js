@@ -2,7 +2,7 @@ import * as Primitives from "../index.js";
 
 import { setGeometries, pane, controls, CONFIG } from "./render.js";
 
-const params = new URLSearchParams(window.location.search);
+const params = new URLSearchParams(location.search);
 
 const update = (options) => {
   setGeometries(
@@ -52,7 +52,7 @@ const update = (options) => {
 };
 
 const mappingOptions = Object.keys(Primitives.mappings);
-if (params.has("screenshot")) window.screenshotItems = mappingOptions;
+if (params.has("screenshot")) globalThis.screenshotItems = mappingOptions;
 
 CONFIG.mapping = "";
 CONFIG.theta = Primitives.utils.TAU;
@@ -82,7 +82,7 @@ pane
   .on("change", (event) => {
     update(getGeometryOptions());
     if (params.has("screenshot")) {
-      window.dispatchEvent(new CustomEvent("screenshot"));
+      globalThis.dispatchEvent(new CustomEvent("screenshot"));
     }
   });
 pane
@@ -111,7 +111,7 @@ pane.addBinding(CONFIG, "cycleMapping");
 CONFIG.mapping = params.get("mapping");
 if (params.has("screenshot")) {
   CONFIG.axes = false;
-  document.querySelector("main h1").innerHTML = ``;
+  document.querySelector("main h1").replaceChildren();
   update();
   pane.refresh();
   pane.dispose();
@@ -126,13 +126,15 @@ if (params.has("screenshot")) {
 }
 
 setInterval(() => {
-  if (CONFIG.cycleMapping) {
-    CONFIG.mapping =
-      mappingOptions[
-        (mappingOptions.findIndex((m) => m === CONFIG.mapping) + 1) %
-          mappingOptions.length
-      ];
-
-    pane.refresh();
+  if (!CONFIG.cycleMapping) {
+  	return;
   }
+
+  CONFIG.mapping =
+    mappingOptions[
+      (mappingOptions.indexOf(CONFIG.mapping) + 1) %
+        mappingOptions.length
+    ];
+
+  pane.refresh();
 }, 2000);

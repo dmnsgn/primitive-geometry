@@ -2,7 +2,7 @@ import * as Primitives from "../index.js";
 
 import { modeOptions, setGeometries } from "./render.js";
 
-const params = new URLSearchParams(window.location.search);
+const params = new URLSearchParams(location.search);
 
 // I don't like performances, just give me the biggest you've got
 // Primitives.utils.setTypedArrayType(Uint32Array);
@@ -10,148 +10,155 @@ const params = new URLSearchParams(window.location.search);
 const named = (name, geometry) => Object.assign(geometry, { name });
 
 const geometries = params.has("geometry")
-  ? params
-      .get("geometry")
-      .split(",")
-      .map(
-        (geometry) =>
-          Primitives[geometry] && named(geometry, Primitives[geometry]()),
-      )
-      .filter(Boolean)
+  ? [
+      params
+        .get("geometry")
+        .split(",")
+        .map(
+          (geometry) =>
+            Primitives[geometry] && named(geometry, Primitives[geometry]()),
+        )
+        .filter(Boolean),
+    ]
   : [
-      named("rectanglePath", Primitives.rectanglePath()),
-      named("squarePath", Primitives.squarePath()),
-      named("circlePath", Primitives.circlePath()),
-      null,
-      named("quadGrid", Primitives.quadGrid()),
-      named("triangularGrid", Primitives.triangularGrid()),
-      named("hexagonalGrid", Primitives.hexagonalGrid()),
-      null,
-      named("quad", Primitives.quad()),
-      named("plane", Primitives.plane()),
-      named("roundedRectangle", Primitives.roundedRectangle()),
-      named("stadium", Primitives.stadium()),
-      null,
-      named("kite", Primitives.kite()),
-      named("rhombus", Primitives.rhombus()),
-      named("lozenge", Primitives.lozenge()),
-      named("trapezoid", Primitives.trapezoid()),
-      named("parallelogram", Primitives.parallelogram()),
-      null,
-      named("arbelos", Primitives.arbelos()),
-      named("lens", Primitives.lens()),
-      named("lune", Primitives.lune()),
-      named("salinon", Primitives.salinon()),
-      named("triquetra", Primitives.triquetra()),
-      named("yinYang", Primitives.yinYang()),
-      null,
-      named("ellipse", Primitives.ellipse()),
-      named("disc", Primitives.disc()),
-      named("superellipse", Primitives.superellipse()),
-      named("squircle", Primitives.squircle()),
-      named("astroid", Primitives.astroid()),
-      named("annulus", Primitives.annulus()),
-      null,
-      named("polygon", Primitives.polygon()),
-      named("reuleaux", Primitives.reuleaux()),
-      named("star", Primitives.star()),
-      named("cross", Primitives.cross()),
-      null,
+      // Plane
       [
-        named("cube", Primitives.cube()),
-        named("cubeFaces", Primitives.cubeFaces()),
+        named("rectanglePath", Primitives.rectanglePath()),
+        named("squarePath", Primitives.squarePath()),
+        named("circlePath", Primitives.circlePath()),
+        null,
+        named("quadGrid", Primitives.quadGrid()),
+        named("triangularGrid", Primitives.triangularGrid()),
+        named("hexagonalGrid", Primitives.hexagonalGrid()),
+        null,
+        named("quad", Primitives.quad()),
+        named("plane", Primitives.plane()),
+        named("roundedRectangle", Primitives.roundedRectangle()),
+        named("stadium", Primitives.stadium()),
+        null,
+        named("kite", Primitives.kite()),
+        named("rhombus", Primitives.rhombus()),
+        named("lozenge", Primitives.lozenge()),
+        named("trapezoid", Primitives.trapezoid()),
+        named("parallelogram", Primitives.parallelogram()),
+        null,
+        named("arbelos", Primitives.arbelos()),
+        named("lens", Primitives.lens()),
+        named("lune", Primitives.lune()),
+        named("salinon", Primitives.salinon()),
+        named("triquetra", Primitives.triquetra()),
+        named("yinYang", Primitives.yinYang()),
+        null,
+        named("ellipse", Primitives.ellipse()),
+        named("disc", Primitives.disc()),
+        named("superellipse", Primitives.superellipse()),
+        named("squircle", Primitives.squircle()),
+        named("astroid", Primitives.astroid()),
+        named("annulus", Primitives.annulus()),
+        null,
+        named("polygon", Primitives.polygon()),
+        named("reuleaux", Primitives.reuleaux()),
+        named("star", Primitives.star()),
+        named("cross", Primitives.cross()),
       ],
-      named("hollowCube", Primitives.hollowCube()),
-      named("roundedCube", Primitives.roundedCube()),
-      null,
-      null,
-      named("sphere", Primitives.sphere()),
-      named("hollowSphere", Primitives.hollowSphere()),
-      named("ellipsoid", Primitives.ellipsoid()),
-      named("superellipsoid", Primitives.superellipsoid()),
-      named("astroidalEllipsoid", Primitives.astroidalEllipsoid()),
-      named("superegg", Primitives.superegg()),
-      null,
-      named("cylinder", Primitives.cylinder()),
-      named("hollowCylinder", Primitives.hollowCylinder()),
-      named("roundedCylinder", Primitives.roundedCylinder()),
-      null,
-      named("cone", Primitives.cone()),
-      named("bicone", Primitives.bicone()),
-      named("sphericon", Primitives.sphericon()),
-      named("doubleCone", Primitives.doubleCone()),
-      named("capsule", Primitives.capsule()),
-      null,
-      named("torus", Primitives.torus()),
-      named("apple", Primitives.apple()),
-      named("lemon", Primitives.lemon()),
-      named("sphericalRing", Primitives.sphericalRing()),
-      null,
-      named("barrel", Primitives.barrel()),
-      named("hyperboloid", Primitives.hyperboloid()),
-      named("paraboloid", Primitives.paraboloid()),
-      named("funnel", Primitives.funnel()),
-      null,
+      // Solid
       [
-        named("tetrahedron", Primitives.tetrahedron()),
-        named("tetrahedronFaces", Primitives.tetrahedronFaces()),
-      ],
-      [
-        named("hexahedron", Primitives.hexahedron()),
-        named("hexahedronFaces", Primitives.hexahedronFaces()),
-      ],
-      [
-        named("octahedron", Primitives.octahedron()),
-        named("octahedronFaces", Primitives.octahedronFaces()),
-      ],
-      [
-        named("dodecahedron", Primitives.dodecahedron()),
-        named("dodecahedronFaces", Primitives.dodecahedronFaces()),
-      ],
-      [
-        named("icosahedron", Primitives.icosahedron()),
-        named("icosahedronFaces", Primitives.icosahedronFaces()),
-      ],
-      null,
-      named("tetrasphere", Primitives.tetrasphere()),
-      named("hexasphere", Primitives.hexasphere()),
-      named("octasphere", Primitives.octasphere()),
-      named("dodecasphere", Primitives.dodecasphere()),
-      named("icosphere", Primitives.icosphere()),
-      null,
-      [
-        named("greatDodecahedron", Primitives.greatDodecahedron()),
-        named("greatDodecahedronFaces", Primitives.greatDodecahedronFaces()),
-      ],
-      [
-        named("greatIcosahedron", Primitives.greatIcosahedron()),
-        named("greatIcosahedronFaces", Primitives.greatIcosahedronFaces()),
-      ],
-      [
-        named(
-          "smallStellatedDodecahedron",
-          Primitives.smallStellatedDodecahedron(),
-        ),
-        named(
-          "smallStellatedDodecahedronFaces",
-          Primitives.smallStellatedDodecahedronFaces(),
-        ),
-      ],
-      [
-        named(
-          "greatStellatedDodecahedron",
-          Primitives.greatStellatedDodecahedron(),
-        ),
-        named(
-          "greatStellatedDodecahedronFaces",
-          Primitives.greatStellatedDodecahedronFaces(),
-        ),
+        [
+          named("cube", Primitives.cube()),
+          named("cubeFaces", Primitives.cubeFaces()),
+        ],
+        named("hollowCube", Primitives.hollowCube()),
+        named("roundedCube", Primitives.roundedCube()),
+        null,
+        null,
+        named("sphere", Primitives.sphere()),
+        named("hollowSphere", Primitives.hollowSphere()),
+        named("ellipsoid", Primitives.ellipsoid()),
+        named("superellipsoid", Primitives.superellipsoid()),
+        named("astroidalEllipsoid", Primitives.astroidalEllipsoid()),
+        named("superegg", Primitives.superegg()),
+        null,
+        named("cylinder", Primitives.cylinder()),
+        named("hollowCylinder", Primitives.hollowCylinder()),
+        named("roundedCylinder", Primitives.roundedCylinder()),
+        null,
+        named("cone", Primitives.cone()),
+        named("bicone", Primitives.bicone()),
+        named("sphericon", Primitives.sphericon()),
+        named("doubleCone", Primitives.doubleCone()),
+        named("capsule", Primitives.capsule()),
+        null,
+        named("torus", Primitives.torus()),
+        named("apple", Primitives.apple()),
+        named("lemon", Primitives.lemon()),
+        named("sphericalRing", Primitives.sphericalRing()),
+        null,
+        named("barrel", Primitives.barrel()),
+        named("hyperboloid", Primitives.hyperboloid()),
+        named("paraboloid", Primitives.paraboloid()),
+        named("funnel", Primitives.funnel()),
+        null,
+        [
+          named("tetrahedron", Primitives.tetrahedron()),
+          named("tetrahedronFaces", Primitives.tetrahedronFaces()),
+        ],
+        [
+          named("hexahedron", Primitives.hexahedron()),
+          named("hexahedronFaces", Primitives.hexahedronFaces()),
+        ],
+        [
+          named("octahedron", Primitives.octahedron()),
+          named("octahedronFaces", Primitives.octahedronFaces()),
+        ],
+        [
+          named("dodecahedron", Primitives.dodecahedron()),
+          named("dodecahedronFaces", Primitives.dodecahedronFaces()),
+        ],
+        [
+          named("icosahedron", Primitives.icosahedron()),
+          named("icosahedronFaces", Primitives.icosahedronFaces()),
+        ],
+        null,
+        named("tetrasphere", Primitives.tetrasphere()),
+        named("hexasphere", Primitives.hexasphere()),
+        named("octasphere", Primitives.octasphere()),
+        named("dodecasphere", Primitives.dodecasphere()),
+        named("icosphere", Primitives.icosphere()),
+        null,
+        [
+          named("greatDodecahedron", Primitives.greatDodecahedron()),
+          named("greatDodecahedronFaces", Primitives.greatDodecahedronFaces()),
+        ],
+        [
+          named("greatIcosahedron", Primitives.greatIcosahedron()),
+          named("greatIcosahedronFaces", Primitives.greatIcosahedronFaces()),
+        ],
+        [
+          named(
+            "smallStellatedDodecahedron",
+            Primitives.smallStellatedDodecahedron(),
+          ),
+          named(
+            "smallStellatedDodecahedronFaces",
+            Primitives.smallStellatedDodecahedronFaces(),
+          ),
+        ],
+        [
+          named(
+            "greatStellatedDodecahedron",
+            Primitives.greatStellatedDodecahedron(),
+          ),
+          named(
+            "greatStellatedDodecahedronFaces",
+            Primitives.greatStellatedDodecahedronFaces(),
+          ),
+        ],
       ],
     ];
 
 setGeometries(geometries);
 
 if (params.has("screenshot")) {
-  window.screenshotItems = [...modeOptions, "bbox"];
-  window.dispatchEvent(new CustomEvent("screenshot"));
+  globalThis.screenshotItems = [...modeOptions, "bbox"];
+  globalThis.dispatchEvent(new CustomEvent("screenshot"));
 }
