@@ -11,6 +11,10 @@ import { analyze } from "./helpers.js";
 // - degenerate: collapsed rings kept on purpose (explicit mergeCentroid opt-out)
 // - unused: collapsed rings have one more duplicate (the wrap column) than fan
 //   triangles, kept for uniform grid indexing
+// - epsilon: shapes with a genuine cusp (zero derivative) at the pole pinch
+//   the ring right after it to a tiny, non-uniform radius - two mirrored
+//   columns can land within the default 1e-4 proximity net despite being
+//   legitimately distinct (not a wrap-seam pair), so the net needs tightening
 const cases = [
   ["plane", () => Primitives.plane()],
   ["quad", () => Primitives.quad()],
@@ -28,6 +32,8 @@ const cases = [
   ["disc", () => Primitives.disc()],
   ["superellipse", () => Primitives.superellipse()],
   ["squircle", () => Primitives.squircle()],
+  ["astroid", () => Primitives.astroid()],
+  ["astroid segments=15", () => Primitives.astroid({ segments: 15 })],
   ["annulus", () => Primitives.annulus()],
   ["annulus segments=15", () => Primitives.annulus({ segments: 15 })],
   ["reuleaux", () => Primitives.reuleaux()],
@@ -124,6 +130,11 @@ const cases = [
     "superellipsoid n1=1,n2=4 (meridian ridge)",
     () => Primitives.superellipsoid({ n1: 1, n2: 4 }),
     { unused: 2 },
+  ],
+  [
+    "astroidalEllipsoid",
+    () => Primitives.astroidalEllipsoid(),
+    { unused: 2, epsilon: 1e-5 },
   ],
   [
     "superegg",
@@ -324,7 +335,7 @@ const cases = [
 describe("seams", () => {
   for (const [name, create, expected = {}] of cases) {
     it(name, () => {
-      const result = analyze(create());
+      const result = analyze(create(), expected.epsilon);
 
       assert.equal(result.nan, 0, "NaN positions");
       assert.equal(result.outOfBounds, 0, "out of bounds cell indices");

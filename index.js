@@ -30,6 +30,7 @@ export { ellipse } from "./src/plane/circular/ellipse.js";
 export { disc } from "./src/plane/circular/disc.js";
 export { superellipse } from "./src/plane/circular/superellipse.js";
 export { squircle } from "./src/plane/circular/squircle.js";
+export { astroid } from "./src/plane/circular/astroid.js";
 export { annulus } from "./src/plane/circular/annulus.js";
 
 export { polygon } from "./src/plane/polygon.js";
@@ -43,6 +44,7 @@ export { roundedCube } from "./src/solid/cuboid/rounded-cube.js";
 export { sphere } from "./src/solid/revolution/sphere.js";
 export { ellipsoid } from "./src/solid/revolution/ellipsoid.js";
 export { superellipsoid } from "./src/solid/revolution/superellipsoid.js";
+export { astroidalEllipsoid } from "./src/solid/revolution/astroidal-ellipsoid.js";
 export { superegg } from "./src/solid/revolution/superegg.js";
 
 export { cylinder } from "./src/solid/revolution/cylinder.js";
