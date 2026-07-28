@@ -3,6 +3,7 @@ import { rectangular } from "../../mappings.js";
 import {
   checkArguments,
   computeCap,
+  computeGridQuad,
   getCellsTypedArray,
   normalize,
   TAU,
@@ -96,8 +97,7 @@ export function torus({
       minorSegments * capFans * 3,
   );
 
-  let vertexIndex = 0;
-  let cellIndex = 0;
+  const indices = { vertex: 0, cell: 0 };
 
   for (let j = 0; j <= minorSegments; j++) {
     const v = j / minorSegments;
@@ -106,7 +106,7 @@ export function torus({
     const cosTheta = -Math.cos(t);
     const sinTheta = Math.sin(t);
 
-    for (let i = 0; i <= segments; i++, vertexIndex++) {
+    for (let i = 0; i <= segments; i++, indices.vertex++) {
       const u = i / segments;
 
       const p = (wrapPhi && i === segments ? 0 : u) * phi + phiOffset;
@@ -115,9 +115,9 @@ export function torus({
 
       const radial = radius + minorRadius * minorSx * cosTheta;
 
-      positions[vertexIndex * 3] = sx * radial * cosPhi;
-      positions[vertexIndex * 3 + 1] = sy * radial * sinPhi;
-      positions[vertexIndex * 3 + 2] = minorRadius * minorSy * sinTheta;
+      positions[indices.vertex * 3] = sx * radial * cosPhi;
+      positions[indices.vertex * 3 + 1] = sy * radial * sinPhi;
+      positions[indices.vertex * 3 + 2] = minorRadius * minorSy * sinTheta;
 
       // sx/sy (footprint) and minorSx/minorSy (tube cross-section) together
       // scale the standard torus by a constant diagonal matrix, so its
@@ -134,33 +134,19 @@ export function torus({
 
       normalize(TMP);
 
-      normals[vertexIndex * 3] = TMP[0];
-      normals[vertexIndex * 3 + 1] = TMP[1];
-      normals[vertexIndex * 3 + 2] = TMP[2];
+      normals[indices.vertex * 3] = TMP[0];
+      normals[indices.vertex * 3 + 1] = TMP[1];
+      normals[indices.vertex * 3 + 2] = TMP[2];
 
-      uvs[vertexIndex * 2] = u;
-      uvs[vertexIndex * 2 + 1] = v;
+      uvs[indices.vertex * 2] = u;
+      uvs[indices.vertex * 2 + 1] = v;
 
-      if (j > 0 && i > 0) {
-        const a = (segments + 1) * j + i - 1;
-        const b = (segments + 1) * (j - 1) + i - 1;
-        const c = (segments + 1) * (j - 1) + i;
-        const d = (segments + 1) * j + i;
-
-        cells[cellIndex] = a;
-        cells[cellIndex + 1] = b;
-        cells[cellIndex + 2] = d;
-
-        cells[cellIndex + 3] = b;
-        cells[cellIndex + 4] = c;
-        cells[cellIndex + 5] = d;
-
-        cellIndex += 6;
-      }
+      // flip=-1: with i (phi) as the row-stride axis, this is the winding
+      // that keeps the b-c split facing the same way as the original a-d
+      // split it replaces
+      if (j > 0 && i > 0) computeGridQuad(cells, indices, segments + 1, -1);
     }
   }
-
-  const indices = { vertex: vertexIndex, cell: cellIndex };
 
   const angleAt = (j) => {
     const v = j / minorSegments;

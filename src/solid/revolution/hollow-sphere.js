@@ -2,6 +2,7 @@
 import {
   checkArguments,
   clampMeridianSweep,
+  computeGridQuad,
   concatGeometries,
   getCellsTypedArray,
   invert,
@@ -35,22 +36,21 @@ function thetaCap({ t, phi, phiOffset, nx, capSegments, radius, innerRadius, fli
   const cosT = Math.cos(t);
   const sinT = Math.sin(t);
 
-  let vertexIndex = 0;
-  let cellIndex = 0;
+  const indices = { vertex: 0, cell: 0 };
 
   for (let j = 0; j <= capSegments; j++) {
     const r = innerRadius + (radius - innerRadius) * (j / capSegments);
 
-    for (let i = 0; i <= nx; i++, vertexIndex++) {
+    for (let i = 0; i <= nx; i++, indices.vertex++) {
       const u = i / nx;
       const p = (wrap && i === nx ? 0 : u) * phi + phiOffset;
       const cosPhi = Math.cos(p);
       const sinPhi = Math.sin(p);
       const [dx, dy, dz] = sphereDirection(t, cosPhi, sinPhi);
 
-      positions[vertexIndex * 3] = r * dx;
-      positions[vertexIndex * 3 + 1] = r * dy;
-      positions[vertexIndex * 3 + 2] = r * dz;
+      positions[indices.vertex * 3] = r * dx;
+      positions[indices.vertex * 3 + 1] = r * dy;
+      positions[indices.vertex * 3 + 2] = r * dz;
 
       // d/dt of sphereDirection's (dx, dy, dz), the +theta tangent
       TMP[0] = flip * -cosPhi * cosT;
@@ -58,36 +58,14 @@ function thetaCap({ t, phi, phiOffset, nx, capSegments, radius, innerRadius, fli
       TMP[2] = flip * sinPhi * cosT;
       normalize(TMP);
 
-      normals[vertexIndex * 3] = TMP[0];
-      normals[vertexIndex * 3 + 1] = TMP[1];
-      normals[vertexIndex * 3 + 2] = TMP[2];
+      normals[indices.vertex * 3] = TMP[0];
+      normals[indices.vertex * 3 + 1] = TMP[1];
+      normals[indices.vertex * 3 + 2] = TMP[2];
 
-      uvs[vertexIndex * 2] = u;
-      uvs[vertexIndex * 2 + 1] = j / capSegments;
+      uvs[indices.vertex * 2] = u;
+      uvs[indices.vertex * 2 + 1] = j / capSegments;
 
-      if (j > 0 && i > 0) {
-        const a = vertexIndex - cols - 1;
-        const b = vertexIndex - cols;
-        const c = vertexIndex - 1;
-        const d = vertexIndex;
-
-        if (flip === 1) {
-          cells[cellIndex] = a;
-          cells[cellIndex + 1] = c;
-          cells[cellIndex + 2] = b;
-          cells[cellIndex + 3] = b;
-          cells[cellIndex + 4] = c;
-          cells[cellIndex + 5] = d;
-        } else {
-          cells[cellIndex] = a;
-          cells[cellIndex + 1] = b;
-          cells[cellIndex + 2] = c;
-          cells[cellIndex + 3] = b;
-          cells[cellIndex + 4] = d;
-          cells[cellIndex + 5] = c;
-        }
-        cellIndex += 6;
-      }
+      if (j > 0 && i > 0) computeGridQuad(cells, indices, cols, flip);
     }
   }
 
@@ -116,21 +94,20 @@ function phiCap({ p, theta, thetaOffset, ny, capSegments, radius, innerRadius, f
   const cosP = Math.cos(p);
   const sinP = Math.sin(p);
 
-  let vertexIndex = 0;
-  let cellIndex = 0;
+  const indices = { vertex: 0, cell: 0 };
 
   for (let j = 0; j <= capSegments; j++) {
     const r = innerRadius + (radius - innerRadius) * (j / capSegments);
 
-    for (let i = 0; i <= ny; i++, vertexIndex++) {
+    for (let i = 0; i <= ny; i++, indices.vertex++) {
       const v = i / ny;
       const t = thetaOffset + theta * v;
       const sinT = Math.sin(t);
       const [dx, dy, dz] = sphereDirection(t, cosP, sinP);
 
-      positions[vertexIndex * 3] = r * dx;
-      positions[vertexIndex * 3 + 1] = r * dy;
-      positions[vertexIndex * 3 + 2] = r * dz;
+      positions[indices.vertex * 3] = r * dx;
+      positions[indices.vertex * 3 + 1] = r * dy;
+      positions[indices.vertex * 3 + 2] = r * dz;
 
       // d/dp of sphereDirection's (dx, dy, dz), the +phi tangent
       TMP[0] = flip * sinP * sinT;
@@ -138,36 +115,17 @@ function phiCap({ p, theta, thetaOffset, ny, capSegments, radius, innerRadius, f
       TMP[2] = flip * cosP * sinT;
       normalize(TMP);
 
-      normals[vertexIndex * 3] = TMP[0];
-      normals[vertexIndex * 3 + 1] = TMP[1];
-      normals[vertexIndex * 3 + 2] = TMP[2];
+      normals[indices.vertex * 3] = TMP[0];
+      normals[indices.vertex * 3 + 1] = TMP[1];
+      normals[indices.vertex * 3 + 2] = TMP[2];
 
-      uvs[vertexIndex * 2] = v;
-      uvs[vertexIndex * 2 + 1] = j / capSegments;
+      uvs[indices.vertex * 2] = v;
+      uvs[indices.vertex * 2 + 1] = j / capSegments;
 
-      if (j > 0 && i > 0) {
-        const a = vertexIndex - rows - 1;
-        const b = vertexIndex - rows;
-        const c = vertexIndex - 1;
-        const d = vertexIndex;
-
-        if (flip === 1) {
-          cells[cellIndex] = a;
-          cells[cellIndex + 1] = b;
-          cells[cellIndex + 2] = c;
-          cells[cellIndex + 3] = b;
-          cells[cellIndex + 4] = d;
-          cells[cellIndex + 5] = c;
-        } else {
-          cells[cellIndex] = a;
-          cells[cellIndex + 1] = c;
-          cells[cellIndex + 2] = b;
-          cells[cellIndex + 3] = b;
-          cells[cellIndex + 4] = c;
-          cells[cellIndex + 5] = d;
-        }
-        cellIndex += 6;
-      }
+      // flip is inverted relative to thetaCap: with i (theta) as the
+      // row-stride axis here instead of phi, the same flip value maps to
+      // the opposite winding for an outward normal
+      if (j > 0 && i > 0) computeGridQuad(cells, indices, rows, -flip);
     }
   }
 

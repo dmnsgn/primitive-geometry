@@ -396,6 +396,48 @@ export function computeCap(
 }
 
 /**
+ * Triangulate one quad of a (rows+1) x (cols+1) vertex grid already written
+ * in row-major order (cols vertices per row), for the vertex just written at
+ * `indices.vertex` - the quad's own corner d, with a/b/c the 3
+ * already-written corners at vertexIndex - cols - 1/- cols/- 1. Called
+ * whenever a full quad is available (row > 0 && col > 0). Splits along the
+ * b-c diagonal, matching `computePlane`/`computePolarGeometry`/
+ * `computeRevolutionGeometry` so displacement in a vertex shader creases
+ * consistently across the library. flip (1 or -1) picks the winding, same
+ * convention as `computeCap` - which value maps to "outward" depends on how
+ * the caller's row/col axes relate to its own surface normal, so callers
+ * work that out for themselves (see torus.js/hollow-sphere.js).
+ * @private
+ */
+export function computeGridQuad(cells, indices, cols, flip) {
+  const vertexIndex = indices.vertex;
+  const a = vertexIndex - cols - 1;
+  const b = vertexIndex - cols;
+  const c = vertexIndex - 1;
+  const d = vertexIndex;
+
+  if (flip === 1) {
+    cells[indices.cell] = a;
+    cells[indices.cell + 1] = c;
+    cells[indices.cell + 2] = b;
+
+    cells[indices.cell + 3] = b;
+    cells[indices.cell + 4] = c;
+    cells[indices.cell + 5] = d;
+  } else {
+    cells[indices.cell] = a;
+    cells[indices.cell + 1] = b;
+    cells[indices.cell + 2] = c;
+
+    cells[indices.cell + 3] = b;
+    cells[indices.cell + 4] = d;
+    cells[indices.cell + 5] = c;
+  }
+
+  indices.cell += 6;
+}
+
+/**
  * @private
  */
 export const PLANE_DIRECTIONS = {
