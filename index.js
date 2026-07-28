@@ -63,6 +63,7 @@ export { sphericalRing } from "./src/solid/revolution/spherical-ring.js";
 export { paraboloid } from "./src/solid/revolution/paraboloid.js";
 export { hyperboloid } from "./src/solid/revolution/hyperboloid.js";
 export { barrel } from "./src/solid/revolution/barrel.js";
+export { funnel } from "./src/solid/revolution/funnel.js";
 
 export {
   tetrahedron,

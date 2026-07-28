@@ -83,6 +83,7 @@ const geometries = params.has("geometry")
       named("barrel", Primitives.barrel()),
       named("hyperboloid", Primitives.hyperboloid()),
       named("paraboloid", Primitives.paraboloid()),
+      named("funnel", Primitives.funnel()),
       null,
       [
         named("tetrahedron", Primitives.tetrahedron()),

@@ -240,6 +240,12 @@ const cases = [
     () => Primitives.paraboloid({ capBase: false }),
     { unused: 1 },
   ],
+  ["funnel", () => Primitives.funnel(), { unused: 2 }],
+  ["funnel nx=15", () => Primitives.funnel({ nx: 15 }), { unused: 2 }],
+  [
+    "funnel no caps",
+    () => Primitives.funnel({ capApex: false, capBase: false }),
+  ],
   ["bicone", () => Primitives.bicone(), { unused: 2 }],
   ["bicone nx=15", () => Primitives.bicone({ nx: 15 }), { unused: 2 }],
   [
