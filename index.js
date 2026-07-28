@@ -52,6 +52,7 @@ export { roundedCylinder } from "./src/solid/revolution/rounded-cylinder.js";
 
 export { cone } from "./src/solid/revolution/cone.js";
 export { bicone } from "./src/solid/revolution/bicone.js";
+export { sphericon } from "./src/solid/revolution/sphericon.js";
 export { doubleCone } from "./src/solid/revolution/double-cone.js";
 export { capsule } from "./src/solid/revolution/capsule.js";
 

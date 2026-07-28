@@ -269,6 +269,8 @@ const cases = [
     () => Primitives.doubleCone({ capBase: false, capApex: false }),
     { unused: 2 },
   ],
+  ["sphericon", () => Primitives.sphericon(), { unused: 4 }],
+  ["sphericon nx=15", () => Primitives.sphericon({ nx: 15 }), { unused: 4 }],
   ["capsule", () => Primitives.capsule(), { unused: 2 }],
   ["capsule nx=15", () => Primitives.capsule({ nx: 15 }), { unused: 2 }],
   ["capsule roundSegments=0", () => Primitives.capsule({ roundSegments: 0 })],
