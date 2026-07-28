@@ -294,8 +294,7 @@ ctx.frame(() => {
     mat3.fromMat4(mesh.normalMatrix, inverseModelViewMatrix);
     mat3.transpose(mesh.normalMatrix, mesh.normalMatrix);
 
-    const isLine =
-      !mesh.geometry.normals || mesh.quads || CONFIG.mode === "wireframe";
+    const isLine = !mesh.geometry.normals || CONFIG.mode === "wireframe";
     ctx.submit(isLine ? drawLinesCmd : drawCmd, {
       attributes: mesh.attributes,
       indices: isLine ? mesh.edges : mesh.indices,
@@ -350,7 +349,7 @@ ctx.frame(() => {
       });
     }
 
-    if (CONFIG.normals && mesh.geometry.normals && !mesh.quads) {
+    if (CONFIG.normals && mesh.geometry.normals) {
       mesh.normalsAttributes ||= {
         aPosition: ctx.vertexBuffer(
           typedArrayInterleave(
@@ -562,7 +561,6 @@ const createMesh = (geometry) => ({
   translation: [0, 0, 0],
   scale: [1, 1, 1],
   geometry,
-  quads: geometry.quads,
   bbox: aabb
     .getCorners(
       aabb.fromPoints(
@@ -591,7 +589,7 @@ const createMesh = (geometry) => ({
 });
 
 const setGeometries = (geometryGroups) => {
-  console.table(geometryGroups);
+  console.table(geometryGroups.flat().filter(Boolean));
 
   // Each entry is either null (grid break), a single geometry, or an array of
   // geometries to stack on the y axis at the same x/z grid position.
@@ -612,7 +610,7 @@ const setGeometries = (geometryGroups) => {
 
   meshes.filter(Boolean).forEach((mesh) => {
     const { geometry } = mesh;
-    if (!geometry.normals || geometry.quads) return;
+    if (!geometry.normals) return;
 
     const seams = computeDiscontinuities(geometry);
     mesh.seamStats = seams.stats;
