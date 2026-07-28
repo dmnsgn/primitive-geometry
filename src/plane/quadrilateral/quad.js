@@ -21,14 +21,14 @@ export function quad({ scale = 0.5 } = {}) {
   return {
     positions,
     // prettier-ignore
-    normals: Int8Array.of(
+    normals: Float32Array.of(
       0, 0, 1,
       0, 0, 1,
       0, 0, 1,
       0, 0, 1,
     ),
     // prettier-ignore
-    uvs: Uint8Array.of(
+    uvs: Float32Array.of(
       0, 0,
       1, 0,
       1, 1,
