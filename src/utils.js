@@ -580,6 +580,34 @@ export function computePlane(
 }
 
 /**
+ * A point on a closed, explicit-corner outline at angle t: splits the
+ * outline into corners.length equal sectors starting at thetaOffset, finds
+ * which one t falls in, and linearly interpolates between its two corners.
+ * Unlike computePolygonEdge (a regular polygon, corners derived from rx/ry),
+ * corners are arbitrary [x, y] pairs supplied by the caller (eg. cross's
+ * dodecagon, trapezoid's quad) - shared so the two don't duplicate the same
+ * sector-lookup arithmetic.
+ * Assumes theta >= 0 (t - thetaOffset never negative): a negative theta
+ * makes local negative, and JS's `%` keeps a negative dividend's sign, so
+ * `corners[corner]` would index before the array's start.
+ * @param {number[][]} corners
+ * @param {number} thetaOffset
+ * @param {number} t
+ * @returns {[number, number]}
+ * @private
+ */
+export function computeOutlineEdge(corners, thetaOffset, t) {
+  const cornerCount = corners.length;
+  const sector = TAU / cornerCount;
+  const local = (t - thetaOffset) / sector;
+  const corner = Math.floor(local) % cornerCount;
+  const frac = local - Math.floor(local);
+  const [x0, y0] = corners[corner];
+  const [x1, y1] = corners[(corner + 1) % cornerCount];
+  return [x0 + (x1 - x0) * frac, y0 + (y1 - y0) * frac];
+}
+
+/**
  * A grid of concentric rings (innerSegments, radiusRatio 0..1 from
  * innerRadius to radius) sampled at evenly-spaced angular columns (segments,
  * closed for a full revolution when theta is a multiple of TAU - the last

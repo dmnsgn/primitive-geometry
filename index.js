@@ -15,9 +15,12 @@ export { quad } from "./src/plane/quadrilateral/quad.js";
 export { plane } from "./src/plane/quadrilateral/plane.js";
 export { roundedRectangle } from "./src/plane/quadrilateral/rounded-rectangle.js";
 export { stadium } from "./src/plane/quadrilateral/stadium.js";
+
 export { kite } from "./src/plane/quadrilateral/kite.js";
 export { rhombus } from "./src/plane/quadrilateral/rhombus.js";
 export { lozenge } from "./src/plane/quadrilateral/lozenge.js";
+export { trapezoid } from "./src/plane/quadrilateral/trapezoid.js";
+export { parallelogram } from "./src/plane/quadrilateral/parallelogram.js";
 
 export { arbelos } from "./src/plane/arc/arbelos.js";
 export { lens } from "./src/plane/arc/lens.js";

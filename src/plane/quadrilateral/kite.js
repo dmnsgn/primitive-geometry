@@ -10,12 +10,12 @@ import {
 
 /**
  * @typedef {object} KiteOptions
- * @property {number} [sx=0.5]
+ * @property {number} [sx=1]
  * @property {number} [sy=1]
- * @property {number} [ratio=0.3] Bottom vertex distance from center, as a
+ * @property {number} [ratio=0.9] Bottom vertex distance from center, as a
  *   fraction of the top vertex's (sy). `ratio=1` is a rhombus, `ratio=0`
  *   collapses the bottom to the center.
- * @property {number} [radius=0.5]
+ * @property {number} [radius=1]
  * @property {number} [edgeSegments=1]
  * @property {number} [innerSegments=16]
  * @property {number} [theta=TAU]
@@ -32,9 +32,9 @@ import {
  * @returns {import("../../../types.js").SimplicialComplex}
  */
 export function kite({
-  sx = 0.5,
+  sx = 1,
   sy = 1,
-  ratio = 0.3,
+  ratio = 0.5,
   radius = 0.5,
   edgeSegments = 1,
   innerSegments = 16,

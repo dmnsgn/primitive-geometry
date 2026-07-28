@@ -1,9 +1,12 @@
 /** @module cross */
 import { rectangular } from "../mappings.js";
-import { checkArguments, computePolarGeometry, TAU } from "../utils.js";
+import {
+  checkArguments,
+  computeOutlineEdge,
+  computePolarGeometry,
+} from "../utils.js";
 
 const CORNER_COUNT = 12;
-const SECTOR = TAU / CORNER_COUNT;
 
 /**
  * @typedef {object} CrossOptions
@@ -77,12 +80,8 @@ export function cross({
       // the full-size outline by its fraction of radius, a self-similar
       // copy of the outer cross at every ring, down to innerRadius.
       const scale = rx / r;
-      const local = t / SECTOR;
-      const corner = Math.floor(local) % CORNER_COUNT;
-      const frac = local - Math.floor(local);
-      const [x0, y0] = outline[corner];
-      const [x1, y1] = outline[(corner + 1) % CORNER_COUNT];
-      return [scale * (x0 + (x1 - x0) * frac), scale * (y0 + (y1 - y0) * frac)];
+      const [x, y] = computeOutlineEdge(outline, 0, t);
+      return [scale * x, scale * y];
     },
   });
 }
