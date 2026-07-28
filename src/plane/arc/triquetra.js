@@ -111,9 +111,12 @@ export function triquetra({
   };
 
   // A core wedge is a triangle fan from the centroid, not a 2-boundary
-  // strip: sweptArc has no vMin/vMax band here (vMin is always 0), so it's
-  // built directly instead, sharing sweptArc's own Chebyshev spacing to
-  // keep this boundary sampled at the exact same angles as the petals'.
+  // strip: sweptArc has no vMin/vMax band here (vMin is always 0, ie. every
+  // column reaches all the way to one shared apex), so it's built directly
+  // instead - mirroring computePolarGeometry's own single-apex/concentric-
+  // ring fan, but sharing sweptArc's own Chebyshev spacing for its columns
+  // to keep the outer boundary sampled at the exact same angles as the
+  // petals'.
   const columnAngle = (i) =>
     i === 0
       ? uMin
@@ -129,11 +132,14 @@ export function triquetra({
     const start = vertices[k];
     const end = vertices[(k + 1) % 3];
 
-    const size = segments + 2;
+    const cols = segments + 1;
+    const size = 1 + innerSegments * cols;
     const positions = new Float32Array(size * 3);
     const normals = new Float32Array(size * 3);
     const uvs = new Float32Array(size * 2);
-    const cells = new (getCellsTypedArray(size))(segments * 3);
+    const cells = new (getCellsTypedArray(size))(
+      segments * 3 + (innerSegments - 1) * segments * 6,
+    );
 
     normals[2] = 1;
     mapping({
@@ -150,38 +156,58 @@ export function triquetra({
       vRatio: 0,
     });
 
-    for (let i = 0; i <= segments; i++) {
-      const theta = columnAngle(i);
-      const v = i === 0 || i === segments ? R : seam(theta);
-      const [x, y] =
-        i === 0
-          ? start
-          : i === segments
-            ? end
-            : [v * Math.cos(theta + offset), v * Math.sin(theta + offset)];
-      const index = i + 1;
+    let vertexIndex = 1;
+    let cellIndex = 0;
+    for (let j = 1; j <= innerSegments; j++) {
+      const radiusRatio = j / innerSegments;
+      const ringOffset = vertexIndex;
 
-      positions[index * 3] = x;
-      positions[index * 3 + 1] = y;
-      normals[index * 3 + 2] = 1;
+      for (let i = 0; i <= segments; i++, vertexIndex++) {
+        const theta = columnAngle(i);
+        const outerV = i === 0 || i === segments ? R : seam(theta);
+        const v = outerV * radiusRatio;
+        const [x, y] =
+          j < innerSegments
+            ? [v * Math.cos(theta + offset), v * Math.sin(theta + offset)]
+            : i === 0
+              ? start
+              : i === segments
+                ? end
+                : [v * Math.cos(theta + offset), v * Math.sin(theta + offset)];
 
-      mapping({
-        uvs,
-        index: index * 2,
-        x,
-        y,
-        radius: 1,
-        sx,
-        sy,
-        u: theta,
-        v,
-        uRatio: i / segments,
-        vRatio: 1,
-      });
-    }
+        positions[vertexIndex * 3] = x;
+        positions[vertexIndex * 3 + 1] = y;
+        normals[vertexIndex * 3 + 2] = 1;
 
-    for (let i = 0; i < segments; i++) {
-      cells.set([0, i + 1, i + 2], i * 3);
+        mapping({
+          uvs,
+          index: vertexIndex * 2,
+          x,
+          y,
+          radius: 1,
+          sx,
+          sy,
+          u: theta,
+          v,
+          uRatio: i / segments,
+          vRatio: radiusRatio,
+        });
+      }
+
+      if (j === 1) {
+        for (let i = 0; i < segments; i++, cellIndex += 3) {
+          cells.set([0, ringOffset + i, ringOffset + i + 1], cellIndex);
+        }
+      } else {
+        const prevRingOffset = ringOffset - cols;
+        for (let i = 0; i < segments; i++, cellIndex += 6) {
+          const a = prevRingOffset + i;
+          const b = ringOffset + i;
+          const c = ringOffset + i + 1;
+          const d = prevRingOffset + i + 1;
+          cells.set([a, b, d, b, c, d], cellIndex);
+        }
+      }
     }
 
     return { positions, normals, uvs, cells };

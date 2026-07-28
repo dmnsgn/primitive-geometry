@@ -270,3 +270,77 @@ describe("cross", () => {
     }
   });
 });
+
+describe("reuleaux", () => {
+  const vertexAngles = (g, cols) => {
+    const n = g.positions.length / 3;
+    const angles = [];
+    for (let i = 0; i < cols; i++) {
+      const index = n - cols + i;
+      const x = g.positions[index * 3];
+      const y = g.positions[index * 3 + 1];
+      if (Math.abs(Math.hypot(x, y) - 1) < 1e-4) {
+        angles.push(Math.atan2(y, x));
+      }
+    }
+    return angles;
+  };
+
+  it("thetaOffset rotates the whole shape (vertices shift by thetaOffset, not just reindex)", () => {
+    const segments = 12;
+    const thetaOffset = Math.PI / 2;
+    const g0 = Primitives.reuleaux({
+      radius: 1,
+      segments,
+      innerSegments: 1,
+      mergeCentroid: false,
+    });
+    const gOffset = Primitives.reuleaux({
+      radius: 1,
+      segments,
+      innerSegments: 1,
+      mergeCentroid: false,
+      thetaOffset,
+    });
+
+    const wrap = (a) =>
+      ((a % Primitives.utils.TAU) + Primitives.utils.TAU) %
+      Primitives.utils.TAU;
+    const before = vertexAngles(g0, segments)
+      .map(wrap)
+      .sort((a, b) => a - b);
+    const after = vertexAngles(gOffset, segments)
+      .map(wrap)
+      .sort((a, b) => a - b);
+
+    assert.equal(before.length, 3);
+    assert.equal(after.length, 3);
+    for (let i = 0; i < 3; i++) {
+      assert.ok(
+        Math.abs(wrap(after[i] - before[i]) - thetaOffset) < 1e-6,
+        `vertex ${i}: expected a ${thetaOffset} rotation`,
+      );
+    }
+  });
+
+  it("winds every triangle CCW, facing +z", () => {
+    assert.equal(flippedTriangles2D(Primitives.reuleaux()), 0);
+  });
+
+  it("is watertight with no seams or cracks across n/theta/thetaOffset variations", () => {
+    for (const options of [
+      {},
+      { n: 4 },
+      { n: 5 },
+      { theta: Math.PI },
+      { thetaOffset: 0.5 },
+      { innerSegments: 1 },
+      { segments: 8 },
+    ]) {
+      const result = analyze(Primitives.reuleaux(options));
+      assert.equal(result.seams, 0, JSON.stringify(options));
+      assert.equal(result.cracks, 0, JSON.stringify(options));
+      assert.equal(result.nonManifold, 0, JSON.stringify(options));
+    }
+  });
+});
