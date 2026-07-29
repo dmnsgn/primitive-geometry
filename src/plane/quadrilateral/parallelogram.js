@@ -1,5 +1,5 @@
 /** @module parallelogram */
-import { trapezoid } from "./trapezoid.js";
+import { trapezoid, trapezoidPath } from "./trapezoid.js";
 import { checkArguments } from "../../utils.js";
 
 /**
@@ -57,5 +57,49 @@ export function parallelogram({
     thetaOffset,
     mergeCentroid,
     mapping,
+  });
+}
+
+/**
+ * @typedef {object} ParallelogramPathOptions
+ * @property {number} [sx=0.5]
+ * @property {number} [sy=1]
+ * @property {number} [shear=0.3]
+ * @property {number} [radius=0.5]
+ * @property {number} [edgeSegments=1]
+ * @property {number} [theta=TAU]
+ * @property {number} [thetaOffset=0]
+ * @property {boolean} [closed=false]
+ */
+
+/**
+ * Outline dual of `parallelogram`: `trapezoidPath` with `topRatio` fixed to
+ * `1`, shifted sideways by `shear`.
+ * @alias module:parallelogramPath
+ * @param {ParallelogramPathOptions} [options={}]
+ * @returns {import("../../../types.js").SimplicialComplexPath}
+ */
+export function parallelogramPath({
+  sx = 0.5,
+  sy = 1,
+  shear = 0.3,
+  radius,
+  edgeSegments,
+  theta,
+  thetaOffset,
+  closed,
+} = {}) {
+  checkArguments(arguments);
+
+  return trapezoidPath({
+    sx,
+    sy,
+    topRatio: 1,
+    topOffset: shear,
+    radius,
+    edgeSegments,
+    theta,
+    thetaOffset,
+    closed,
   });
 }

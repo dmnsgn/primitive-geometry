@@ -1,5 +1,5 @@
 /** @module lozenge */
-import { rhombus } from "./rhombus.js";
+import { rhombus, rhombusPath } from "./rhombus.js";
 import { checkArguments } from "../../utils.js";
 
 /**
@@ -48,5 +48,45 @@ export function lozenge({
     thetaOffset,
     mergeCentroid,
     mapping,
+  });
+}
+
+/**
+ * @typedef {object} LozengePathOptions
+ * @property {number} [sx=0.5]
+ * @property {number} [sy=sx*2]
+ * @property {number} [radius=0.5]
+ * @property {number} [edgeSegments=1]
+ * @property {number} [theta=TAU]
+ * @property {number} [thetaOffset=HALF_PI]
+ * @property {boolean} [closed=false]
+ */
+
+/**
+ * Outline dual of `lozenge`: `rhombusPath` elongated along its vertical
+ * diagonal by default (sy = sx * 2).
+ * @alias module:lozengePath
+ * @param {LozengePathOptions} [options={}]
+ * @returns {import("../../../types.js").SimplicialComplexPath}
+ */
+export function lozengePath({
+  sx = 0.5,
+  sy = sx * 2,
+  radius,
+  edgeSegments,
+  theta,
+  thetaOffset,
+  closed,
+} = {}) {
+  checkArguments(arguments);
+
+  return rhombusPath({
+    sx,
+    sy,
+    radius,
+    edgeSegments,
+    theta,
+    thetaOffset,
+    closed,
   });
 }

@@ -4,24 +4,29 @@
  */
 
 // Plane
-export { rectanglePath } from "./src/plane/quadrilateral/rectangle-path.js";
-export { squarePath } from "./src/plane/quadrilateral/square-path.js";
-export { circlePath } from "./src/plane/circular/circle-path.js";
-
 export { quadGrid } from "./src/plane/grid/quad-grid.js";
 export { triangularGrid } from "./src/plane/grid/triangular-grid.js";
 export { hexagonalGrid } from "./src/plane/grid/hexagonal-grid.js";
 
-export { quad } from "./src/plane/quadrilateral/quad.js";
-export { plane } from "./src/plane/quadrilateral/plane.js";
-export { roundedRectangle } from "./src/plane/quadrilateral/rounded-rectangle.js";
-export { stadium } from "./src/plane/quadrilateral/stadium.js";
+export { quad, squarePath } from "./src/plane/quadrilateral/quad.js";
+export { plane, rectanglePath } from "./src/plane/quadrilateral/plane.js";
+export {
+  roundedRectangle,
+  roundedRectanglePath,
+} from "./src/plane/quadrilateral/rounded-rectangle.js";
+export { stadium, stadiumPath } from "./src/plane/quadrilateral/stadium.js";
 
-export { kite } from "./src/plane/quadrilateral/kite.js";
-export { rhombus } from "./src/plane/quadrilateral/rhombus.js";
-export { lozenge } from "./src/plane/quadrilateral/lozenge.js";
-export { trapezoid } from "./src/plane/quadrilateral/trapezoid.js";
-export { parallelogram } from "./src/plane/quadrilateral/parallelogram.js";
+export { kite, kitePath } from "./src/plane/quadrilateral/kite.js";
+export { rhombus, rhombusPath } from "./src/plane/quadrilateral/rhombus.js";
+export { lozenge, lozengePath } from "./src/plane/quadrilateral/lozenge.js";
+export {
+  trapezoid,
+  trapezoidPath,
+} from "./src/plane/quadrilateral/trapezoid.js";
+export {
+  parallelogram,
+  parallelogramPath,
+} from "./src/plane/quadrilateral/parallelogram.js";
 
 export { arbelos } from "./src/plane/arc/arbelos.js";
 export { lens } from "./src/plane/arc/lens.js";
@@ -30,17 +35,20 @@ export { salinon } from "./src/plane/arc/salinon.js";
 export { triquetra } from "./src/plane/arc/triquetra.js";
 export { yinYang } from "./src/plane/arc/yin-yang.js";
 
-export { ellipse } from "./src/plane/circular/ellipse.js";
-export { disc } from "./src/plane/circular/disc.js";
-export { superellipse } from "./src/plane/circular/superellipse.js";
-export { squircle } from "./src/plane/circular/squircle.js";
-export { astroid } from "./src/plane/circular/astroid.js";
-export { annulus } from "./src/plane/circular/annulus.js";
+export { ellipse, ellipsePath } from "./src/plane/circular/ellipse.js";
+export { disc, circlePath } from "./src/plane/circular/disc.js";
+export {
+  superellipse,
+  superellipsePath,
+} from "./src/plane/circular/superellipse.js";
+export { squircle, squirclePath } from "./src/plane/circular/squircle.js";
+export { astroid, astroidPath } from "./src/plane/circular/astroid.js";
+export { annulus, annulusPath } from "./src/plane/circular/annulus.js";
 
-export { polygon } from "./src/plane/polygon.js";
-export { reuleaux } from "./src/plane/reuleaux.js";
-export { star } from "./src/plane/star.js";
-export { cross } from "./src/plane/cross.js";
+export { polygon, polygonPath } from "./src/plane/polygon.js";
+export { reuleaux, reuleauxPath } from "./src/plane/reuleaux.js";
+export { star, starPath } from "./src/plane/star.js";
+export { cross, crossPath } from "./src/plane/cross.js";
 
 // Solid
 export { cube, cubeFaces, box } from "./src/solid/cuboid/cube.js";

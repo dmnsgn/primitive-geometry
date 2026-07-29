@@ -3,6 +3,7 @@ import { concentric } from "../mappings.js";
 import {
   checkArguments,
   computePolarGeometry,
+  computePolarPathGeometry,
   computeStarRatio,
   TAU,
 } from "../utils.js";
@@ -82,6 +83,52 @@ export function star({
       const r = holeR + (outerR - holeR) * s;
 
       return [r * cosTheta, r * sinTheta];
+    },
+  });
+}
+
+/**
+ * @typedef {object} StarPathOptions
+ * @property {number} [points=5]
+ * @property {number} [density=2]
+ * @property {number} [radius=0.5]
+ * @property {number} [notchRadius=radius*computeStarRatio(points,density)]
+ * @property {number} [theta=TAU]
+ * @property {number} [thetaOffset=0]
+ * @property {boolean} [closed=false]
+ */
+
+/**
+ * Outline dual of `star`: `points` outer tips alternating with `points`
+ * inner notches, connected by straight edges. `segments` is fixed to `points
+ * * 2`, sampled one vertex per tip/notch (unlike `star`'s filled version,
+ * there's no radial subdivision to interpolate across), so tip/notch is just
+ * the sample's parity.
+ * @alias module:starPath
+ * @param {StarPathOptions} [options={}]
+ * @returns {import("../../types.js").SimplicialComplexPath} `points * 2`
+ *   positions and a single path cell of that many indices (`+ 1`, repeating
+ *   index `0`, when `closed`)
+ */
+export function starPath({
+  points = 5,
+  density = 2,
+  radius = 0.5,
+  notchRadius = radius * computeStarRatio(points, density),
+  theta = TAU,
+  thetaOffset = 0,
+  closed = false,
+} = {}) {
+  checkArguments(arguments);
+
+  return computePolarPathGeometry({
+    segments: points * 2,
+    theta,
+    thetaOffset,
+    closed,
+    equation: (t, i) => {
+      const r = i % 2 === 0 ? radius : notchRadius;
+      return [r * Math.cos(t), r * Math.sin(t)];
     },
   });
 }

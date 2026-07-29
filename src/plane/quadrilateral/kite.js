@@ -3,6 +3,7 @@ import { concentric } from "../../mappings.js";
 import {
   checkArguments,
   computePolarGeometry,
+  computePolarPathGeometry,
   computePolygonEdge,
   HALF_PI,
   TAU,
@@ -60,5 +61,56 @@ export function kite({
     mapping,
     equation: ({ rx, ry, t }) =>
       computePolygonEdge(thetaOffset, 4, rx, ry, t, 1, 1, 1, ratio),
+  });
+}
+
+/**
+ * @typedef {object} KitePathOptions
+ * @property {number} [sx=1]
+ * @property {number} [sy=1]
+ * @property {number} [ratio=0.5]
+ * @property {number} [radius=0.5]
+ * @property {number} [edgeSegments=1]
+ * @property {number} [theta=TAU]
+ * @property {number} [thetaOffset=HALF_PI]
+ * @property {boolean} [closed=false]
+ */
+
+/**
+ * Outline dual of `kite`: same `computePolygonEdge` corner interpolation as
+ * `kite`'s own fill, `ratio` pulling the bottom vertex toward the center.
+ * @alias module:kitePath
+ * @param {KitePathOptions} [options={}]
+ * @returns {import("../../../types.js").SimplicialComplexPath}
+ */
+export function kitePath({
+  sx = 1,
+  sy = 1,
+  ratio = 0.5,
+  radius = 0.5,
+  edgeSegments = 1,
+  theta = TAU,
+  thetaOffset = HALF_PI,
+  closed = false,
+} = {}) {
+  checkArguments(arguments);
+
+  return computePolarPathGeometry({
+    segments: edgeSegments * 4,
+    theta,
+    thetaOffset,
+    closed,
+    equation: (t) =>
+      computePolygonEdge(
+        thetaOffset,
+        4,
+        sx * radius,
+        sy * radius,
+        t,
+        1,
+        1,
+        1,
+        ratio,
+      ),
   });
 }

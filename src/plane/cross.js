@@ -4,9 +4,31 @@ import {
   checkArguments,
   computeOutlineEdge,
   computePolarGeometry,
+  computePolarPathGeometry,
+  TAU,
 } from "../utils.js";
 
 const CORNER_COUNT = 12;
+
+// CCW from the right arm's bottom-right corner, 2 outer + 1 inner corner per
+// arm - shared by cross's radial fill (self-similar copy scaled per ring)
+// and crossPath's outline (this exact boundary, no scaling needed).
+function computeCrossOutline(r, w) {
+  return [
+    [r, -w],
+    [r, w],
+    [w, w],
+    [w, r],
+    [-w, r],
+    [-w, w],
+    [-r, w],
+    [-r, -w],
+    [-w, -w],
+    [-w, -r],
+    [w, -r],
+    [w, -w],
+  ];
+}
 
 /**
  * @typedef {object} CrossOptions
@@ -48,23 +70,7 @@ export function cross({
 
   const r = radius;
   const w = armWidth;
-
-  // CCW from the right arm's bottom-right corner, 2 outer + 1 inner corner
-  // per arm.
-  const outline = [
-    [r, -w],
-    [r, w],
-    [w, w],
-    [w, r],
-    [-w, r],
-    [-w, w],
-    [-r, w],
-    [-r, -w],
-    [-w, -w],
-    [-w, -r],
-    [w, -r],
-    [w, -w],
-  ];
+  const outline = computeCrossOutline(r, w);
 
   return computePolarGeometry({
     sx: 1,
@@ -83,5 +89,39 @@ export function cross({
       const [x, y] = computeOutlineEdge(outline, 0, t);
       return [scale * x, scale * y];
     },
+  });
+}
+
+/**
+ * @typedef {object} CrossPathOptions
+ * @property {number} [radius=0.5]
+ * @property {number} [armWidth=radius/3]
+ * @property {number} [segments=1]
+ * @property {boolean} [closed=false]
+ */
+
+/**
+ * Outline dual of `cross`: the same 12-corner outline, walked directly
+ * instead of fanned from the center.
+ * @alias module:crossPath
+ * @param {CrossPathOptions} [options={}]
+ * @returns {import("../../types.js").SimplicialComplexPath}
+ */
+export function crossPath({
+  radius = 0.5,
+  armWidth = radius / 3,
+  segments = 1,
+  closed = false,
+} = {}) {
+  checkArguments(arguments);
+
+  const outline = computeCrossOutline(radius, armWidth);
+
+  return computePolarPathGeometry({
+    segments: CORNER_COUNT * segments,
+    theta: TAU,
+    thetaOffset: 0,
+    closed,
+    equation: (t) => computeOutlineEdge(outline, 0, t),
   });
 }

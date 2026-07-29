@@ -1,5 +1,5 @@
 /** @module astroid */
-import { superellipse } from "./superellipse.js";
+import { superellipse, superellipsePath } from "./superellipse.js";
 import { lamé } from "../../mappings.js";
 import { checkArguments, TAU } from "../../utils.js";
 
@@ -42,6 +42,43 @@ export function astroid({
     thetaOffset,
     mergeCentroid,
     mapping,
+    m: 2 / 3,
+    n: 2 / 3,
+  });
+}
+
+/**
+ * @typedef {object} AstroidPathOptions
+ * @property {number} [radius=0.5]
+ * @property {number} [segments=32]
+ * @property {number} [theta=TAU]
+ * @property {number} [thetaOffset=0]
+ * @property {boolean} [closed=false]
+ */
+
+/**
+ * Outline dual of `astroid`: `superellipsePath` with `m = n = 2 / 3`.
+ * @alias module:astroidPath
+ * @param {AstroidPathOptions} [options={}]
+ * @returns {import("../../../types.js").SimplicialComplexPath}
+ */
+export function astroidPath({
+  radius = 0.5,
+  segments = 32,
+  theta = TAU,
+  thetaOffset = 0,
+  closed = false,
+} = {}) {
+  checkArguments(arguments);
+
+  return superellipsePath({
+    sx: 1,
+    sy: 1,
+    radius,
+    segments,
+    theta,
+    thetaOffset,
+    closed,
     m: 2 / 3,
     n: 2 / 3,
   });

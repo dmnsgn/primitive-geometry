@@ -1,6 +1,6 @@
 /** @module quad */
 
-import { squarePath } from "./square-path.js";
+import { rectanglePath } from "./plane.js";
 import { checkArguments, triangulateFaces } from "../../utils.js";
 
 /**
@@ -36,4 +36,24 @@ export function quad({ scale = 0.5 } = {}) {
     ),
     cells: triangulateFaces(cells, 4),
   };
+}
+
+/**
+ * @typedef {object} SquarePathOptions
+ * @property {number} [scale=0.5]
+ * @property {number} [nx=1] Segments along the bottom/top edges
+ * @property {number} [ny=nx] Segments along the left/right edges
+ */
+
+/**
+ * Outline dual of `quad`: `rectanglePath` with equal sx/sy, same as `quad`
+ * itself is built from it.
+ * @alias module:squarePath
+ * @param {SquarePathOptions} [options={}]
+ * @returns {import("../../../types.js").SimplicialComplexPath}
+ */
+export function squarePath({ scale = 0.5, nx = 1, ny = nx } = {}) {
+  checkArguments(arguments);
+
+  return rectanglePath({ sx: scale * 2, sy: scale * 2, nx, ny });
 }

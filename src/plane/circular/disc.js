@@ -1,5 +1,5 @@
 /** @module disc */
-import { ellipse } from "./ellipse.js";
+import { ellipse, ellipsePath } from "./ellipse.js";
 import { concentric } from "../../mappings.js";
 import { checkArguments, TAU } from "../../utils.js";
 
@@ -40,5 +40,42 @@ export function disc({
     thetaOffset,
     mergeCentroid,
     mapping,
+  });
+}
+
+/**
+ * @typedef {object} CirclePathOptions
+ * @property {number} [radius=0.5]
+ * @property {number} [segments=32]
+ * @property {number} [theta=TAU]
+ * @property {number} [thetaOffset=0]
+ * @property {boolean} [closed=false]
+ */
+
+/**
+ * Outline dual of `disc`: `ellipsePath` with sx = sy = 1.
+ * @alias module:circlePath
+ * @param {CirclePathOptions} [options={}]
+ * @returns {import("../../../types.js").SimplicialComplexPath} `segments`
+ *   positions and a single path cell of `segments` indices (`segments + 1`,
+ *   repeating index `0`, when `closed`)
+ */
+export function circlePath({
+  radius = 0.5,
+  segments = 32,
+  theta = TAU,
+  thetaOffset = 0,
+  closed = false,
+} = {}) {
+  checkArguments(arguments);
+
+  return ellipsePath({
+    sx: 1,
+    sy: 1,
+    radius,
+    segments,
+    theta,
+    thetaOffset,
+    closed,
   });
 }

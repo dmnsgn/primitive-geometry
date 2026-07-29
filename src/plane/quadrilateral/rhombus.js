@@ -1,5 +1,5 @@
 /** @module rhombus */
-import { polygon } from "../polygon.js";
+import { polygon, polygonPath } from "../polygon.js";
 import { concentric } from "../../mappings.js";
 import { checkArguments, HALF_PI, TAU } from "../../utils.js";
 
@@ -51,5 +51,45 @@ export function rhombus({
     thetaOffset,
     mergeCentroid,
     mapping,
+  });
+}
+
+/**
+ * @typedef {object} RhombusPathOptions
+ * @property {number} [sx=1]
+ * @property {number} [sy=1]
+ * @property {number} [radius=0.5]
+ * @property {number} [edgeSegments=1]
+ * @property {number} [theta=TAU]
+ * @property {number} [thetaOffset=HALF_PI]
+ * @property {boolean} [closed=false]
+ */
+
+/**
+ * Outline dual of `rhombus`: `polygonPath` with sides fixed to `4`.
+ * @alias module:rhombusPath
+ * @param {RhombusPathOptions} [options={}]
+ * @returns {import("../../../types.js").SimplicialComplexPath}
+ */
+export function rhombusPath({
+  sx = 1,
+  sy = 1,
+  radius = 0.5,
+  edgeSegments = 1,
+  theta = TAU,
+  thetaOffset = HALF_PI,
+  closed = false,
+} = {}) {
+  checkArguments(arguments);
+
+  return polygonPath({
+    sides: 4,
+    sx,
+    sy,
+    radius,
+    edgeSegments,
+    theta,
+    thetaOffset,
+    closed,
   });
 }

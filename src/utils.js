@@ -780,6 +780,40 @@ export function computePolarGeometry({
 }
 
 /**
+ * A single ring of `segments` points swept across `theta` (`thetaOffset`
+ * start) - the path-only counterpart of `computePolarGeometry`'s angular
+ * dimension, with no radial rings or fan-triangulation: just the boundary
+ * loop `equation(t, i)` maps each angle (and its integer sample index, eg.
+ * for `starPath`'s tip/notch parity) to. `closed` repeats index `0` to
+ * explicitly close the loop; open (the default) leaves the last vertex
+ * unconnected to the first, matching every other path primitive's
+ * convention.
+ * @private
+ */
+export function computePolarPathGeometry({
+  segments,
+  theta,
+  thetaOffset,
+  closed,
+  equation,
+}) {
+  const positions = new Float32Array(segments * 3);
+  const path = Array.from({ length: segments + (closed ? 1 : 0) });
+
+  for (let i = 0; i < segments; i++) {
+    const t = (i / segments) * theta + thetaOffset;
+    const [x, y] = equation(t, i);
+    positions[i * 3] = x;
+    positions[i * 3 + 1] = y;
+    path[i] = i;
+  }
+
+  if (closed) path[segments] = 0;
+
+  return { positions, cells: [path] };
+}
+
+/**
  * A grid of meridian rings (v = 0..1, row-major/outer) x nx + 1 angular
  * columns (phi, inner - wrapped and welded on the last column when phi is a
  * multiple of TAU, same rule as the other revolution solids) revolved

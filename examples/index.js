@@ -23,24 +23,47 @@ const geometries = params.has("geometry")
   : [
       // Plane
       [
-        named("rectanglePath", Primitives.rectanglePath()),
-        named("squarePath", Primitives.squarePath()),
-        named("circlePath", Primitives.circlePath()),
-        null,
         named("quadGrid", Primitives.quadGrid()),
         named("triangularGrid", Primitives.triangularGrid()),
         named("hexagonalGrid", Primitives.hexagonalGrid()),
         null,
-        named("quad", Primitives.quad()),
-        named("plane", Primitives.plane()),
-        named("roundedRectangle", Primitives.roundedRectangle()),
-        named("stadium", Primitives.stadium()),
+        [
+          named("quad", Primitives.quad()),
+          named("squarePath", Primitives.squarePath()),
+        ],
+        [
+          named("plane", Primitives.plane()),
+          named("rectanglePath", Primitives.rectanglePath()),
+        ],
+        [
+          named("roundedRectangle", Primitives.roundedRectangle()),
+          named("roundedRectanglePath", Primitives.roundedRectanglePath()),
+        ],
+        [
+          named("stadium", Primitives.stadium()),
+          named("stadiumPath", Primitives.stadiumPath()),
+        ],
         null,
-        named("kite", Primitives.kite()),
-        named("rhombus", Primitives.rhombus()),
-        named("lozenge", Primitives.lozenge()),
-        named("trapezoid", Primitives.trapezoid()),
-        named("parallelogram", Primitives.parallelogram()),
+        [
+          named("kite", Primitives.kite()),
+          named("kitePath", Primitives.kitePath()),
+        ],
+        [
+          named("rhombus", Primitives.rhombus()),
+          named("rhombusPath", Primitives.rhombusPath()),
+        ],
+        [
+          named("lozenge", Primitives.lozenge()),
+          named("lozengePath", Primitives.lozengePath()),
+        ],
+        [
+          named("trapezoid", Primitives.trapezoid()),
+          named("trapezoidPath", Primitives.trapezoidPath()),
+        ],
+        [
+          named("parallelogram", Primitives.parallelogram()),
+          named("parallelogramPath", Primitives.parallelogramPath()),
+        ],
         null,
         named("arbelos", Primitives.arbelos()),
         named("lens", Primitives.lens()),
@@ -49,17 +72,47 @@ const geometries = params.has("geometry")
         named("triquetra", Primitives.triquetra()),
         named("yinYang", Primitives.yinYang()),
         null,
-        named("ellipse", Primitives.ellipse()),
-        named("disc", Primitives.disc()),
-        named("superellipse", Primitives.superellipse()),
-        named("squircle", Primitives.squircle()),
-        named("astroid", Primitives.astroid()),
-        named("annulus", Primitives.annulus()),
+        [
+          named("ellipse", Primitives.ellipse()),
+          named("ellipsePath", Primitives.ellipsePath()),
+        ],
+        [
+          named("disc", Primitives.disc()),
+          named("circlePath", Primitives.circlePath()),
+        ],
+        [
+          named("superellipse", Primitives.superellipse()),
+          named("superellipsePath", Primitives.superellipsePath()),
+        ],
+        [
+          named("squircle", Primitives.squircle()),
+          named("squirclePath", Primitives.squirclePath()),
+        ],
+        [
+          named("astroid", Primitives.astroid()),
+          named("astroidPath", Primitives.astroidPath()),
+        ],
+        [
+          named("annulus", Primitives.annulus()),
+          named("annulusPath", Primitives.annulusPath()),
+        ],
         null,
-        named("polygon", Primitives.polygon()),
-        named("reuleaux", Primitives.reuleaux()),
-        named("star", Primitives.star()),
-        named("cross", Primitives.cross()),
+        [
+          named("polygon", Primitives.polygon()),
+          named("polygonPath", Primitives.polygonPath()),
+        ],
+        [
+          named("reuleaux", Primitives.reuleaux()),
+          named("reuleauxPath", Primitives.reuleauxPath()),
+        ],
+        [
+          named("star", Primitives.star()),
+          named("starPath", Primitives.starPath()),
+        ],
+        [
+          named("cross", Primitives.cross()),
+          named("crossPath", Primitives.crossPath()),
+        ],
       ],
       // Solid
       [

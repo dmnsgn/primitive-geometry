@@ -4,10 +4,33 @@ import {
   checkArguments,
   computeOutlineEdge,
   computePolarGeometry,
+  computePolarPathGeometry,
   TAU,
 } from "../../utils.js";
 
 const CORNER_COUNT = 4;
+
+// The 4 corners, recentered on their own average so a radial fan (trapezoid)
+// or radius scale (trapezoidPath) is centered on the shape rather than
+// world origin - shared by both, see trapezoid's own doc comment for why.
+function computeTrapezoidCorners(sx, sy, topRatio, topOffset) {
+  const corners = [
+    [-sx, -sy],
+    [sx, -sy],
+    [topOffset + sx * topRatio, sy],
+    [topOffset - sx * topRatio, sy],
+  ];
+
+  const [cx, cy] = corners
+    .reduce(([ax, ay], [x, y]) => [ax + x, ay + y], [0, 0])
+    .map((sum) => sum / CORNER_COUNT);
+
+  return {
+    centeredCorners: corners.map(([x, y]) => [x - cx, y - cy]),
+    cx,
+    cy,
+  };
+}
 
 /**
  * @typedef {object} TrapezoidOptions
@@ -71,17 +94,12 @@ export function trapezoid({
 } = {}) {
   checkArguments(arguments);
 
-  const corners = [
-    [-sx, -sy],
-    [sx, -sy],
-    [topOffset + sx * topRatio, sy],
-    [topOffset - sx * topRatio, sy],
-  ];
-
-  const [cx, cy] = corners
-    .reduce(([ax, ay], [x, y]) => [ax + x, ay + y], [0, 0])
-    .map((sum) => sum / CORNER_COUNT);
-  const centeredCorners = corners.map(([x, y]) => [x - cx, y - cy]);
+  const { centeredCorners, cx, cy } = computeTrapezoidCorners(
+    sx,
+    sy,
+    topRatio,
+    topOffset,
+  );
 
   const geometry = computePolarGeometry({
     sx: 1,
@@ -111,4 +129,59 @@ export function trapezoid({
   }
 
   return geometry;
+}
+
+/**
+ * @typedef {object} TrapezoidPathOptions
+ * @property {number} [sx=1]
+ * @property {number} [sy=1]
+ * @property {number} [topRatio=0.5]
+ * @property {number} [topOffset=0]
+ * @property {number} [radius=0.5]
+ * @property {number} [edgeSegments=1]
+ * @property {number} [theta=TAU]
+ * @property {number} [thetaOffset=0]
+ * @property {boolean} [closed=false]
+ */
+
+/**
+ * Outline dual of `trapezoid`: the same 4 corners (recentered so `radius`
+ * scales around the shape's own centroid, then translated back), walked
+ * directly with `computeOutlineEdge` instead of `trapezoid`'s radial fan.
+ * @alias module:trapezoidPath
+ * @param {TrapezoidPathOptions} [options={}]
+ * @returns {import("../../../types.js").SimplicialComplexPath}
+ */
+export function trapezoidPath({
+  sx = 1,
+  sy = 1,
+  topRatio = 0.5,
+  topOffset = 0,
+  radius = 0.5,
+  edgeSegments = 1,
+  theta = TAU,
+  thetaOffset = 0,
+  closed = false,
+} = {}) {
+  checkArguments(arguments);
+
+  const { centeredCorners, cx, cy } = computeTrapezoidCorners(
+    sx,
+    sy,
+    topRatio,
+    topOffset,
+  );
+  const dx = radius * cx;
+  const dy = radius * cy;
+
+  return computePolarPathGeometry({
+    segments: edgeSegments * CORNER_COUNT,
+    theta,
+    thetaOffset,
+    closed,
+    equation: (t) => {
+      const [x, y] = computeOutlineEdge(centeredCorners, thetaOffset, t);
+      return [radius * x + dx, radius * y + dy];
+    },
+  });
 }

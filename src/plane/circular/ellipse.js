@@ -1,6 +1,11 @@
 /** @module ellipse */
 import { elliptical } from "../../mappings.js";
-import { checkArguments, computePolarGeometry, TAU } from "../../utils.js";
+import {
+  checkArguments,
+  computePolarGeometry,
+  computePolarPathGeometry,
+  TAU,
+} from "../../utils.js";
 
 /**
  * @typedef {object} EllipseOptions
@@ -49,5 +54,45 @@ export function ellipse({
     mergeCentroid,
     mapping,
     equation,
+  });
+}
+
+/**
+ * @typedef {object} EllipsePathOptions
+ * @property {number} [sx=1]
+ * @property {number} [sy=0.5]
+ * @property {number} [radius=0.5]
+ * @property {number} [segments=32]
+ * @property {number} [theta=TAU]
+ * @property {number} [thetaOffset=0]
+ * @property {boolean} [closed=false]
+ */
+
+/**
+ * Outline dual of `ellipse`: sx/sy independently scale the two axes, same as
+ * `circlePath` with sx = sy = 1.
+ * @alias module:ellipsePath
+ * @param {EllipsePathOptions} [options={}]
+ * @returns {import("../../../types.js").SimplicialComplexPath} `segments`
+ *   positions and a single path cell of `segments` indices (`segments + 1`,
+ *   repeating index `0`, when `closed`)
+ */
+export function ellipsePath({
+  sx = 1,
+  sy = 0.5,
+  radius = 0.5,
+  segments = 32,
+  theta = TAU,
+  thetaOffset = 0,
+  closed = false,
+} = {}) {
+  checkArguments(arguments);
+
+  return computePolarPathGeometry({
+    segments,
+    theta,
+    thetaOffset,
+    closed,
+    equation: (t) => [sx * radius * Math.cos(t), sy * radius * Math.sin(t)],
   });
 }
