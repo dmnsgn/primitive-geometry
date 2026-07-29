@@ -149,6 +149,28 @@ export function checkArguments(args) {
 }
 
 /**
+ * A single triangle, 3x oversized so its 3 vertices land past every edge of
+ * the [-1, 1] clip-space square: the standard vertex-shader trick for a
+ * fullscreen pass (rasterizes to exactly the viewport once clipped, with no
+ * diagonal seam and no overdraw compared to a quad split into 2 triangles).
+ * xy positions only - no z, no normals/uvs, no cells - since a fullscreen
+ * pass reads screen-space data directly (`gl_FragCoord`, or a uv derived from
+ * the clip position in-shader) rather than interpolated vertex attributes,
+ * and needs no index buffer for a single triangle.
+ * @returns {{positions: Float32Array}}
+ */
+export function fullscreenTriangle() {
+  return {
+    // prettier-ignore
+    positions: Float32Array.of(
+      -1, -1,
+      3, -1,
+      -1, 3,
+    ),
+  };
+}
+
+/**
  * @private
  */
 let TYPED_ARRAY_TYPE;

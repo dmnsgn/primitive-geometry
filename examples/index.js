@@ -28,6 +28,15 @@ const geometries = params.has("geometry")
         named("hexagonalGrid", Primitives.hexagonalGrid()),
         null,
         [
+          named("triangle", Primitives.triangle()),
+          named("trianglePath", Primitives.trianglePath()),
+        ],
+        [
+          named("rightTriangle", Primitives.rightTriangle()),
+          named("rightTrianglePath", Primitives.rightTrianglePath()),
+        ],
+        null,
+        [
           named("quad", Primitives.quad()),
           named("squarePath", Primitives.squarePath()),
         ],

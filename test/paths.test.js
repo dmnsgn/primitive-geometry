@@ -336,6 +336,35 @@ describe("parallelogramPath", () => {
   });
 });
 
+describe("trianglePath", () => {
+  it("matches triangle's outer boundary", () => {
+    const apexOffset = 0.1;
+    const path = Primitives.trianglePath({ apexOffset });
+    const filled = Primitives.triangle({ apexOffset, innerSegments: 1 });
+    const ring = outerRing(filled, 3).flat();
+
+    assertClose(Array.from(path.positions.filter((_, i) => i % 3 !== 2)), ring);
+  });
+});
+
+describe("rightTrianglePath", () => {
+  it("matches rightTriangle's outer boundary", () => {
+    const path = Primitives.rightTrianglePath();
+    const filled = Primitives.rightTriangle({ innerSegments: 1 });
+    const ring = outerRing(filled, 3).flat();
+
+    assertClose(Array.from(path.positions.filter((_, i) => i % 3 !== 2)), ring);
+  });
+
+  it("is trianglePath with apexOffset = -sx", () => {
+    const sx = 0.5;
+    const sy = 1;
+    const a = Primitives.rightTrianglePath({ sx, sy });
+    const b = Primitives.trianglePath({ sx, sy, apexOffset: -sx });
+    assert.deepEqual(a.positions, b.positions);
+  });
+});
+
 describe("stadiumPath", () => {
   it("is roundedRectanglePath with radius fixed to half the shorter side", () => {
     const sx = 1;

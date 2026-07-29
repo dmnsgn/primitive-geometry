@@ -8,6 +8,12 @@ export { quadGrid } from "./src/plane/grid/quad-grid.js";
 export { triangularGrid } from "./src/plane/grid/triangular-grid.js";
 export { hexagonalGrid } from "./src/plane/grid/hexagonal-grid.js";
 
+export { triangle, trianglePath } from "./src/plane/triangular/triangle.js";
+export {
+  rightTriangle,
+  rightTrianglePath,
+} from "./src/plane/triangular/right-triangle.js";
+
 export { quad, squarePath } from "./src/plane/quadrilateral/quad.js";
 export { plane, rectanglePath } from "./src/plane/quadrilateral/plane.js";
 export {
