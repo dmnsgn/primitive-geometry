@@ -8,8 +8,8 @@ import { checkArguments } from "../../../utils.js";
  */
 
 /**
- * Regular hexahedron (cube) faces: two unit squares (0, 0), (1, 0), (1, 1),
- * (0, 1), +z then -z. Cells order: +z, +x, -z, -x, +y, -y.
+ * Regular hexahedron (cube) faces: 8 corners.
+ * Cells order: +x, -x, +y, -y, +z, -z.
  * @param {HexahedronFacesOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplexPolygon}
  */
@@ -19,23 +19,23 @@ export function hexahedronFaces({ radius = 0.5 } = {}) {
   return {
     // prettier-ignore
     positions: Float32Array.of(
+      -radius, radius, radius,
       -radius, -radius, radius,
       radius, -radius, radius,
       radius, radius, radius,
-      -radius, radius, radius,
-      -radius, -radius, -radius,
-      radius, -radius, -radius,
       radius, radius, -radius,
+      radius, -radius, -radius,
+      -radius, -radius, -radius,
       -radius, radius, -radius,
     ),
 
     cells: [
+      [3, 2, 5, 4], // +x
+      [7, 6, 1, 0], // -x
+      [7, 0, 3, 4], // +y
+      [1, 6, 5, 2], // -y
       [0, 1, 2, 3], // +z
-      [1, 5, 6, 2], // +x
-      [5, 4, 7, 6], // -z
-      [4, 0, 3, 7], // -x
-      [3, 2, 6, 7], // +y
-      [4, 5, 1, 0], // -y
+      [4, 5, 6, 7], // -z
     ],
   };
 }

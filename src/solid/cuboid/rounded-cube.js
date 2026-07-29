@@ -92,12 +92,12 @@ export function roundedCube({
   const bounds = [widthX * 0.5, widthY * 0.5, widthZ * 0.5];
 
   const PLANES = [
-    [widthX, widthY, nx, ny, "z", halfSZ],
-    [widthX, widthY, nx, ny, "-z", -halfSZ],
-    [widthZ, widthY, nz, ny, "-x", -halfSX],
     [widthZ, widthY, nz, ny, "x", halfSX],
+    [widthZ, widthY, nz, ny, "-x", -halfSX],
     [widthX, widthZ, nx, nz, "y", halfSY],
     [widthX, widthZ, nx, nz, "-y", -halfSY],
+    [widthX, widthY, nx, ny, "z", halfSZ],
+    [widthX, widthY, nx, ny, "-z", -halfSZ],
   ];
 
   for (let i = 0; i < PLANES.length; i++) {

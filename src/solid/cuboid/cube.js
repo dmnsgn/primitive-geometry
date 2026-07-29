@@ -11,6 +11,7 @@ import { checkArguments, computePlane, getCellsTypedArray } from "../../utils.js
 
 /**
  * Cuboid faces: 8 positions and 6 quad faces (indices into positions).
+ * Cells order: +x, -x, +y, -y, +z, -z.
  * @param {CubeFacesOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPolygon}
  */
@@ -36,12 +37,12 @@ export function cubeFaces({ sx = 1, sy = sx, sz = sx } = {}) {
       -x, y, -z,
     ),
     cells: [
-      [0, 1, 2, 3], // +z
       [3, 2, 5, 4], // +x
-      [4, 5, 6, 7], // -z
       [7, 6, 1, 0], // -x
       [7, 0, 3, 4], // +y
       [1, 6, 5, 2], // -y
+      [0, 1, 2, 3], // +z
+      [4, 5, 6, 7], // -z
     ],
   };
 }
@@ -99,12 +100,12 @@ export function cube({ sx = 1, sy = sx, sz = sx, nx = 1, ny = nx, nz = nx } = {}
 
   const indices = { vertex: 0, cell: 0 };
 
-  computePlane(geometry, indices, sx, sy, nx, ny, "z", halfSZ);
-  computePlane(geometry, indices, sx, sy, nx, ny, "-z", -halfSZ);
-  computePlane(geometry, indices, sz, sy, nz, ny, "-x", -halfSX);
   computePlane(geometry, indices, sz, sy, nz, ny, "x", halfSX);
+  computePlane(geometry, indices, sz, sy, nz, ny, "-x", -halfSX);
   computePlane(geometry, indices, sx, sz, nx, nz, "y", halfSY);
   computePlane(geometry, indices, sx, sz, nx, nz, "-y", -halfSY);
+  computePlane(geometry, indices, sx, sy, nx, ny, "z", halfSZ);
+  computePlane(geometry, indices, sx, sy, nx, ny, "-z", -halfSZ);
 
   return geometry;
 }
