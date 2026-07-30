@@ -1,6 +1,7 @@
 /** @module sphericalRing */
 import {
   checkArguments,
+  clamp,
   computeRevolutionGeometry,
   concatGeometries,
   snapToZero,
@@ -10,7 +11,9 @@ import {
 /**
  * @typedef {object} SphericalRingOptions
  * @property {number} [radius=0.5] Sphere radius
- * @property {number} [innerRadius=radius*0.5] Cylindrical bore radius
+ * @property {number} [innerRadius=radius*0.5] Cylindrical bore radius,
+ * silently clamped to [0, radius] - a bore wider than the sphere has no
+ * sensible rim to meet
  * @property {number} [nx=32]
  * @property {number} [ny=16] Outer spherical band meridian segments
  * @property {number} [holeSegments=1] Inner bore wall segments
@@ -55,8 +58,10 @@ export function sphericalRing({
 } = {}) {
   checkArguments(arguments);
 
+  const clampedInnerRadius = clamp(innerRadius, 0, radius);
+
   // Polar angle from the pole to the rim where the bore meets the sphere
-  const thetaRim = Math.asin(innerRadius / radius);
+  const thetaRim = Math.asin(clampedInnerRadius / radius);
   const theta = Math.PI - 2 * thetaRim;
 
   function outerEquation({ v, cosPhi, sinPhi }) {
