@@ -1,11 +1,11 @@
 /** @module sphericalRing */
 import {
+  TAU,
   clamp,
-  computeRevolutionGeometry,
   concatGeometries,
   snapToZero,
-  TAU,
-} from "../../utils.js";
+} from "../../utils/common.js";
+import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
 /**
  * @typedef {object} SphericalRingOptions

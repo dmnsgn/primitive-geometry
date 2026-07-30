@@ -1,5 +1,5 @@
 /** @module salinon */
-import { sweptArc } from "./swept-arc.js";
+import { computeSweptArc } from "../../utils/polar.js";
 import { rectangular } from "../../mappings.js";
 
 /**
@@ -44,7 +44,7 @@ export function salinon({
   const earRadius = (R - r) / 2;
   const earCenter = (R + r) / 2;
 
-  return sweptArc({
+  return computeSweptArc({
     segments,
     innerSegments,
     uMin: -R,

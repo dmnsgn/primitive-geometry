@@ -1,7 +1,7 @@
 /** @module disc */
 import { ellipse, ellipsePath } from "./ellipse.js";
 import { concentric } from "../../mappings.js";
-import { TAU } from "../../utils.js";
+import { TAU } from "../../utils/common.js";
 
 /**
  * @typedef {object} DiscOptions

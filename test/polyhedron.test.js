@@ -2,12 +2,12 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
 import * as Primitives from "../index.js";
-import { polyhedron } from "../src/solid/polyhedra/polyhedron.js";
+import { computePolyhedron } from "../src/utils/polyhedron.js";
 import { rectangular } from "../src/mappings.js";
 import { analyze, inwardTriangles, uniquePositionCount } from "./helpers.js";
 
 // Seed data reused directly (not through the public solids) to exercise
-// polyhedron()'s bare project=false/true behavior at the algorithm level,
+// computePolyhedron()'s bare project=false/true behavior at the algorithm level,
 // beyond what tetrasphere/octasphere/dodecasphere already cover below.
 const tetrahedronSeed = {
   positions: Float32Array.of(1, 1, 1, 1, -1, -1, -1, 1, -1, -1, -1, 1),
@@ -414,7 +414,7 @@ describe("tetrasphere / hexasphere / octasphere / dodecasphere / icosphere", () 
     // tetrasphere is excluded: its 4 huge faces mean a triangle's 3 corners
     // can already be ~120° apart in longitude before any subdivision, which
     // no per-vertex uv duplication can fix (only splitting the triangle
-    // itself would) - see the comment above the zipper in polyhedron.js.
+    // itself would) - see the comment above the zipper in src/utils/polyhedron.js.
     for (const [name, create] of [
       ["hexasphere", () => Primitives.hexasphere({ subdivisions: 3 })],
       ["octasphere", () => Primitives.octasphere({ subdivisions: 3 })],
@@ -434,7 +434,7 @@ describe("tetrasphere / hexasphere / octasphere / dodecasphere / icosphere", () 
 describe("polyhedron (subdivisions / project, direct)", () => {
   it("flat mode subdivision keeps exact triangle/vertex counts and stays crack-free (triangular seed)", () => {
     for (const subdivisions of [0, 1, 2, 3, 5]) {
-      const g = polyhedron(tetrahedronSeed, { subdivisions });
+      const g = computePolyhedron(tetrahedronSeed, { subdivisions });
       assert.equal(g.cells.length / 3, 4 * (subdivisions + 1) ** 2);
       const result = analyze(g);
       assert.equal(result.cracks, 0, `subdivisions=${subdivisions}`);
@@ -447,7 +447,7 @@ describe("polyhedron (subdivisions / project, direct)", () => {
   it("flat mode subdivision on a pentagon seed exercises the diagonal cache", () => {
     const seed = dodecahedronSeed();
     for (const subdivisions of [0, 1, 3]) {
-      const g = polyhedron(seed, { subdivisions });
+      const g = computePolyhedron(seed, { subdivisions });
       assert.equal(g.cells.length / 3, 12 * 3 * (subdivisions + 1) ** 2);
       const result = analyze(g);
       assert.equal(result.cracks, 0, `subdivisions=${subdivisions}`);
@@ -460,7 +460,7 @@ describe("polyhedron (subdivisions / project, direct)", () => {
     for (const subdivisions of [0, 1, 2, 3, 5]) {
       // mapping: rectangular isolates welding from the uv-seam zipper below,
       // which intentionally reintroduces a few same-position duplicates
-      const g = polyhedron(tetrahedronSeed, {
+      const g = computePolyhedron(tetrahedronSeed, {
         subdivisions,
         project: true,
         radius: 0.5,
@@ -491,8 +491,8 @@ describe("polyhedron (subdivisions / project, direct)", () => {
 
   it("project mode welds a pentagon seed across shared edges too", () => {
     const seed = dodecahedronSeed();
-    const flat = polyhedron(seed, { subdivisions: 2 });
-    const projected = polyhedron(seed, { subdivisions: 2, project: true });
+    const flat = computePolyhedron(seed, { subdivisions: 2 });
+    const projected = computePolyhedron(seed, { subdivisions: 2, project: true });
     // Same triangle topology, fewer vertices once shared edges are welded
     assert.equal(flat.cells.length, projected.cells.length);
     assert.ok(projected.positions.length < flat.positions.length);

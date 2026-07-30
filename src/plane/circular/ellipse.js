@@ -1,10 +1,10 @@
 /** @module ellipse */
 import { elliptical } from "../../mappings.js";
+import { TAU } from "../../utils/common.js";
 import {
   computePolarGeometry,
   computePolarPathGeometry,
-  TAU,
-} from "../../utils.js";
+} from "../../utils/polar.js";
 
 /**
  * @typedef {object} EllipseOptions

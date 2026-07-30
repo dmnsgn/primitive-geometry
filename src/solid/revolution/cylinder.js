@@ -1,10 +1,10 @@
 /** @module cylinder */
 import { rectangular } from "../../mappings.js";
 import {
-  computeRevolutionGeometry,
-  lerp,
   TAU,
-} from "../../utils.js";
+  lerp,
+} from "../../utils/common.js";
+import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
 /**
  * @typedef {object} CylinderOptions

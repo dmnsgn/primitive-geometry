@@ -1,12 +1,14 @@
 /** @module kite */
 import { concentric } from "../../mappings.js";
 import {
+  HALF_PI,
+  TAU,
+} from "../../utils/common.js";
+import {
   computePolarGeometry,
   computePolarPathGeometry,
   computePolygonEdge,
-  HALF_PI,
-  TAU,
-} from "../../utils.js";
+} from "../../utils/polar.js";
 
 /**
  * @typedef {object} KiteOptions

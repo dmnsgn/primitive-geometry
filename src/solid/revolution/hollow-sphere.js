@@ -1,14 +1,16 @@
 /** @module hollowSphere */
 import {
+  TAU,
   clampMeridianSweep,
-  computeGridQuad,
   concatGeometries,
   getCellsTypedArray,
   invert,
   normalize,
-  TAU,
+} from "../../utils/common.js";
+import {
   TMP,
-} from "../../utils.js";
+  computeGridQuad,
+} from "../../utils/revolution.js";
 import { sphere } from "./sphere.js";
 import { sphereDirection } from "./ellipsoid.js";
 

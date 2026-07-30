@@ -1,9 +1,7 @@
 /** @module funnel */
 import { rectangular } from "../../mappings.js";
-import {
-  computeFlatRevolutionGeometry,
-  TAU,
-} from "../../utils.js";
+import { TAU } from "../../utils/common.js";
+import { computeFlatRevolutionGeometry } from "../../utils/revolution.js";
 
 /**
  * @typedef {object} FunnelOptions

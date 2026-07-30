@@ -1,7 +1,7 @@
 /** @module lune */
-import { sweptArc } from "./swept-arc.js";
+import { computeSweptArc } from "../../utils/polar.js";
 import { rectangular } from "../../mappings.js";
-import { concatGeometries } from "../../utils.js";
+import { concatGeometries } from "../../utils/common.js";
 
 /**
  * @typedef {object} LuneOptions
@@ -73,7 +73,7 @@ export function lune({
     const capEnd = Math.min(kink, uMax);
     if (capEnd > uMin) {
       pieces.push(
-        sweptArc({
+        computeSweptArc({
           segments,
           innerSegments,
           uMin,
@@ -91,7 +91,7 @@ export function lune({
     const hornStart = Math.max(kink, uMin);
     if (hornStart < uMax) {
       pieces.push(
-        sweptArc({
+        computeSweptArc({
           segments,
           innerSegments,
           uMin: hornStart,

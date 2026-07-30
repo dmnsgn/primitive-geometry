@@ -1,7 +1,7 @@
 /** @module smallStellatedDodecahedron */
 import { greatDodecahedronFaces } from "./great-dodecahedron.js";
 import { assembleFaces, computePentagram } from "./pentagram.js";
-import { polyhedron } from "../polyhedron.js";
+import { computePolyhedron } from "../../../utils/polyhedron.js";
 
 /**
  * @typedef {object} SmallStellatedDodecahedronFacesOptions
@@ -41,7 +41,7 @@ export function smallStellatedDodecahedron({
   subdivisions = 0,
   mapping,
 } = {}) {
-  return polyhedron(smallStellatedDodecahedronFaces({ radius }), {
+  return computePolyhedron(smallStellatedDodecahedronFaces({ radius }), {
     radius,
     subdivisions,
     mapping,

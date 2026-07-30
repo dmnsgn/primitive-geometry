@@ -1,11 +1,13 @@
 /** @module prism */
 import { rectangular } from "../../mappings.js";
 import {
+  TAU,
+  getCellsTypedArray,
+} from "../../utils/common.js";
+import {
   computePolygonCap,
   computePolygonCorner,
-  getCellsTypedArray,
-  TAU,
-} from "../../utils.js";
+} from "../../utils/revolution.js";
 
 /**
  * @typedef {object} PrismOptions

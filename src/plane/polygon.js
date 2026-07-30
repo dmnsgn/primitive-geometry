@@ -1,11 +1,11 @@
 /** @module polygon */
 import { concentric } from "../mappings.js";
+import { TAU } from "../utils/common.js";
 import {
   computePolarGeometry,
   computePolarPathGeometry,
   computePolygonEdge,
-  TAU,
-} from "../utils.js";
+} from "../utils/polar.js";
 
 /**
  * @typedef {object} PolygonOptions

@@ -1,9 +1,9 @@
 /** @module apple */
 import {
-  clamp,
-  computeSpindleArcRevolution,
   TAU,
-} from "../../utils.js";
+  clamp,
+} from "../../utils/common.js";
+import { computeSpindleArcRevolution } from "../../utils/revolution.js";
 
 /**
  * @typedef {object} AppleOptions

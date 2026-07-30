@@ -1,11 +1,11 @@
 /** @module cross */
 import { rectangular } from "../mappings.js";
+import { TAU } from "../utils/common.js";
 import {
   computeOutlineEdge,
   computePolarGeometry,
   computePolarPathGeometry,
-  TAU,
-} from "../utils.js";
+} from "../utils/polar.js";
 
 const CORNER_COUNT = 12;
 

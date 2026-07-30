@@ -1,11 +1,13 @@
 /** @module star */
 import { concentric } from "../mappings.js";
 import {
+  TAU,
+  computeStarRatio,
+} from "../utils/common.js";
+import {
   computePolarGeometry,
   computePolarPathGeometry,
-  computeStarRatio,
-  TAU,
-} from "../utils.js";
+} from "../utils/polar.js";
 
 /**
  * @typedef {object} StarOptions

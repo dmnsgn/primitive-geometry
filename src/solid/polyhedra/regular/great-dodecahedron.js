@@ -1,6 +1,6 @@
 /** @module greatDodecahedron */
 import { icosahedronFaces } from "./icosahedron.js";
-import { polyhedron } from "../polyhedron.js";
+import { computePolyhedron } from "../../../utils/polyhedron.js";
 
 /**
  * @typedef {object} GreatDodecahedronFacesOptions
@@ -50,7 +50,7 @@ export function greatDodecahedronFaces({ radius = 0.5 } = {}) {
  * @returns {import("../../../../types.js").SimplicialComplex}
  */
 export function greatDodecahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
-  return polyhedron(greatDodecahedronFaces({ radius }), {
+  return computePolyhedron(greatDodecahedronFaces({ radius }), {
     radius,
     subdivisions,
     mapping,

@@ -5,8 +5,8 @@ import {
   computeStarLayer,
   PENTAGRAM_RATIO,
 } from "./pentagram.js";
-import { polyhedron } from "../polyhedron.js";
-import { PHI } from "../../../utils.js";
+import { computePolyhedron } from "../../../utils/polyhedron.js";
+import { PHI } from "../../../utils/common.js";
 
 /**
  * @typedef {object} GreatStellatedDodecahedronFacesOptions
@@ -65,7 +65,7 @@ export function greatStellatedDodecahedron({
   subdivisions = 0,
   mapping,
 } = {}) {
-  return polyhedron(greatStellatedDodecahedronFaces({ radius }), {
+  return computePolyhedron(greatStellatedDodecahedronFaces({ radius }), {
     radius,
     subdivisions,
     mapping,

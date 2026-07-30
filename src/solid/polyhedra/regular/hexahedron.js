@@ -1,5 +1,5 @@
 /** @module hexahedron */
-import { polyhedron } from "../polyhedron.js";
+import { computePolyhedron } from "../../../utils/polyhedron.js";
 import { cubeFaces } from "../../cuboid/cube.js";
 
 /**
@@ -32,7 +32,7 @@ export function hexahedronFaces({ radius = 0.5 } = {}) {
  * @returns {import("../../../../types.js").SimplicialComplex}
  */
 export function hexahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
-  return polyhedron(hexahedronFaces({ radius }), {
+  return computePolyhedron(hexahedronFaces({ radius }), {
     radius,
     subdivisions,
     mapping,

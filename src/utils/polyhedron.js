@@ -1,16 +1,16 @@
 /** @module polyhedron */
-import { rectangular, spherical } from "../../mappings.js";
-import { getCellsTypedArray, normalize } from "../../utils.js";
+
+import { rectangular, spherical } from "../mappings.js";
+import {
+  computeFaceContext,
+  edgePoint,
+  getCellsTypedArray,
+  normalize,
+  point,
+  slerpTriangle,
+} from "./common.js";
 
 const MAX_VERTICES = 1e7;
-
-// Below this angle (radians), two slerp endpoints are treated as coincident
-// to avoid a 0/0 division
-const SLERP_MIN_ANGLE = 1e-6;
-
-// Below this combined barycentric weight, a point is treated as sitting
-// exactly at the fan apex to avoid a 0/0 division
-const BARYCENTRIC_MIN_WEIGHT = 1e-9;
 
 // Distance of a uv v-coordinate from 0 or 1 below which a vertex counts as a pole
 const POLE_EPSILON = 1e-5;
@@ -33,135 +33,24 @@ const POLE_KEY_CORNER_STRIDE = 3 * POLE_KEY_U_SCALE;
 // spaces disjoint regardless of how many vertices this call produces
 const POLE_KEY_BASE = MAX_VERTICES;
 
-function point(positions, index) {
-  return [
-    positions[index * 3],
-    positions[index * 3 + 1],
-    positions[index * 3 + 2],
-  ];
-}
-
-function subtract(positions, a, b) {
-  return [
-    positions[a * 3] - positions[b * 3],
-    positions[a * 3 + 1] - positions[b * 3 + 1],
-    positions[a * 3 + 2] - positions[b * 3 + 2],
-  ];
-}
-
-function cross(a, b) {
-  return [
-    a[1] * b[2] - a[2] * b[1],
-    a[2] * b[0] - a[0] * b[2],
-    a[0] * b[1] - a[1] * b[0],
-  ];
-}
-
-function dot(a, b) {
-  return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-}
-
-// Per-face constants: a flat normal and a tangent basis (+ extent) used for
-// the default per-face planar uv unwrap. The normal is summed via Newell's
-// method over every edge, so it stays correct for faces with (nearly)
-// collinear corners and averages out slightly non-planar faces.
-function computeFaceContext(seedPositions, face) {
-  const normal = [0, 0, 0];
-  for (let i = 0; i < face.length; i++) {
-    const a = point(seedPositions, face[i]);
-    const b = point(seedPositions, face[(i + 1) % face.length]);
-    normal[0] += (a[1] - b[1]) * (a[2] + b[2]);
-    normal[1] += (a[2] - b[2]) * (a[0] + b[0]);
-    normal[2] += (a[0] - b[0]) * (a[1] + b[1]);
-  }
-  normalize(normal);
-  const u = normalize(subtract(seedPositions, face[1], face[0]));
-  const v = cross(normal, u);
-
-  const centroid = [0, 0, 0];
-  for (const index of face) {
-    centroid[0] += seedPositions[index * 3];
-    centroid[1] += seedPositions[index * 3 + 1];
-    centroid[2] += seedPositions[index * 3 + 2];
-  }
-  centroid[0] /= face.length;
-  centroid[1] /= face.length;
-  centroid[2] /= face.length;
-
-  let extent = 0;
-  for (const index of face) {
-    const p = [
-      seedPositions[index * 3] - centroid[0],
-      seedPositions[index * 3 + 1] - centroid[1],
-      seedPositions[index * 3 + 2] - centroid[2],
-    ];
-    extent = Math.max(extent, Math.abs(dot(p, u)), Math.abs(dot(p, v)));
-  }
-
-  return { normal, u, v, centroid, extent: extent || 1 };
-}
-
-// Point on the great circle between unit vectors p and q, at fraction t
-function slerp(p, q, t) {
-  const cosTheta = Math.min(1, Math.max(-1, dot(p, q)));
-  const theta = Math.acos(cosTheta);
-  if (theta < SLERP_MIN_ANGLE) return normalize([...p]);
-
-  const sinTheta = Math.sin(theta);
-  const wp = Math.sin((1 - t) * theta) / sinTheta;
-  const wq = Math.sin(t * theta) / sinTheta;
-  return [p[0] * wp + q[0] * wq, p[1] * wp + q[1] * wq, p[2] * wp + q[2] * wq];
-}
-
-// Barycentric point (weight v toward uB, w toward uC) on a spherical
-// triangle of unit vectors, via nested slerp along BC then A to that point
-function slerpTriangle(uA, uB, uC, v, w) {
-  if (v + w < BARYCENTRIC_MIN_WEIGHT) return normalize([...uA]);
-  return slerp(uA, slerp(uB, uC, w / (v + w)), v + w);
-}
-
-// Point on edge (a, b) at k/S from a to b, canonicalized on min(a, b) so two
-// faces sharing this edge compute bit-identical floats regardless of winding
-function edgePoint(seedPositions, a, b, k, S, slerped) {
-  const lo = Math.min(a, b);
-  const hi = Math.max(a, b);
-  const t = (a < b ? k : S - k) / S;
-
-  const p = [
-    seedPositions[lo * 3],
-    seedPositions[lo * 3 + 1],
-    seedPositions[lo * 3 + 2],
-  ];
-  const q = [
-    seedPositions[hi * 3],
-    seedPositions[hi * 3 + 1],
-    seedPositions[hi * 3 + 2],
-  ];
-
-  if (slerped) return slerp(normalize(p), normalize(q), t);
-
-  const t1 = 1 - t;
-  return [p[0] * t1 + q[0] * t, p[1] * t1 + q[1] * t, p[2] * t1 + q[2] * t];
-}
-
 /**
  * Build a flat-shaded (or, with `project`, smooth) triangle mesh from a seed
  * polyhedron: n-gon faces are fan-triangulated, each triangle optionally
  * subdivided into a barycentric grid. By default each face keeps its own
  * vertices for flat per-face normals. `project` instead normalizes vertices
  * onto `radius` and welds them across faces into a geodesic sphere.
- * @param {import("../../../types.js").SimplicialComplexPolygon} seed Seed polyhedron: flat xyz positions (radius already baked in by the caller) and CCW n-gon faces (indices into positions)
+ * @param {import("../../types.js").SimplicialComplexPolygon} seed Seed polyhedron: flat xyz positions (radius already baked in by the caller) and CCW n-gon faces (indices into positions)
  * @param {object} [options={}]
  * @param {number} [options.radius=0.5] Only used to re-normalize when project is true
  * @param {number} [options.subdivisions=0] Barycentric grid subdivisions per fan triangle
  * @param {boolean} [options.project=false] Radially project and weld across faces
  * @param {"gnomonic"|"spherical"} [options.projection="gnomonic"] How subdivided points are placed when project is true: "gnomonic" subdivides flat then projects (denser near seed vertices); "spherical" interpolates along great circles instead
  * @param {Function} [options.mapping] Defaults to mappings.spherical when project, mappings.rectangular otherwise
- * @returns {import("../../../types.js").SimplicialComplex}
+ * @returns {import("../../types.js").SimplicialComplex}
  * @throws {Error} If subdivisions would produce more than 1e7 vertices
  * @private
  */
-export function polyhedron(
+export function computePolyhedron(
   { positions: seedPositions, cells: seedCells },
   {
     radius = 0.5,

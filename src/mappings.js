@@ -1,5 +1,9 @@
 /** @module mappings */
-import { HALF_PI, SQRT2, TAU } from "./utils.js";
+import {
+  HALF_PI,
+  SQRT2,
+  TAU,
+} from "./utils/common.js";
 
 const safeSqrt = (x) => Math.sqrt(Math.max(x, 0));
 const safeDivide = (x, y) => x / (y + Number.EPSILON);

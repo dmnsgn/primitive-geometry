@@ -1,6 +1,6 @@
 /** @module hexagonalGrid */
 
-import { SQRT3 } from "../../utils.js";
+import { SQRT3 } from "../../utils/common.js";
 
 // Vertex-welding cache keys quantize x/y relative to dx (each hex's own
 // scale) rather than to an absolute epsilon, so welding stays reliable

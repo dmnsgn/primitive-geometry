@@ -1,11 +1,14 @@
 /** @module triquetra */
-import { chebyshevColumn, sweptArc } from "./swept-arc.js";
+import {
+  computeChebyshevColumn,
+  computeSweptArc,
+} from "../../utils/polar.js";
 import { rectangular } from "../../mappings.js";
 import {
+  TAU,
   concatGeometries,
   getCellsTypedArray,
-  TAU,
-} from "../../utils.js";
+} from "../../utils/common.js";
 
 /**
  * @typedef {object} TriquetraOptions
@@ -83,7 +86,7 @@ export function triquetra({
     const start = vertices[k];
     const end = vertices[(k + 1) % 3];
 
-    return sweptArc({
+    return computeSweptArc({
       segments,
       innerSegments,
       uMin,
@@ -104,13 +107,13 @@ export function triquetra({
   };
 
   // A core wedge is a triangle fan from the centroid, not a 2-boundary
-  // strip: sweptArc has no vMin/vMax band here (vMin is always 0, ie. every
+  // strip: computeSweptArc has no vMin/vMax band here (vMin is always 0, ie. every
   // column reaches all the way to one shared apex), so it's built directly
   // instead - mirroring computePolarGeometry's own single-apex/concentric-
-  // ring fan, but sharing sweptArc's own Chebyshev spacing for its columns
+  // ring fan, but sharing computeSweptArc's own Chebyshev spacing for its columns
   // to keep the outer boundary sampled at the exact same angles as the
   // petals'.
-  const columnAngle = (i) => chebyshevColumn(i, segments, uMin, uMax);
+  const columnAngle = (i) => computeChebyshevColumn(i, segments, uMin, uMax);
 
   const core = (k) => {
     const offset = offsets[k];

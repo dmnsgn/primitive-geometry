@@ -1,7 +1,7 @@
 /** @module arbelos */
-import { sweptArc } from "./swept-arc.js";
+import { computeSweptArc } from "../../utils/polar.js";
 import { rectangular } from "../../mappings.js";
-import { concatGeometries } from "../../utils.js";
+import { concatGeometries } from "../../utils/common.js";
 
 /**
  * @typedef {object} ArbelosOptions
@@ -63,7 +63,7 @@ export function arbelos({
   const point = (x, y) => [x, y];
 
   return concatGeometries([
-    sweptArc({
+    computeSweptArc({
       segments,
       innerSegments,
       uMin: -R,
@@ -75,7 +75,7 @@ export function arbelos({
       bounds: (x) => [leftInner(x), outer(x)],
       point,
     }),
-    sweptArc({
+    computeSweptArc({
       segments,
       innerSegments,
       uMin: splitX,

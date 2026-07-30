@@ -1,13 +1,15 @@
 /** @module torus */
 import { rectangular } from "../../mappings.js";
 import {
-  computeCap,
-  computeGridQuad,
+  TAU,
   getCellsTypedArray,
   normalize,
-  TAU,
+} from "../../utils/common.js";
+import {
   TMP,
-} from "../../utils.js";
+  computeCap,
+  computeGridQuad,
+} from "../../utils/revolution.js";
 
 /**
  * @typedef {object} TorusOptions

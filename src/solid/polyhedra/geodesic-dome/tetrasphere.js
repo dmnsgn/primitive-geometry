@@ -1,5 +1,5 @@
 /** @module tetrasphere */
-import { polyhedron } from "../polyhedron.js";
+import { computePolyhedron } from "../../../utils/polyhedron.js";
 import { tetrahedronFaces } from "../regular/tetrahedron.js";
 
 /**
@@ -23,7 +23,7 @@ export function tetrasphere({
   mapping,
 } = {}) {
 
-  return polyhedron(tetrahedronFaces({ radius, center: false }), {
+  return computePolyhedron(tetrahedronFaces({ radius, center: false }), {
     radius,
     subdivisions,
     project: true,

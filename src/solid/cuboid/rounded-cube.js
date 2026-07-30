@@ -1,12 +1,14 @@
 /** @module roundedCube */
 import {
-  computePlane,
   getCellsTypedArray,
   normalize,
-  getPlaneCoordinate,
+} from "../../utils/common.js";
+import { TMP } from "../../utils/revolution.js";
+import {
   PLANE_DIRECTIONS,
-  TMP,
-} from "../../utils.js";
+  computePlane,
+  getPlaneCoordinate,
+} from "../../utils/plane-grid.js";
 
 /**
  * @typedef {"all" | "x" | "y" | "z"} RoundedCubeDirection

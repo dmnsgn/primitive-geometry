@@ -1,6 +1,6 @@
 /** @module triangularGrid */
 
-import { SQRT3 } from "../../utils.js";
+import { SQRT3 } from "../../utils/common.js";
 
 /**
  * @typedef {object} TriangularGridOptions

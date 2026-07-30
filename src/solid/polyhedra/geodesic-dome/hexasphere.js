@@ -1,5 +1,5 @@
 /** @module hexasphere */
-import { polyhedron } from "../polyhedron.js";
+import { computePolyhedron } from "../../../utils/polyhedron.js";
 import { hexahedronFaces } from "../regular/hexahedron.js";
 
 /**
@@ -25,7 +25,7 @@ export function hexasphere({
   mapping,
 } = {}) {
 
-  return polyhedron(hexahedronFaces({ radius }), {
+  return computePolyhedron(hexahedronFaces({ radius }), {
     radius,
     subdivisions,
     project: true,

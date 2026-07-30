@@ -1,6 +1,7 @@
 /** @module cone */
 import { rectangular } from "../../mappings.js";
-import { computeRevolutionGeometry, TAU } from "../../utils.js";
+import { TAU } from "../../utils/common.js";
+import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
 /**
  * A single right-circular-cone-frustum segment of a meridian sweep between

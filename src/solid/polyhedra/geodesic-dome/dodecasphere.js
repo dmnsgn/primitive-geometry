@@ -1,5 +1,5 @@
 /** @module dodecasphere */
-import { polyhedron } from "../polyhedron.js";
+import { computePolyhedron } from "../../../utils/polyhedron.js";
 import { dodecahedronFaces } from "../regular/dodecahedron.js";
 
 /**
@@ -23,7 +23,7 @@ export function dodecasphere({
   mapping,
 } = {}) {
 
-  return polyhedron(dodecahedronFaces({ radius }), {
+  return computePolyhedron(dodecahedronFaces({ radius }), {
     radius,
     subdivisions,
     project: true,

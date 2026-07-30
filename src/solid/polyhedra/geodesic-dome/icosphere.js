@@ -1,5 +1,5 @@
 /** @module icosphere */
-import { polyhedron } from "../polyhedron.js";
+import { computePolyhedron } from "../../../utils/polyhedron.js";
 import { icosahedronFaces } from "../regular/icosahedron.js";
 
 /**
@@ -23,7 +23,7 @@ export function icosphere({
   mapping,
 } = {}) {
 
-  return polyhedron(icosahedronFaces({ radius }), {
+  return computePolyhedron(icosahedronFaces({ radius }), {
     radius,
     subdivisions,
     project: true,

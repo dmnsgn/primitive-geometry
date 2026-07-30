@@ -1,6 +1,7 @@
 /** @module paraboloid */
 import { rectangular } from "../../mappings.js";
-import { computeRevolutionGeometry, TAU } from "../../utils.js";
+import { TAU } from "../../utils/common.js";
+import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
 /**
  * @typedef {object} ParaboloidOptions

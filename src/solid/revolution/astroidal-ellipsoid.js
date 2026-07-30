@@ -1,6 +1,6 @@
 /** @module astroidal-ellipsoid */
 import { superellipsoid } from "./superellipsoid.js";
-import { TAU } from "../../utils.js";
+import { TAU } from "../../utils/common.js";
 
 /**
  * @typedef {object} AstroidalEllipsoidOptions

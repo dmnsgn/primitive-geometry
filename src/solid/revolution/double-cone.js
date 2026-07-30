@@ -1,6 +1,9 @@
 /** @module doubleCone */
 import { rectangular } from "../../mappings.js";
-import { concatGeometries, TAU } from "../../utils.js";
+import {
+  TAU,
+  concatGeometries,
+} from "../../utils/common.js";
 import { computeConeSegment } from "./cone.js";
 
 /**

@@ -1,5 +1,9 @@
 /** @module hollowCylinder */
-import { concatGeometries, invert, TAU } from "../../utils.js";
+import {
+  TAU,
+  concatGeometries,
+  invert,
+} from "../../utils/common.js";
 import { cylinder } from "./cylinder.js";
 import { computeConeSegment } from "./cone.js";
 

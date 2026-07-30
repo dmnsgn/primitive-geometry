@@ -1,7 +1,7 @@
 /** @module quad */
 
 import { rectanglePath } from "./plane.js";
-import { triangulateFaces } from "../../utils.js";
+import { triangulateFaces } from "../../utils/common.js";
 
 /**
  * @typedef {object} QuadOptions

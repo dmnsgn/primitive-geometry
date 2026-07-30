@@ -1,11 +1,11 @@
 /** @module superellipsoid */
 import {
+  TAU,
   clampMeridianSweep,
-  computeRevolutionGeometry,
   signedPow,
   snapToZero,
-  TAU,
-} from "../../utils.js";
+} from "../../utils/common.js";
+import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
 /**
  * @typedef {object} SuperellipsoidOptions

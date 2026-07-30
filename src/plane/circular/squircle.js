@@ -1,12 +1,14 @@
 /** @module squircle */
 import { fgSquircular } from "../../mappings.js";
 import {
-  computePolarGeometry,
-  computePolarPathGeometry,
   HALF_PI,
   SQRT2,
   TAU,
-} from "../../utils.js";
+} from "../../utils/common.js";
+import {
+  computePolarGeometry,
+  computePolarPathGeometry,
+} from "../../utils/polar.js";
 
 // Fernández-Guasti squircle boundary point at angle t, already scaled by
 // rx/ry - shared by squircle's radial fill (rx/ry vary per ring) and

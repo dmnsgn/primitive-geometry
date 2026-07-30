@@ -1,10 +1,10 @@
 /** @module ellipsoid */
 import {
-  clampMeridianSweep,
-  computeRevolutionGeometry,
-  snapToZero,
   TAU,
-} from "../../utils.js";
+  clampMeridianSweep,
+  snapToZero,
+} from "../../utils/common.js";
+import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
 /**
  * @typedef {object} EllipsoidOptions

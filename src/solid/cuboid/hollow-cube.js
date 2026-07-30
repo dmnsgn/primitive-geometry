@@ -1,9 +1,9 @@
 /** @module hollowCube */
+import { getCellsTypedArray } from "../../utils/common.js";
 import {
-  computePlane,
-  getCellsTypedArray,
   PLANE_DIRECTIONS,
-} from "../../utils.js";
+  computePlane,
+} from "../../utils/plane-grid.js";
 
 const DIRECTIONS = ["x", "-x", "y", "-y", "z", "-z"];
 

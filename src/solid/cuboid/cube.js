@@ -1,6 +1,7 @@
 /** @module cube */
 
-import { computePlane, getCellsTypedArray } from "../../utils.js";
+import { getCellsTypedArray } from "../../utils/common.js";
+import { computePlane } from "../../utils/plane-grid.js";
 
 /**
  * @typedef {object} CubeFacesOptions

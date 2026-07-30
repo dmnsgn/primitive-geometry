@@ -1,13 +1,13 @@
 /** @module triangle */
 import { rectangular } from "../../mappings.js";
+import { TAU } from "../../utils/common.js";
 import {
   centerCorners,
   computeOutlineEdge,
   computePolarGeometry,
   computePolarPathGeometry,
   translatePositions,
-  TAU,
-} from "../../utils.js";
+} from "../../utils/polar.js";
 
 const CORNER_COUNT = 3;
 

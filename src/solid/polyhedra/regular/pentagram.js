@@ -1,5 +1,5 @@
 /** @module pentagram */
-import { computeStarRatio } from "../../../utils.js";
+import { computeStarRatio } from "../../../utils/common.js";
 
 /**
  * The regular pentagram ({5/2} star polygon)'s inner (reflex) to outer (tip)

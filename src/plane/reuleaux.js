@@ -1,10 +1,10 @@
 /** @module reuleaux */
 import { concentric } from "../mappings.js";
+import { TAU } from "../utils/common.js";
 import {
   computePolarGeometry,
   computePolarPathGeometry,
-  TAU,
-} from "../utils.js";
+} from "../utils/polar.js";
 
 /**
  * @typedef {object} ReuleauxOptions

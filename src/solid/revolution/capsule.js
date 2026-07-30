@@ -1,9 +1,9 @@
 /** @module capsule */
 import {
-  computeRevolutionGeometry,
-  snapToZero,
   TAU,
-} from "../../utils.js";
+  snapToZero,
+} from "../../utils/common.js";
+import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
 /**
  * @typedef {object} CapsuleOptions

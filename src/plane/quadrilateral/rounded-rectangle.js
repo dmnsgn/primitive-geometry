@@ -1,9 +1,9 @@
 /** @module roundedRectangle */
 import {
-  computePlane,
-  getCellsTypedArray,
   HALF_PI,
-} from "../../utils.js";
+  getCellsTypedArray,
+} from "../../utils/common.js";
+import { computePlane } from "../../utils/plane-grid.js";
 
 /**
  * @typedef {"top-left" | "top-right" | "bottom-right" | "bottom-left"} RoundedRectangleCorner

@@ -1,10 +1,10 @@
 /** @module roundedCylinder */
 import {
-  clamp,
-  computeRevolutionGeometry,
-  snapToZero,
   TAU,
-} from "../../utils.js";
+  clamp,
+  snapToZero,
+} from "../../utils/common.js";
+import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
 /**
  * @typedef {object} RoundedCylinderOptions

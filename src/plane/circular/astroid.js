@@ -1,7 +1,7 @@
 /** @module astroid */
 import { superellipse, superellipsePath } from "./superellipse.js";
 import { lamé } from "../../mappings.js";
-import { TAU } from "../../utils.js";
+import { TAU } from "../../utils/common.js";
 
 /**
  * @typedef {object} AstroidOptions

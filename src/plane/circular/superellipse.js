@@ -1,10 +1,10 @@
 /** @module superellipse */
 import { lamé } from "../../mappings.js";
+import { TAU } from "../../utils/common.js";
 import {
   computePolarGeometry,
   computePolarPathGeometry,
-  TAU,
-} from "../../utils.js";
+} from "../../utils/polar.js";
 
 // Lamé curve boundary point at angle t, already scaled by rx/ry - shared by
 // superellipse's radial fill (rx/ry vary per ring) and superellipsePath's

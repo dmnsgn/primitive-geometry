@@ -1,6 +1,10 @@
 /** @module tetrahedron */
-import { polyhedron } from "../polyhedron.js";
-import { SQRT2, SQRT3, SQRT6 } from "../../../utils.js";
+import { computePolyhedron } from "../../../utils/polyhedron.js";
+import {
+  SQRT2,
+  SQRT3,
+  SQRT6,
+} from "../../../utils/common.js";
 
 /**
  * @typedef {object} TetrahedronFacesOptions
@@ -63,7 +67,7 @@ export function tetrahedronFaces({ radius = 0.5, center = true } = {}) {
  * @returns {import("../../../../types.js").SimplicialComplex}
  */
 export function tetrahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
-  return polyhedron(tetrahedronFaces({ radius }), {
+  return computePolyhedron(tetrahedronFaces({ radius }), {
     radius,
     subdivisions,
     mapping,

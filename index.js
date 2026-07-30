@@ -138,4 +138,4 @@ export { icosphere } from "./src/solid/polyhedra/geodesic-dome/icosphere.js";
 // Utils
 export * as mappings from "./src/mappings.js";
 
-export * as utils from "./src/utils.js";
+export * as utils from "./src/utils/index.js";

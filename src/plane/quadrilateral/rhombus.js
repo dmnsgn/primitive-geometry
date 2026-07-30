@@ -1,7 +1,10 @@
 /** @module rhombus */
 import { polygon, polygonPath } from "../polygon.js";
 import { concentric } from "../../mappings.js";
-import { HALF_PI, TAU } from "../../utils.js";
+import {
+  HALF_PI,
+  TAU,
+} from "../../utils/common.js";
 
 /**
  * @typedef {object} RhombusOptions

@@ -1,8 +1,6 @@
 /** @module lemon */
-import {
-  computeSpindleArcRevolution,
-  TAU,
-} from "../../utils.js";
+import { TAU } from "../../utils/common.js";
+import { computeSpindleArcRevolution } from "../../utils/revolution.js";
 
 /**
  * @typedef {object} LemonOptions

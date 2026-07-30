@@ -1,5 +1,8 @@
 /** @module sphericon */
-import { concatGeometries, snapToZero } from "../../utils.js";
+import {
+  concatGeometries,
+  snapToZero,
+} from "../../utils/common.js";
 import { computeConeSegment } from "./cone.js";
 
 /**

@@ -1,7 +1,10 @@
 /** @module yinYang */
-import { sweptArc } from "./swept-arc.js";
+import { computeSweptArc } from "../../utils/polar.js";
 import { rectangular } from "../../mappings.js";
-import { clamp, concatGeometries } from "../../utils.js";
+import {
+  clamp,
+  concatGeometries,
+} from "../../utils/common.js";
 
 /**
  * @typedef {object} YinYangOptions
@@ -106,7 +109,7 @@ export function yinYang({
     };
 
     const sweep = (uMin, uMax, rows, bounds) =>
-      sweptArc({
+      computeSweptArc({
         segments: rows,
         innerSegments,
         uMin,
