@@ -1,6 +1,10 @@
 /** @module funnel */
 import { rectangular } from "../../mappings.js";
-import { checkArguments, computeRevolutionGeometry, TAU } from "../../utils.js";
+import {
+  checkArguments,
+  computeFlatRevolutionGeometry,
+  TAU,
+} from "../../utils.js";
 
 /**
  * @typedef {object} FunnelOptions
@@ -49,31 +53,21 @@ export function funnel({
   // r = radius·e^(k·(y+halfHeight)), fixed by r = radiusTop at y = halfHeight
   const k = Math.log(radiusTop / radius) / height;
 
-  function equation({ v, cosPhi: rawCosPhi, sinPhi }) {
-    const cosPhi = -rawCosPhi;
-    const r = radius * (radiusTop / radius) ** v;
-    const x = r * cosPhi;
-    const z = r * sinPhi;
-
-    return {
-      position: [x, height * v - halfHeight, z],
-      // Gradient of x² + z² - r(y)² = 0, ie. (2x, -2k·r², 2z)
-      normal: [x, -k * (x * x + z * z), z],
-      collapsed: false,
-    };
-  }
-
-  const { positions, normals, uvs, cells } = computeRevolutionGeometry({
+  const { positions, normals, uvs, cells } = computeFlatRevolutionGeometry({
+    height,
     nx,
     ny,
     phi,
     phiOffset,
     capApex,
     capBase,
-    capApexSegments: capSegments,
-    capBaseSegments: capSegments,
+    capSegments,
     capMapping,
-    equation,
+    profile: (y, v) => {
+      const r = radius * (radiusTop / radius) ** v;
+      // Gradient of x² + z² - r(y)² = 0, ie. (2x, -2k·r², 2z)
+      return [r, -k * (r * r)];
+    },
   });
 
   return { positions, normals, uvs, cells };

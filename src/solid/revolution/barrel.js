@@ -1,6 +1,10 @@
 /** @module barrel */
 import { rectangular } from "../../mappings.js";
-import { checkArguments, computeRevolutionGeometry, TAU } from "../../utils.js";
+import {
+  checkArguments,
+  computeFlatRevolutionGeometry,
+  TAU,
+} from "../../utils.js";
 
 /**
  * @typedef {object} BarrelOptions
@@ -52,32 +56,18 @@ export function barrel({
   // r = radius - k·y², fixed by r = endRadius at both y = ±halfHeight
   const k = (radius - endRadius) / (halfHeight * halfHeight);
 
-  function equation({ v, cosPhi: rawCosPhi, sinPhi }) {
-    const cosPhi = -rawCosPhi;
-    const y = height * v - halfHeight;
-    const r = radius - k * y * y;
-    const x = r * cosPhi;
-    const z = r * sinPhi;
-
-    return {
-      position: [x, y, z],
-      // Gradient of x² + z² - radius + k·y² = 0, ie. (2x, 2k·y, 2z)
-      normal: [x, k * y, z],
-      collapsed: false,
-    };
-  }
-
-  const { positions, normals, uvs, cells } = computeRevolutionGeometry({
+  const { positions, normals, uvs, cells } = computeFlatRevolutionGeometry({
+    height,
     nx,
     ny,
     phi,
     phiOffset,
     capApex,
     capBase,
-    capApexSegments: capSegments,
-    capBaseSegments: capSegments,
+    capSegments,
     capMapping,
-    equation,
+    // Gradient of x² + z² - radius + k·y² = 0, ie. (2x, 2k·y, 2z)
+    profile: (y) => [radius - k * y * y, k * y],
   });
 
   return { positions, normals, uvs, cells };

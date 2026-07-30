@@ -1069,6 +1069,62 @@ export function computeRevolutionGeometry({
 }
 
 /**
+ * A flat-ended surface of revolution around the y axis, both ends open
+ * rings cappable exactly like `cylinder`'s - shared plumbing for
+ * `barrel`/`funnel`/`hyperboloid`, which only differ in their own radius
+ * law (parabolic/exponential/hyperbolic). `profile(y, v)` returns `[r,
+ * normalY]`: the meridian's radius at that height and the y-component of
+ * the implicit surface's gradient there (x/z components are always `x`/`z`
+ * themselves for this whole family, since none of their defining equations
+ * has an x/y or z/y cross term). Both `y` and the raw sweep parameter `v`
+ * are passed through so a caller whose own radius law is naturally written
+ * in terms of one or the other (eg. funnel's exponential, in `v`) doesn't
+ * have to round-trip through the other and risk a 1-ULP drift.
+ * @private
+ */
+export function computeFlatRevolutionGeometry({
+  height,
+  nx,
+  ny,
+  phi,
+  phiOffset,
+  capApex,
+  capBase,
+  capSegments,
+  capMapping,
+  profile,
+}) {
+  const halfHeight = height / 2;
+
+  function equation({ v, cosPhi: rawCosPhi, sinPhi }) {
+    const cosPhi = -rawCosPhi;
+    const y = height * v - halfHeight;
+    const [r, normalY] = profile(y, v);
+    const x = r * cosPhi;
+    const z = r * sinPhi;
+
+    return {
+      position: [x, y, z],
+      normal: [x, normalY, z],
+      collapsed: false,
+    };
+  }
+
+  return computeRevolutionGeometry({
+    nx,
+    ny,
+    phi,
+    phiOffset,
+    capApex,
+    capBase,
+    capApexSegments: capSegments,
+    capBaseSegments: capSegments,
+    capMapping,
+    equation,
+  });
+}
+
+/**
  * A point on a straight-edged polygon's boundary at angle t: splits the
  * circle into cornerCount equal sectors starting at thetaOffset, finds which
  * one t falls in, and linearly interpolates between its two corners. Each
