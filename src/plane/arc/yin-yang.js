@@ -1,7 +1,7 @@
 /** @module yinYang */
 import { sweptArc } from "./swept-arc.js";
 import { rectangular } from "../../mappings.js";
-import { checkArguments, concatGeometries } from "../../utils.js";
+import { checkArguments, clamp, concatGeometries } from "../../utils.js";
 
 /**
  * @typedef {object} YinYangOptions
@@ -88,7 +88,6 @@ export function yinYang({
     const dotBottom = isYin ? yinDotBottom : yangDotBottom;
     const dotTop = isYin ? yinDotTop : yangDotTop;
 
-    const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
     // Compares against dotBottom/dotTop directly rather than re-deriving
     // via y - dotCenterY, which doesn't reliably round-trip to dotRadius.
     const holeHalfWidth = (y) =>
