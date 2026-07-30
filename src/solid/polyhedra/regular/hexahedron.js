@@ -26,6 +26,7 @@ export function hexahedronFaces({ radius = 0.5 } = {}) {
  */
 
 /**
+ * Regular hexahedron (cube).
  * @alias module:hexahedron
  * @param {HexahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}

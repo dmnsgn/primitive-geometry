@@ -13,6 +13,7 @@ import { ellipsoid } from "./ellipsoid.js";
  */
 
 /**
+ * A sphere: `ellipsoid` with rx = ry = 1.
  * @alias module:sphere
  * @param {SphereOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}

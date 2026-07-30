@@ -16,6 +16,7 @@ import { computePlane, getCellsTypedArray } from "../../utils.js";
  */
 
 /**
+ * A flat rectangular grid, facing `direction`.
  * @alias module:plane
  * @param {PlaneOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}

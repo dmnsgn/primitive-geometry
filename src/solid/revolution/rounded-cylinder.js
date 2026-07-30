@@ -23,22 +23,10 @@ import {
 
 /**
  * A cylinder with its top/bottom rim edges filleted instead of sharp - a
- * flat cap (like `cylinder`'s), blended into the straight side by a quarter-
- * circle fillet, both ends symmetric.
- *
- * Unlike `capsule` (a full hemisphere cap, always tangent to the axis at its
- * pole), the fillet here is a quarter-circle whose own center is offset from
- * the axis by radius - roundRadius, so the cap stays flat right up to that
- * offset. The two are the same family at opposite extremes: roundRadius = 0
- * is a plain flat-capped `cylinder`; roundRadius = radius = height / 2
- * pinches the flat cap away entirely and the fillet's own center lands back
- * on the axis, becoming `capsule`'s hemisphere.
- *
- * Every junction (flat cap -> fillet, fillet -> side) is C1-continuous (the
- * fillet's tangent is horizontal at the cap and vertical at the side, by
- * construction), so - like `capsule` - the whole meridian is one continuous
- * sweep through both poles (flat cap center, top and bottom) in a single
- * computeRevolutionGeometry call, no concatGeometries seam needed.
+ * flat cap blended into the straight side by a quarter-circle fillet, both
+ * ends symmetric. `roundRadius = 0` gives a plain flat-capped `cylinder`;
+ * `roundRadius = radius = height / 2` pinches the flat cap away entirely,
+ * becoming `capsule`'s hemisphere.
  * @alias module:roundedCylinder
  * @param {RoundedCylinderOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -146,6 +134,10 @@ export function roundedCylinder({
     };
   }
 
+  // Every junction (flat cap -> fillet, fillet -> side) is C1-continuous
+  // (the fillet's tangent is horizontal at the cap, vertical at the side, by
+  // construction), so the whole meridian is one continuous sweep through
+  // both poles in a single call, no concatGeometries seam needed.
   const { positions, normals, uvs, cells } = computeRevolutionGeometry({
     nx,
     ny: nyTotal,

@@ -4,12 +4,12 @@ import { computeRevolutionGeometry, TAU } from "../../utils.js";
 
 /**
  * A single right-circular-cone-frustum segment of a meridian sweep between
- * two arbitrary y's - cylinder.js's elliptical-frustum case, minus the
+ * two arbitrary y's. It's cylinder.js's elliptical-frustum case, minus the
  * per-end ellipse (sx/sz are constant across the segment, since a frustum
- * end that isn't a single point never occurs here) and generalized from a
+ * end that isn't a single point never occurs here), generalized from a
  * height/halfHeight-centered span to an arbitrary yFrom/yTo. `cone` below
  * is one such segment (apex at one end); bicone.js and doubleCone.js each
- * concatenate two others at their shared seam instead of using a single
+ * concatenate two others at their shared seam, instead of using a single
  * function with a v = 0.5 kink - see bicone.js for why that shared-row
  * approach can't be wound correctly on both sides.
  * @private

@@ -52,6 +52,7 @@ export function greatIcosahedronFaces({ radius = 0.5 } = {}) {
  */
 
 /**
+ * Great icosahedron.
  * @alias module:greatIcosahedron
  * @param {GreatIcosahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}

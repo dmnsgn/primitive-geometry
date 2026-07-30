@@ -9,6 +9,7 @@ import { triangulateFaces } from "../../utils.js";
  */
 
 /**
+ * A square, filled with 2 triangles.
  * @alias module:quad
  * @param {QuadOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}

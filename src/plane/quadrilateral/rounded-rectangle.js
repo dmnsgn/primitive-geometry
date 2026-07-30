@@ -16,18 +16,17 @@ import {
  * @property {number} [radius=sx * 0.25]
  * @property {number} [roundSegments=8]
  * @property {number} [edgeSegments=1]
- * @property {number} [nx=edgeSegments]
- * @property {number} [ny=nx]
+ * @property {number} [nx=edgeSegments] Segments along the straight
+ *   top/bottom sections.
+ * @property {number} [ny=nx] Segments along the straight left/right
+ *   sections.
  * @property {RoundedRectangleCorner[]} [roundedCorners=["top-left", "top-right", "bottom-right", "bottom-left"]]
  */
 
 const CORNER_ORDER = ["top-left", "top-right", "bottom-right", "bottom-left"];
 
 /**
- * Built as a single welded grid so face, edges and corners share their
- * boundary vertices: no duplicated seams nor T-junctions. nx/ny subdivide both
- * the inner face and the straight edge sections (edgeSegments is their default
- * for backwards compatibility).
+ * A rectangle with rounded corners.
  * @alias module:roundedRectangle
  * @param {RoundedRectangleOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -65,6 +64,8 @@ export function roundedRectangle({
 
   const indices = { vertex: 0, cell: 0 };
 
+  // A single welded grid so face, edges and corners share their boundary
+  // vertices: no duplicated seams nor T-junctions.
   computePlane(
     geometry,
     indices,
@@ -111,15 +112,10 @@ const PATH_CORNERS = [
 
 /**
  * Outline dual of `roundedRectangle`: same radius/segment/roundedCorners
- * conventions, but only the boundary polyline, walked directly (bottom-left
- * → bottom-right → top-right → top-left, matching `rectanglePath`'s corner
- * order) instead of extracted from a full triangulated grid. A rounded
- * corner contributes `roundSegments` samples along its quarter-circle arc; a
- * sharp one contributes its single true corner point, at exactly (±sx / 2,
- * ±sy / 2) - the same point this file's own flat-corner grid extension
- * resolves to. Each straight edge then only samples its interior (excluding
- * both endpoints, already written by the corners on either side), so this
- * and `rectanglePath` produce identical output when `radius` is `0`.
+ * conventions, walked directly (bottom-left → bottom-right → top-right →
+ * top-left). A rounded corner contributes `roundSegments` samples along its
+ * quarter-circle arc; a sharp one contributes its single corner point.
+ * Produces identical output to `rectanglePath` when `radius` is `0`.
  * @alias module:roundedRectanglePath
  * @param {RoundedRectanglePathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
@@ -189,6 +185,8 @@ export function roundedRectanglePath({
     if (n > 0) {
       const [x0, y0] = point(c, HALF_PI);
       const [x1, y1] = point((c + 1) % 4, 0);
+      // Skips t = 0 on an unrounded corner: its exit point is already
+      // written as that corner's own single vertex.
       const start = isRounded[c] ? 0 : 1;
 
       for (let i = start; i < n; i++) {

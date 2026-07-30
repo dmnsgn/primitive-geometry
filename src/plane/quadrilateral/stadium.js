@@ -4,7 +4,7 @@ import { roundedRectangle, roundedRectanglePath } from "./rounded-rectangle.js";
 /**
  * @typedef {object} StadiumOptions
  * @property {number} [sx=1]
- * @property {number} [sy=sx]
+ * @property {number} [sy=0.5]
  * @property {number} [nx=1]
  * @property {number} [ny=nx]
  * @property {number} [roundSegments=8]
@@ -12,6 +12,8 @@ import { roundedRectangle, roundedRectanglePath } from "./rounded-rectangle.js";
  */
 
 /**
+ * A stadium (discorectangle): `roundedRectangle` with `radius` fixed to half
+ * the shorter side.
  * @alias module:stadium
  * @param {StadiumOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -38,7 +40,7 @@ export function stadium({
 /**
  * @typedef {object} StadiumPathOptions
  * @property {number} [sx=1]
- * @property {number} [sy=sx]
+ * @property {number} [sy=0.5]
  * @property {number} [nx=1]
  * @property {number} [ny=nx]
  * @property {number} [roundSegments=8]

@@ -15,6 +15,7 @@ import { TAU } from "../../utils.js";
  */
 
 /**
+ * A disc: `ellipse` with sx = sy = 1.
  * @alias module:disc
  * @param {DiscOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}

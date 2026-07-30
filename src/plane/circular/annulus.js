@@ -17,6 +17,7 @@ import { TAU } from "../../utils.js";
  */
 
 /**
+ * An annulus (ring): the region between two concentric circles.
  * @alias module:annulus
  * @param {AnnulusOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -60,10 +61,8 @@ export function annulus({
 
 /**
  * Outline dual of `annulus`: unlike every other path in this module, an
- * annulus's boundary is 2 disjoint loops, not one - `ellipsePath` at
- * `radius` and again at `innerRadius`, concatenated into a single geometry
- * with 2 path cells (outer loop first, inner second) rather than fanned into
- * a single ring of triangles between them.
+ * annulus's boundary is 2 disjoint loops, not one - 2 path cells (outer
+ * loop first, inner second).
  * @alias module:annulusPath
  * @param {AnnulusPathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
@@ -78,6 +77,8 @@ export function annulusPath({
   innerRadius = radius * 0.5,
   closed = false,
 } = {}) {
+  // 2 disjoint ellipsePath loops concatenated into one geometry, rather than
+  // fanned into a single ring of triangles between them.
   const outer = ellipsePath({ sx, sy, radius, segments, theta, thetaOffset, closed });
   const inner = ellipsePath({
     sx,

@@ -53,6 +53,8 @@ export function cubeFaces({ sx = 1, sy = sx, sz = sx } = {}) {
  */
 
 /**
+ * A cuboid, as raw quad faces rather than a triangulated mesh - see
+ * `cubeFaces`.
  * @alias module:box
  * @param {BoxOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPolygon}
@@ -72,6 +74,7 @@ export function box({ sx = 1, sy = sx, sz = sx } = {}) {
  */
 
 /**
+ * A cuboid (rectangular box).
  * @alias module:cube
  * @param {CubeOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}

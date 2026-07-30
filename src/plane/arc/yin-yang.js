@@ -30,14 +30,6 @@ import { clamp, concatGeometries } from "../../utils.js";
 /**
  * Yin-Yang (taijitu): a circle divided by an S-shaped seam of two opposing
  * semicircles, each side holed by a dot at the other's bulge.
- *
- * Quirks:
- * - Each half is built from two bands (left/right of its dot's own x = 0),
- *   split into five y-sub-sweeps around both dots' row ranges, not just
- *   this half's own - so yin and yang always sample the shared S-curve
- *   boundary at identical y-values. Skipped when `dotRadius` is `0`, back
- *   to one sweep per band.
- * - Both bands collapse to a point at the shape's own top and bottom tips.
  * @see [Wolfram MathWorld – Yin-Yang]{@link https://mathworld.wolfram.com/Yin-Yang.html}
  * @alias module:yinYang
  * @param {YinYangOptions} [options={}]
@@ -67,6 +59,11 @@ export function yinYang({
   const yangDotTop = -R / 2 + dotRadius;
   const yinDotBottom = R / 2 - dotRadius;
   const yinDotTop = R / 2 + dotRadius;
+  // Each half is built from two bands (left/right of its dot's own x = 0),
+  // split into five y-sub-sweeps around both dots' row ranges, not just
+  // this half's own - so yin and yang always sample the shared S-curve
+  // boundary at identical y-values. Skipped when dotRadius is 0, back to
+  // one sweep per band.
   const schedule =
     dotRadius <= 0
       ? [[-R, R, segments]]

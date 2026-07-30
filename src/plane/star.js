@@ -12,7 +12,7 @@ import {
  * @property {number} [points=5]
  * @property {number} [density=2] Schläfli "skip" factor: must be `< points /
  *   2` (and coprime with `points` for a genuine, non-compound star polygon)
- *   or the auto-computed `notchRadius` degenerates. Default is `2`
+ *   or the auto-computed `notchRadius` degenerates.
  * @property {number} [radius=0.5]
  * @property {number} [notchRadius=radius*computeStarRatio(points,density)]
  *   Radius of the points/tips' flanking concave vertices, ie. how deep the
@@ -33,12 +33,9 @@ import {
 
 /**
  * Regular {points/density} star polygon: `points` outer tips alternating
- * with `points` inner notches. `segments` is fixed to `points * 2` so each
- * tip/notch is sampled exactly once and edges come out straight rather than
- * curved. `notchRadius` defaults to the tips' own `{points/density}` ratio
- * (see `computeStarRatio`), so e.g. the default `star()` traces a regular
- * pentagram. `innerRadius` optionally drills a hole through the center, like
- * `annulus`.
+ * with `points` inner notches. `notchRadius` defaults to the tips' own
+ * `{points/density}` ratio, so e.g. the default `star()` traces a regular
+ * pentagram.
  * @see [Wolfram MathWorld – Star Polygon]{@link https://mathworld.wolfram.com/StarPolygon.html}
  * @alias module:star
  * @param {StarOptions} [options={}]
@@ -57,6 +54,8 @@ export function star({
   mergeCentroid = innerRadius === 0,
   mapping = concentric,
 } = {}) {
+  // points * 2 so each tip/notch is sampled exactly once and edges come out
+  // straight rather than curved.
   const segments = points * 2;
   const notchScale = radius === 0 ? 0 : notchRadius / radius;
 
@@ -97,10 +96,7 @@ export function star({
 
 /**
  * Outline dual of `star`: `points` outer tips alternating with `points`
- * inner notches, connected by straight edges. `segments` is fixed to `points
- * * 2`, sampled one vertex per tip/notch (unlike `star`'s filled version,
- * there's no radial subdivision to interpolate across), so tip/notch is just
- * the sample's parity.
+ * inner notches, connected by straight edges.
  * @alias module:starPath
  * @param {StarPathOptions} [options={}]
  * @returns {import("../../types.js").SimplicialComplexPath} `points * 2`
@@ -121,6 +117,8 @@ export function starPath({
     theta,
     thetaOffset,
     closed,
+    // One vertex per tip/notch, no radial subdivision to interpolate
+    // across, so tip/notch is just the sample's parity.
     equation: (t, i) => {
       const r = i % 2 === 0 ? radius : notchRadius;
       return [r * Math.cos(t), r * Math.sin(t)];

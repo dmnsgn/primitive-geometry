@@ -7,7 +7,7 @@
 export const TAU = Math.PI * 2;
 
 /**
- * Two times PI.
+ * Half of PI.
  * @constant {number}
  */
 export const HALF_PI = Math.PI / 2;
@@ -81,9 +81,8 @@ export function clamp(value, min, max) {
  * Clamp a theta/thetaOffset meridian sweep to [0, PI]: thetaOffset first (0 =
  * north pole), then theta to whatever range keeps thetaOffset + theta inside
  * [0, PI] too. Shared by every meridian-based revolution shape (ellipsoid,
- * superellipsoid, superegg, hollowSphere's own cut caps) since
- * `computeRevolutionGeometry` only supports a pole at v = 0/1 - the sweep can
- * never cross the axis anywhere but its own start/end.
+ * superellipsoid, superegg, hollowSphere's cut caps): a pole can only sit at
+ * the sweep's own start or end, never partway through.
  * @param {number} theta
  * @param {number} thetaOffset
  * @returns {[number, number]} [clampedTheta, clampedThetaOffset]
@@ -193,8 +192,7 @@ export const getCellsTypedArray = (size) =>
  * `TRIANGLE_STRIP` produces (and that `computePlane`/`computePolarGeometry`/
  * `computeRevolutionGeometry` already use), so displacement in a vertex
  * shader creases consistently across every primitive in this library. Only
- * valid for convex, planar faces - the same assumption `polyhedron.js` makes
- * for its own (subdivision/projection aware) fan triangulation.
+ * valid for convex, planar faces.
  * @param {Array<number[]|Uint8Array|Uint16Array|Uint32Array>} cells
  * @param {number} numVertices Used to pick the returned typed array's element size
  * @returns {(Uint8Array|Uint16Array|Uint32Array)}
@@ -289,21 +287,22 @@ export const TMP = [0, 0, 0];
 /**
  * Fan-triangulated flat disk cap shared by revolution solids (cylinder/cone,
  * torus): capSegments concentric rings sampled at ringSegments + 1 angular
- * positions, with the innermost ring collapsed to a point and fanned with a
- * single triangle per quad instead of two, skipping the degenerate one.
+ * positions. The innermost ring collapses to a point and fans with a single
+ * triangle per quad instead of two, skipping the degenerate one.
  *
- * The disk is defined in the caller's own local 2D coordinates (x along the
- * angular sample's cosine, y along its sine, both scaled by capRadius *
- * radiusRatio, then independently by sx/sy for an elliptical cap);
- * `point(x, y)` embeds those into the solid's 3D space and `normal` is that
- * embedding's flat outward normal - both are the caller's responsibility
- * since the two solids embed their cap plane differently (cylinder:
- * axis-aligned; torus: offset and rotated by its phi angle). A flat disk's
- * normal only depends on the plane it sits in, not its in-plane shape, so
- * sx/sy don't affect `normal` - only the position/uv scale.
+ * The disk is defined in the caller's own local 2D coordinates: x along the
+ * angular sample's cosine, y along its sine, both scaled by
+ * capRadius * radiusRatio, then independently by sx/sy for an elliptical
+ * cap. `point(x, y)` embeds those into the solid's 3D space; `normal` is
+ * that embedding's flat outward normal. Both are the caller's
+ * responsibility, since the two solids embed their cap plane differently
+ * (cylinder: axis-aligned; torus: offset and rotated by its phi angle). A
+ * flat disk's normal only depends on the plane it sits in, not its in-plane
+ * shape - so sx/sy don't affect `normal`, only the position/uv scale.
+ *
  * `flip` (1 or -1) selects which of a cap pair (base/apex, start/end) this
- * is, driving winding order; `normal` must already have flip folded in so it
- * points outward, ie. away from the solid.
+ * is, driving winding order. `normal` must already have flip folded in, so
+ * it points outward, ie. away from the solid.
  * @private
  */
 export function computeCap(
@@ -409,15 +408,17 @@ export function computeCap(
 /**
  * Triangulate one quad of a (rows+1) x (cols+1) vertex grid already written
  * in row-major order (cols vertices per row), for the vertex just written at
- * `indices.vertex` - the quad's own corner d, with a/b/c the 3
- * already-written corners at vertexIndex - cols - 1/- cols/- 1. Called
- * whenever a full quad is available (row > 0 && col > 0). Splits along the
- * b-c diagonal, matching `computePlane`/`computePolarGeometry`/
- * `computeRevolutionGeometry` so displacement in a vertex shader creases
- * consistently across the library. flip (1 or -1) picks the winding, same
- * convention as `computeCap` - which value maps to "outward" depends on how
- * the caller's row/col axes relate to its own surface normal, so callers
- * work that out for themselves (see torus.js/hollow-sphere.js).
+ * `indices.vertex` - the quad's own corner d. a/b/c are the 3 already-written
+ * corners, at vertexIndex - cols - 1/- cols/- 1. Called whenever a full quad
+ * is available (row > 0 && col > 0).
+ *
+ * Splits along the b-c diagonal, matching `computePlane`/
+ * `computePolarGeometry`/`computeRevolutionGeometry`, so displacement in a
+ * vertex shader creases consistently across the library. flip (1 or -1)
+ * picks the winding, same convention as `computeCap`. Which value maps to
+ * "outward" depends on how the caller's row/col axes relate to its own
+ * surface normal - callers work that out for themselves (see
+ * torus.js/hollow-sphere.js).
  * @private
  */
 export function computeGridQuad(cells, indices, cols, flip) {
@@ -530,13 +531,13 @@ export function isPlaneCornerRounded(cx, cy, roundCorners) {
 /**
  * Plane as a single welded grid, optionally with rounded corners
  * (cornerRadius/cornerSegments > 0): [cornerSegments|nu|cornerSegments] x
- * [cornerSegments|nv|cornerSegments] so face, edges and corners share their
+ * [cornerSegments|nv|cornerSegments], so face, edges and corners share their
  * boundary vertices, with radial diagonals in the corner quads. su/sv are the
- * inner face sizes (full size minus 2 * cornerRadius) and collapse to the
+ * inner face sizes (full size minus 2 * cornerRadius); they collapse to the
  * plain su/sv grid when cornerRadius/cornerSegments are 0. roundCorners is
- * false (none rounded), true (all 4 rounded) or a 4-item boolean array
- * selecting which of [-u-v, +u-v, +u+v, -u+v] round; unselected corners stay
- * flat/square (their raw grid extension left as-is).
+ * false (none rounded), true (all 4 rounded), or a 4-item boolean array
+ * selecting which of [-u-v, +u-v, +u+v, -u+v] round. Unselected corners stay
+ * flat/square - their raw grid extension left as-is.
  * @private
  */
 export function computePlane(
@@ -641,11 +642,11 @@ export function computePlane(
 /**
  * Center a closed corner list on its own vertex average, returning the
  * centered corners alongside that average (cx, cy) so a caller can translate
- * a shape built around them back afterward - shared by trapezoid/triangle,
- * whose radial fan (via computePolarGeometry) or outline (via
- * computeOutlineEdge) must be centered on the shape's own centroid rather
- * than world origin for an off-center corner (eg. trapezoid's topOffset,
- * triangle's apexOffset) to not bunch rings tight on one side.
+ * a shape built around them back afterward. Shared by trapezoid/triangle:
+ * their radial fan (via computePolarGeometry) or outline (via
+ * computeOutlineEdge) must be centered on the shape's own centroid, not
+ * world origin, or an off-center corner (eg. trapezoid's topOffset,
+ * triangle's apexOffset) bunches rings tight on one side.
  * @param {number[][]} corners
  * @returns {{centeredCorners: number[][], cx: number, cy: number}}
  * @private
@@ -663,10 +664,10 @@ export function centerCorners(corners) {
 }
 
 /**
- * Translate a geometry's positions in place by (dx, dy), z untouched - the
- * inverse of the recentering `centerCorners` sets up, applied after building
- * around the recentered origin so the shape lands back at its documented,
- * caller-relative position.
+ * Translate a geometry's positions in place by (dx, dy), z untouched. The
+ * inverse of the recentering `centerCorners` sets up - applied after
+ * building around the recentered origin, so the shape lands back at its
+ * documented, caller-relative position.
  * @param {Float32Array} positions
  * @param {number} dx
  * @param {number} dy
@@ -866,46 +867,47 @@ export function computePolarPathGeometry({
 }
 
 /**
- * A grid of meridian rings (v = 0..1, row-major/outer) x nx + 1 angular
- * columns (phi, inner - wrapped and welded on the last column when phi is a
- * multiple of TAU, same rule as the other revolution solids) revolved
- * around the y-axis. `equation({ v, cosPhi, sinPhi })` computes a single
- * vertex's analytic position/normal - already embedding whatever axis-scale
- * or ellipse the caller needs (eg. cylinder's per-end sx/sz, ellipsoid's
- * rx/ry/rz) - and whether the whole v-ring is pinched to a point on the
- * axis (a pole or an apex). `collapsed` must depend on v only: it's probed
- * once per row (at cosPhi = 1, sinPhi = 0) to size and fan-triangulate the
- * mesh before the main fill, generalizing ellipsoid's original pole
- * handling to any meridian curve, not just an ellipse's sin/cos one. A pole
- * is only supported at v = 0 or v = 1: the meridian curve must not cross
- * the axis anywhere in between (callers with a bounded theta/thetaOffset,
- * eg. ellipsoid, clamp them so their sweep can't).
+ * A grid of meridian rings (v = 0..1, row-major/outer) by nx + 1 angular
+ * columns (phi, inner), revolved around the y-axis. The last column wraps
+ * and welds to the first when phi is a multiple of TAU, same rule as every
+ * other revolution solid.
+ *
+ * `equation({ v, cosPhi, sinPhi })` computes one vertex's analytic
+ * position/normal, already embedding whatever axis-scale or ellipse the
+ * caller needs (eg. cylinder's per-end sx/sz, ellipsoid's rx/ry/rz), plus
+ * whether the whole v-ring is pinched to a point on the axis (a pole or an
+ * apex). `collapsed` must depend on v only: it's probed once per row (at
+ * cosPhi = 1, sinPhi = 0) to size and fan-triangulate the mesh before the
+ * main fill. This generalizes ellipsoid's original pole handling to any
+ * meridian curve, not just an ellipse's sin/cos one. A pole is only
+ * supported at v = 0 or v = 1 - the meridian curve must not cross the axis
+ * anywhere in between - so callers with a bounded theta/thetaOffset (eg.
+ * ellipsoid) clamp them so their sweep can't.
  *
  * The uv v-coordinate defaults to the row's structural v (row-index
- * fraction), which distorts whenever a caller allocates rows non-uniformly
+ * fraction). That distorts whenever a caller allocates rows non-uniformly
  * across the meridian (eg. capsule.js packing more/fewer rows into its
- * hemispheres than its cylindrical body) - the texture would stretch across
- * whichever section got more rows instead of following actual surface
- * position. `equation` may return its own `v` to override just the uv
- * (structural v - row spacing, pole detection - is unaffected, since it's
- * only ever read from the input parameter, never the return value).
+ * hemispheres than its cylindrical body): the texture would stretch across
+ * whichever section got more rows, instead of following actual surface
+ * position. `equation` may return its own `v` to override just the uv;
+ * structural v (row spacing, pole detection) is unaffected, since it's only
+ * ever read from the input parameter, never the return value.
  *
-
- * capBase/capApex add a flat disk at v = 0/v = 1 (skip them when that end is
- * already collapsed, ie. a true point apex - same convention cylinder/cone
- * use today). Since position.x/z are always linear in (cosPhi, sinPhi) with
- * no cross term for an axis-aligned surface of revolution (the defining
- * property of this whole family), each cap's radius/ellipse-scale is
- * reconstructed by probing `equation` at that end rather than requiring the
- * caller to pass it separately: `equation(v, 1, 0).position` and
+ * capBase/capApex add a flat disk at v = 0/v = 1, skipped when that end is
+ * already collapsed to a true point apex (same convention cylinder/cone use
+ * today). position.x/z are always linear in (cosPhi, sinPhi) with no cross
+ * term, for an axis-aligned surface of revolution (the defining property of
+ * this whole family). So each cap's radius/ellipse-scale is reconstructed
+ * by probing `equation` at that end rather than requiring the caller to
+ * pass it separately: `equation(v, 1, 0).position` and
  * `equation(v, 0, 1).position` give the rim's x/z extent directly, positive
- * or negative depending on the shape's own internal sign convention (eg.
- * cylinder's cosPhi = -cos(p)). capRadius is fixed at 1 and the sign is
- * folded into a per-cap cos/sin flip instead of `Math.abs`-ing it away
- * blindly, so the reconstructed rim still lands exactly on the body's own
- * boundary ring (bit-identical, same "seam" convention as every other welded
- * boundary in this codebase) while keeping the cap's sx/sy positive for
- * mapping functions that divide by them (eg. `rectangular`).
+ * or negative depending on the shape's own sign convention (eg. cylinder's
+ * cosPhi = -cos(p)). capRadius is fixed at 1, and the sign is folded into a
+ * per-cap cos/sin flip instead of `Math.abs`-ing it away blindly - so the
+ * reconstructed rim still lands exactly on the body's own boundary ring
+ * (bit-identical, the same "seam" convention as every other welded boundary
+ * here), while keeping the cap's sx/sy positive for mapping functions that
+ * divide by them (eg. `rectangular`).
  * @private
  */
 export function computeRevolutionGeometry({
@@ -1103,20 +1105,20 @@ export function computePolygonCap(
 /**
  * A spindle-torus generating-circle revolution: the meridian is an arc of a
  * circle (radius `a`, offset from the axis) that crosses the revolution
- * axis at its own two endpoints, producing cusped poles - not smooth
+ * axis at its own two endpoints. This produces cusped poles - not smooth
  * tangent points like a sphere's - each with its own per-column normal.
  * Shared by `apple` (the major, more-than-half-circle arc) and `lemon` (the
  * minor, less-than-half-circle arc of the same construction, opposite sign
- * convention) - see each file's own doc comment for the halfHeight domain
- * that distinguishes them and the derivation of `a`/`thetaCross`/
- * `poleCosTheta`/`radiusAt`, which this helper takes as given rather than
- * re-deriving, since the two files' sign conventions for the circle's own
- * axis offset are mirrored.
- * `radiusAt(cosTheta)` computes the meridian's radius away from the poles;
+ * convention); see each file's own doc comment for the halfHeight domain
+ * that distinguishes them. This helper takes `a`/`thetaCross`/
+ * `poleCosTheta`/`radiusAt` as given rather than re-deriving them, since the
+ * two files' sign conventions for the circle's own axis offset are mirrored.
+ *
+ * `radiusAt(cosTheta)` computes the meridian's radius away from the poles.
  * `poleCosTheta` is the same circle's cosTheta at r = 0, used for the
- * pole's own normal - kept separate from `radiusAt` since deriving it via
- * `radiusAt`'s own formula wouldn't reliably round-trip to exactly 0 in
- * floating point, leaving the pole undetected as collapsed (see apple.js's
+ * pole's own normal. It's kept separate from `radiusAt`, since deriving it
+ * via `radiusAt`'s own formula wouldn't reliably round-trip to exactly 0 in
+ * floating point - leaving the pole undetected as collapsed (see apple.js's
  * own comment on its equation for the full reasoning).
  * @private
  */
@@ -1166,14 +1168,14 @@ export function computeSpindleArcRevolution({
 
 /**
  * A flat-ended surface of revolution around the y axis, both ends open
- * rings cappable exactly like `cylinder`'s - shared plumbing for
+ * rings cappable exactly like `cylinder`'s. Shared plumbing for
  * `barrel`/`funnel`/`hyperboloid`, which only differ in their own radius
  * law (parabolic/exponential/hyperbolic). `profile(y, v)` returns `[r,
- * normalY]`: the meridian's radius at that height and the y-component of
+ * normalY]`: the meridian's radius at that height, and the y-component of
  * the implicit surface's gradient there (x/z components are always `x`/`z`
  * themselves for this whole family, since none of their defining equations
  * has an x/y or z/y cross term). Both `y` and the raw sweep parameter `v`
- * are passed through so a caller whose own radius law is naturally written
+ * are passed through, so a caller whose own radius law is naturally written
  * in terms of one or the other (eg. funnel's exponential, in `v`) doesn't
  * have to round-trip through the other and risk a 1-ULP drift.
  * @private

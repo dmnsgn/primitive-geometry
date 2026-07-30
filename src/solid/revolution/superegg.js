@@ -18,7 +18,7 @@ import {
  * cylinder-capped-with-cones shape
  * @property {number} [theta=Math.PI] Meridian sweep length, silently clamped
  * to [-thetaOffset, PI - thetaOffset] - see ellipsoid.js's EllipsoidOptions
- * for why (computeRevolutionGeometry only supports a pole at v = 0/1).
+ * for why.
  * @property {number} [thetaOffset=0] Meridian sweep start, silently clamped
  * to [0, PI] - see theta.
  * @property {number} [phi=TAU]

@@ -11,9 +11,13 @@ import {
 
 const CORNER_COUNT = 4;
 
-// The 4 corners, recentered on their own average so a radial fan (trapezoid)
-// or radius scale (trapezoidPath) is centered on the shape rather than
-// world origin - shared by both, see trapezoid's own doc comment for why.
+// The 4 corners, recentered on their own average: computePolarGeometry's
+// merged apex is pinned at (0, 0), which would bunch rings tight on one
+// side and stretch them thin on the other whenever topOffset pulls the
+// outline off-center. Recentering fans from the shape's own center instead;
+// each caller then translates every vertex back by that same offset so the
+// documented, topOffset-relative corner positions are unaffected. Shared by
+// trapezoid (radial fan) and trapezoidPath (radius scale).
 function computeTrapezoidCorners(sx, sy, topRatio, topOffset) {
   return centerCorners([
     [-sx, -sy],
@@ -51,19 +55,8 @@ function computeTrapezoidCorners(sx, sy, topRatio, topOffset) {
 /**
  * A trapezoid: a quad with horizontal top/bottom edges, the top narrowed to
  * `topRatio` of the bottom's width and optionally shifted by `topOffset`.
- * Each ring between the fan point and the outline is a smaller self-similar
- * copy (same trick as `star`/`cross`'s `innerRadius`), fanned from the
- * outline's own vertex average rather than world origin - `topOffset` pulls
- * the outline off-center, and `computePolarGeometry`'s merged apex is
- * otherwise pinned at `(0, 0)`, which would bunch rings tight on one side and
- * stretch them thin on the other. `equation` builds around a recentered copy
- * of `corners` so that apex lands at the shape's own center instead, then a
- * final pass translates every vertex back by that same center so the
- * documented, `topOffset`-relative corner positions are unaffected. Unlike
- * `rhombus`'s kite family (corners at top/left/bottom/right), the default
- * `thetaOffset=0` starts at the bottom-left corner and sweeps CCW through
- * bottom-right, top-right, top-left - the same order as `rectanglePath`'s
- * corners.
+ * The default `thetaOffset=0` starts at the bottom-left corner and sweeps
+ * CCW through bottom-right, top-right, top-left.
  * @see [Wolfram MathWorld – Trapezoid]{@link https://mathworld.wolfram.com/Trapezoid.html}
  * @alias module:trapezoid
  * @param {TrapezoidOptions} [options={}]
@@ -128,9 +121,8 @@ export function trapezoid({
  */
 
 /**
- * Outline dual of `trapezoid`: the same 4 corners (recentered so `radius`
- * scales around the shape's own centroid, then translated back), walked
- * directly with `computeOutlineEdge` instead of `trapezoid`'s radial fan.
+ * Outline dual of `trapezoid`: the same 4 corners, walked directly instead
+ * of fanned.
  * @alias module:trapezoidPath
  * @param {TrapezoidPathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}

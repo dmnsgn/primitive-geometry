@@ -112,7 +112,7 @@ export function computePentagram(points, { stellate = false } = {}) {
  * cracks. Mutates each position array in place. The tolerance is relative
  * to the largest coordinate so any `radius` welds equally well, and each
  * point is compared against the representatives found so far (no spatial
- * hashing, so no grid-boundary misses) - a linear scan meant for seed-sized
+ * hashing, so no grid-boundary misses). A linear scan meant for seed-sized
  * point sets, not arbitrary meshes.
  * @private
  * @param {number[][]} positions
@@ -145,7 +145,7 @@ export function weldNearDuplicates(positions, epsilon = 1e-5) {
 /**
  * Assemble per-face geometry fragments into one seed: each face is a group
  * of indices into `vertexPositions`, handed as points to `computeFace`,
- * whose local positions/cells are offset into the shared arrays; positions
+ * whose local positions/cells are offset into the shared arrays. Positions
  * that coincide across faces are then welded (see above) so the seed is
  * watertight.
  * @param {Float32Array|number[]} vertexPositions Flat xyz positions

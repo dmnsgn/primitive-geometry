@@ -22,26 +22,13 @@ import {
 
 /**
  * A sphere with a cylindrical hole drilled through its center - MathWorld's
- * Spherical Ring, aka a napkin ring.
+ * Spherical Ring, aka a napkin ring. Unlike what "ring" might suggest,
+ * there's no flat annulus at either end: at the rim (height
+ * `sqrt(radius² - innerRadius²)`), the sphere's and bore's surfaces meet
+ * directly, so the meridian cross-section is a single closed loop -
+ * topologically a torus with a lens-shaped minor curve instead of a
+ * circular one.
  * @see [Wolfram MathWorld – Spherical Ring]{@link https://mathworld.wolfram.com/SphericalRing.html}
- *
- * Unlike what "ring" might suggest, there's no flat annulus at either end:
- * at the rim height h/2 = sqrt(radius² - innerRadius²), the sphere's own
- * cross-section radius already equals innerRadius, so the outer (spherical)
- * and inner (cylindrical) surfaces meet directly there - the meridian
- * cross-section is a single closed loop (up the bore, back down the
- * sphere's own arc), topologically a torus with a lens-shaped minor curve
- * instead of a circular one.
- *
- * computeRevolutionGeometry only wraps its phi columns, not its v rows, so
- * that closed loop can't be swept in a single call - built instead as two
- * open pieces (outer band, inner wall) concatenated at their shared rims,
- * the same pattern bicone/doubleCone use for a meridian that genuinely
- * kinks (here, the sphere's tangent at the rim generally isn't parallel to
- * the bore wall). The inner wall's rim x/z is read straight off the outer
- * band's own equation at v = 0/1 rather than recomputed independently, so
- * the two pieces weld bit-identically there - the same trick computeCap
- * uses to derive a flat cap's own rim from the body it's capping.
  * @alias module:sphericalRing
  * @param {SphericalRingOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -80,6 +67,11 @@ export function sphericalRing({
     };
   }
 
+  // computeRevolutionGeometry only wraps its phi columns, not its v rows, so
+  // the sphere+bore's single closed meridian loop can't be swept in one
+  // call - built instead as two open pieces (outer band, inner wall)
+  // concatenated at their shared rims, the same pattern bicone/doubleCone
+  // use for a meridian that genuinely kinks.
   const outer = computeRevolutionGeometry({
     nx,
     ny,

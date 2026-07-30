@@ -22,13 +22,10 @@ import { rectangular } from "../../mappings.js";
  */
 
 /**
- * Archimedes' salinon: a "salt cellar" shape bounded by four semicircles -
- * one spanning the full width on the bottom, a smaller one bulging the
- * opposite way in the middle on top, and two more bulging the same way as
- * the bottom one (a shallower dip) filling the remaining top thirds. Its
- * area equals `pi/4 * (radius + innerRadius) ** 2` for any radius/
- * innerRadius (Archimedes' own theorem: a circle whose diameter spans the
- * shape's topmost and bottommost points).
+ * Archimedes' salinon: a "salt cellar" bounded by four semicircles - one
+ * full-width on the bottom, a smaller one opposite it on top, and two "ear"
+ * semicircles filling the remaining top thirds. Area:
+ * `pi/4 * (radius + innerRadius) ** 2` (Archimedes' theorem).
  * @see [Wolfram MathWorld – Salinon]{@link https://mathworld.wolfram.com/Salinon.html}
  * @alias module:salinon
  * @param {SalinonOptions} [options={}]

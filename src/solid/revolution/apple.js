@@ -21,14 +21,9 @@ import {
 /**
  * MathWorld's Apple Surface: "more than half of a circular arc rotated
  * about an axis passing through the [arc's] endpoints" - the outer lobe of
- * a spindle torus (a torus whose tube radius exceeds its center-offset
- * radius, so the tube crosses the revolution axis instead of clearing it).
- * The generating circle (radius `a`, center offset `d` from the axis, with
- * a > d - the spindle condition) touches the axis at its own two endpoints,
- * producing the poles as true cusps (dimples), not smooth tangent points
- * like a sphere's - each pole's normal varies per column exactly like
- * `cone`'s apex does, for the same reason (a cusp has no single tangent
- * plane).
+ * a spindle torus. Poles are true cusps (dimples), not smooth tangent
+ * points like a sphere's - each pole's normal varies per column, same as
+ * `cone`'s apex.
  * @see [Wolfram MathWorld – Apple Surface]{@link https://mathworld.wolfram.com/AppleSurface.html}
  * @alias module:apple
  * @param {AppleOptions} [options={}]
@@ -45,10 +40,12 @@ export function apple({
 
   const halfHeight = clamp(height, 0, radius * 2) / 2;
 
-  // Solve the generating circle's radius (a) and axis offset (d) from
-  // radius = a + d (equatorial extent) and halfHeight² = a² - d² (pole
-  // extent, ie. how far the arc's two axis-crossings sit from the equator):
-  // (a - d)(a + d) = halfHeight² and a + d = radius give a - d directly.
+  // Solve the generating circle's radius (a) and axis offset (d) - with
+  // a > d (the spindle condition), so the circle touches the axis at its own
+  // two endpoints - from radius = a + d (equatorial extent) and
+  // halfHeight² = a² - d² (pole extent, ie. how far the arc's two
+  // axis-crossings sit from the equator): (a - d)(a + d) = halfHeight² and
+  // a + d = radius give a - d directly.
   const aMinusD = (halfHeight * halfHeight) / radius;
   const a = (radius + aMinusD) / 2;
   const d = radius - a;

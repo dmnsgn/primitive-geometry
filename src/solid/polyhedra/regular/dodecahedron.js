@@ -66,6 +66,7 @@ export function dodecahedronFaces({ radius = 0.5 } = {}) {
  */
 
 /**
+ * Regular dodecahedron.
  * @alias module:dodecahedron
  * @param {DodecahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}

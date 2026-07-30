@@ -44,6 +44,7 @@ export function greatDodecahedronFaces({ radius = 0.5 } = {}) {
  */
 
 /**
+ * Great dodecahedron.
  * @alias module:greatDodecahedron
  * @param {GreatDodecahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}

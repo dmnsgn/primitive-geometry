@@ -20,17 +20,15 @@ import {
  * @property {number} [radius=sx * 0.25]
  * @property {number} [roundSegments=8]
  * @property {number} [edgeSegments=1]
- * @property {number} [nx=edgeSegments]
- * @property {number} [ny=nx]
- * @property {number} [nz=nx]
+ * @property {number} [nx=edgeSegments] Segments along the straight x
+ *   sections.
+ * @property {number} [ny=nx] Segments along the straight y sections.
+ * @property {number} [nz=nx] Segments along the straight z sections.
  * @property {RoundedCubeDirection} [roundDirection="all"]
  */
 
 /**
- * Each face is a single welded grid (face, edges and corners share their
- * boundary vertices) so seams only remain between faces where UVs differ.
- * nx/ny/nz subdivide both the inner faces and the straight edge sections
- * (edgeSegments is their default for backwards compatibility).
+ * A cuboid with rounded edges and corners.
  * @alias module:roundedCube
  * @param {RoundedCubeOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -69,6 +67,8 @@ export function roundedCube({
       (colsX + 1) * (colsZ + 1)) *
     2;
 
+  // Each face is a single welded grid (face, edges and corners share their
+  // boundary vertices) so seams only remain between faces where UVs differ.
   const geometry = {
     positions: new Float32Array(size * 3),
     normals: new Float32Array(size * 3),

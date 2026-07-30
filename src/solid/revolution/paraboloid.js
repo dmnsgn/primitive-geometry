@@ -17,12 +17,10 @@ import { computeRevolutionGeometry, TAU } from "../../utils.js";
 
 /**
  * Circular paraboloid (revolution of x² + z² = k·(apexY - y), the classic
- * satellite-dish/reflector shape) - apex up, rim down, same orientation
- * convention as `cone`, and like `cone` only the rim end (naturally open)
- * takes a cap option; the apex is a single point but - unlike a cone's -
- * has one genuine tangent plane there (the surface is smooth, not
- * creased), so its normal is well-defined and shared across every column
- * instead of needing cone's per-column duplicates.
+ * satellite-dish/reflector shape) - apex up, rim down, same orientation as
+ * `cone`, and like `cone` only the rim end takes a cap option. Unlike a
+ * cone's apex, the surface here is smooth at the apex (no crease), with a
+ * single well-defined normal there.
  * @see [Wolfram MathWorld – Paraboloid]{@link https://mathworld.wolfram.com/Paraboloid.html}
  * @alias module:paraboloid
  * @param {ParaboloidOptions} [options={}]

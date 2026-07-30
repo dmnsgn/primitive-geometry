@@ -27,10 +27,8 @@ import {
 /**
  * Hyperboloid of one sheet (revolution of x² + z² = radius² + k·y², a
  * pinched-waist, flared-both-ends shape - cooling towers, gear/skew-roller
- * profiles) - `cylinder`'s own frustum equation with a hyperbolic (not
- * linear) radius law, so it shares its cappable, symmetric-around-neither-
- * pole structure: both ends are flat rings, not points, same as an
- * uncapped cylinder frustum.
+ * profiles). Both ends are flat rings, not points, cappable like
+ * `cylinder`'s frustum.
  * @see [Wolfram MathWorld – One-Sheeted Hyperboloid]{@link https://mathworld.wolfram.com/One-SheetedHyperboloid.html}
  * @alias module:hyperboloid
  * @param {HyperboloidOptions} [options={}]

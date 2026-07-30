@@ -24,20 +24,7 @@ import {
 
 /**
  * Triquetra: three mutually intersecting vesica piscis lenses, centered at
- * the vertices of an equilateral triangle of side `radius`. Split into 6
- * non-overlapping wedges, swept angularly from the centroid, so the mesh
- * never double-covers area: 3 `core` wedges (together the Reuleaux triangle
- * common to all 3 disks) and 3 `petal`s (each lens minus the core), 120deg
- * apart.
- *
- * At angle `theta`, `seam(theta)` is the distance from the centroid to the
- * "opposite" circle (the one not forming that petal) along the ray at that
- * angle - the boundary a core wedge shares with its petal. Both pieces sweep
- * the identical angle range and evaluate the identical formula, so the seam
- * matches exactly. Wedge endpoints (the 3 circle centers, each shared by 2
- * core wedges and 2 petals) reuse one precomputed vertex rather than
- * re-deriving the same point from different rotated angles, since that can
- * disagree in the last float bit and register as a crack.
+ * the vertices of an equilateral triangle of side `radius`.
  * @see [Wolfram MathWorld – Triquetra]{@link https://mathworld.wolfram.com/Triquetra.html}
  * @alias module:triquetra
  * @param {TriquetraOptions} [options={}]
@@ -53,7 +40,11 @@ export function triquetra({
   const r = radius;
   const R = radius / Math.sqrt(3);
 
-  // Circle centers, at the equilateral triangle's vertices.
+  // Circle centers, at the equilateral triangle's vertices. Each is shared
+  // by 2 core wedges and 2 petals below; reused as one precomputed point
+  // rather than re-derived per wedge, since re-deriving it from different
+  // rotated angles can disagree in the last float bit and register as a
+  // crack.
   const angleC0 = (7 * Math.PI) / 6;
   const angleC1 = (11 * Math.PI) / 6;
   const angleC2 = Math.PI / 2;
@@ -72,6 +63,10 @@ export function triquetra({
     );
   };
 
+  // seam(theta) is the boundary a core wedge shares with its petal: the
+  // distance to the "opposite" circle (the one not forming that petal).
+  // Both pieces sweep the same angle range through the same formula, so the
+  // seam matches exactly and the mesh never double-covers area.
   const seam = (theta) => ray(angleC2, theta);
   const outer = (theta) => Math.min(ray(angleC0, theta), ray(angleC1, theta));
 
@@ -203,6 +198,9 @@ export function triquetra({
     return { positions, normals, uvs, cells };
   };
 
+  // Split into 6 non-overlapping wedges instead of 3 full lenses: 3 `core`
+  // wedges (together the Reuleaux triangle common to all 3 disks) and 3
+  // `petal`s (each lens minus the core), 120deg apart.
   return concatGeometries([
     core(0),
     core(1),

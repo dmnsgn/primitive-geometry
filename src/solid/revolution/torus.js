@@ -36,9 +36,7 @@ import {
  * partial/open torus (phi < TAU, optionally capped via capStart/capEnd), an
  * elliptical torus (sx != sy, an oval/racetrack footprint), and a tube with
  * an elliptical cross-section (minorSx != minorSy, like a flattened or
- * spindle-shaped bagel). Both pairs apply as a constant diagonal scale of
- * the standard torus, so its usual normal direction just needs the matching
- * inverse-scale correction (see the main loop below).
+ * spindle-shaped bagel).
  * @alias module:torus
  * @param {TorusOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}

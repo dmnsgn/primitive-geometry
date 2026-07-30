@@ -15,13 +15,13 @@ function snapZeros(array) {
 }
 
 /**
- * Rotate a geometry's positions/normals by (x, y, z) -> (-y, -x, -z), the
+ * Rotate a geometry's positions/normals by (x, y, z) -> (-y, -x, -z): the
  * rigid, orientation-preserving map that carries `half` (apex N = (0, r, 0),
  * shared equator rim through W = (-r, 0, 0), (0, 0, r), E = (r, 0, 0)) onto
  * the other two quarter-cones (apex W, shared rim through N, (0, 0, -r), S =
- * (0, -r, 0)) - the 90°-twisted reattachment that makes a sphericon a
+ * (0, -r, 0)). This is the 90°-twisted reattachment that makes a sphericon a
  * sphericon rather than a plain bicone. Since it's a proper rotation (not a
- * reflection), normals carry over unchanged in direction, no
+ * reflection), normals carry over unchanged in direction - no
  * inverse-transpose needed, and winding stays correct.
  * @private
  */
@@ -52,16 +52,10 @@ function twist({ positions, normals, uvs, cells }) {
  */
 
 /**
- * A right-circular bicone with a 90° apex angle (radius = height per nappe,
- * `bicone`'s own equation restricted to a half sweep, phi = PI) split along
- * the plane through both apexes and reattached with one half rotated 90°
- * about the axis perpendicular to that plane - `bicone`'s two independent
- * cone segments (`computeConeSegment`, unchanged) plus a copy rigidly
- * `twist`-ed into the other two quarter-cones. The result has no flat faces
- * at all: the omitted flat cut face of each half becomes the open boundary
- * that welds, bit-identical, to the other half's - a single continuous
- * developable surface of 4 congruent quarter-cone patches that rolls by
- * wobbling in a straight line.
+ * A right-circular bicone with a 90° apex angle, split along the plane
+ * through both apexes and reattached with one half rotated 90° - the
+ * classic 4-quarter-cone rolling solid. No flat faces: a single continuous
+ * developable surface that rolls by wobbling in a straight line.
  * @see [Wolfram MathWorld – Sphericon]{@link https://mathworld.wolfram.com/Sphericon.html}
  * @alias module:sphericon
  * @param {SphericonOptions} [options={}]

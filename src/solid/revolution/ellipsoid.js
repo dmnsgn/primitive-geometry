@@ -8,16 +8,15 @@ import {
 
 /**
  * @typedef {object} EllipsoidOptions
- * @property {number} [radius=0.5]
+ * @property {number} [radius=1]
  * @property {number} [nx=32]
  * @property {number} [ny=16]
- * @property {number} [rx=1]
- * @property {number} [ry=0.5]
+ * @property {number} [rx=0.5]
+ * @property {number} [ry=0.25]
  * @property {number} [rz=ry]
- * @property {number} [theta=Math.PI] Meridian sweep length. computeRevolutionGeometry
- * only supports a pole at v = 0/1, so theta is silently clamped to
- * [-thetaOffset, PI - thetaOffset] - the sweep can never cross the axis
- * anywhere but its own start/end.
+ * @property {number} [theta=Math.PI] Meridian sweep length, silently
+ * clamped to [-thetaOffset, PI - thetaOffset]: a pole can only sit at the
+ * sweep's own start or end, never partway through.
  * @property {number} [thetaOffset=0] Meridian sweep start (0 = north pole),
  * silently clamped to [0, PI] - see theta.
  * @property {number} [phi=TAU]
@@ -26,13 +25,13 @@ import {
 
 /**
  * Unit-sphere direction cosines for a given meridian angle t (0 = north
- * pole) and (already computed) equatorial cosPhi/sinPhi - the [dx, dy, dz]
+ * pole) and (already computed) equatorial cosPhi/sinPhi: the [dx, dy, dz]
  * this module's own `equation` scales by radius/rx/ry/rz for position, and
  * by 1/rx/1/ry/1/rz for its gradient-based normal. Exported so other
  * spherical shapes (eg. `hollowSphere`'s theta/phi cut caps) can place a
  * point on - or a direction from - the exact same sphere without
- * re-deriving the formula, guaranteeing bit-identical positions where they
- * must weld to an `ellipsoid`/`sphere` surface.
+ * re-deriving the formula. This guarantees bit-identical positions where
+ * they must weld to an `ellipsoid`/`sphere` surface.
  * @param {number} t Meridian angle, 0 at the north pole
  * @param {number} cosPhi
  * @param {number} sinPhi

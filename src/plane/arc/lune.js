@@ -26,17 +26,6 @@ import { concatGeometries } from "../../utils.js";
 /**
  * Lune: a crescent, the region inside the big circle and outside the offset
  * small one.
- *
- * Quirks:
- * - A single top/bottom sweep would bifurcate into two disconnected bands
- *   past the small circle's own leftmost point (its disk only removes a
- *   middle sliver there, not the full band). Built as two independent
- *   sweeps split along y = 0 instead, each a band whose near boundary is
- *   `0` until the small circle encroaches, then its own arc.
- * - That near boundary has a kink at `x = distance - innerRadius` (flat,
- *   then a vertical tangent), so each band is further split into a flat
- *   "cap" sweep up to that x and a curved "horn" sweep from it.
- * - Both collapse to a point at the far left tip and at the crossing point.
  * @see [Wolfram MathWorld – Lune]{@link https://mathworld.wolfram.com/Lune.html}
  * @alias module:lune
  * @param {LuneOptions} [options={}]
@@ -57,6 +46,7 @@ export function lune({
 
   const uMin = -b;
   const uMax = (b * b - a * a + d * d) / (2 * d);
+  // Near boundary (see sweepBand) kinks here: flat, then a vertical tangent.
   const kink = d - a;
 
   const outerBound = (x) => Math.sqrt(Math.max(b * b - x * x, 0));
@@ -67,7 +57,11 @@ export function lune({
   const sx = (uMax - uMin) / 2;
   const sy = outerBound(Math.min(Math.max(0, uMin), uMax));
 
-  // Builds one band's cap+horn pieces; mirror flips top/bottom.
+  // A single top/bottom sweep would bifurcate past the small circle's
+  // leftmost point (it only removes a middle sliver there, not the full
+  // band), so each half is built as its own band split along y = 0, mirror
+  // flipping top/bottom. The near boundary's kink further splits each band
+  // into a flat "cap" sweep up to it and a curved "horn" sweep beyond it.
   function sweepBand(mirror) {
     const pieces = [];
     const flat = (x) => (mirror ? [-outerBound(x), 0] : [0, outerBound(x)]);

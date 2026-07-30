@@ -11,11 +11,7 @@ import { polyhedron } from "../polyhedron.js";
 /**
  * Small stellated dodecahedron: the same 12 vertices and pentagon groupings
  * as the great dodecahedron, with each face's 5 corners connected as a
- * pentagram (skip-one star) instead of a convex pentagon. Since a pentagram
- * outline can't be fan-triangulated, each face is decomposed into 8 filled
- * triangles around 5 computed inner vertices - mathematically shared across
- * faces (the icosahedron's vertex figures are vertex-transitive) but
- * computed independently per face, hence the welding in assembleFaces.
+ * pentagram (skip-one star) instead of a convex pentagon.
  * @param {SmallStellatedDodecahedronFacesOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplexPolygon}
  */
@@ -35,6 +31,7 @@ export function smallStellatedDodecahedronFaces({ radius = 0.5 } = {}) {
  */
 
 /**
+ * Small stellated dodecahedron.
  * @alias module:smallStellatedDodecahedron
  * @param {SmallStellatedDodecahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}

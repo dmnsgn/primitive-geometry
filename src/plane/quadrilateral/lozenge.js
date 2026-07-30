@@ -3,7 +3,7 @@ import { rhombus, rhombusPath } from "./rhombus.js";
 
 /**
  * @typedef {object} LozengeOptions
- * @property {number} [sx=1]
+ * @property {number} [sx=0.5]
  * @property {number} [sy=sx*2]
  * @property {number} [radius=0.5]
  * @property {number} [edgeSegments=1]

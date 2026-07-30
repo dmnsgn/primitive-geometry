@@ -23,9 +23,8 @@ import { concatGeometries } from "../../utils.js";
 
 /**
  * Arbelos ("shoemaker's knife"): the region inside a big semicircle and
- * outside 2 smaller ones, all sharing the same baseline and each pair
- * tangent where their diameters meet. Its area equals `pi * innerRadius *
- * (radius - innerRadius)` for any split point.
+ * outside 2 smaller ones sharing its baseline, tangent where their
+ * diameters meet. Area: `pi * innerRadius * (radius - innerRadius)`.
  * @see [Wolfram MathWorld – Arbelos]{@link https://mathworld.wolfram.com/Arbelos.html}
  * @alias module:arbelos
  * @param {ArbelosOptions} [options={}]

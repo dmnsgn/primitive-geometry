@@ -14,10 +14,10 @@ import { sphereDirection } from "./ellipsoid.js";
 
 /**
  * Flat annular wall at a fixed meridian angle t (a theta cut, ie. where the
- * theta sweep stops short of a pole): r sweeps innerRadius -> radius,
- * phi sweeps the same phiOffset/phi range as the outer/inner bands, sampled
- * on the exact same nx grid (so its rim welds bit-identically to theirs).
- * flip (1 or -1) picks which of the 2 possible caps this is (t = the sweep's
+ * theta sweep stops short of a pole): r sweeps innerRadius -> radius, phi
+ * sweeps the same phiOffset/phi range as the outer/inner bands, sampled on
+ * the exact same nx grid so its rim welds bit-identically to theirs. flip
+ * (1 or -1) picks which of the 2 possible caps this is (t = the sweep's
  * start or end), driving both the outward normal (the +-theta tangent of
  * `sphereDirection`) and winding.
  * @private
@@ -75,8 +75,8 @@ function thetaCap({ t, phi, phiOffset, nx, capSegments, radius, innerRadius, fli
  * Flat annular wall at a fixed equatorial angle p (a phi cut, ie. where the
  * phi sweep is a partial revolution): r sweeps innerRadius -> radius, theta
  * sweeps the same clamped thetaOffset/theta range as the outer/inner bands,
- * sampled on the exact same ny grid (so its rim welds bit-identically to
- * theirs). flip (1 or -1) picks which of the 2 possible caps this is (p =
+ * sampled on the exact same ny grid so its rim welds bit-identically to
+ * theirs. flip (1 or -1) picks which of the 2 possible caps this is (p =
  * the sweep's start or end), driving both the outward normal (the +-phi
  * tangent of `sphereDirection`) and winding.
  * @private
@@ -148,20 +148,10 @@ function phiCap({ p, theta, thetaOffset, ny, capSegments, radius, innerRadius, f
 
 /**
  * A sphere with a smaller, concentric sphere hollowed out of it: a shell of
- * uniform wall thickness. Just `sphere` called twice, once at radius for the
- * outer surface and once at innerRadius `invert`-ed to face into the cavity
- * - plus, whenever theta/phi cut the sweep short of a full sphere, a flat
- * annular cap at each cut closing the gap between the two: a cone-like
- * `thetaCap` where the sweep stops short of a pole, a flat `phiCap` where
- * it's short of a full revolution. Both reuse `ellipsoid`'s own
- * `sphereDirection` so their rims land bit-identically on the bands they
- * weld to, the same trick `computeCap` uses for revolution solids in
- * general.
- *
- * Defaults to a quarter band (theta/thetaOffset), not a full sphere: a
- * closed hollow sphere looks identical to a plain `sphere` from outside, so
- * a full sphere default would hide the whole point of the shape. The
- * partial default exposes the cavity and both cut caps immediately.
+ * uniform wall thickness. Defaults to a quarter band (theta/thetaOffset)
+ * rather than a full sphere, since a closed hollow sphere looks identical to
+ * a plain `sphere` from outside - the partial default exposes the cavity
+ * and cut caps immediately.
  * @alias module:hollowSphere
  * @param {HollowSphereOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}

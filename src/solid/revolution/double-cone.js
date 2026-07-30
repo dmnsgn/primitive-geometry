@@ -22,12 +22,9 @@ import { computeConeSegment } from "./cone.js";
 
 /**
  * Two right circular cones joined apex-to-apex at the waist (an hourglass of
- * revolution) - the wide top/bottom ends are flat, so unlike bicone it takes
- * the same capBase/capApex/capSegments/capMapping options as cylinder. Built
- * as two independent cones (cylinder's elliptical-cone case, generalized to
- * an arbitrary y span) concatenated at the waist rather than one function
- * with a v = 0.5 kink - see bicone.js for why that shared-row approach
- * doesn't give a correctly-wound normal on both sides.
+ * revolution) - the wide top/bottom ends are flat, so unlike `bicone` it
+ * takes the same capBase/capApex/capSegments/capMapping options as
+ * `cylinder`.
  * @alias module:doubleCone
  * @param {DoubleConeOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -65,6 +62,9 @@ export function doubleCone({
       capOptions,
     });
 
+  // Two independent cones concatenated at the waist rather than one function
+  // with a v = 0.5 kink - see bicone.js for why that shared-row approach
+  // can't give a correctly-wound normal on both sides.
   return concatGeometries([
     segment(-halfHeight, 0, radius, 0, {
       capBase,

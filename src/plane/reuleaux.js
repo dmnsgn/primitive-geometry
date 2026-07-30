@@ -31,8 +31,9 @@ function computeReuleauxEdge(n, cosN, PIoverN, thetaOffset, cosOffset, sinOffset
 }
 
 /**
+ * A Reuleaux polygon: a constant-width curve built from n circular arcs,
+ * each centered on the opposite vertex.
  * @see [Parametric equations for regular and Reuleaux polygons]{@link https://tpfto.wordpress.com/2011/09/15/parametric-equations-for-regular-and-reuleaux-polygons/}
- *
  * @alias module:reuleaux
  * @param {ReuleauxOptions} [options={}]
  * @returns {import("../../types.js").SimplicialComplex}

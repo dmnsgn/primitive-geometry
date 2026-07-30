@@ -18,10 +18,9 @@ import {
 
 /**
  * Right prism: a regular sides-gon extruded into sides flat rectangular
- * side faces, each with its own hard-edged normal - unlike cylinder's smooth
- * per-vertex normal, which just makes a large-nx cylinder look faceted
- * rather than actually being one. The 2 flat sides-gon caps reuse
- * computeCap, same as cylinder/torus's own end caps.
+ * side faces, each with its own hard-edged normal - unlike `cylinder`'s
+ * smooth per-vertex normal, which just makes a large-nx cylinder look
+ * faceted rather than actually being one.
  * @alias module:prism
  * @param {PrismOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}

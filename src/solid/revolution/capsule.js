@@ -11,20 +11,14 @@ import {
  * @property {number} [radius=0.25]
  * @property {number} [nx=16]
  * @property {number} [ny=1]
- * @property {number} [roundSegments=16]
+ * @property {number} [roundSegments=16] `0` collapses both hemispheres
+ *   away, leaving an open tube.
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
  */
 
 /**
- * A cylindrical body capped with two hemispheres (a "pill" shape). The
- * meridian sweep is piecewise (hemisphere/cylinder/hemisphere) but stays a
- * single computeRevolutionGeometry call: a cylinder's side normal is already
- * purely radial, matching a sphere's own normal at its equator, so both
- * joins are C1-continuous and need no seam vertices - unlike bicone/
- * doubleCone's genuinely kinked joins, which do need concatGeometries (see
- * bicone.js). roundSegments = 0 collapses both hemispheres away, leaving an
- * open tube.
+ * A cylindrical body capped with two hemispheres (a "pill" shape).
  * @alias module:capsule
  * @param {CapsuleOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -42,6 +36,12 @@ export function capsule({
   const halfHeight = height / 2;
   const halfPi = Math.PI / 2;
 
+  // The meridian sweep is piecewise (hemisphere/cylinder/hemisphere) but
+  // stays a single computeRevolutionGeometry call below: a cylinder's side
+  // normal is already purely radial, matching a sphere's own normal at its
+  // equator, so both joins are C1-continuous and need no seam vertices -
+  // unlike bicone/doubleCone's genuinely kinked joins (see bicone.js).
+  //
   // Row budget across the whole meridian: roundSegments rings per hemisphere,
   // ny for the straight body - same proportions as the pre-refactor version.
   const nyTotal = 2 * roundSegments + ny;

@@ -11,9 +11,9 @@ import {
 
 const CORNER_COUNT = 3;
 
-// The 3 corners, recentered on their own average so a radial fan (triangle)
-// or radius scale (trianglePath) is centered on the shape rather than world
-// origin - shared by both, same reasoning as trapezoid's own helper.
+// The 3 corners, recentered on their own average so an off-center apex
+// doesn't bunch rings tight on one side (same reasoning as trapezoid's own
+// helper). Shared by triangle (radial fan) and trianglePath (radius scale).
 function computeTriangleCorners(sx, sy, apexOffset) {
   return centerCorners([
     [-sx, -sy],
@@ -46,12 +46,8 @@ function computeTriangleCorners(sx, sy, apexOffset) {
 
 /**
  * A triangle: a horizontal base with the apex placed anywhere above it via
- * `apexOffset`. Each ring between the fan point and the outline is a smaller
- * self-similar copy (same trick as `trapezoid`'s `innerRadius`), fanned from
- * the outline's own vertex average rather than world origin so an
- * off-center apex doesn't bunch rings tight on one side. `thetaOffset=0`
- * starts at the bottom-left corner and sweeps CCW through bottom-right, apex
- * - the same order as `trapezoid`'s corners, minus its collapsed top edge.
+ * `apexOffset`. `thetaOffset=0` starts at the bottom-left corner and sweeps
+ * CCW through bottom-right, apex.
  * @see [Wolfram MathWorld – Triangle]{@link https://mathworld.wolfram.com/Triangle.html}
  * @alias module:triangle
  * @param {TriangleOptions} [options={}]
@@ -113,9 +109,8 @@ export function triangle({
  */
 
 /**
- * Outline dual of `triangle`: the same 3 corners (recentered so `radius`
- * scales around the shape's own centroid, then translated back), walked
- * directly with `computeOutlineEdge` instead of `triangle`'s radial fan.
+ * Outline dual of `triangle`: the same 3 corners, walked directly instead of
+ * fanned.
  * @alias module:trianglePath
  * @param {TrianglePathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}

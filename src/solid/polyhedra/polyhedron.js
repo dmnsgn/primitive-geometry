@@ -148,7 +148,7 @@ function edgePoint(seedPositions, a, b, k, S, slerped) {
  * Build a flat-shaded (or, with `project`, smooth) triangle mesh from a seed
  * polyhedron: n-gon faces are fan-triangulated, each triangle optionally
  * subdivided into a barycentric grid. By default each face keeps its own
- * vertices for flat per-face normals; `project` instead normalizes vertices
+ * vertices for flat per-face normals. `project` instead normalizes vertices
  * onto `radius` and welds them across faces into a geodesic sphere.
  * @param {import("../../../types.js").SimplicialComplexPolygon} seed Seed polyhedron: flat xyz positions (radius already baked in by the caller) and CCW n-gon faces (indices into positions)
  * @param {object} [options={}]

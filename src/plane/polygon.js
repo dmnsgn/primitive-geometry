@@ -25,11 +25,9 @@ import {
 /**
  * A regular polygon: sides corners evenly spaced around a circle, connected
  * by straight edges rather than ellipse's elliptical arc (rhombus is this
- * shape's sides=4 case). computePolygonEdge locates which side a sample
- * falls on and linearly interpolates between that side's two corners, so
- * edgeSegments subdivides each side into evenly spaced points. sx/sy
- * independently scale the two axes; equal values keep it regular, different
- * values stretch it into an ellipse-inscribed polygon.
+ * shape's sides=4 case). sx/sy independently scale the two axes; equal
+ * values keep it regular, different values stretch it into an
+ * ellipse-inscribed polygon.
  * @alias module:polygon
  * @param {PolygonOptions} [options={}]
  * @returns {import("../../types.js").SimplicialComplex}
@@ -76,9 +74,7 @@ export function polygon({
 
 /**
  * Outline dual of `polygon`: sides corners evenly spaced around a circle,
- * connected by straight edges (rhombus is this shape's sides=4 case). Reuses
- * `computePolygonEdge`, the same corner interpolation `polygon`'s own fill
- * uses.
+ * connected by straight edges (rhombus is this shape's sides=4 case).
  * @alias module:polygonPath
  * @param {PolygonPathOptions} [options={}]
  * @returns {import("../../types.js").SimplicialComplexPath} `edgeSegments *

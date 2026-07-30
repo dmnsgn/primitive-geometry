@@ -57,6 +57,7 @@ export function tetrahedronFaces({ radius = 0.5, center = true } = {}) {
  */
 
 /**
+ * Regular tetrahedron.
  * @alias module:tetrahedron
  * @param {TetrahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}

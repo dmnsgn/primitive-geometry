@@ -43,6 +43,7 @@ export function octahedronFaces({ radius = 0.5 } = {}) {
  */
 
 /**
+ * Regular octahedron.
  * @alias module:octahedron
  * @param {OctahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}

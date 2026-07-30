@@ -21,14 +21,9 @@ import {
 /**
  * Lemon (geometry): "a circular arc of angle less than half of a full
  * circle" rotated about the chord through its own endpoints - `apple`'s
- * exact complementary half (apple keeps the arc's major, more-than-half-
- * circle, portion; lemon keeps the minor, less-than-half-circle, portion of
- * the very same spindle-torus-generating circle). Unlike apple, the kept
- * arc doesn't sweep past either pole's own latitude on its way to the
- * equator, so the meridian is plain y-monotonic - no dimple, no double-
- * back, just a smooth convex taper to a point (still a cusp, not a tangent
- * point, at each pole - same per-column-normal reasoning as apple's/cone's
- * own apex).
+ * exact complementary half. Unlike apple, the meridian is plain
+ * y-monotonic: no dimple, just a smooth convex taper to a point (still a
+ * cusp, not a tangent point, at each pole).
  * @see [Wikipedia – Lemon (geometry)]{@link https://en.wikipedia.org/wiki/Lemon_(geometry)}
  * @alias module:lemon
  * @param {LemonOptions} [options={}]

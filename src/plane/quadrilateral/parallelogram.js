@@ -3,14 +3,11 @@ import { trapezoid, trapezoidPath } from "./trapezoid.js";
 
 /**
  * @typedef {object} ParallelogramOptions
- * @property {number} [sx=0.5] Narrower than `trapezoid`'s own default (`1`)
- *   so that, combined with the default `shear`, the sheared top edge still
- *   fits within the unit box (`sx + shear` reaching past `1` would push it
- *   out).
+ * @property {number} [sx=0.5] Narrower than `trapezoid`'s default so the
+ *   sheared top edge still fits the unit box.
  * @property {number} [sy=1]
  * @property {number} [shear=0.3] Horizontal shift of the top edge's center,
- *   as a fraction of `sx` (`trapezoid`'s `topOffset`, renamed since fixing
- *   `topRatio` to `1` leaves no width left to describe as a ratio).
+ *   as a fraction of `sx`.
  * @property {number} [radius=0.5]
  * @property {number} [edgeSegments=1]
  * @property {number} [innerSegments=16]

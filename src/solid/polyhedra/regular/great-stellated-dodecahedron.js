@@ -17,12 +17,9 @@ import { PHI } from "../../../utils.js";
  * Great stellated dodecahedron: the 3rd (outermost) stellation of the
  * dodecahedron. Each face's 5 edges, extended within its own plane, first
  * cross at a "depth 1" ring (exactly the icosahedron's vertex positions -
- * this is small stellated dodecahedron's own tips) before crossing a second,
- * further ring at "depth 2" - the true tips here. Depth 2 is a plain radial
- * scale of the dodecahedron's own vertices by `phi^3`. Each tip is flanked
- * by the two depth-1 points nearest it, not by the dodecahedron's own
- * (unstellated) vertices; adjacent faces' shared depth-1 points are welded
- * by assembleFaces.
+ * small stellated dodecahedron's own tips) before crossing a second,
+ * further ring at "depth 2" - the true tips here, a plain radial scale of
+ * the dodecahedron's own vertices by `phi^3`.
  * @param {GreatStellatedDodecahedronFacesOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplexPolygon}
  */
@@ -58,6 +55,7 @@ export function greatStellatedDodecahedronFaces({ radius = 0.5 } = {}) {
  */
 
 /**
+ * Great stellated dodecahedron.
  * @alias module:greatStellatedDodecahedron
  * @param {GreatStellatedDodecahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}

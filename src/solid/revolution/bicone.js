@@ -17,14 +17,7 @@ import { computeConeSegment } from "./cone.js";
 /**
  * Two right circular cones joined base-to-base at the equator (a bipyramid
  * of revolution/spinning-top shape) - both ends come to a point, so unlike
- * cylinder/doubleCone there are no cap options. Built as two independent
- * cones (cylinder's elliptical-cone case, generalized to an arbitrary y
- * span) concatenated at the equator rather than one function with a v = 0.5
- * kink: the two halves need opposite-signed local slopes there, which a
- * single shared row (and thus a single vertex normal) can't satisfy for
- * both sides at once - concatGeometries gives each half its own equator
- * ring instead, the same seam convention used for cap/body boundaries
- * elsewhere in this codebase.
+ * `cylinder`/`doubleCone` there are no cap options.
  * @alias module:bicone
  * @param {BiconeOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -56,6 +49,11 @@ export function bicone({
       sz,
     });
 
+  // Two independent cone segments concatenated at the equator rather than
+  // one function with a v = 0.5 kink: the two halves need opposite-signed
+  // local slopes there, which a single shared row (and vertex normal) can't
+  // satisfy for both sides at once - each half gets its own equator ring
+  // instead.
   return concatGeometries([
     segment(-halfHeight, 0, 0, radius),
     segment(0, halfHeight, radius, 0),

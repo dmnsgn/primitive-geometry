@@ -17,12 +17,11 @@ import {
  */
 
 /**
- * Antiprism: like prism, but the top sides-gon is rotated by half a sector
- * relative to the bottom one, so the two rings connect through a zigzag band
- * of 2 * sides flat triangles (each with its own hard-edged normal) instead
- * of prism's sides flat rectangles. The 2 end caps are otherwise identical
- * to prism's own (see prism.js for why computeCap's sides + 1 angle samples
- * trace a straight sides-gon, not an arc) - just with the top one rotated to
+ * Antiprism: like `prism`, but the top sides-gon is rotated by half a
+ * sector relative to the bottom one, so the two rings connect through a
+ * zigzag band of 2 * sides flat triangles (each with its own hard-edged
+ * normal) instead of prism's sides flat rectangles. The 2 end caps are
+ * otherwise identical to prism's own, just with the top one rotated to
  * match its own ring.
  * @alias module:antiprism
  * @param {AntiprismOptions} [options={}]

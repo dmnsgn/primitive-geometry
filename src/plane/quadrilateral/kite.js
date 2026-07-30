@@ -15,7 +15,7 @@ import {
  * @property {number} [ratio=0.5] Bottom vertex distance from center, as a
  *   fraction of the top vertex's (sy). `ratio=1` is a rhombus, `ratio=0`
  *   collapses the bottom to the center.
- * @property {number} [radius=1]
+ * @property {number} [radius=0.5]
  * @property {number} [edgeSegments=1]
  * @property {number} [innerSegments=16]
  * @property {number} [innerRadius=0]
@@ -74,8 +74,8 @@ export function kite({
  */
 
 /**
- * Outline dual of `kite`: same `computePolygonEdge` corner interpolation as
- * `kite`'s own fill, `ratio` pulling the bottom vertex toward the center.
+ * Outline dual of `kite`: same shape, `ratio` pulling the bottom vertex
+ * toward the center.
  * @alias module:kitePath
  * @param {KitePathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}

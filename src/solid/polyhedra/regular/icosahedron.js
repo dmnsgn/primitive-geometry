@@ -65,6 +65,7 @@ export function icosahedronFaces({ radius = 0.5 } = {}) {
  */
 
 /**
+ * Regular icosahedron.
  * @alias module:icosahedron
  * @param {IcosahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}

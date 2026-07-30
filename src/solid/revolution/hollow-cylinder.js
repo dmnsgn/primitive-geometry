@@ -19,14 +19,9 @@ import { computeConeSegment } from "./cone.js";
 
 /**
  * A cylinder with a concentric cylindrical bore through it - a washer/pipe
- * extruded to a given height. Built from `cylinder`'s own lateral surface
- * (capBase/capApex false, its own "tube" case) called twice, once at radius
- * for the outer wall and once at innerRadius `invert`-ed for the bore wall,
- * plus 2 flat annular caps (see `annularCap` below).
- *
- * Doesn't close the phi < TAU wedge cut (no wall between the outer/inner
- * walls or the 2 caps there) - same pre-existing limitation as a plain
- * `cylinder({ phi: <TAU })`, which is equally open at its own cut.
+ * extruded to a given height. Doesn't close the `phi < TAU` wedge cut (no
+ * wall between the outer/inner walls or the 2 caps there) - same limitation
+ * as a plain `cylinder({ phi: <TAU })`.
  * @alias module:hollowCylinder
  * @param {HollowCylinderOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -60,6 +55,9 @@ export function hollowCylinder({
       phiOffset,
     });
 
+  // cylinder's own lateral surface (capBase/capApex false, its "tube" case)
+  // called twice: once at radius for the outer wall, once at innerRadius
+  // inverted for the bore wall.
   const pieces = [
     cylinder({
       height,

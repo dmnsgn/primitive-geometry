@@ -15,13 +15,17 @@ import {
  * @property {number} [innerSegments=16]
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
- * @property {boolean} [mergeCentroid=innerRadius = 0]
+ * @property {number} [innerRadius=0] Like `annulus`'s: a hole radius the
+ *   fill stops at instead of reaching the center. `0` (default): no hole,
+ *   fill reaches the center (subject to `mergeCentroid`).
+ * @property {boolean} [mergeCentroid=innerRadius === 0]
  * @property {Function} [mapping=mappings.elliptical]
+ * @property {Function} [equation] Maps each (rx, ry, cosTheta, sinTheta)
+ *   sample to its [x, y] position, defaulting to an ellipse's arc.
  */
 
 /**
- * Closed for a full revolution (theta multiple of TAU): the last column of
- * vertices is shared with the first so the wrap edge is welded.
+ * An ellipse (or circle when `sx = sy`).
  * @alias module:ellipse
  * @param {EllipseOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}

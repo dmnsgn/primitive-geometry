@@ -20,12 +20,8 @@ import { rectangular } from "../../mappings.js";
  */
 
 /**
- * Lens: the convex region where two circles overlap. Both circles are
- * centered on the x axis, offset symmetrically by `distance`; the
- * intersection is always convex, so a straight top/bottom sweep between the
- * two arcs (the tighter of the two at every column) fills it directly, no
- * matter how `radius`/`radius2`/`distance` compare.
- * Default to a Vesica Piscis.
+ * Lens: the convex region where two circles overlap, centered on the x axis
+ * and offset symmetrically by `distance`. Defaults to a Vesica Piscis.
  * @see [Wolfram MathWorld – Lens]{@link https://mathworld.wolfram.com/Lens.html}
  * @see [Wolfram MathWorld – Vesica Piscis]{@link https://mathworld.wolfram.com/VesicaPiscis.html}
  * @alias module:lens
@@ -49,6 +45,8 @@ export function lens({
   const uMin = Math.max(c1 - r1, c2 - r2);
   const uMax = Math.min(c1 + r1, c2 + r2);
 
+  // Intersection is always convex, so the tighter of the two arcs at each
+  // column bounds it directly, regardless of how radius/radius2/distance compare.
   const height = (x) =>
     Math.min(
       Math.sqrt(Math.max(r1 * r1 - (x - c1) ** 2, 0)),

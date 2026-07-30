@@ -9,17 +9,17 @@ import {
 
 /**
  * @typedef {object} SuperellipsoidOptions
- * @property {number} [radius=0.5]
+ * @property {number} [radius=1]
  * @property {number} [nx=32]
  * @property {number} [ny=16]
- * @property {number} [rx=1]
- * @property {number} [ry=1]
- * @property {number} [rz=1]
- * @property {number} [n1=2] North-south (meridian) roundness exponent
+ * @property {number} [rx=0.5]
+ * @property {number} [ry=0.25]
+ * @property {number} [rz=ry]
+ * @property {number} [n1=3] North-south (meridian) roundness exponent
  * @property {number} [n2=n1] East-west (cross-section) roundness exponent
  * @property {number} [theta=Math.PI] Meridian sweep length, silently clamped
  * to [-thetaOffset, PI - thetaOffset] - see ellipsoid.js's EllipsoidOptions
- * for why (computeRevolutionGeometry only supports a pole at v = 0/1).
+ * for why.
  * @property {number} [thetaOffset=0] Meridian sweep start, silently clamped
  * to [0, PI] - see theta.
  * @property {number} [phi=TAU]
@@ -29,8 +29,8 @@ import {
 /**
  * Superquadric ellipsoid (Barr 1981): generalizes ellipsoid by raising its
  * meridian (n1) and cross-section (n2) sin/cos terms to signed powers -
- * n = 2 is a plain ellipsoid (the default), n < 2 rounds toward a box,
- * n > 2 pinches toward a star/octahedron. See superegg for the n2 = 2
+ * n = 2 is a plain ellipsoid, n < 2 rounds toward a box, n > 2 (the default,
+ * n1 = n2 = 3) pinches toward a star/octahedron. See superegg for the n2 = 2
  * (circular cross-section) special case.
  * @see [Wolfram MathWorld – Superellipsoid]{@link https://mathworld.wolfram.com/Superellipsoid.html}
  * @see [Wikipedia – Superellipsoid]{@link https://en.wikipedia.org/wiki/Superellipsoid}

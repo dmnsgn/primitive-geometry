@@ -26,12 +26,9 @@ import {
 
 /**
  * Barrel/cask: a cylinder that bulges outward at the equator and tapers
- * back to a narrower flat rim at both ends (`hyperboloid`'s own frustum
- * structure, with a parabolic - not hyperbolic - radius law, curving the
- * other way: outward from the ends toward the middle instead of outward
- * from a pinched waist). Unlike `superegg` (which also bulges but tapers
- * all the way to a point at each pole), both ends here stay flat, open
- * rings, cappable exactly like `cylinder`'s.
+ * back to a narrower flat rim at both ends. Unlike `superegg` (which also
+ * bulges but tapers all the way to a point at each pole), both ends here
+ * stay flat, open rings, cappable like `cylinder`'s.
  * @alias module:barrel
  * @param {BarrelOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
