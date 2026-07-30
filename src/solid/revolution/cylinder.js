@@ -17,6 +17,7 @@ import {
  * @property {number} [capSegments=1]
  * @property {boolean} [capApex=true]
  * @property {boolean} [capBase=true]
+ * @property {number} [capBaseSegments=capSegments]
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
  * @property {Function} [capMapping=mappings.rectangular]
