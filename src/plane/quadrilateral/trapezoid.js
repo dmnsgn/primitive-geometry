@@ -1,10 +1,12 @@
 /** @module trapezoid */
 import { rectangular } from "../../mappings.js";
 import {
+  centerCorners,
   checkArguments,
   computeOutlineEdge,
   computePolarGeometry,
   computePolarPathGeometry,
+  translatePositions,
   TAU,
 } from "../../utils.js";
 
@@ -14,22 +16,12 @@ const CORNER_COUNT = 4;
 // or radius scale (trapezoidPath) is centered on the shape rather than
 // world origin - shared by both, see trapezoid's own doc comment for why.
 function computeTrapezoidCorners(sx, sy, topRatio, topOffset) {
-  const corners = [
+  return centerCorners([
     [-sx, -sy],
     [sx, -sy],
     [topOffset + sx * topRatio, sy],
     [topOffset - sx * topRatio, sy],
-  ];
-
-  const [cx, cy] = corners
-    .reduce(([ax, ay], [x, y]) => [ax + x, ay + y], [0, 0])
-    .map((sum) => sum / CORNER_COUNT);
-
-  return {
-    centeredCorners: corners.map(([x, y]) => [x - cx, y - cy]),
-    cx,
-    cy,
-  };
+  ]);
 }
 
 /**
@@ -119,13 +111,7 @@ export function trapezoid({
   });
 
   if (cx !== 0 || cy !== 0) {
-    const { positions } = geometry;
-    const dx = radius * cx;
-    const dy = radius * cy;
-    for (let i = 0; i < positions.length; i += 3) {
-      positions[i] += dx;
-      positions[i + 1] += dy;
-    }
+    translatePositions(geometry.positions, radius * cx, radius * cy);
   }
 
   return geometry;

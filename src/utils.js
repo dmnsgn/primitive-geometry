@@ -650,6 +650,47 @@ export function computePlane(
 }
 
 /**
+ * Center a closed corner list on its own vertex average, returning the
+ * centered corners alongside that average (cx, cy) so a caller can translate
+ * a shape built around them back afterward - shared by trapezoid/triangle,
+ * whose radial fan (via computePolarGeometry) or outline (via
+ * computeOutlineEdge) must be centered on the shape's own centroid rather
+ * than world origin for an off-center corner (eg. trapezoid's topOffset,
+ * triangle's apexOffset) to not bunch rings tight on one side.
+ * @param {number[][]} corners
+ * @returns {{centeredCorners: number[][], cx: number, cy: number}}
+ * @private
+ */
+export function centerCorners(corners) {
+  const [cx, cy] = corners
+    .reduce(([ax, ay], [x, y]) => [ax + x, ay + y], [0, 0])
+    .map((sum) => sum / corners.length);
+
+  return {
+    centeredCorners: corners.map(([x, y]) => [x - cx, y - cy]),
+    cx,
+    cy,
+  };
+}
+
+/**
+ * Translate a geometry's positions in place by (dx, dy), z untouched - the
+ * inverse of the recentering `centerCorners` sets up, applied after building
+ * around the recentered origin so the shape lands back at its documented,
+ * caller-relative position.
+ * @param {Float32Array} positions
+ * @param {number} dx
+ * @param {number} dy
+ * @private
+ */
+export function translatePositions(positions, dx, dy) {
+  for (let i = 0; i < positions.length; i += 3) {
+    positions[i] += dx;
+    positions[i + 1] += dy;
+  }
+}
+
+/**
  * A point on a closed, explicit-corner outline at angle t: splits the
  * outline into corners.length equal sectors starting at thetaOffset, finds
  * which one t falls in, and linearly interpolates between its two corners.
