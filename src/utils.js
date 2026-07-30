@@ -1069,6 +1069,70 @@ export function computeRevolutionGeometry({
 }
 
 /**
+ * A spindle-torus generating-circle revolution: the meridian is an arc of a
+ * circle (radius `a`, offset from the axis) that crosses the revolution
+ * axis at its own two endpoints, producing cusped poles - not smooth
+ * tangent points like a sphere's - each with its own per-column normal.
+ * Shared by `apple` (the major, more-than-half-circle arc) and `lemon` (the
+ * minor, less-than-half-circle arc of the same construction, opposite sign
+ * convention) - see each file's own doc comment for the halfHeight domain
+ * that distinguishes them and the derivation of `a`/`thetaCross`/
+ * `poleCosTheta`/`radiusAt`, which this helper takes as given rather than
+ * re-deriving, since the two files' sign conventions for the circle's own
+ * axis offset are mirrored.
+ * `radiusAt(cosTheta)` computes the meridian's radius away from the poles;
+ * `poleCosTheta` is the same circle's cosTheta at r = 0, used for the
+ * pole's own normal - kept separate from `radiusAt` since deriving it via
+ * `radiusAt`'s own formula wouldn't reliably round-trip to exactly 0 in
+ * floating point, leaving the pole undetected as collapsed (see apple.js's
+ * own comment on its equation for the full reasoning).
+ * @private
+ */
+export function computeSpindleArcRevolution({
+  a,
+  halfHeight,
+  thetaCross,
+  poleCosTheta,
+  radiusAt,
+  nx,
+  ny,
+  phi,
+  phiOffset,
+}) {
+  function equation({ v, cosPhi: rawCosPhi, sinPhi: rawSinPhi }) {
+    const cosPhi = snapToZero(rawCosPhi);
+    const sinPhi = snapToZero(rawSinPhi);
+
+    let cosTheta, sinTheta, r, y;
+    if (v === 0 || v === 1) {
+      cosTheta = poleCosTheta;
+      sinTheta = v === 0 ? -halfHeight / a : halfHeight / a;
+      r = 0;
+      y = v === 0 ? -halfHeight : halfHeight;
+    } else {
+      const theta = -thetaCross + v * 2 * thetaCross;
+      cosTheta = snapToZero(Math.cos(theta));
+      sinTheta = snapToZero(Math.sin(theta));
+      r = radiusAt(cosTheta);
+      y = a * sinTheta;
+    }
+
+    return {
+      position: [-cosPhi * r, y, sinPhi * r],
+      // Direction from the generating circle's own (off-axis) center, not
+      // from the revolution axis - unlike a sphere/ellipsoid, position and
+      // normal direction aren't simply proportional here. `a` is left out
+      // (normalize() erases positive scalar multiples), same "factor out
+      // the radius" trick cylinder/cone's tangent-cross-product normals use.
+      normal: [-cosPhi * cosTheta, sinTheta, sinPhi * cosTheta],
+      collapsed: r === 0,
+    };
+  }
+
+  return computeRevolutionGeometry({ nx, ny, phi, phiOffset, equation });
+}
+
+/**
  * A flat-ended surface of revolution around the y axis, both ends open
  * rings cappable exactly like `cylinder`'s - shared plumbing for
  * `barrel`/`funnel`/`hyperboloid`, which only differ in their own radius

@@ -2,8 +2,7 @@
 import {
   checkArguments,
   clamp,
-  computeRevolutionGeometry,
-  snapToZero,
+  computeSpindleArcRevolution,
   TAU,
 } from "../../utils.js";
 
@@ -56,50 +55,23 @@ export function apple({
   const a = (radius + aMinusD) / 2;
   const d = radius - a;
 
+  // r = d + a·cosTheta with cosTheta = -d/a is only *mathematically* exactly
+  // 0 - a/(-d/a) doesn't reliably round-trip to -d in floating point, which
+  // left the pole undetected as collapsed (computed r a few ULPs off 0) and
+  // a degenerate fan triangle behind - poleCosTheta is passed to
+  // computeSpindleArcRevolution directly rather than derived from radiusAt.
   const thetaCross = Math.acos(-d / a);
 
-  function equation({ v, cosPhi: rawCosPhi, sinPhi: rawSinPhi }) {
-    const cosPhi = snapToZero(rawCosPhi);
-    const sinPhi = snapToZero(rawSinPhi);
-
-    let cosTheta, sinTheta, r, y;
-    if (v === 0 || v === 1) {
-      // r = d + a·cosTheta with cosTheta = -d/a is only *mathematically*
-      // exactly 0 - a/(-d/a) doesn't reliably round-trip to -d in floating
-      // point, which left the pole undetected as collapsed (computed r a
-      // few ULPs off 0) and a degenerate fan triangle behind. Set r/y
-      // directly at the poles instead of deriving them from cosTheta/
-      // sinTheta, which still feed into the normal below.
-      cosTheta = -d / a;
-      sinTheta = v === 0 ? -halfHeight / a : halfHeight / a;
-      r = 0;
-      y = v === 0 ? -halfHeight : halfHeight;
-    } else {
-      const theta = -thetaCross + v * 2 * thetaCross;
-      cosTheta = snapToZero(Math.cos(theta));
-      sinTheta = snapToZero(Math.sin(theta));
-      r = d + a * cosTheta;
-      y = a * sinTheta;
-    }
-
-    return {
-      position: [-cosPhi * r, y, sinPhi * r],
-      // Direction from the generating circle's own (off-axis) center, not
-      // from the revolution axis - unlike a sphere/ellipsoid, position and
-      // normal direction aren't simply proportional here. `a` is left out
-      // (normalize() erases positive scalar multiples), same "factor out
-      // the radius" trick cylinder/cone's tangent-cross-product normals use.
-      normal: [-cosPhi * cosTheta, sinTheta, sinPhi * cosTheta],
-      collapsed: r === 0,
-    };
-  }
-
-  const { positions, normals, uvs, cells } = computeRevolutionGeometry({
+  const { positions, normals, uvs, cells } = computeSpindleArcRevolution({
+    a,
+    halfHeight,
+    thetaCross,
+    poleCosTheta: -d / a,
+    radiusAt: (cosTheta) => d + a * cosTheta,
     nx,
     ny,
     phi,
     phiOffset,
-    equation,
   });
 
   return { positions, normals, uvs, cells };

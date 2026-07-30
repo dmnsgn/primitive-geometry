@@ -1,8 +1,7 @@
 /** @module lemon */
 import {
   checkArguments,
-  computeRevolutionGeometry,
-  snapToZero,
+  computeSpindleArcRevolution,
   TAU,
 } from "../../utils.js";
 
@@ -55,46 +54,21 @@ export function lemon({
   const a = (radius + aPlusD) / 2;
   const d = aPlusD - a;
 
+  // Same bit-exactness concern as apple.js's own poles: a * (d / a) doesn't
+  // reliably round-trip to exactly d, so poleCosTheta is passed to
+  // computeSpindleArcRevolution directly rather than derived from radiusAt.
   const thetaLemon = Math.acos(d / a);
 
-  function equation({ v, cosPhi: rawCosPhi, sinPhi: rawSinPhi }) {
-    const cosPhi = snapToZero(rawCosPhi);
-    const sinPhi = snapToZero(rawSinPhi);
-
-    let cosTheta, sinTheta, r, y;
-    if (v === 0 || v === 1) {
-      // Same bit-exactness concern as apple.js's own poles: a * (d / a)
-      // doesn't reliably round-trip to exactly d, so r/y are set directly
-      // here rather than derived from cosTheta/sinTheta (still used below,
-      // for the normal).
-      cosTheta = d / a;
-      sinTheta = v === 0 ? -halfHeight / a : halfHeight / a;
-      r = 0;
-      y = v === 0 ? -halfHeight : halfHeight;
-    } else {
-      const theta = -thetaLemon + v * 2 * thetaLemon;
-      cosTheta = snapToZero(Math.cos(theta));
-      sinTheta = snapToZero(Math.sin(theta));
-      r = a * cosTheta - d;
-      y = a * sinTheta;
-    }
-
-    return {
-      position: [-cosPhi * r, y, sinPhi * r],
-      // Direction from the generating circle's own (off-axis) center, same
-      // trick as apple.js's normal (and for the same reason: position and
-      // normal direction aren't simply proportional here, unlike a sphere).
-      normal: [-cosPhi * cosTheta, sinTheta, sinPhi * cosTheta],
-      collapsed: r === 0,
-    };
-  }
-
-  const { positions, normals, uvs, cells } = computeRevolutionGeometry({
+  const { positions, normals, uvs, cells } = computeSpindleArcRevolution({
+    a,
+    halfHeight,
+    thetaCross: thetaLemon,
+    poleCosTheta: d / a,
+    radiusAt: (cosTheta) => a * cosTheta - d,
     nx,
     ny,
     phi,
     phiOffset,
-    equation,
   });
 
   return { positions, normals, uvs, cells };
