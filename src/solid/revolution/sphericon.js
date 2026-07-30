@@ -67,7 +67,7 @@ function twist({ positions, normals, uvs, cells }) {
  * @param {SphericonOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
  */
-export function sphericon({ radius = 0.5, nx = 16, ny = 8 } = {}) {
+export function sphericon({ radius = 0.5, nx = 16, ny = 1 } = {}) {
   checkArguments(arguments);
 
   const segment = (yFrom, yTo, rFrom, rTo) =>

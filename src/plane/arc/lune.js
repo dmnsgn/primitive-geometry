@@ -7,9 +7,9 @@ import { checkArguments, concatGeometries } from "../../utils.js";
  * @typedef {object} LuneOptions
  * @property {number} [radius=0.5] Radius of the big circle (`b` in
  *   MathWorld's notation), centered at the origin.
- * @property {number} [innerRadius=radius*0.6] Radius of the small circle
+ * @property {number} [innerRadius=radius] Radius of the small circle
  *   (`a`), whose disk is subtracted from the big one. Must be `< radius`.
- * @property {number} [distance=radius*0.8] Offset of the small circle's
+ * @property {number} [distance=radius*0.5] Offset of the small circle's
  *   center from the origin, along +x (`c`). For a proper crescent (both
  *   arcs contributing to the boundary) `distance + innerRadius` must exceed
  *   `radius`, ie. the small circle actually pokes through the big one's

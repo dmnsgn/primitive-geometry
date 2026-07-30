@@ -13,7 +13,7 @@ import {
  * @typedef {object} KiteOptions
  * @property {number} [sx=1]
  * @property {number} [sy=1]
- * @property {number} [ratio=0.9] Bottom vertex distance from center, as a
+ * @property {number} [ratio=0.5] Bottom vertex distance from center, as a
  *   fraction of the top vertex's (sy). `ratio=1` is a rhombus, `ratio=0`
  *   collapses the bottom to the center.
  * @property {number} [radius=1]
