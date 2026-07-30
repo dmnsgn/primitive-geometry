@@ -62,7 +62,7 @@ export function icosahedronFaces({ radius = 0.5 } = {}) {
 /**
  * @typedef {object} IcosahedronOptions
  * @property {number} [radius=0.5]
- * @property {number} [subdivisions=2]
+ * @property {number} [subdivisions=0]
  * @property {Function} [mapping=mappings.rectangular]
  */
 
@@ -71,7 +71,7 @@ export function icosahedronFaces({ radius = 0.5 } = {}) {
  * @param {IcosahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
  */
-export function icosahedron({ radius = 0.5, subdivisions = 2, mapping } = {}) {
+export function icosahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
   checkArguments(arguments);
 
   return polyhedron(icosahedronFaces({ radius }), {
