@@ -2,7 +2,6 @@
 import { rectangular } from "../../mappings.js";
 import {
   centerCorners,
-  checkArguments,
   computeOutlineEdge,
   computePolarGeometry,
   computePolarPathGeometry,
@@ -84,8 +83,6 @@ export function trapezoid({
   mergeCentroid = innerRadius === 0,
   mapping = rectangular,
 } = {}) {
-  checkArguments(arguments);
-
   const { centeredCorners, cx, cy } = computeTrapezoidCorners(
     sx,
     sy,
@@ -149,8 +146,6 @@ export function trapezoidPath({
   thetaOffset = 0,
   closed = false,
 } = {}) {
-  checkArguments(arguments);
-
   const { centeredCorners, cx, cy } = computeTrapezoidCorners(
     sx,
     sy,

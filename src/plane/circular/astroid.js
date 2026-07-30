@@ -1,7 +1,7 @@
 /** @module astroid */
 import { superellipse, superellipsePath } from "./superellipse.js";
 import { lamé } from "../../mappings.js";
-import { checkArguments, TAU } from "../../utils.js";
+import { TAU } from "../../utils.js";
 
 /**
  * @typedef {object} AstroidOptions
@@ -30,8 +30,6 @@ export function astroid({
   mergeCentroid = true,
   mapping = lamé,
 } = {}) {
-  checkArguments(arguments);
-
   return superellipse({
     sx: 1,
     sy: 1,
@@ -69,8 +67,6 @@ export function astroidPath({
   thetaOffset = 0,
   closed = false,
 } = {}) {
-  checkArguments(arguments);
-
   return superellipsePath({
     sx: 1,
     sy: 1,

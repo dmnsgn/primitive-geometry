@@ -1,6 +1,5 @@
 /** @module apple */
 import {
-  checkArguments,
   clamp,
   computeSpindleArcRevolution,
   TAU,
@@ -43,7 +42,6 @@ export function apple({
   phi = TAU,
   phiOffset = 0,
 } = {}) {
-  checkArguments(arguments);
 
   const halfHeight = clamp(height, 0, radius * 2) / 2;
 

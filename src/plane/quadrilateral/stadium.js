@@ -1,6 +1,5 @@
 /** @module stadium */
 import { roundedRectangle, roundedRectanglePath } from "./rounded-rectangle.js";
-import { checkArguments } from "../../utils.js";
 
 /**
  * @typedef {object} StadiumOptions
@@ -25,8 +24,6 @@ export function stadium({
   roundSegments,
   edgeSegments,
 } = {}) {
-  checkArguments(arguments);
-
   return roundedRectangle({
     sx,
     sy,
@@ -66,8 +63,6 @@ export function stadiumPath({
   edgeSegments,
   closed,
 } = {}) {
-  checkArguments(arguments);
-
   return roundedRectanglePath({
     sx,
     sy,

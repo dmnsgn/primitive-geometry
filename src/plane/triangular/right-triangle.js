@@ -1,6 +1,5 @@
 /** @module rightTriangle */
 import { triangle, trianglePath } from "./triangle.js";
-import { checkArguments } from "../../utils.js";
 
 /**
  * @typedef {object} RightTriangleOptions
@@ -37,8 +36,6 @@ export function rightTriangle({
   mergeCentroid,
   mapping,
 } = {}) {
-  checkArguments(arguments);
-
   return triangle({
     sx,
     sy,
@@ -81,8 +78,6 @@ export function rightTrianglePath({
   thetaOffset,
   closed,
 } = {}) {
-  checkArguments(arguments);
-
   return trianglePath({
     sx,
     sy,

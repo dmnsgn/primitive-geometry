@@ -1,7 +1,6 @@
 /** @module hexahedron */
 import { polyhedron } from "../polyhedron.js";
 import { cubeFaces } from "../../cuboid/cube.js";
-import { checkArguments } from "../../../utils.js";
 
 /**
  * @typedef {object} HexahedronFacesOptions
@@ -16,8 +15,6 @@ import { checkArguments } from "../../../utils.js";
  * @returns {import("../../../../types.js").SimplicialComplexPolygon}
  */
 export function hexahedronFaces({ radius = 0.5 } = {}) {
-  checkArguments(arguments);
-
   return cubeFaces({ sx: radius * 2, sy: radius * 2, sz: radius * 2 });
 }
 
@@ -34,8 +31,6 @@ export function hexahedronFaces({ radius = 0.5 } = {}) {
  * @returns {import("../../../../types.js").SimplicialComplex}
  */
 export function hexahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
-  checkArguments(arguments);
-
   return polyhedron(hexahedronFaces({ radius }), {
     radius,
     subdivisions,

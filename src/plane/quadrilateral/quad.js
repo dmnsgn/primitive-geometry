@@ -1,7 +1,7 @@
 /** @module quad */
 
 import { rectanglePath } from "./plane.js";
-import { checkArguments, triangulateFaces } from "../../utils.js";
+import { triangulateFaces } from "../../utils.js";
 
 /**
  * @typedef {object} QuadOptions
@@ -14,8 +14,6 @@ import { checkArguments, triangulateFaces } from "../../utils.js";
  * @returns {import("../../../types.js").SimplicialComplex}
  */
 export function quad({ scale = 0.5 } = {}) {
-  checkArguments(arguments);
-
   const { positions, cells } = squarePath({ scale });
 
   return {
@@ -53,7 +51,5 @@ export function quad({ scale = 0.5 } = {}) {
  * @returns {import("../../../types.js").SimplicialComplexPath}
  */
 export function squarePath({ scale = 0.5, nx = 1, ny = nx } = {}) {
-  checkArguments(arguments);
-
   return rectanglePath({ sx: scale * 2, sy: scale * 2, nx, ny });
 }

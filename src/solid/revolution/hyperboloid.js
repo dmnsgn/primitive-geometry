@@ -1,7 +1,6 @@
 /** @module hyperboloid */
 import { rectangular } from "../../mappings.js";
 import {
-  checkArguments,
   computeFlatRevolutionGeometry,
   TAU,
 } from "../../utils.js";
@@ -50,7 +49,6 @@ export function hyperboloid({
   phiOffset = 0,
   capMapping = rectangular,
 } = {}) {
-  checkArguments(arguments);
 
   const halfHeight = height / 2;
   // r² = radius² + k·y², fixed by r = radiusTop at both y = ±halfHeight

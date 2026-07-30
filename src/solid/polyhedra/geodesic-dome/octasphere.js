@@ -1,7 +1,6 @@
 /** @module octasphere */
 import { polyhedron } from "../polyhedron.js";
 import { octahedronFaces } from "../regular/octahedron.js";
-import { checkArguments } from "../../../utils.js";
 
 /**
  * @typedef {object} OctasphereOptions
@@ -23,7 +22,6 @@ export function octasphere({
   projection,
   mapping,
 } = {}) {
-  checkArguments(arguments);
 
   return polyhedron(octahedronFaces({ radius }), {
     radius,

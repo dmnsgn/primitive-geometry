@@ -1,6 +1,5 @@
 /** @module parallelogram */
 import { trapezoid, trapezoidPath } from "./trapezoid.js";
-import { checkArguments } from "../../utils.js";
 
 /**
  * @typedef {object} ParallelogramOptions
@@ -42,8 +41,6 @@ export function parallelogram({
   mergeCentroid,
   mapping,
 } = {}) {
-  checkArguments(arguments);
-
   return trapezoid({
     sx,
     sy,
@@ -89,8 +86,6 @@ export function parallelogramPath({
   thetaOffset,
   closed,
 } = {}) {
-  checkArguments(arguments);
-
   return trapezoidPath({
     sx,
     sy,

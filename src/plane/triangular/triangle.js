@@ -2,7 +2,6 @@
 import { rectangular } from "../../mappings.js";
 import {
   centerCorners,
-  checkArguments,
   computeOutlineEdge,
   computePolarGeometry,
   computePolarPathGeometry,
@@ -71,8 +70,6 @@ export function triangle({
   mergeCentroid = innerRadius === 0,
   mapping = rectangular,
 } = {}) {
-  checkArguments(arguments);
-
   const { centeredCorners, cx, cy } = computeTriangleCorners(
     sx,
     sy,
@@ -133,8 +130,6 @@ export function trianglePath({
   thetaOffset = 0,
   closed = false,
 } = {}) {
-  checkArguments(arguments);
-
   const { centeredCorners, cx, cy } = computeTriangleCorners(
     sx,
     sy,

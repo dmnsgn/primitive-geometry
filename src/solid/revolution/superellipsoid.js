@@ -1,6 +1,5 @@
 /** @module superellipsoid */
 import {
-  checkArguments,
   clampMeridianSweep,
   computeRevolutionGeometry,
   signedPow,
@@ -53,7 +52,6 @@ export function superellipsoid({
   phi = TAU,
   phiOffset = 0,
 } = {}) {
-  checkArguments(arguments);
 
   const e1 = 2 / n1;
   const e2 = 2 / n2;

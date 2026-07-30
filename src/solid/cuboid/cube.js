@@ -1,6 +1,6 @@
 /** @module cube */
 
-import { checkArguments, computePlane, getCellsTypedArray } from "../../utils.js";
+import { computePlane, getCellsTypedArray } from "../../utils.js";
 
 /**
  * @typedef {object} CubeFacesOptions
@@ -16,8 +16,6 @@ import { checkArguments, computePlane, getCellsTypedArray } from "../../utils.js
  * @returns {import("../../../types.js").SimplicialComplexPolygon}
  */
 export function cubeFaces({ sx = 1, sy = sx, sz = sx } = {}) {
-  checkArguments(arguments);
-
   const x = sx / 2;
   const y = sy / 2;
   const z = sz / 2;
@@ -60,7 +58,6 @@ export function cubeFaces({ sx = 1, sy = sx, sz = sx } = {}) {
  * @returns {import("../../../types.js").SimplicialComplexPolygon}
  */
 export function box({ sx = 1, sy = sx, sz = sx } = {}) {
-  checkArguments(arguments);
   return cubeFaces({ sx, sy, sz });
 }
 
@@ -80,8 +77,6 @@ export function box({ sx = 1, sy = sx, sz = sx } = {}) {
  * @returns {import("../../../types.js").SimplicialComplex}
  */
 export function cube({ sx = 1, sy = sx, sz = sx, nx = 1, ny = nx, nz = nx } = {}) {
-  checkArguments(arguments);
-
   const size =
     (nx + 1) * (ny + 1) * 2 + (nx + 1) * (nz + 1) * 2 + (nz + 1) * (ny + 1) * 2;
 

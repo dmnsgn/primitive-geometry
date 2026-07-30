@@ -1,5 +1,5 @@
 /** @module bicone */
-import { checkArguments, concatGeometries, TAU } from "../../utils.js";
+import { concatGeometries, TAU } from "../../utils.js";
 import { computeConeSegment } from "./cone.js";
 
 /**
@@ -39,7 +39,6 @@ export function bicone({
   sx = 1,
   sz = 1,
 } = {}) {
-  checkArguments(arguments);
 
   const halfHeight = height / 2;
 

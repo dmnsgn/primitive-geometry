@@ -1,6 +1,5 @@
 /** @module roundedRectangle */
 import {
-  checkArguments,
   computePlane,
   getCellsTypedArray,
   HALF_PI,
@@ -43,8 +42,6 @@ export function roundedRectangle({
   ny = nx,
   roundedCorners = CORNER_ORDER,
 } = {}) {
-  checkArguments(arguments);
-
   const r2 = radius * 2;
   const widthX = sx - r2;
   const widthY = sy - r2;
@@ -138,8 +135,6 @@ export function roundedRectanglePath({
   roundedCorners = CORNER_ORDER,
   closed = false,
 } = {}) {
-  checkArguments(arguments);
-
   const x = sx * 0.5;
   const y = sy * 0.5;
 

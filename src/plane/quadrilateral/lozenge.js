@@ -1,6 +1,5 @@
 /** @module lozenge */
 import { rhombus, rhombusPath } from "./rhombus.js";
-import { checkArguments } from "../../utils.js";
 
 /**
  * @typedef {object} LozengeOptions
@@ -35,8 +34,6 @@ export function lozenge({
   mergeCentroid,
   mapping,
 } = {}) {
-  checkArguments(arguments);
-
   return rhombus({
     sx,
     sy,
@@ -78,8 +75,6 @@ export function lozengePath({
   thetaOffset,
   closed,
 } = {}) {
-  checkArguments(arguments);
-
   return rhombusPath({
     sx,
     sy,

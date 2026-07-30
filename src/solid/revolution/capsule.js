@@ -1,6 +1,5 @@
 /** @module capsule */
 import {
-  checkArguments,
   computeRevolutionGeometry,
   snapToZero,
   TAU,
@@ -39,7 +38,6 @@ export function capsule({
   phi = TAU,
   phiOffset = 0,
 } = {}) {
-  checkArguments(arguments);
 
   const halfHeight = height / 2;
   const halfPi = Math.PI / 2;

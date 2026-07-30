@@ -1,7 +1,6 @@
 /** @module star */
 import { concentric } from "../mappings.js";
 import {
-  checkArguments,
   computePolarGeometry,
   computePolarPathGeometry,
   computeStarRatio,
@@ -58,8 +57,6 @@ export function star({
   mergeCentroid = innerRadius === 0,
   mapping = concentric,
 } = {}) {
-  checkArguments(arguments);
-
   const segments = points * 2;
   const notchScale = radius === 0 ? 0 : notchRadius / radius;
 
@@ -119,8 +116,6 @@ export function starPath({
   thetaOffset = 0,
   closed = false,
 } = {}) {
-  checkArguments(arguments);
-
   return computePolarPathGeometry({
     segments: points * 2,
     theta,

@@ -1,7 +1,7 @@
 /** @module rhombus */
 import { polygon, polygonPath } from "../polygon.js";
 import { concentric } from "../../mappings.js";
-import { checkArguments, HALF_PI, TAU } from "../../utils.js";
+import { HALF_PI, TAU } from "../../utils.js";
 
 /**
  * @typedef {object} RhombusOptions
@@ -37,8 +37,6 @@ export function rhombus({
   mergeCentroid = innerRadius === 0,
   mapping = concentric,
 } = {}) {
-  checkArguments(arguments);
-
   return polygon({
     sides: 4,
     sx,
@@ -80,8 +78,6 @@ export function rhombusPath({
   thetaOffset = HALF_PI,
   closed = false,
 } = {}) {
-  checkArguments(arguments);
-
   return polygonPath({
     sides: 4,
     sx,

@@ -1,7 +1,6 @@
 /** @module superellipse */
 import { lamé } from "../../mappings.js";
 import {
-  checkArguments,
   computePolarGeometry,
   computePolarPathGeometry,
   TAU,
@@ -54,8 +53,6 @@ export function superellipse({
   m = 2,
   n = m,
 } = {}) {
-  checkArguments(arguments);
-
   return computePolarGeometry({
     sx,
     sy,
@@ -102,8 +99,6 @@ export function superellipsePath({
   n = m,
   closed = false,
 } = {}) {
-  checkArguments(arguments);
-
   return computePolarPathGeometry({
     segments,
     theta,

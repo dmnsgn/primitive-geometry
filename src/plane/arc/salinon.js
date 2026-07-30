@@ -1,7 +1,6 @@
 /** @module salinon */
 import { sweptArc } from "./swept-arc.js";
 import { rectangular } from "../../mappings.js";
-import { checkArguments } from "../../utils.js";
 
 /**
  * @typedef {object} SalinonOptions
@@ -42,7 +41,6 @@ export function salinon({
   innerSegments = 16,
   mapping = rectangular,
 } = {}) {
-  checkArguments(arguments);
 
   const R = radius;
   const r = innerRadius;

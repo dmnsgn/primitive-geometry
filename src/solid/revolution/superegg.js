@@ -1,6 +1,5 @@
 /** @module superegg */
 import {
-  checkArguments,
   clampMeridianSweep,
   computeRevolutionGeometry,
   signedPow,
@@ -48,7 +47,6 @@ export function superegg({
   phi = TAU,
   phiOffset = 0,
 } = {}) {
-  checkArguments(arguments);
 
   const e = 2 / n;
 

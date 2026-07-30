@@ -1,7 +1,6 @@
 /** @module tetrasphere */
 import { polyhedron } from "../polyhedron.js";
 import { tetrahedronFaces } from "../regular/tetrahedron.js";
-import { checkArguments } from "../../../utils.js";
 
 /**
  * @typedef {object} TetrasphereOptions
@@ -23,7 +22,6 @@ export function tetrasphere({
   projection,
   mapping,
 } = {}) {
-  checkArguments(arguments);
 
   return polyhedron(tetrahedronFaces({ radius, center: false }), {
     radius,

@@ -1,7 +1,6 @@
 /** @module icosphere */
 import { polyhedron } from "../polyhedron.js";
 import { icosahedronFaces } from "../regular/icosahedron.js";
-import { checkArguments } from "../../../utils.js";
 
 /**
  * @typedef {object} IcosphereOptions
@@ -23,7 +22,6 @@ export function icosphere({
   projection,
   mapping,
 } = {}) {
-  checkArguments(arguments);
 
   return polyhedron(icosahedronFaces({ radius }), {
     radius,

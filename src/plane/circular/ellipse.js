@@ -1,7 +1,6 @@
 /** @module ellipse */
 import { elliptical } from "../../mappings.js";
 import {
-  checkArguments,
   computePolarGeometry,
   computePolarPathGeometry,
   TAU,
@@ -40,8 +39,6 @@ export function ellipse({
   mapping = elliptical,
   equation = ({ rx, ry, cosTheta, sinTheta }) => [rx * cosTheta, ry * sinTheta],
 } = {}) {
-  checkArguments(arguments);
-
   return computePolarGeometry({
     sx,
     sy,
@@ -86,8 +83,6 @@ export function ellipsePath({
   thetaOffset = 0,
   closed = false,
 } = {}) {
-  checkArguments(arguments);
-
   return computePolarPathGeometry({
     segments,
     theta,

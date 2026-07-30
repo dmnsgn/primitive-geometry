@@ -2,7 +2,6 @@
 import { chebyshevColumn, sweptArc } from "./swept-arc.js";
 import { rectangular } from "../../mappings.js";
 import {
-  checkArguments,
   concatGeometries,
   getCellsTypedArray,
   TAU,
@@ -50,7 +49,6 @@ export function triquetra({
   innerSegments = 16,
   mapping = rectangular,
 } = {}) {
-  checkArguments(arguments);
 
   const r = radius;
   const R = radius / Math.sqrt(3);

@@ -1,6 +1,5 @@
 /** @module quadGrid */
 
-import { checkArguments } from "../../utils.js";
 
 /**
  * @typedef {object} QuadGridOptions
@@ -17,7 +16,6 @@ import { checkArguments } from "../../utils.js";
  * @returns {import("../../../types.js").SimplicialComplexPolygon}
  */
 export function quadGrid({ sx = 1, sy = sx, nx = 10, ny = nx } = {}) {
-  checkArguments(arguments);
 
   const positions = new Float32Array((nx + 1) * (ny + 1) * 3);
   const cells = [];

@@ -1,6 +1,5 @@
 /** @module roundedCube */
 import {
-  checkArguments,
   computePlane,
   getCellsTypedArray,
   normalize,
@@ -48,7 +47,6 @@ export function roundedCube({
   nz = nx,
   roundDirection = "all",
 } = {}) {
-  checkArguments(arguments);
 
   const r2 = radius * 2;
   const widthX = sx - r2;

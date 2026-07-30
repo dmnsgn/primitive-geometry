@@ -1,6 +1,5 @@
 /** @module ellipsoid */
 import {
-  checkArguments,
   clampMeridianSweep,
   computeRevolutionGeometry,
   snapToZero,
@@ -68,7 +67,6 @@ export function ellipsoid({
   phi = TAU,
   phiOffset = 0,
 } = {}) {
-  checkArguments(arguments);
 
   const [clampedTheta, clampedThetaOffset] = clampMeridianSweep(
     theta,

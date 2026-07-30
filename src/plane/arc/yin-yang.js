@@ -1,7 +1,7 @@
 /** @module yinYang */
 import { sweptArc } from "./swept-arc.js";
 import { rectangular } from "../../mappings.js";
-import { checkArguments, clamp, concatGeometries } from "../../utils.js";
+import { clamp, concatGeometries } from "../../utils.js";
 
 /**
  * @typedef {object} YinYangOptions
@@ -52,7 +52,6 @@ export function yinYang({
   innerSegments = 16,
   mapping = rectangular,
 } = {}) {
-  checkArguments(arguments);
 
   const R = radius;
 

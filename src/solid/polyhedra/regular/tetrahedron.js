@@ -1,6 +1,6 @@
 /** @module tetrahedron */
 import { polyhedron } from "../polyhedron.js";
-import { checkArguments, SQRT2, SQRT3, SQRT6 } from "../../../utils.js";
+import { SQRT2, SQRT3, SQRT6 } from "../../../utils.js";
 
 /**
  * @typedef {object} TetrahedronFacesOptions
@@ -16,8 +16,6 @@ import { checkArguments, SQRT2, SQRT3, SQRT6 } from "../../../utils.js";
  * @returns {import("../../../../types.js").SimplicialComplexPolygon}
  */
 export function tetrahedronFaces({ radius = 0.5, center = true } = {}) {
-  checkArguments(arguments);
-
   // A tetrahedron has no center of symmetry, so its bounding box can't touch
   // the unit box on every axis when centered; scale instead so its tallest
   // axis (apex to base) touches.
@@ -64,8 +62,6 @@ export function tetrahedronFaces({ radius = 0.5, center = true } = {}) {
  * @returns {import("../../../../types.js").SimplicialComplex}
  */
 export function tetrahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
-  checkArguments(arguments);
-
   return polyhedron(tetrahedronFaces({ radius }), {
     radius,
     subdivisions,

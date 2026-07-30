@@ -1,5 +1,5 @@
 /** @module sphericon */
-import { checkArguments, concatGeometries, snapToZero } from "../../utils.js";
+import { concatGeometries, snapToZero } from "../../utils.js";
 import { computeConeSegment } from "./cone.js";
 
 /**
@@ -68,7 +68,6 @@ function twist({ positions, normals, uvs, cells }) {
  * @returns {import("../../../types.js").SimplicialComplex}
  */
 export function sphericon({ radius = 0.5, nx = 16, ny = 1 } = {}) {
-  checkArguments(arguments);
 
   const segment = (yFrom, yTo, rFrom, rTo) =>
     computeConeSegment({

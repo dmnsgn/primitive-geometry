@@ -1,6 +1,5 @@
 /** @module hollowCube */
 import {
-  checkArguments,
   computePlane,
   getCellsTypedArray,
   PLANE_DIRECTIONS,
@@ -72,7 +71,6 @@ function computeBox(geometry, indices, dims, center, fullSize) {
  * @returns {import("../../../types.js").SimplicialComplex}
  */
 export function hollowCube({ sx = 1, sy = sx, sz = sx, thickness = sx * 0.2 } = {}) {
-  checkArguments(arguments);
 
   const fullSize = [sx, sy, sz];
   const half = [sx * 0.5, sy * 0.5, sz * 0.5];

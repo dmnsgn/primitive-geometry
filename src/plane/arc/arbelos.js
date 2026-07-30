@@ -1,7 +1,7 @@
 /** @module arbelos */
 import { sweptArc } from "./swept-arc.js";
 import { rectangular } from "../../mappings.js";
-import { checkArguments, concatGeometries } from "../../utils.js";
+import { concatGeometries } from "../../utils.js";
 
 /**
  * @typedef {object} ArbelosOptions
@@ -38,7 +38,6 @@ export function arbelos({
   innerSegments = 16,
   mapping = rectangular,
 } = {}) {
-  checkArguments(arguments);
 
   const R = radius;
   const r1 = innerRadius;

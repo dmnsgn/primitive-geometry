@@ -1,6 +1,6 @@
 /** @module doubleCone */
 import { rectangular } from "../../mappings.js";
-import { checkArguments, concatGeometries, TAU } from "../../utils.js";
+import { concatGeometries, TAU } from "../../utils.js";
 import { computeConeSegment } from "./cone.js";
 
 /**
@@ -47,7 +47,6 @@ export function doubleCone({
   sx = 1,
   sz = 1,
 } = {}) {
-  checkArguments(arguments);
 
   const halfHeight = height / 2;
 

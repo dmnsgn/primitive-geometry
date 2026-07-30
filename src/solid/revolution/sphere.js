@@ -1,6 +1,5 @@
 /** @module sphere */
 import { ellipsoid } from "./ellipsoid.js";
-import { checkArguments } from "../../utils.js";
 
 /**
  * @typedef {object} SphereOptions
@@ -27,7 +26,6 @@ export function sphere({
   phi,
   phiOffset,
 } = {}) {
-  checkArguments(arguments);
 
   return ellipsoid({
     radius,

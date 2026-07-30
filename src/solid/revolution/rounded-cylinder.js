@@ -1,6 +1,5 @@
 /** @module roundedCylinder */
 import {
-  checkArguments,
   clamp,
   computeRevolutionGeometry,
   snapToZero,
@@ -55,7 +54,6 @@ export function roundedCylinder({
   phi = TAU,
   phiOffset = 0,
 } = {}) {
-  checkArguments(arguments);
 
   const halfHeight = height / 2;
   const clampedRoundRadius = clamp(

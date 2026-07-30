@@ -1,7 +1,6 @@
 /** @module cross */
 import { rectangular } from "../mappings.js";
 import {
-  checkArguments,
   computeOutlineEdge,
   computePolarGeometry,
   computePolarPathGeometry,
@@ -66,8 +65,6 @@ export function cross({
   mergeCentroid = innerRadius === 0,
   mapping = rectangular,
 } = {}) {
-  checkArguments(arguments);
-
   const r = radius;
   const w = armWidth;
   const outline = computeCrossOutline(r, w);
@@ -113,8 +110,6 @@ export function crossPath({
   segments = 1,
   closed = false,
 } = {}) {
-  checkArguments(arguments);
-
   const outline = computeCrossOutline(radius, armWidth);
 
   return computePolarPathGeometry({

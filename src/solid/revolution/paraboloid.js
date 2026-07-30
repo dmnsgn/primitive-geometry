@@ -1,6 +1,6 @@
 /** @module paraboloid */
 import { rectangular } from "../../mappings.js";
-import { checkArguments, computeRevolutionGeometry, TAU } from "../../utils.js";
+import { computeRevolutionGeometry, TAU } from "../../utils.js";
 
 /**
  * @typedef {object} ParaboloidOptions
@@ -39,7 +39,6 @@ export function paraboloid({
   phiOffset = 0,
   capMapping = rectangular,
 } = {}) {
-  checkArguments(arguments);
 
   const halfHeight = height / 2;
   // r² = k·(halfHeight - y), fixed by r = radius at the rim (y = -halfHeight)

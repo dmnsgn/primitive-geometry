@@ -1,7 +1,7 @@
 /** @module annulus */
 import { ellipse, ellipsePath } from "./ellipse.js";
 import { concentric } from "../../mappings.js";
-import { checkArguments, TAU } from "../../utils.js";
+import { TAU } from "../../utils.js";
 
 /**
  * @typedef {object} AnnulusOptions
@@ -32,8 +32,6 @@ export function annulus({
   innerRadius = radius * 0.5,
   mapping = concentric,
 } = {}) {
-  checkArguments(arguments);
-
   return ellipse({
     sx,
     sy,
@@ -80,8 +78,6 @@ export function annulusPath({
   innerRadius = radius * 0.5,
   closed = false,
 } = {}) {
-  checkArguments(arguments);
-
   const outer = ellipsePath({ sx, sy, radius, segments, theta, thetaOffset, closed });
   const inner = ellipsePath({
     sx,

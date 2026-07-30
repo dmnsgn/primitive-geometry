@@ -1,6 +1,6 @@
 /** @module plane */
 
-import { checkArguments, computePlane, getCellsTypedArray } from "../../utils.js";
+import { computePlane, getCellsTypedArray } from "../../utils.js";
 
 /**
  * @typedef {object} PlaneOptions
@@ -21,8 +21,6 @@ import { checkArguments, computePlane, getCellsTypedArray } from "../../utils.js
  * @returns {import("../../../types.js").SimplicialComplex}
  */
 export function plane({ sx = 1, sy = sx, nx = 1, ny = nx, direction = "z" } = {}) {
-  checkArguments(arguments);
-
   const size = (nx + 1) * (ny + 1);
 
   return computePlane(
@@ -59,8 +57,6 @@ export function plane({ sx = 1, sy = sx, nx = 1, ny = nx, direction = "z" } = {}
  * @returns {import("../../../types.js").SimplicialComplexPath}
  */
 export function rectanglePath({ sx = 1, sy = 0.5, nx = 1, ny = nx } = {}) {
-  checkArguments(arguments);
-
   const x = sx * 0.5;
   const y = sy * 0.5;
 

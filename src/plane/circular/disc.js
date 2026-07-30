@@ -1,7 +1,7 @@
 /** @module disc */
 import { ellipse, ellipsePath } from "./ellipse.js";
 import { concentric } from "../../mappings.js";
-import { checkArguments, TAU } from "../../utils.js";
+import { TAU } from "../../utils.js";
 
 /**
  * @typedef {object} DiscOptions
@@ -28,8 +28,6 @@ export function disc({
   mergeCentroid = true,
   mapping = concentric,
 } = {}) {
-  checkArguments(arguments);
-
   return ellipse({
     sx: 1,
     sy: 1,
@@ -67,8 +65,6 @@ export function circlePath({
   thetaOffset = 0,
   closed = false,
 } = {}) {
-  checkArguments(arguments);
-
   return ellipsePath({
     sx: 1,
     sy: 1,

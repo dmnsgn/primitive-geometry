@@ -1,7 +1,6 @@
 /** @module torus */
 import { rectangular } from "../../mappings.js";
 import {
-  checkArguments,
   computeCap,
   computeGridQuad,
   getCellsTypedArray,
@@ -67,7 +66,6 @@ export function torus({
   minorSx = 1,
   minorSy = 1,
 } = {}) {
-  checkArguments(arguments);
 
   // Wrap the last column/ring to the exact first angle for full revolutions
   const wrapPhi = phi % TAU === 0;

@@ -1,7 +1,6 @@
 /** @module cylinder */
 import { rectangular } from "../../mappings.js";
 import {
-  checkArguments,
   computeRevolutionGeometry,
   lerp,
   TAU,
@@ -56,7 +55,6 @@ export function cylinder({
   sxApex = sx,
   szApex = sz,
 } = {}) {
-  checkArguments(arguments);
 
   const halfHeight = height / 2;
 

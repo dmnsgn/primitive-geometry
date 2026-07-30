@@ -1,6 +1,5 @@
 /** @module hollowSphere */
 import {
-  checkArguments,
   clampMeridianSweep,
   computeGridQuad,
   concatGeometries,
@@ -178,7 +177,6 @@ export function hollowSphere({
   phi = TAU,
   phiOffset = 0,
 } = {}) {
-  checkArguments(arguments);
 
   const [clampedTheta, clampedThetaOffset] = clampMeridianSweep(
     theta,

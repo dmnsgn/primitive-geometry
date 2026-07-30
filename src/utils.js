@@ -138,17 +138,6 @@ export function signedPow(x, e) {
 }
 
 /**
- * Ensure first argument passed to the primitive functions is an object
- * @param {...*} args
- */
-export function checkArguments(args) {
-  const argumentType = typeof args[0];
-  if (argumentType !== "object" && argumentType !== "undefined") {
-    console.error("First argument must be an object.");
-  }
-}
-
-/**
  * A single triangle, 3x oversized so its 3 vertices land past every edge of
  * the [-1, 1] clip-space square: the standard vertex-shader trick for a
  * fullscreen pass (rasterizes to exactly the viewport once clipped, with no

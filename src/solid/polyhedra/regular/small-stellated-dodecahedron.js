@@ -2,7 +2,6 @@
 import { greatDodecahedronFaces } from "./great-dodecahedron.js";
 import { assembleFaces, computePentagram } from "./pentagram.js";
 import { polyhedron } from "../polyhedron.js";
-import { checkArguments } from "../../../utils.js";
 
 /**
  * @typedef {object} SmallStellatedDodecahedronFacesOptions
@@ -21,8 +20,6 @@ import { checkArguments } from "../../../utils.js";
  * @returns {import("../../../../types.js").SimplicialComplexPolygon}
  */
 export function smallStellatedDodecahedronFaces({ radius = 0.5 } = {}) {
-  checkArguments(arguments);
-
   const { positions, cells: pentagons } = greatDodecahedronFaces({ radius });
 
   return assembleFaces(positions, pentagons, (points) =>
@@ -47,8 +44,6 @@ export function smallStellatedDodecahedron({
   subdivisions = 0,
   mapping,
 } = {}) {
-  checkArguments(arguments);
-
   return polyhedron(smallStellatedDodecahedronFaces({ radius }), {
     radius,
     subdivisions,

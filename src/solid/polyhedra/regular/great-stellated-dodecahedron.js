@@ -6,7 +6,7 @@ import {
   PENTAGRAM_RATIO,
 } from "./pentagram.js";
 import { polyhedron } from "../polyhedron.js";
-import { PHI, checkArguments } from "../../../utils.js";
+import { PHI } from "../../../utils.js";
 
 /**
  * @typedef {object} GreatStellatedDodecahedronFacesOptions
@@ -27,8 +27,6 @@ import { PHI, checkArguments } from "../../../utils.js";
  * @returns {import("../../../../types.js").SimplicialComplexPolygon}
  */
 export function greatStellatedDodecahedronFaces({ radius = 0.5 } = {}) {
-  checkArguments(arguments);
-
   // The tips, not the dodecahedron's own vertices, are the outermost extent
   const { positions, cells: pentagons } = dodecahedronFaces({
     radius: radius / PHI ** 3,
@@ -69,8 +67,6 @@ export function greatStellatedDodecahedron({
   subdivisions = 0,
   mapping,
 } = {}) {
-  checkArguments(arguments);
-
   return polyhedron(greatStellatedDodecahedronFaces({ radius }), {
     radius,
     subdivisions,

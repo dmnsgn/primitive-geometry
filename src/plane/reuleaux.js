@@ -1,7 +1,6 @@
 /** @module reuleaux */
 import { concentric } from "../mappings.js";
 import {
-  checkArguments,
   computePolarGeometry,
   computePolarPathGeometry,
   TAU,
@@ -48,8 +47,6 @@ export function reuleaux({
   mapping = concentric,
   n = 3,
 } = {}) {
-  checkArguments(arguments);
-
   const cosN = 2 * Math.cos(Math.PI / (2 * n));
   const PIoverN = Math.PI / n;
   const cosOffset = Math.cos(thetaOffset);
@@ -105,8 +102,6 @@ export function reuleauxPath({
   n = 3,
   closed = false,
 } = {}) {
-  checkArguments(arguments);
-
   const cosN = 2 * Math.cos(Math.PI / (2 * n));
   const PIoverN = Math.PI / n;
   const cosOffset = Math.cos(thetaOffset);

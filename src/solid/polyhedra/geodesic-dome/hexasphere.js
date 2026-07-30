@@ -1,7 +1,6 @@
 /** @module hexasphere */
 import { polyhedron } from "../polyhedron.js";
 import { hexahedronFaces } from "../regular/hexahedron.js";
-import { checkArguments } from "../../../utils.js";
 
 /**
  * @typedef {object} HexasphereOptions
@@ -25,7 +24,6 @@ export function hexasphere({
   projection,
   mapping,
 } = {}) {
-  checkArguments(arguments);
 
   return polyhedron(hexahedronFaces({ radius }), {
     radius,

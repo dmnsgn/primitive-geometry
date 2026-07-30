@@ -1,7 +1,6 @@
 /** @module lens */
 import { sweptArc } from "./swept-arc.js";
 import { rectangular } from "../../mappings.js";
-import { checkArguments } from "../../utils.js";
 
 /**
  * @typedef {object} LensOptions
@@ -41,7 +40,6 @@ export function lens({
   innerSegments = 16,
   mapping = rectangular,
 } = {}) {
-  checkArguments(arguments);
 
   const r1 = radius;
   const r2 = radius2;

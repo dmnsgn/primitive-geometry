@@ -1,7 +1,7 @@
 /** @module lune */
 import { sweptArc } from "./swept-arc.js";
 import { rectangular } from "../../mappings.js";
-import { checkArguments, concatGeometries } from "../../utils.js";
+import { concatGeometries } from "../../utils.js";
 
 /**
  * @typedef {object} LuneOptions
@@ -50,7 +50,6 @@ export function lune({
   innerSegments = 16,
   mapping = rectangular,
 } = {}) {
-  checkArguments(arguments);
 
   const b = radius;
   const a = innerRadius;

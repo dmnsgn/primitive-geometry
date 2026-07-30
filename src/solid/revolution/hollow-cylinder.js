@@ -1,5 +1,5 @@
 /** @module hollowCylinder */
-import { checkArguments, concatGeometries, invert, TAU } from "../../utils.js";
+import { concatGeometries, invert, TAU } from "../../utils.js";
 import { cylinder } from "./cylinder.js";
 import { computeConeSegment } from "./cone.js";
 
@@ -43,7 +43,6 @@ export function hollowCylinder({
   phi = TAU,
   phiOffset = 0,
 } = {}) {
-  checkArguments(arguments);
 
   const halfHeight = height / 2;
 

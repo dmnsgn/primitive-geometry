@@ -1,6 +1,5 @@
 /** @module lemon */
 import {
-  checkArguments,
   computeSpindleArcRevolution,
   TAU,
 } from "../../utils.js";
@@ -43,7 +42,6 @@ export function lemon({
   phi = TAU,
   phiOffset = 0,
 } = {}) {
-  checkArguments(arguments);
 
   const halfHeight = Math.max(height, radius * 2) / 2;
 

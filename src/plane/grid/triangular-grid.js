@@ -1,6 +1,6 @@
 /** @module triangularGrid */
 
-import { checkArguments, SQRT3 } from "../../utils.js";
+import { SQRT3 } from "../../utils.js";
 
 /**
  * @typedef {object} TriangularGridOptions
@@ -22,7 +22,6 @@ export function triangularGrid({
   ny = 10,
   inscribed = true,
 } = {}) {
-  checkArguments(arguments);
 
   const dx = sx / nx;
   const dy = (dx * SQRT3) / 2;

@@ -1,7 +1,6 @@
 /** @module barrel */
 import { rectangular } from "../../mappings.js";
 import {
-  checkArguments,
   computeFlatRevolutionGeometry,
   TAU,
 } from "../../utils.js";
@@ -50,7 +49,6 @@ export function barrel({
   phiOffset = 0,
   capMapping = rectangular,
 } = {}) {
-  checkArguments(arguments);
 
   const halfHeight = height / 2;
   // r = radius - k·y², fixed by r = endRadius at both y = ±halfHeight

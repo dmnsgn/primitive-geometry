@@ -1,7 +1,6 @@
 /** @module dodecasphere */
 import { polyhedron } from "../polyhedron.js";
 import { dodecahedronFaces } from "../regular/dodecahedron.js";
-import { checkArguments } from "../../../utils.js";
 
 /**
  * @typedef {object} DodecasphereOptions
@@ -23,7 +22,6 @@ export function dodecasphere({
   projection,
   mapping,
 } = {}) {
-  checkArguments(arguments);
 
   return polyhedron(dodecahedronFaces({ radius }), {
     radius,

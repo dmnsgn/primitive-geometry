@@ -1,6 +1,6 @@
 /** @module hexagonalGrid */
 
-import { checkArguments, SQRT3 } from "../../utils.js";
+import { SQRT3 } from "../../utils.js";
 
 // Vertex-welding cache keys quantize x/y relative to dx (each hex's own
 // scale) rather than to an absolute epsilon, so welding stays reliable
@@ -27,7 +27,6 @@ export function hexagonalGrid({
   ny = 10,
   inscribed = true,
 } = {}) {
-  checkArguments(arguments);
 
   const dx = sx / nx;
   const r = dx / SQRT3;

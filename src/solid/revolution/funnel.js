@@ -1,7 +1,6 @@
 /** @module funnel */
 import { rectangular } from "../../mappings.js";
 import {
-  checkArguments,
   computeFlatRevolutionGeometry,
   TAU,
 } from "../../utils.js";
@@ -47,7 +46,6 @@ export function funnel({
   phiOffset = 0,
   capMapping = rectangular,
 } = {}) {
-  checkArguments(arguments);
 
   const halfHeight = height / 2;
   // r = radius·e^(k·(y+halfHeight)), fixed by r = radiusTop at y = halfHeight

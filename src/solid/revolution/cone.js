@@ -1,6 +1,6 @@
 /** @module cone */
 import { rectangular } from "../../mappings.js";
-import { checkArguments, computeRevolutionGeometry, TAU } from "../../utils.js";
+import { computeRevolutionGeometry, TAU } from "../../utils.js";
 
 /**
  * A single right-circular-cone-frustum segment of a meridian sweep between
@@ -94,7 +94,6 @@ export function cone({
   sx = 1,
   sz = 1,
 } = {}) {
-  checkArguments(arguments);
 
   const halfHeight = height / 2;
 

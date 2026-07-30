@@ -1,6 +1,6 @@
 /** @module astroidal-ellipsoid */
 import { superellipsoid } from "./superellipsoid.js";
-import { checkArguments, TAU } from "../../utils.js";
+import { TAU } from "../../utils.js";
 
 /**
  * @typedef {object} AstroidalEllipsoidOptions
@@ -40,7 +40,6 @@ export function astroidalEllipsoid({
   phi = TAU,
   phiOffset = 0,
 } = {}) {
-  checkArguments(arguments);
 
   return superellipsoid({
     radius,

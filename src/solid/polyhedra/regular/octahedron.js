@@ -1,6 +1,5 @@
 /** @module octahedron */
 import { polyhedron } from "../polyhedron.js";
-import { checkArguments } from "../../../utils.js";
 
 /**
  * @typedef {object} OctahedronFacesOptions
@@ -13,8 +12,6 @@ import { checkArguments } from "../../../utils.js";
  * @returns {import("../../../../types.js").SimplicialComplexPolygon}
  */
 export function octahedronFaces({ radius = 0.5 } = {}) {
-  checkArguments(arguments);
-
   return {
     // prettier-ignore
     positions: Float32Array.of(
@@ -51,8 +48,6 @@ export function octahedronFaces({ radius = 0.5 } = {}) {
  * @returns {import("../../../../types.js").SimplicialComplex}
  */
 export function octahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
-  checkArguments(arguments);
-
   return polyhedron(octahedronFaces({ radius }), {
     radius,
     subdivisions,

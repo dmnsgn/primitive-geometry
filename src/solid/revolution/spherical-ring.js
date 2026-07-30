@@ -1,6 +1,5 @@
 /** @module sphericalRing */
 import {
-  checkArguments,
   clamp,
   computeRevolutionGeometry,
   concatGeometries,
@@ -56,7 +55,6 @@ export function sphericalRing({
   phi = TAU,
   phiOffset = 0,
 } = {}) {
-  checkArguments(arguments);
 
   const clampedInnerRadius = clamp(innerRadius, 0, radius);
 

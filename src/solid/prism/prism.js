@@ -1,7 +1,6 @@
 /** @module prism */
 import { rectangular } from "../../mappings.js";
 import {
-  checkArguments,
   computePolygonCap,
   computePolygonCorner,
   getCellsTypedArray,
@@ -34,7 +33,6 @@ export function prism({
   phiOffset = 0,
   capMapping = rectangular,
 } = {}) {
-  checkArguments(arguments);
 
   const halfHeight = height / 2;
 

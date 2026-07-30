@@ -1,7 +1,6 @@
 /** @module greatIcosahedron */
 import { icosahedronFaces } from "./icosahedron.js";
 import { polyhedron } from "../polyhedron.js";
-import { checkArguments } from "../../../utils.js";
 
 /**
  * @typedef {object} GreatIcosahedronFacesOptions
@@ -16,8 +15,6 @@ import { checkArguments } from "../../../utils.js";
  * @returns {import("../../../../types.js").SimplicialComplexPolygon}
  */
 export function greatIcosahedronFaces({ radius = 0.5 } = {}) {
-  checkArguments(arguments);
-
   const { positions } = icosahedronFaces({ radius });
 
   return {
@@ -60,8 +57,6 @@ export function greatIcosahedronFaces({ radius = 0.5 } = {}) {
  * @returns {import("../../../../types.js").SimplicialComplex}
  */
 export function greatIcosahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
-  checkArguments(arguments);
-
   return polyhedron(greatIcosahedronFaces({ radius }), {
     radius,
     subdivisions,

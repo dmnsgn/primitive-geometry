@@ -1,7 +1,6 @@
 /** @module kite */
 import { concentric } from "../../mappings.js";
 import {
-  checkArguments,
   computePolarGeometry,
   computePolarPathGeometry,
   computePolygonEdge,
@@ -46,8 +45,6 @@ export function kite({
   mergeCentroid = innerRadius === 0,
   mapping = concentric,
 } = {}) {
-  checkArguments(arguments);
-
   return computePolarGeometry({
     sx,
     sy,
@@ -93,8 +90,6 @@ export function kitePath({
   thetaOffset = HALF_PI,
   closed = false,
 } = {}) {
-  checkArguments(arguments);
-
   return computePolarPathGeometry({
     segments: edgeSegments * 4,
     theta,

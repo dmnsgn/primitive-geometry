@@ -1,7 +1,6 @@
 /** @module antiprism */
 import { rectangular } from "../../mappings.js";
 import {
-  checkArguments,
   computePolygonCap,
   computePolygonCorner,
   getCellsTypedArray,
@@ -36,7 +35,6 @@ export function antiprism({
   phiOffset = 0,
   capMapping = rectangular,
 } = {}) {
-  checkArguments(arguments);
 
   const halfHeight = height / 2;
   const topOffset = phiOffset + TAU / sides / 2;

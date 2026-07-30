@@ -1,7 +1,6 @@
 /** @module squircle */
 import { fgSquircular } from "../../mappings.js";
 import {
-  checkArguments,
   computePolarGeometry,
   computePolarPathGeometry,
   HALF_PI,
@@ -72,8 +71,6 @@ export function squircle({
   mapping = fgSquircular,
   squareness = 0.95,
 } = {}) {
-  checkArguments(arguments);
-
   return computePolarGeometry({
     sx,
     sy,
@@ -118,8 +115,6 @@ export function squirclePath({
   squareness = 0.95,
   closed = false,
 } = {}) {
-  checkArguments(arguments);
-
   return computePolarPathGeometry({
     segments,
     theta,

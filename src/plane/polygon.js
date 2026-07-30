@@ -1,7 +1,6 @@
 /** @module polygon */
 import { concentric } from "../mappings.js";
 import {
-  checkArguments,
   computePolarGeometry,
   computePolarPathGeometry,
   computePolygonEdge,
@@ -48,8 +47,6 @@ export function polygon({
   mergeCentroid = innerRadius === 0,
   mapping = concentric,
 } = {}) {
-  checkArguments(arguments);
-
   return computePolarGeometry({
     sx,
     sy,
@@ -98,8 +95,6 @@ export function polygonPath({
   thetaOffset = 0,
   closed = false,
 } = {}) {
-  checkArguments(arguments);
-
   return computePolarPathGeometry({
     segments: edgeSegments * sides,
     theta,
