@@ -1,5 +1,5 @@
 /** @module triquetra */
-import { sweptArc } from "./swept-arc.js";
+import { chebyshevColumn, sweptArc } from "./swept-arc.js";
 import { rectangular } from "../../mappings.js";
 import {
   checkArguments,
@@ -117,15 +117,7 @@ export function triquetra({
   // ring fan, but sharing sweptArc's own Chebyshev spacing for its columns
   // to keep the outer boundary sampled at the exact same angles as the
   // petals'.
-  const columnAngle = (i) =>
-    i === 0
-      ? uMin
-      : i === segments
-        ? uMax
-        : 2 * i === segments
-          ? (uMin + uMax) / 2
-          : uMin +
-            ((1 - Math.cos((Math.PI * i) / segments)) / 2) * (uMax - uMin);
+  const columnAngle = (i) => chebyshevColumn(i, segments, uMin, uMax);
 
   const core = (k) => {
     const offset = offsets[k];

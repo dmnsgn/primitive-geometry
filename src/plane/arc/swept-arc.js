@@ -4,6 +4,26 @@ import { getCellsTypedArray } from "../../utils.js";
 const COLLAPSE_EPSILON = 1e-6;
 
 /**
+ * Chebyshev-spaced sample of `[uMin, uMax]` at column `i` of `segments + 1`:
+ * denser near `uMin`/`uMax` than an even split, matching a sweep that
+ * pinches at both ends, where a boundary curve is steepest. `uMin`/`uMax`/
+ * midpoint are special-cased to their exact values: floating point doesn't
+ * guarantee `uMin + t * (uMax - uMin)` reconstructs `uMax` at t=1, nor that
+ * `Math.cos(Math.PI / 2)` is bit-exact 0 at the midpoint.
+ * @private
+ */
+export function chebyshevColumn(i, segments, uMin, uMax) {
+  return i === 0
+    ? uMin
+    : i === segments
+      ? uMax
+      : 2 * i === segments
+        ? (uMin + uMax) / 2
+        : uMin +
+          ((1 - Math.cos((Math.PI * i) / segments)) / 2) * (uMax - uMin);
+}
+
+/**
  * Fills the region between two boundary curves swept along a parameter `u`:
  * for each of `segments + 1` columns spanning `[uMin, uMax]`, `bounds(u)`
  * gives `[vMin, vMax]`, and `point(u, v)` maps to an `(x, y)` position as
@@ -44,19 +64,7 @@ export function sweptArc({
   let vertexCount = 0;
 
   for (let i = 0; i < cols; i++) {
-    // uMin/uMax/midpoint are special-cased to their exact values: floating
-    // point doesn't guarantee `uMin + t * (uMax - uMin)` reconstructs `uMax`
-    // at t=1, nor that `Math.cos(Math.PI / 2)` is bit-exact 0 at the
-    // midpoint.
-    const u =
-      i === 0
-        ? uMin
-        : i === segments
-          ? uMax
-          : 2 * i === segments
-            ? (uMin + uMax) / 2
-            : uMin +
-              ((1 - Math.cos((Math.PI * i) / segments)) / 2) * (uMax - uMin);
+    const u = chebyshevColumn(i, segments, uMin, uMax);
     const [vMin, vMax] = bounds(u);
     columnBounds[i] = [u, vMin, vMax];
     collapsed[i] = Math.abs(vMax - vMin) < COLLAPSE_EPSILON ? 1 : 0;
