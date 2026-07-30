@@ -2,7 +2,8 @@
 import { rectangular } from "../../mappings.js";
 import {
   checkArguments,
-  computeCap,
+  computePolygonCap,
+  computePolygonCorner,
   getCellsTypedArray,
   TAU,
 } from "../../utils.js";
@@ -15,15 +16,6 @@ import {
  * @property {number} [phiOffset=0]
  * @property {Function} [capMapping=mappings.rectangular]
  */
-
-// Same x/z sign convention as cylinder.js's own equation() (and prism.js's
-// own corner()), so an antiprism shares a bottom corner with a prism/cylinder
-// built with the same radius/phiOffset.
-const corner = (angle, radius, y) => [
-  -radius * Math.cos(angle),
-  y,
-  radius * Math.sin(angle),
-];
 
 /**
  * Antiprism: like prism, but the top sides-gon is rotated by half a sector
@@ -110,10 +102,14 @@ export function antiprism({
   };
 
   for (let i = 0; i < sides; i++) {
-    const bottomA = corner(bottomAngleAt(i), radius, -halfHeight);
-    const bottomB = corner(bottomAngleAt(i + 1), radius, -halfHeight);
-    const topA = corner(topAngleAt(i), radius, halfHeight);
-    const topB = corner(topAngleAt(i + 1), radius, halfHeight);
+    const bottomA = computePolygonCorner(bottomAngleAt(i), radius, -halfHeight);
+    const bottomB = computePolygonCorner(
+      bottomAngleAt(i + 1),
+      radius,
+      -halfHeight,
+    );
+    const topA = computePolygonCorner(topAngleAt(i), radius, halfHeight);
+    const topB = computePolygonCorner(topAngleAt(i + 1), radius, halfHeight);
 
     const u0 = i / sides;
     const u1 = (i + 1) / sides;
@@ -143,24 +139,24 @@ export function antiprism({
 
   const geometry = { positions, normals, uvs, cells };
 
-  const buildCap = (y, flip, normalY, angleAt) => {
-    computeCap(geometry, indices, {
-      ringSegments: sides,
-      capSegments: 1,
-      capRadius: radius,
-      flip,
-      angleAt: (i) => {
-        const p = angleAt(i);
-        return { cos: -Math.cos(p), sin: Math.sin(p), t: p };
-      },
-      point: (x, z) => [x, y, z],
-      normal: [0, normalY, 0],
-      mapping: capMapping,
-    });
-  };
-
-  buildCap(-halfHeight, 1, -1, bottomAngleAt);
-  buildCap(halfHeight, -1, 1, topAngleAt);
+  computePolygonCap(geometry, indices, {
+    sides,
+    radius,
+    y: -halfHeight,
+    flip: 1,
+    normalY: -1,
+    angleAt: bottomAngleAt,
+    mapping: capMapping,
+  });
+  computePolygonCap(geometry, indices, {
+    sides,
+    radius,
+    y: halfHeight,
+    flip: -1,
+    normalY: 1,
+    angleAt: topAngleAt,
+    mapping: capMapping,
+  });
 
   return geometry;
 }

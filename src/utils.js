@@ -1069,6 +1069,49 @@ export function computeRevolutionGeometry({
 }
 
 /**
+ * A point on a regular sides-gon ring at the given angle/radius/height -
+ * same x/z sign convention as `cylinder`'s own `equation()`, so a prism,
+ * antiprism and cylinder built with the same radius/phiOffset share a
+ * corner. Shared by prism/antiprism's own wall corners and cap rims (see
+ * `computePolygonCap`), so a wall corner's position is computed by the
+ * exact same expression as its coincident cap vertex - required for them to
+ * weld bit-identically (`analyze()`'s crack check), not just approximately.
+ * @private
+ */
+export function computePolygonCorner(angle, radius, y) {
+  return [-radius * Math.cos(angle), y, radius * Math.sin(angle)];
+}
+
+/**
+ * A prism/antiprism's flat sides-gon cap: `computeCap`'s own `sides + 1`
+ * angle samples with no further interpolation between them trace a
+ * straight sides-gon boundary, not an arc (see `prism.js`'s own doc
+ * comment for why). Shared by `prism` (whose bottom/top ends sample the
+ * same `angleAt`) and `antiprism` (whose top ring is rotated by half a
+ * sector, so each end supplies its own).
+ * @private
+ */
+export function computePolygonCap(
+  geometry,
+  indices,
+  { sides, radius, y, flip, normalY, angleAt, mapping },
+) {
+  computeCap(geometry, indices, {
+    ringSegments: sides,
+    capSegments: 1,
+    capRadius: radius,
+    flip,
+    angleAt: (i) => {
+      const p = angleAt(i);
+      return { cos: -Math.cos(p), sin: Math.sin(p), t: p };
+    },
+    point: (x, z) => [x, y, z],
+    normal: [0, normalY, 0],
+    mapping,
+  });
+}
+
+/**
  * A spindle-torus generating-circle revolution: the meridian is an arc of a
  * circle (radius `a`, offset from the axis) that crosses the revolution
  * axis at its own two endpoints, producing cusped poles - not smooth

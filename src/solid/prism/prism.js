@@ -2,7 +2,8 @@
 import { rectangular } from "../../mappings.js";
 import {
   checkArguments,
-  computeCap,
+  computePolygonCap,
+  computePolygonCorner,
   getCellsTypedArray,
   TAU,
 } from "../../utils.js";
@@ -15,14 +16,6 @@ import {
  * @property {number} [phiOffset=0]
  * @property {Function} [capMapping=mappings.rectangular]
  */
-
-// Same x/z sign convention as cylinder.js's own equation(), so a prism and a
-// cylinder built with the same radius/phiOffset share a corner.
-const corner = (angle, radius, y) => [
-  -radius * Math.cos(angle),
-  y,
-  radius * Math.sin(angle),
-];
 
 /**
  * Right prism: a regular sides-gon extruded into sides flat rectangular
@@ -72,8 +65,8 @@ export function prism({
     // instead of that face's own true midpoint
     const midAngle = angle0 + sector / 2;
 
-    const [x0, , z0] = corner(angle0, radius, 0);
-    const [x1, , z1] = corner(angle1, radius, 0);
+    const [x0, , z0] = computePolygonCorner(angle0, radius, 0);
+    const [x1, , z1] = computePolygonCorner(angle1, radius, 0);
 
     const nx = -Math.cos(midAngle);
     const nz = Math.sin(midAngle);
@@ -118,28 +111,24 @@ export function prism({
 
   const geometry = { positions, normals, uvs, cells };
 
-  // angleAt/point/normal glue around the shared cap builder, same pattern
-  // as torus.js/computeRevolutionGeometry's own end caps: sides + 1 angle
-  // samples with no further interpolation between them traces a straight
-  // sides-gon boundary, not an arc.
-  const buildCap = (y, flip, normalY) => {
-    computeCap(geometry, indices, {
-      ringSegments: sides,
-      capSegments: 1,
-      capRadius: radius,
-      flip,
-      angleAt: (i) => {
-        const p = angleAt(i);
-        return { cos: -Math.cos(p), sin: Math.sin(p), t: p };
-      },
-      point: (x, z) => [x, y, z],
-      normal: [0, normalY, 0],
-      mapping: capMapping,
-    });
-  };
-
-  buildCap(-halfHeight, 1, -1);
-  buildCap(halfHeight, -1, 1);
+  computePolygonCap(geometry, indices, {
+    sides,
+    radius,
+    y: -halfHeight,
+    flip: 1,
+    normalY: -1,
+    angleAt,
+    mapping: capMapping,
+  });
+  computePolygonCap(geometry, indices, {
+    sides,
+    radius,
+    y: halfHeight,
+    flip: -1,
+    normalY: 1,
+    angleAt,
+    mapping: capMapping,
+  });
 
   return geometry;
 }
