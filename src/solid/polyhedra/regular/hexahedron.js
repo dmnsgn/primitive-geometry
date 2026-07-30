@@ -1,5 +1,6 @@
 /** @module hexahedron */
 import { polyhedron } from "../polyhedron.js";
+import { cubeFaces } from "../../cuboid/cube.js";
 import { checkArguments } from "../../../utils.js";
 
 /**
@@ -8,36 +9,16 @@ import { checkArguments } from "../../../utils.js";
  */
 
 /**
- * Regular hexahedron (cube) faces: 8 corners.
- * Cells order: +x, -x, +y, -y, +z, -z.
+ * Regular hexahedron (cube) faces: 8 corners, cells order +x, -x, +y, -y,
+ * +z, -z - `cubeFaces`'s own layout, since a regular hexahedron is exactly
+ * a cube whose half-extent (`radius`) is the same on all 3 axes.
  * @param {HexahedronFacesOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplexPolygon}
  */
 export function hexahedronFaces({ radius = 0.5 } = {}) {
   checkArguments(arguments);
 
-  return {
-    // prettier-ignore
-    positions: Float32Array.of(
-      -radius, radius, radius,
-      -radius, -radius, radius,
-      radius, -radius, radius,
-      radius, radius, radius,
-      radius, radius, -radius,
-      radius, -radius, -radius,
-      -radius, -radius, -radius,
-      -radius, radius, -radius,
-    ),
-
-    cells: [
-      [3, 2, 5, 4], // +x
-      [7, 6, 1, 0], // -x
-      [7, 0, 3, 4], // +y
-      [1, 6, 5, 2], // -y
-      [0, 1, 2, 3], // +z
-      [4, 5, 6, 7], // -z
-    ],
-  };
+  return cubeFaces({ sx: radius * 2, sy: radius * 2, sz: radius * 2 });
 }
 
 /**
