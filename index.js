@@ -83,6 +83,9 @@ export { apple } from "./src/solid/revolution/apple.js";
 export { lemon } from "./src/solid/revolution/lemon.js";
 export { sphericalRing } from "./src/solid/revolution/spherical-ring.js";
 
+export { prism } from "./src/solid/prism/prism.js";
+export { antiprism } from "./src/solid/prism/antiprism.js";
+
 export { paraboloid } from "./src/solid/revolution/paraboloid.js";
 export { hyperboloid } from "./src/solid/revolution/hyperboloid.js";
 export { barrel } from "./src/solid/revolution/barrel.js";

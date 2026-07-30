@@ -364,6 +364,24 @@ const cases = [
     { unused: 2 },
   ],
 
+
+  // The fan center's own wrap-column duplicate (1 per cap) is never
+  // referenced by a cell - same benign pattern as torus's capped case
+  ["prism", () => Primitives.prism(), { unused: 2 }],
+  ["prism sides=3", () => Primitives.prism({ sides: 3 }), { unused: 2 }],
+  ["prism sides=15", () => Primitives.prism({ sides: 15 }), { unused: 2 }],
+  ["antiprism", () => Primitives.antiprism(), { unused: 2 }],
+  [
+    "antiprism sides=3",
+    () => Primitives.antiprism({ sides: 3 }),
+    { unused: 2 },
+  ],
+  [
+    "antiprism sides=15",
+    () => Primitives.antiprism({ sides: 15 }),
+    { unused: 2 },
+  ],
+
   ["tetrahedron", () => Primitives.tetrahedron()],
   ["hexahedron", () => Primitives.hexahedron()],
   ["octahedron", () => Primitives.octahedron()],
