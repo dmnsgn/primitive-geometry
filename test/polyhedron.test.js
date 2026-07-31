@@ -133,6 +133,41 @@ describe("polyhedron (flat platonic solids)", () => {
     }
   });
 
+  it("hexahedron's UVs agree with cube's on every face (same corner, same facing, same texture coordinate)", () => {
+    // hexahedronFaces shares cube's positions/cells (see cubeFaces), but its
+    // UVs come from the polyhedron module's generic per-face rectangular
+    // mapping, a wholly separate code path from cube's plane-grid mapping.
+    // Nothing keeps them in sync structurally, so this pins the two systems
+    // to producing the same result by hand.
+    const h = Primitives.hexahedron();
+    const c = Primitives.cube();
+
+    // Position + normal together identify a corner unambiguously: a cube
+    // corner is shared by 3 faces, each with a different facing and (in
+    // general) a different UV, so position alone is not a stable key.
+    const key = (g, i) =>
+      [0, 1, 2]
+        .map((k) => Math.round(g.positions[i * 3 + k] * 1e4))
+        .concat([0, 1, 2].map((k) => Math.round(g.normals[i * 3 + k])))
+        .join(",");
+
+    const cubeUvByCorner = new Map();
+    for (let i = 0; i < c.positions.length / 3; i++) {
+      cubeUvByCorner.set(key(c, i), [c.uvs[i * 2], c.uvs[i * 2 + 1]]);
+    }
+
+    for (let i = 0; i < h.positions.length / 3; i++) {
+      const k = key(h, i);
+      const expected = cubeUvByCorner.get(k);
+      assert.ok(expected, `corner ${k} missing from cube()`);
+      assert.ok(
+        Math.abs(h.uvs[i * 2] - expected[0]) < 1e-5 &&
+          Math.abs(h.uvs[i * 2 + 1] - expected[1]) < 1e-5,
+        `corner ${k}: hexahedron uv [${h.uvs[i * 2]}, ${h.uvs[i * 2 + 1]}] !== cube uv [${expected}]`,
+      );
+    }
+  });
+
   it("tetrahedron is a regular tetrahedron with a centered bounding box", () => {
     const g = Primitives.tetrahedron({ radius: 0.5 });
     const corners = [];

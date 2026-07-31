@@ -378,8 +378,8 @@ export function computeFaceContext(seedPositions, face) {
     normal[2] += (a[0] - b[0]) * (a[1] + b[1]);
   }
   normalize(normal);
-  const u = normalize(subtract(seedPositions, face[1], face[0]));
-  const v = cross(normal, u);
+  const v = normalize(subtract(seedPositions, face[0], face[1]));
+  const u = cross(v, normal);
 
   const centroid = [0, 0, 0];
   for (const index of face) {
