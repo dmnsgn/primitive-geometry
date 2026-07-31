@@ -48,32 +48,36 @@ const modeOptions = ["texture", "normal", "flat-shaded", "uv", "wireframe"];
 const CONFIG = {
   mode: params.get("mode") || "texture",
   cycle: false,
-  axes: true,
+  axes: params.get("axes") !== "false",
   bbox: params.get("bbox") !== "false",
   normals: params.get("normals") !== "false",
   seams: params.get("seams") !== "false",
 };
 const pane = new Pane();
-pane.addBinding(CONFIG, "mode", {
-  options: modeOptions.map((value) => ({
-    text: value.toUpperCase(),
-    value,
-  })),
-});
-pane.addBinding(CONFIG, "cycle");
-pane.addBinding(CONFIG, "bbox");
-pane.addBinding(CONFIG, "normals");
-pane.addBinding(CONFIG, "seams");
+if (!params.has("screenshot")) {
+  pane.addBinding(CONFIG, "mode", {
+    options: modeOptions.map((value) => ({
+      text: value.toUpperCase(),
+      value,
+    })),
+  });
+  pane.addBinding(CONFIG, "cycle");
+  pane.addBinding(CONFIG, "bbox");
+  pane.addBinding(CONFIG, "normals");
+  pane.addBinding(CONFIG, "seams");
 
-setInterval(() => {
-  if (!CONFIG.cycle) {
-    return;
-  }
+  setInterval(() => {
+    if (!CONFIG.cycle) {
+      return;
+    }
 
-  CONFIG.mode =
-    modeOptions[(modeOptions.indexOf(CONFIG.mode) + 1) % modeOptions.length];
-  pane.refresh();
-}, 2000);
+    CONFIG.mode =
+      modeOptions[(modeOptions.indexOf(CONFIG.mode) + 1) % modeOptions.length];
+    pane.refresh();
+  }, 2000);
+} else {
+  pane.dispose();
+}
 
 // Assets
 const colorMap = ctx.texture2D({
@@ -680,7 +684,7 @@ const setGeometries = (geometryGroups) => {
     }
 
     const lastSlot = meshSlots.findLast(Boolean);
-    const halfGridSize = lastSlot.at(-1).translation[2] * 0.5;
+    const halfGridSize = lastSlot?.at(-1).translation[2] * 0.5;
     for (const slot of meshSlots) {
       if (!slot) continue;
       for (const mesh of slot) mesh.translation[2] -= halfGridSize;

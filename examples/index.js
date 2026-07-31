@@ -224,6 +224,11 @@ const geometries = params.has("geometry")
 setGeometries(geometries);
 
 if (params.has("screenshot")) {
-  globalThis.screenshotItems = [...modeOptions, "bbox"];
+  document.querySelector("h1").style.display = "none";
+  globalThis.screenshotItems = params.has("geometry")
+    ? Object.keys(Primitives).filter(
+        (entry) => !["utils", "mappings"].includes(entry),
+      )
+    : [...modeOptions, "bbox"];
   globalThis.dispatchEvent(new CustomEvent("screenshot"));
 }
