@@ -72,13 +72,19 @@ export function prism({
 
     const base = indices.vertex;
 
+    // u wraps once around the whole perimeter (like cylinder's u = x / nx),
+    // not per-face; v = 0 at the bottom rising to 1 at the top, same as
+    // cylinder and every other computeRevolutionGeometry-based solid.
+    const u0 = i / sides;
+    const u1 = (i + 1) / sides;
+
     // Bottom-left, bottom-right, top-right, top-left: CCW as seen from
     // outside (nx, 0, nz), matching every other quad face in this library
     for (const [px, py, pz, u, v] of [
-      [x0, -halfHeight, z0, 0, 1],
-      [x1, -halfHeight, z1, 1, 1],
-      [x1, halfHeight, z1, 1, 0],
-      [x0, halfHeight, z0, 0, 0],
+      [x0, -halfHeight, z0, u0, 0],
+      [x1, -halfHeight, z1, u1, 0],
+      [x1, halfHeight, z1, u1, 1],
+      [x0, halfHeight, z0, u0, 1],
     ]) {
       positions[indices.vertex * 3] = px;
       positions[indices.vertex * 3 + 1] = py;

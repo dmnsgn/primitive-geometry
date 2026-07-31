@@ -114,6 +114,8 @@ export function antiprism({
     const u1 = (i + 1) / sides;
     const uMid = (u0 + u1) / 2;
 
+    // v = 0 at the bottom rising to 1 at the top, same as cylinder and every
+    // other computeRevolutionGeometry-based solid.
     // Base on the bottom ring's edge, apex on the top ring (directly above
     // that edge's own midpoint, since the top ring is offset by half a
     // sector)
@@ -121,18 +123,18 @@ export function antiprism({
       bottomA,
       bottomB,
       topA,
-      [u0, 1],
-      [u1, 1],
-      [uMid, 0],
+      [u0, 0],
+      [u1, 0],
+      [uMid, 1],
     );
     // Base on the top ring's edge, apex on the bottom ring
     writeTriangle(
       topB,
       topA,
       bottomB,
-      [u1, 0],
-      [u0, 0],
       [u1, 1],
+      [u0, 1],
+      [u1, 0],
     );
   }
 

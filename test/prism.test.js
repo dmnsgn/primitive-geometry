@@ -63,6 +63,33 @@ describe("prism", () => {
     assert.ok(Math.abs(maxY - height / 2) < 1e-6);
   });
 
+  it("side walls: v runs 0 (bottom) to 1 (top), u wraps continuously around the whole perimeter - same convention as cylinder, not a per-face 0..1 tile", () => {
+    const sides = 6;
+    const g = Primitives.prism({ sides });
+
+    for (let face = 0; face < sides; face++) {
+      const base = face * 4;
+      // Bottom-left, bottom-right, top-right, top-left (see prism.js's own
+      // vertex order comment)
+      assert.equal(g.uvs[base * 2 + 1], 0, `face ${face} bottom-left v`);
+      assert.equal(g.uvs[(base + 1) * 2 + 1], 0, `face ${face} bottom-right v`);
+      assert.equal(g.uvs[(base + 2) * 2 + 1], 1, `face ${face} top-right v`);
+      assert.equal(g.uvs[(base + 3) * 2 + 1], 1, `face ${face} top-left v`);
+
+      assert.ok(
+        Math.abs(g.uvs[base * 2] - face / sides) < 1e-6,
+        `face ${face} bottom-left u`,
+      );
+      assert.ok(
+        Math.abs(g.uvs[(base + 1) * 2] - (face + 1) / sides) < 1e-6,
+        `face ${face} bottom-right u`,
+      );
+    }
+
+    // Last face's u wraps exactly to 1, not back down to 0
+    assert.equal(g.uvs[((sides - 1) * 4 + 1) * 2], 1);
+  });
+
   it("radius matches cylinder's own corner at the same phiOffset", () => {
     const radius = 0.4;
     const sides = 6;
@@ -134,6 +161,25 @@ describe("antiprism", () => {
     const nearestBottomCorner = Math.round(angle / sector) * sector;
     const offset = Math.abs(angle - nearestBottomCorner);
     assert.ok(Math.abs(offset - sector / 2) < 1e-4);
+  });
+
+  it("band: v = 0 at the bottom ring, 1 at the top ring, u wraps continuously around the whole perimeter - same convention as cylinder", () => {
+    const sides = 6;
+    const halfHeight = 0.5;
+    const g = Primitives.antiprism({ sides, height: 1 });
+
+    const bandVertexCount = sides * 2 * 3;
+    let maxU = 0;
+    for (let i = 0; i < bandVertexCount; i++) {
+      const y = g.positions[i * 3 + 1];
+      const [u, v] = [g.uvs[i * 2], g.uvs[i * 2 + 1]];
+      if (Math.abs(y + halfHeight) < 1e-6) assert.equal(v, 0, `vertex ${i}`);
+      if (Math.abs(y - halfHeight) < 1e-6) assert.equal(v, 1, `vertex ${i}`);
+      maxU = Math.max(maxU, u);
+    }
+
+    // Wraps exactly to 1 at the seam, not tiled 0..1 per triangle
+    assert.equal(maxU, 1);
   });
 
   it("caps sit exactly at +/- height / 2", () => {
