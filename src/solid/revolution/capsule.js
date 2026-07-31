@@ -3,6 +3,7 @@ import {
   TAU,
   snapToZero,
 } from "../../utils/common.js";
+import { linear } from "../../utils/distribution.js";
 import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
 /**
@@ -15,6 +16,7 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  *   away, leaving an open tube.
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
+ * @property {Function} [vDistribution=utils.linear]
  */
 
 /**
@@ -31,6 +33,7 @@ export function capsule({
   roundSegments = 16,
   phi = TAU,
   phiOffset = 0,
+  vDistribution = linear,
 } = {}) {
 
   const halfHeight = height / 2;
@@ -96,6 +99,7 @@ export function capsule({
     ny: nyTotal,
     phi,
     phiOffset,
+    vDistribution,
     equation,
   });
 

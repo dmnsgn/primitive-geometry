@@ -1,5 +1,6 @@
 /** @module lemon */
 import { TAU } from "../../utils/common.js";
+import { linear } from "../../utils/distribution.js";
 import { computeSpindleArcRevolution } from "../../utils/revolution.js";
 
 /**
@@ -14,6 +15,7 @@ import { computeSpindleArcRevolution } from "../../utils/revolution.js";
  * @property {number} [ny=16]
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
+ * @property {Function} [vDistribution=utils.linear]
  */
 
 /**
@@ -34,6 +36,7 @@ export function lemon({
   ny = 16,
   phi = TAU,
   phiOffset = 0,
+  vDistribution = linear,
 } = {}) {
 
   const halfHeight = Math.max(height, radius * 2) / 2;
@@ -60,6 +63,7 @@ export function lemon({
     ny,
     phi,
     phiOffset,
+    vDistribution,
   });
 
   return { positions, normals, uvs, cells };

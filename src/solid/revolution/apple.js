@@ -3,6 +3,7 @@ import {
   TAU,
   clamp,
 } from "../../utils/common.js";
+import { linear } from "../../utils/distribution.js";
 import { computeSpindleArcRevolution } from "../../utils/revolution.js";
 
 /**
@@ -16,6 +17,7 @@ import { computeSpindleArcRevolution } from "../../utils/revolution.js";
  * @property {number} [ny=16]
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
+ * @property {Function} [vDistribution=utils.linear]
  */
 
 /**
@@ -36,6 +38,7 @@ export function apple({
   ny = 16,
   phi = TAU,
   phiOffset = 0,
+  vDistribution = linear,
 } = {}) {
 
   const halfHeight = clamp(height, 0, radius * 2) / 2;
@@ -67,6 +70,7 @@ export function apple({
     ny,
     phi,
     phiOffset,
+    vDistribution,
   });
 
   return { positions, normals, uvs, cells };

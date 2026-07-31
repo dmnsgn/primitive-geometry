@@ -1008,6 +1008,189 @@ describe("capMapping", () => {
   });
 });
 
+describe("vDistribution", () => {
+  const { linear, chebyshev, smoothstep, power } = Primitives.utils;
+
+  it("linear is the identity", () => {
+    for (const t of [0, 0.25, 0.5, 0.73, 1]) {
+      assert.equal(linear(t), t);
+    }
+  });
+
+  it("chebyshev preserves both endpoints and the midpoint", () => {
+    assert.equal(chebyshev(0), 0);
+    assert.equal(chebyshev(1), 1);
+    assert.ok(Math.abs(chebyshev(0.5) - 0.5) < 1e-9);
+  });
+
+  it("chebyshev is point-symmetric about (0.5, 0.5)", () => {
+    for (const t of [0.1, 0.25, 0.37, 0.5]) {
+      assert.ok(Math.abs(chebyshev(1 - t) - (1 - chebyshev(t))) < 1e-9);
+    }
+  });
+
+  it("chebyshev clusters samples toward both ends, sparser through the middle", () => {
+    const n = 8;
+    // Consecutive-sample gaps for a fixed dt=1/n: smallest at the ends,
+    // largest in the middle - the classic Chebyshev-node distribution.
+    const gap = (i) => chebyshev((i + 1) / n) - chebyshev(i / n);
+    const firstGap = gap(0);
+    const middleGap = gap(n / 2 - 1);
+    const lastGap = gap(n - 1);
+    assert.ok(firstGap < middleGap);
+    assert.ok(lastGap < middleGap);
+    assert.ok(Math.abs(firstGap - lastGap) < 1e-9);
+  });
+
+  it("smoothstep preserves both endpoints and the midpoint", () => {
+    assert.equal(smoothstep(0), 0);
+    assert.equal(smoothstep(1), 1);
+    assert.ok(Math.abs(smoothstep(0.5) - 0.5) < 1e-9);
+  });
+
+  it("smoothstep is point-symmetric about (0.5, 0.5), same shape as chebyshev", () => {
+    for (const t of [0.1, 0.25, 0.37, 0.5]) {
+      assert.ok(Math.abs(smoothstep(1 - t) - (1 - smoothstep(t))) < 1e-9);
+    }
+  });
+
+  it("smoothstep clusters samples toward both ends, sparser through the middle", () => {
+    const n = 8;
+    const gap = (i) => smoothstep((i + 1) / n) - smoothstep(i / n);
+    const firstGap = gap(0);
+    const middleGap = gap(n / 2 - 1);
+    const lastGap = gap(n - 1);
+    assert.ok(firstGap < middleGap);
+    assert.ok(lastGap < middleGap);
+    assert.ok(Math.abs(firstGap - lastGap) < 1e-9);
+  });
+
+  it("power(1) is the identity, matching linear", () => {
+    for (const t of [0, 0.25, 0.5, 0.73, 1]) {
+      assert.ok(Math.abs(power(1)(t) - t) < 1e-9);
+    }
+  });
+
+  it("power(2) exactly cancels a sqrt radius law (1 - (1 - t)^2)", () => {
+    for (const t of [0, 0.25, 0.5, 0.75, 1]) {
+      assert.ok(Math.abs(power(2)(t) - (1 - (1 - t) ** 2)) < 1e-9);
+    }
+  });
+
+  it("power clusters samples toward t = 1 only, unlike chebyshev/smoothstep's symmetric clustering", () => {
+    const n = 8;
+    const p = power(3);
+    const gap = (i) => p((i + 1) / n) - p(i / n);
+    // t = 1 (clustered) gets a narrower-than-linear gap; t = 0 (untouched)
+    // gets a wider-than-linear one - asymmetric, unlike chebyshev/smoothstep
+    // which narrow both ends.
+    assert.ok(gap(n - 1) < 1 / n);
+    assert.ok(gap(0) > 1 / n);
+  });
+
+  const cases = [
+    ["paraboloid", (vDistribution) => Primitives.paraboloid({ nx: 8, ny: 8, vDistribution })],
+    ["ellipsoid", (vDistribution) => Primitives.ellipsoid({ nx: 8, ny: 8, vDistribution })],
+    ["barrel", (vDistribution) => Primitives.barrel({ nx: 8, ny: 8, vDistribution })],
+    ["apple", (vDistribution) => Primitives.apple({ nx: 8, ny: 8, vDistribution })],
+  ];
+
+  const nonLinearDistributions = [
+    ["chebyshev", chebyshev],
+    ["smoothstep", smoothstep],
+    ["power(2)", power(2)],
+  ];
+
+  for (const [shapeName, create] of cases) {
+    for (const [distributionName, distribution] of nonLinearDistributions) {
+      it(`${shapeName} + ${distributionName}: reshapes row spacing (positions) without affecting the default uvs or topology`, () => {
+        const withLinear = create(linear);
+        const withDistribution = create(distribution);
+        const label = `${shapeName} + ${distributionName}`;
+
+        assert.notDeepEqual(
+          Array.from(withDistribution.positions),
+          Array.from(withLinear.positions),
+          label,
+        );
+        assert.deepEqual(
+          Array.from(withDistribution.uvs),
+          Array.from(withLinear.uvs),
+          label,
+        );
+        assert.deepEqual(
+          Array.from(withDistribution.cells),
+          Array.from(withLinear.cells),
+          label,
+        );
+
+        const result = analyze(withDistribution);
+        assert.equal(result.cracks, 0, label);
+        assert.equal(result.degenerate, 0, label);
+        assert.equal(flippedNormalTriangles(withDistribution), 0, label);
+      });
+    }
+  }
+
+  it("defaults to utils.linear, matching the pre-option row spacing", () => {
+    const withDefault = Primitives.paraboloid({ nx: 8, ny: 8 });
+    const withExplicitDefault = Primitives.paraboloid({
+      nx: 8,
+      ny: 8,
+      vDistribution: linear,
+    });
+    assert.deepEqual(
+      Array.from(withDefault.positions),
+      Array.from(withExplicitDefault.positions),
+    );
+  });
+
+  it("paraboloid: chebyshev pulls rows toward the apex, where a linear sweep under-resolves it (radius ~ sqrt(1 - v))", () => {
+    const ny = 8;
+    const linearG = Primitives.paraboloid({ nx: 4, ny, capBase: false });
+    const chebyshevG = Primitives.paraboloid({
+      nx: 4,
+      ny,
+      capBase: false,
+      vDistribution: chebyshev,
+    });
+
+    const cols = 5;
+    const yAt = (g, row) => g.positions[row * cols * 3 + 1];
+
+    // The last row gap before the apex (row ny-1 -> ny) is the widest under
+    // a plain linear sweep, since dr/dv blows up as v -> 1 - chebyshev
+    // should narrow it by pulling that row closer to the apex.
+    const linearLastGap = yAt(linearG, ny) - yAt(linearG, ny - 1);
+    const chebyshevLastGap = yAt(chebyshevG, ny) - yAt(chebyshevG, ny - 1);
+    assert.ok(chebyshevLastGap < linearLastGap);
+  });
+
+  it("paraboloid: power(2) gives exactly uniform radius spacing, unlike chebyshev's partial (both-ends) fix", () => {
+    const radius = 0.5;
+    const g = Primitives.paraboloid({
+      nx: 4,
+      ny: 8,
+      radius,
+      capBase: false,
+      vDistribution: power(2),
+    });
+
+    const cols = 5;
+    const rAt = (row) =>
+      Math.hypot(g.positions[row * cols * 3], g.positions[row * cols * 3 + 2]);
+
+    let prevGap;
+    for (let row = 1; row <= 8; row++) {
+      const gap = rAt(row - 1) - rAt(row);
+      if (prevGap !== undefined) {
+        assert.ok(Math.abs(gap - prevGap) < 1e-5, `row ${row}`);
+      }
+      prevGap = gap;
+    }
+  });
+});
+
 describe("elliptical revolution solids", () => {
   describe("cylinder/cone", () => {
     it("sx = sz = 1 is a no-op (matches the pre-ellipse output)", () => {

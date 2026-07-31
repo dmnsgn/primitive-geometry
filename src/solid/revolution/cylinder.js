@@ -4,6 +4,7 @@ import {
   TAU,
   lerp,
 } from "../../utils/common.js";
+import { linear } from "../../utils/distribution.js";
 import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
 /**
@@ -24,6 +25,7 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @property {number} [sz=1] Base ring z scale, elliptical when != sx
  * @property {number} [sxApex=sx] Apex ring x scale, independent of the base
  * @property {number} [szApex=sz] Apex ring z scale, independent of the base
+ * @property {Function} [vDistribution=utils.linear]
  */
 
 /**
@@ -54,6 +56,7 @@ export function cylinder({
   sz = 1,
   sxApex = sx,
   szApex = sz,
+  vDistribution = linear,
 } = {}) {
 
   const halfHeight = height / 2;
@@ -103,6 +106,7 @@ export function cylinder({
     capBaseSegments,
     capApexSegments: capSegments,
     capMapping,
+    vDistribution,
     equation,
   });
 

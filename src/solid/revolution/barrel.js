@@ -1,6 +1,7 @@
 /** @module barrel */
 import { rectangular } from "../../mappings.js";
 import { TAU } from "../../utils/common.js";
+import { linear } from "../../utils/distribution.js";
 import { computeFlatRevolutionGeometry } from "../../utils/revolution.js";
 
 /**
@@ -20,6 +21,7 @@ import { computeFlatRevolutionGeometry } from "../../utils/revolution.js";
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
  * @property {Function} [capMapping=mappings.rectangular]
+ * @property {Function} [vDistribution=utils.linear]
  */
 
 /**
@@ -43,6 +45,7 @@ export function barrel({
   phi = TAU,
   phiOffset = 0,
   capMapping = rectangular,
+  vDistribution = linear,
 } = {}) {
 
   const halfHeight = height / 2;
@@ -59,6 +62,7 @@ export function barrel({
     capBase,
     capSegments,
     capMapping,
+    vDistribution,
     // Gradient of x² + z² - radius + k·y² = 0, ie. (2x, 2k·y, 2z)
     profile: (y) => [radius - k * y * y, k * y],
   });

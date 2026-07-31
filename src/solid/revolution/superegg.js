@@ -5,6 +5,7 @@ import {
   signedPow,
   snapToZero,
 } from "../../utils/common.js";
+import { linear } from "../../utils/distribution.js";
 import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
 /**
@@ -23,6 +24,7 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * to [0, PI] - see theta.
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
+ * @property {Function} [vDistribution=utils.linear]
  */
 
 /**
@@ -46,6 +48,7 @@ export function superegg({
   thetaOffset = 0,
   phi = TAU,
   phiOffset = 0,
+  vDistribution = linear,
 } = {}) {
 
   const e = 2 / n;
@@ -83,5 +86,12 @@ export function superegg({
     };
   }
 
-  return computeRevolutionGeometry({ nx, ny, phi, phiOffset, equation });
+  return computeRevolutionGeometry({
+    nx,
+    ny,
+    phi,
+    phiOffset,
+    vDistribution,
+    equation,
+  });
 }

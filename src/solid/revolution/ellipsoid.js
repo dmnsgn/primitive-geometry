@@ -4,6 +4,7 @@ import {
   clampMeridianSweep,
   snapToZero,
 } from "../../utils/common.js";
+import { linear } from "../../utils/distribution.js";
 import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
 /**
@@ -21,6 +22,7 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * silently clamped to [0, PI] - see theta.
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
+ * @property {Function} [vDistribution=utils.linear]
  */
 
 /**
@@ -65,6 +67,7 @@ export function ellipsoid({
   thetaOffset = 0,
   phi = TAU,
   phiOffset = 0,
+  vDistribution = linear,
 } = {}) {
 
   const [clampedTheta, clampedThetaOffset] = clampMeridianSweep(
@@ -91,6 +94,7 @@ export function ellipsoid({
     ny,
     phi,
     phiOffset,
+    vDistribution,
     equation,
   });
 

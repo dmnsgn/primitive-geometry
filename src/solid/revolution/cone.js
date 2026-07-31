@@ -1,6 +1,7 @@
 /** @module cone */
 import { rectangular } from "../../mappings.js";
 import { TAU } from "../../utils/common.js";
+import { linear } from "../../utils/distribution.js";
 import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
 /**
@@ -26,6 +27,7 @@ export function computeConeSegment({
   phiOffset,
   sx = 1,
   sz = 1,
+  vDistribution,
   capOptions,
 }) {
   const rPrime = rTo - rFrom;
@@ -53,6 +55,7 @@ export function computeConeSegment({
     ny,
     phi,
     phiOffset,
+    vDistribution,
     equation,
     ...capOptions,
   });
@@ -71,6 +74,7 @@ export function computeConeSegment({
  * @property {Function} [capMapping=mappings.rectangular]
  * @property {number} [sx=1] Base ring x scale, elliptical when != sz
  * @property {number} [sz=1] Base ring z scale, elliptical when != sx
+ * @property {Function} [vDistribution=utils.linear]
  */
 
 /**
@@ -94,6 +98,7 @@ export function cone({
   capMapping = rectangular,
   sx = 1,
   sz = 1,
+  vDistribution = linear,
 } = {}) {
 
   const halfHeight = height / 2;
@@ -109,6 +114,7 @@ export function cone({
     phiOffset,
     sx,
     sz,
+    vDistribution,
     capOptions: { capBase, capBaseSegments: capSegments, capMapping },
   });
 

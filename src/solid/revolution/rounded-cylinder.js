@@ -4,6 +4,7 @@ import {
   clamp,
   snapToZero,
 } from "../../utils/common.js";
+import { linear } from "../../utils/distribution.js";
 import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
 /**
@@ -19,6 +20,7 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @property {number} [capSegments=1] Flat cap segments (each end)
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
+ * @property {Function} [vDistribution=utils.linear]
  */
 
 /**
@@ -41,6 +43,7 @@ export function roundedCylinder({
   capSegments = 1,
   phi = TAU,
   phiOffset = 0,
+  vDistribution = linear,
 } = {}) {
 
   const halfHeight = height / 2;
@@ -143,6 +146,7 @@ export function roundedCylinder({
     ny: nyTotal,
     phi,
     phiOffset,
+    vDistribution,
     equation,
   });
 

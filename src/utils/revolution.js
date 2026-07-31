@@ -1,6 +1,7 @@
 /** @module revolution */
 
 import { TAU, getCellsTypedArray, normalize, snapToZero } from "./common.js";
+import { linear } from "./distribution.js";
 
 /**
  * @private
@@ -190,14 +191,22 @@ export function computeGridQuad(cells, indices, cols, flip) {
  * anywhere in between - so callers with a bounded theta/thetaOffset (eg.
  * ellipsoid) clamp them so their sweep can't.
  *
- * The uv v-coordinate defaults to the row's structural v (row-index
- * fraction). That distorts whenever a caller allocates rows non-uniformly
- * across the meridian (eg. capsule.js packing more/fewer rows into its
- * hemispheres than its cylindrical body): the texture would stretch across
- * whichever section got more rows, instead of following actual surface
- * position. `equation` may return its own `v` to override just the uv;
- * structural v (row spacing, pole detection) is unaffected, since it's only
- * ever read from the input parameter, never the return value.
+ * `vDistribution(t)` remaps the row's linear index fraction `t` (0..1,
+ * evenly spaced) to the actual `v` fed into `equation` - `linear` (the
+ * default) is the identity, `chebyshev` clusters rows toward both ends of
+ * the sweep. This changes vertex positions, not just texturing: a row's
+ * `v` drives its position through `equation`, so redistributing `v` moves
+ * where rows actually sit along the meridian (see distribution.js).
+ *
+ * The uv v-coordinate defaults to `t`, not the (possibly redistributed) `v`,
+ * so texture coordinates stay linear regardless of `vDistribution` unless a
+ * caller allocates rows non-uniformly across the meridian for its own
+ * reasons (eg. capsule.js packing more/fewer rows into its hemispheres than
+ * its cylindrical body): the texture would stretch across whichever section
+ * got more rows, instead of following actual surface position. `equation`
+ * may return its own `v` to override just the uv; structural v (row
+ * spacing, pole detection) is unaffected, since it's only ever read from the
+ * input parameter, never the return value.
  *
  * capBase/capApex add a flat disk at v = 0/v = 1, skipped when that end is
  * already collapsed to a true point apex (same convention cylinder/cone use
@@ -227,6 +236,7 @@ export function computeRevolutionGeometry({
   capBaseSegments = capSegments,
   capApexSegments = capSegments,
   capMapping,
+  vDistribution = linear,
   equation,
 } = {}) {
   const wrap = phi % TAU === 0;
@@ -236,7 +246,11 @@ export function computeRevolutionGeometry({
   const collapsedAt = Array.from({ length: ny + 1 });
   let fans = 0;
   for (let y = 0; y <= ny; y++) {
-    collapsedAt[y] = equation({ v: y / ny, cosPhi: 1, sinPhi: 0 }).collapsed;
+    collapsedAt[y] = equation({
+      v: vDistribution(y / ny),
+      cosPhi: 1,
+      sinPhi: 0,
+    }).collapsed;
     if (collapsedAt[y]) fans += y === 0 || y === ny ? 1 : 2;
   }
 
@@ -265,7 +279,8 @@ export function computeRevolutionGeometry({
   let cellIndex = 0;
 
   for (let y = 0; y <= ny; y++) {
-    const v = y / ny;
+    const t = y / ny;
+    const v = vDistribution(t);
 
     for (let x = 0; x <= nx; x++, vertexIndex++) {
       const u = x / nx;
@@ -276,7 +291,7 @@ export function computeRevolutionGeometry({
       const {
         position,
         normal,
-        v: uvV = v,
+        v: uvV = t,
       } = equation({ v, cosPhi, sinPhi });
 
       positions[vertexIndex * 3] = position[0];
@@ -438,6 +453,7 @@ export function computeSpindleArcRevolution({
   ny,
   phi,
   phiOffset,
+  vDistribution,
 }) {
   function equation({ v, cosPhi: rawCosPhi, sinPhi: rawSinPhi }) {
     const cosPhi = snapToZero(rawCosPhi);
@@ -469,7 +485,14 @@ export function computeSpindleArcRevolution({
     };
   }
 
-  return computeRevolutionGeometry({ nx, ny, phi, phiOffset, equation });
+  return computeRevolutionGeometry({
+    nx,
+    ny,
+    phi,
+    phiOffset,
+    vDistribution,
+    equation,
+  });
 }
 
 /**
@@ -496,6 +519,7 @@ export function computeFlatRevolutionGeometry({
   capBase,
   capSegments,
   capMapping,
+  vDistribution,
   profile,
 }) {
   const halfHeight = height / 2;
@@ -524,6 +548,7 @@ export function computeFlatRevolutionGeometry({
     capApexSegments: capSegments,
     capBaseSegments: capSegments,
     capMapping,
+    vDistribution,
     equation,
   });
 }

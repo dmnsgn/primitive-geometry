@@ -5,6 +5,7 @@ import {
   concatGeometries,
   snapToZero,
 } from "../../utils/common.js";
+import { linear } from "../../utils/distribution.js";
 import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
 /**
@@ -18,6 +19,8 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @property {number} [holeSegments=1] Inner bore wall segments
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
+ * @property {Function} [vDistribution=utils.linear] Applies to the outer
+ * spherical band only - the inner bore wall is a plain cylinder.
  */
 
 /**
@@ -41,6 +44,7 @@ export function sphericalRing({
   holeSegments = 1,
   phi = TAU,
   phiOffset = 0,
+  vDistribution = linear,
 } = {}) {
 
   const clampedInnerRadius = clamp(innerRadius, 0, radius);
@@ -77,6 +81,7 @@ export function sphericalRing({
     ny,
     phi,
     phiOffset,
+    vDistribution,
     equation: outerEquation,
   });
 

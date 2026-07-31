@@ -1,6 +1,7 @@
 /** @module funnel */
 import { rectangular } from "../../mappings.js";
 import { TAU } from "../../utils/common.js";
+import { linear } from "../../utils/distribution.js";
 import { computeFlatRevolutionGeometry } from "../../utils/revolution.js";
 
 /**
@@ -19,6 +20,7 @@ import { computeFlatRevolutionGeometry } from "../../utils/revolution.js";
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
  * @property {Function} [capMapping=mappings.rectangular]
+ * @property {Function} [vDistribution=utils.linear]
  */
 
 /**
@@ -43,6 +45,7 @@ export function funnel({
   phi = TAU,
   phiOffset = 0,
   capMapping = rectangular,
+  vDistribution = linear,
 } = {}) {
 
   const halfHeight = height / 2;
@@ -59,6 +62,7 @@ export function funnel({
     capBase,
     capSegments,
     capMapping,
+    vDistribution,
     profile: (y, v) => {
       const r = radius * (radiusTop / radius) ** v;
       // Gradient of x² + z² - r(y)² = 0, ie. (2x, -2k·r², 2z)
