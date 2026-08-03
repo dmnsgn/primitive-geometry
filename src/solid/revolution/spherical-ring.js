@@ -3,6 +3,7 @@ import {
   TAU,
   clamp,
   concatGeometries,
+  invert,
   snapToZero,
 } from "../../utils/common.js";
 import { linear } from "../../utils/distribution.js";
@@ -97,25 +98,25 @@ export function sphericalRing({
     const { position: rim } = outerEquation({ v: 0, cosPhi, sinPhi });
 
     return {
-      // v = 0 -> yTop, v = 1 -> yBottom: reversed vs. the outer band's own
-      // bottom -> top sweep, which flips this piece's winding to face into
-      // the bore instead of out of it, matching the inward normal below
-      // (confirmed empirically via flippedNormalTriangles, not derived by
-      // hand - computeRevolutionGeometry's fixed row/column triangulation
-      // makes the resulting winding non-obvious to predict analytically)
-      position: [rim[0], yTop + (yBottom - yTop) * v, rim[2]],
-      normal: [-rim[0], 0, -rim[2]],
+      // v = 0 -> yBottom, v = 1 -> yTop, matching the outer band's own sweep
+      // direction - the same inner/outer v convention cylinder/hollowCylinder/
+      // hollowSphere use. The normal below points naturally outward; invert()
+      // flips it inward and corrects winding to face into the bore.
+      position: [rim[0], yBottom + (yTop - yBottom) * v, rim[2]],
+      normal: [rim[0], 0, rim[2]],
       collapsed: false,
     };
   }
 
-  const inner = computeRevolutionGeometry({
-    nx,
-    ny: holeSegments,
-    phi,
-    phiOffset,
-    equation: innerEquation,
-  });
+  const inner = invert(
+    computeRevolutionGeometry({
+      nx,
+      ny: holeSegments,
+      phi,
+      phiOffset,
+      equation: innerEquation,
+    }),
+  );
 
   return concatGeometries([outer, inner]);
 }
