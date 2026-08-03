@@ -21,7 +21,7 @@ const ctx = createContext({
 
 const hasGeometry = params.has("geometry");
 const camera = new PerspectiveCamera({
-  fov: Math.PI / 4,
+  fov: hasGeometry ? Math.PI / 4 : Math.PI / 6,
   near: 0.1,
   far: 100,
   viewport: [0, 0, window.innerWidth, window.innerHeight],
@@ -32,9 +32,9 @@ const controls = new Controls({
         position: [0, 0, 2],
       }
     : {
-        phi: Math.PI / 4,
-        theta: Math.PI / 8,
-        distance: 40 * (window.innerHeight / window.innerWidth),
+        phi: Math.PI / 3.5,
+        // theta: -Math.PI / 12,
+        distance: 50 * (window.innerHeight / window.innerWidth),
       }),
   element: ctx.gl.canvas,
   camera,
@@ -48,13 +48,15 @@ const modeOptions = ["texture", "normal", "flat-shaded", "uv", "wireframe"];
 const CONFIG = {
   mode: params.get("mode") || "texture",
   cycle: false,
-  axes: params.get("axes") !== "false",
-  bbox: params.get("bbox") !== "false",
-  normals: params.get("normals") !== "false",
-  seams: params.get("seams") !== "false",
+  axes: params.get("axes") === "false" ? false : true,
+  bbox: params.get("bbox") === "false" ? false : false,
+  normals: params.get("normals") === "false" ? false : false,
+  seams: params.get("seams") === "false" ? false : false,
 };
 const pane = new Pane();
-if (!params.has("screenshot")) {
+if (params.has("screenshot")) {
+  pane.dispose();
+} else {
   pane.addBinding(CONFIG, "mode", {
     options: modeOptions.map((value) => ({
       text: value.toUpperCase(),
@@ -75,15 +77,17 @@ if (!params.has("screenshot")) {
       modeOptions[(modeOptions.indexOf(CONFIG.mode) + 1) % modeOptions.length];
     pane.refresh();
   }, 2000);
-} else {
-  pane.dispose();
 }
 
 // Assets
 const colorMap = ctx.texture2D({
   data: await AsyncPreloader.loadImage({ src: "examples/uv.jpg" }),
-  flipY: true,
   wrap: ctx.Wrap.Repeat,
+  flipY: true,
+  mag: ctx.Filter.Linear,
+  min: ctx.Filter.LinearMipmapLinear,
+  mipmap: true,
+  aniso: 16,
 });
 
 // Loop
@@ -675,7 +679,7 @@ const setGeometries = (geometryGroups) => {
         continue;
       }
       const x = groupStartX + (i % gridSize) * offset;
-      const z = Math.trunc(i / gridSize) * offset;
+      const z = -Math.trunc(i / gridSize) * offset;
       // Stack a slot's meshes on the y axis, starting at y = 0
       for (const [level, mesh] of slot.entries()) {
         mesh.translation = [x, -level * offset, z];
