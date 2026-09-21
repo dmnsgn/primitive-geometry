@@ -3,16 +3,25 @@
 import { TAU, getCellsTypedArray } from "./common.js";
 
 /**
- * Center a closed corner list on its own vertex average, returning the
- * centered corners alongside that average (cx, cy) so a caller can translate
- * a shape built around them back afterward. Shared by trapezoid/triangle:
- * their radial fan (via computePolarGeometry) or outline (via
- * computeOutlineEdge) must be centered on the shape's own centroid, not
- * world origin, or an off-center corner (eg. trapezoid's topOffset,
- * triangle's apexOffset) bunches rings tight on one side.
- * @param {number[][]} corners
- * @returns {{centeredCorners: number[][], cx: number, cy: number}}
  * @private
+ * @typedef {object} CenteredCorners
+ * @property {number[][]} centeredCorners
+ * @property {number} cx
+ * @property {number} cy
+ */
+
+/**
+ * Center a closed corner list on its own vertex average, returning the centered
+ * corners alongside that average (cx, cy) so a caller can translate a shape
+ * built around them back afterward. Shared by trapezoid/triangle: their radial
+ * fan (via computePolarGeometry) or outline (via computeOutlineEdge) must be
+ * centered on the shape's own centroid, not world origin, or an off-center
+ * corner (eg. trapezoid's topOffset, triangle's apexOffset) bunches rings tight
+ * on one side.
+ *
+ * @private
+ * @param {number[][]} corners
+ * @returns {CenteredCorners}
  */
 export function centerCorners(corners) {
   const [cx, cy] = corners
@@ -28,13 +37,14 @@ export function centerCorners(corners) {
 
 /**
  * Translate a geometry's positions in place by (dx, dy), z untouched. The
- * inverse of the recentering `centerCorners` sets up - applied after
- * building around the recentered origin, so the shape lands back at its
- * documented, caller-relative position.
+ * inverse of the recentering `centerCorners` sets up - applied after building
+ * around the recentered origin, so the shape lands back at its documented,
+ * caller-relative position.
+ *
+ * @private
  * @param {Float32Array} positions
  * @param {number} dx
  * @param {number} dy
- * @private
  */
 export function translatePositions(positions, dx, dy) {
   for (let i = 0; i < positions.length; i += 3) {
@@ -44,21 +54,21 @@ export function translatePositions(positions, dx, dy) {
 }
 
 /**
- * A point on a closed, explicit-corner outline at angle t: splits the
- * outline into corners.length equal sectors starting at thetaOffset, finds
- * which one t falls in, and linearly interpolates between its two corners.
- * Unlike computePolygonEdge (a regular polygon, corners derived from rx/ry),
- * corners are arbitrary [x, y] pairs supplied by the caller (eg. cross's
- * dodecagon, trapezoid's quad) - shared so the two don't duplicate the same
- * sector-lookup arithmetic.
- * Assumes theta >= 0 (t - thetaOffset never negative): a negative theta
- * makes local negative, and JS's `%` keeps a negative dividend's sign, so
+ * A point on a closed, explicit-corner outline at angle t: splits the outline
+ * into corners.length equal sectors starting at thetaOffset, finds which one t
+ * falls in, and linearly interpolates between its two corners. Unlike
+ * computePolygonEdge (a regular polygon, corners derived from rx/ry), corners
+ * are arbitrary [x, y] pairs supplied by the caller (eg. cross's dodecagon,
+ * trapezoid's quad) - shared so the two don't duplicate the same sector-lookup
+ * arithmetic. Assumes theta >= 0 (t - thetaOffset never negative): a negative
+ * theta makes local negative, and JS's `%` keeps a negative dividend's sign, so
  * `corners[corner]` would index before the array's start.
+ *
+ * @private
  * @param {number[][]} corners
  * @param {number} thetaOffset
  * @param {number} t
  * @returns {[number, number]}
- * @private
  */
 export function computeOutlineEdge(corners, thetaOffset, t) {
   const cornerCount = corners.length;
@@ -72,13 +82,14 @@ export function computeOutlineEdge(corners, thetaOffset, t) {
 }
 
 /**
- * A grid of concentric rings (innerSegments, radiusRatio 0..1 from
- * innerRadius to radius) sampled at evenly-spaced angular columns (segments,
- * closed for a full revolution when theta is a multiple of TAU - the last
- * column then shares its vertices with the first so the wrap edge is
- * welded), fan-triangulated between rings. equation maps each (radiusRatio,
- * angle) sample to its [x, y] position, defaulting to an ellipse's arc;
- * mapping computes its uv and has no default, so it must always be supplied.
+ * A grid of concentric rings (innerSegments, radiusRatio 0..1 from innerRadius
+ * to radius) sampled at evenly-spaced angular columns (segments, closed for a
+ * full revolution when theta is a multiple of TAU - the last column then shares
+ * its vertices with the first so the wrap edge is welded), fan-triangulated
+ * between rings. equation maps each (radiusRatio, angle) sample to its [x, y]
+ * position, defaulting to an ellipse's arc; mapping computes its uv and has no
+ * default, so it must always be supplied.
+ *
  * @private
  */
 export function computePolarGeometry({
@@ -196,14 +207,15 @@ export function computePolarGeometry({
 }
 
 /**
- * A single ring of `segments` points swept across `theta` (`thetaOffset`
- * start) - the path-only counterpart of `computePolarGeometry`'s angular
- * dimension, with no radial rings or fan-triangulation: just the boundary
- * loop `equation(t, i)` maps each angle (and its integer sample index, eg.
- * for `starPath`'s tip/notch parity) to. `closed` repeats index `0` to
- * explicitly close the loop; open (the default) leaves the last vertex
- * unconnected to the first, matching every other path primitive's
- * convention.
+ * A single ring of `segments` points swept across `theta` (`thetaOffset` start)
+ *
+ * - The path-only counterpart of `computePolarGeometry`'s angular dimension, with
+ *   no radial rings or fan-triangulation: just the boundary loop `equation(t,
+ *   i)` maps each angle (and its integer sample index, eg. for `starPath`'s
+ *   tip/notch parity) to. `closed` repeats index `0` to explicitly close the
+ *   loop; open (the default) leaves the last vertex unconnected to the first,
+ *   matching every other path primitive's convention.
+ *
  * @private
  */
 export function computePolarPathGeometry({
@@ -230,13 +242,13 @@ export function computePolarPathGeometry({
 }
 
 /**
- * A point on a straight-edged polygon's boundary at angle t: splits the
- * circle into cornerCount equal sectors starting at thetaOffset, finds which
- * one t falls in, and linearly interpolates between its two corners. Each
- * corner sits at (rx * cos(angle), ry * sin(angle)), independently scaled by
- * xFactor/negativeXFactor (cos positive/negative) and yFactor/
- * negativeYFactor (sin positive/negative) - all default to 1, a regular
- * polygon.
+ * A point on a straight-edged polygon's boundary at angle t: splits the circle
+ * into cornerCount equal sectors starting at thetaOffset, finds which one t
+ * falls in, and linearly interpolates between its two corners. Each corner sits
+ * at (rx * cos(angle), ry * sin(angle)), independently scaled by
+ * xFactor/negativeXFactor (cos positive/negative) and yFactor/ negativeYFactor
+ * (sin positive/negative) - all default to 1, a regular polygon.
+ *
  * @private
  */
 export function computePolygonEdge(
@@ -275,11 +287,12 @@ const COLLAPSE_EPSILON = 1e-6;
 
 /**
  * Chebyshev-spaced sample of `[uMin, uMax]` at column `i` of `segments + 1`:
- * denser near `uMin`/`uMax` than an even split, matching a sweep that
- * pinches at both ends, where a boundary curve is steepest. `uMin`/`uMax`/
- * midpoint are special-cased to their exact values: floating point doesn't
- * guarantee `uMin + t * (uMax - uMin)` reconstructs `uMax` at t=1, nor that
- * `Math.cos(Math.PI / 2)` is bit-exact 0 at the midpoint.
+ * denser near `uMin`/`uMax` than an even split, matching a sweep that pinches
+ * at both ends, where a boundary curve is steepest. `uMin`/`uMax`/ midpoint are
+ * special-cased to their exact values: floating point doesn't guarantee `uMin +
+ * t * (uMax - uMin)` reconstructs `uMax` at t=1, nor that `Math.cos(Math.PI /
+ * 2)` is bit-exact 0 at the midpoint.
+ *
  * @private
  */
 export function computeChebyshevColumn(i, segments, uMin, uMax) {
@@ -289,27 +302,28 @@ export function computeChebyshevColumn(i, segments, uMin, uMax) {
       ? uMax
       : 2 * i === segments
         ? (uMin + uMax) / 2
-        : uMin +
-          ((1 - Math.cos((Math.PI * i) / segments)) / 2) * (uMax - uMin);
+        : uMin + ((1 - Math.cos((Math.PI * i) / segments)) / 2) * (uMax - uMin);
 }
 
 /**
- * Fills the region between two boundary curves swept along a parameter `u`:
- * for each of `segments + 1` columns spanning `[uMin, uMax]`, `bounds(u)`
- * gives `[vMin, vMax]`, and `point(u, v)` maps to an `(x, y)` position as
- * `v` sweeps `[0, 1]` across `innerSegments + 1` rows.
+ * Fills the region between two boundary curves swept along a parameter `u`: for
+ * each of `segments + 1` columns spanning `[uMin, uMax]`, `bounds(u)` gives
+ * `[vMin, vMax]`, and `point(u, v)` maps to an `(x, y)` position as `v` sweeps
+ * `[0, 1]` across `innerSegments + 1` rows.
  *
  * Quirks:
- * - A column where `vMin === vMax` collapses to one vertex and fan-connects
- *   to its neighboring column, instead of a zero-area quad.
- * - `point`'s `(u, v)` must be right-handed (increasing `v` turns 90deg CCW
- *   from increasing `u`) for CCW winding; pass `flip: true` otherwise.
- * - Columns are Chebyshev-spaced (denser near `uMin`/`uMax`) rather than
- *   evenly spaced, since a sweep pinches at both ends and a boundary curve
- *   is steepest right there.
- * - `uvs` default to `(uRatio, vRatio)`, following the arcs. Pass `mapping`
- *   for a flat unwrap instead: it receives `(x, y)` shifted by `center` and
- *   scaled by `radius`/`sx`/`sy`.
+ *
+ * - A column where `vMin === vMax` collapses to one vertex and fan-connects to
+ *   its neighboring column, instead of a zero-area quad.
+ * - `point`'s `(u, v)` must be right-handed (increasing `v` turns 90deg CCW from
+ *   increasing `u`) for CCW winding; pass `flip: true` otherwise.
+ * - Columns are Chebyshev-spaced (denser near `uMin`/`uMax`) rather than evenly
+ *   spaced, since a sweep pinches at both ends and a boundary curve is steepest
+ *   right there.
+ * - `uvs` default to `(uRatio, vRatio)`, following the arcs. Pass `mapping` for a
+ *   flat unwrap instead: it receives `(x, y)` shifted by `center` and scaled by
+ *   `radius`/`sx`/`sy`.
+ *
  * @private
  */
 export function computeSweptArc({
@@ -329,7 +343,7 @@ export function computeSweptArc({
   const cols = segments + 1;
   const rows = innerSegments + 1;
 
-  const columnBounds = new Array(cols);
+  const columnBounds = Array.from({ length: cols });
   const collapsed = new Uint8Array(cols);
   let vertexCount = 0;
 
@@ -343,11 +357,12 @@ export function computeSweptArc({
 
   let cellCount = 0;
   for (let i = 0; i < segments; i++) {
-    cellCount += collapsed[i] && collapsed[i + 1]
-      ? 0
-      : collapsed[i] || collapsed[i + 1]
-        ? (rows - 1) * 3
-        : (rows - 1) * 6;
+    cellCount +=
+      collapsed[i] && collapsed[i + 1]
+        ? 0
+        : collapsed[i] || collapsed[i + 1]
+          ? (rows - 1) * 3
+          : (rows - 1) * 6;
   }
 
   const positions = new Float32Array(vertexCount * 3);
@@ -403,7 +418,6 @@ export function computeSweptArc({
 
     if (collapsed[i] && collapsed[i + 1]) {
       // Both columns collapsed: zero-width sliver, nothing to fill.
-      continue;
     } else if (collapsed[i]) {
       for (let j = 0; j < rows - 1; j++, cellIndex += 3) {
         const t = flip ? [a, b + j + 1, b + j] : [a, b + j, b + j + 1];

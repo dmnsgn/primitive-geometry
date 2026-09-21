@@ -5,23 +5,26 @@ import { computeStarRatio } from "../../../utils/common.js";
  * The regular pentagram ({5/2} star polygon)'s inner (reflex) to outer (tip)
  * radius ratio, `1 / PHI ** 2`. Also used by great-stellated-dodecahedron.js,
  * whose own depth-1 notches sit at the same ratio's reciprocal.
+ *
  * @private
  */
 export const PENTAGRAM_RATIO = computeStarRatio(5, 2);
 
 /**
- * The 5 points of a regular pentagon's "other" star layer: point i sits
- * between the given points i and i + 1, along their bisector (the sum of the
- * two centroid-relative vectors, since they're 72° apart), at `ratio` times
- * the given points' distance from their centroid. `PENTAGRAM_RATIO` (the
- * {5/2} star polygon's inner/outer radius ratio, `1 / PHI ** 2`) yields the
- * inner (reflex) pentagon of a pentagram whose tips are given; its
- * reciprocal (`PHI ** 2`) yields the tips reached by extending the given
- * pentagon's own edges until they meet (one stellation step).
- * @param {number[][]} points 5 coplanar, equidistant-from-centroid points, in consecutive (not skip-2/star-path) cyclic order
+ * The 5 points of a regular pentagon's "other" star layer: point i sits between
+ * the given points i and i + 1, along their bisector (the sum of the two
+ * centroid-relative vectors, since they're 72° apart), at `ratio` times the
+ * given points' distance from their centroid. `PENTAGRAM_RATIO` (the {5/2} star
+ * polygon's inner/outer radius ratio, `1 / PHI ** 2`) yields the inner (reflex)
+ * pentagon of a pentagram whose tips are given; its reciprocal (`PHI ** 2`)
+ * yields the tips reached by extending the given pentagon's own edges until
+ * they meet (one stellation step).
+ *
+ * @private
+ * @param {number[][]} points 5 coplanar, equidistant-from-centroid points, in
+ *   consecutive (not skip-2/star-path) cyclic order
  * @param {number} ratio
  * @returns {number[][]}
- * @private
  */
 export function computeStarLayer(points, ratio) {
   const centroid = [0, 0, 0];
@@ -56,26 +59,26 @@ export function computeStarLayer(points, ratio) {
 }
 
 /**
- * Decompose a regular pentagram (5-pointed star) face into 8 filled
- * triangles: 5 "point" triangles plus a 3-triangle fan across the inner
- * pentagon where its edges cross. The 5 vertices not given are new points,
- * not shared with any other face - two star faces only ever share the
- * given, non-computed layer.
+ * Decompose a regular pentagram (5-pointed star) face into 8 filled triangles:
+ * 5 "point" triangles plus a 3-triangle fan across the inner pentagon where its
+ * edges cross. The 5 vertices not given are new points, not shared with any
+ * other face - two star faces only ever share the given, non-computed layer.
+ *
  * @private
- * @param {number[][]} points 5 coplanar, equidistant-from-centroid points,
- * in consecutive (not skip-2/star-path) cyclic order
+ * @param {number[][]} points 5 coplanar, equidistant-from-centroid points, in
+ *   consecutive (not skip-2/star-path) cyclic order
  * @param {object} [options={}]
- * @param {boolean} [options.stellate=false] `false` (default): `points` are
- * the star's outer tips, and the inner (reflex) pentagon - where the star's
- * edges cross - is computed at the regular pentagram's fixed inner/outer
- * radius ratio `1/phi^2`. `true`: `points` are instead the *inner* pentagon
- * (e.g. a convex polyhedron's own face corners), and new outer tips are
- * computed at `phi^2` - the genuine "extend a regular pentagon's edges
- * until they meet" stellation, which needs `points`' own radius scaled up
- * rather than a fresh smaller pentagon scaled down.
- * @returns {import("../../../../types.js").SimplicialComplexPolygon} 10 positions (tips
- * followed by inner points, regardless of which one was `points`) and 8
- * triangles, local indices
+ * @param {boolean} [options.stellate=false] `false` (default): `points` are the
+ *   star's outer tips, and the inner (reflex) pentagon - where the star's edges
+ *   cross - is computed at the regular pentagram's fixed inner/outer radius
+ *   ratio `1/phi^2`. `true`: `points` are instead the _inner_ pentagon (e.g. a
+ *   convex polyhedron's own face corners), and new outer tips are computed at
+ *   `phi^2` - the genuine "extend a regular pentagon's edges until they meet"
+ *   stellation, which needs `points`' own radius scaled up rather than a fresh
+ *   smaller pentagon scaled down.
+ * @returns {import("../../../../types.js").SimplicialComplexPolygon} 10
+ *   positions (tips followed by inner points, regardless of which one was
+ *   `points`) and 8 triangles, local indices
  */
 export function computePentagram(points, { stellate = false } = {}) {
   const other = computeStarLayer(
@@ -105,15 +108,16 @@ export function computePentagram(points, { stellate = false } = {}) {
 }
 
 /**
- * Snap near-duplicate positions (mathematically identical points that ended
- * up computed independently, from different local contexts, and so agree
- * only to within float precision rather than bit-for-bit) onto one shared
+ * Snap near-duplicate positions (mathematically identical points that ended up
+ * computed independently, from different local contexts, and so agree only to
+ * within float precision rather than bit-for-bit) onto one shared
  * representative, so they weld into exact seams instead of showing up as
- * cracks. Mutates each position array in place. The tolerance is relative
- * to the largest coordinate so any `radius` welds equally well, and each
- * point is compared against the representatives found so far (no spatial
- * hashing, so no grid-boundary misses). A linear scan meant for seed-sized
- * point sets, not arbitrary meshes.
+ * cracks. Mutates each position array in place. The tolerance is relative to
+ * the largest coordinate so any `radius` welds equally well, and each point is
+ * compared against the representatives found so far (no spatial hashing, so no
+ * grid-boundary misses). A linear scan meant for seed-sized point sets, not
+ * arbitrary meshes.
+ *
  * @private
  * @param {number[][]} positions
  * @param {number} [epsilon=1e-5] Relative tolerance
@@ -143,16 +147,23 @@ export function weldNearDuplicates(positions, epsilon = 1e-5) {
 }
 
 /**
- * Assemble per-face geometry fragments into one seed: each face is a group
- * of indices into `vertexPositions`, handed as points to `computeFace`,
- * whose local positions/cells are offset into the shared arrays. Positions
- * that coincide across faces are then welded (see above) so the seed is
- * watertight.
- * @param {Float32Array|number[]} vertexPositions Flat xyz positions
- * @param {number[][]} faces Vertex index groups
- * @param {Function} computeFace
- * @returns {import("../../../../types.js").SimplicialComplexPolygon}
  * @private
+ * @callback ComputeFaceFn
+ * @param {number[][]} points The face's xyz vertices
+ * @returns {import("../../../../types.js").SimplicialComplexPolygon}
+ */
+
+/**
+ * Assemble per-face geometry fragments into one seed: each face is a group of
+ * indices into `vertexPositions`, handed as points to `computeFace`, whose
+ * local positions/cells are offset into the shared arrays. Positions that
+ * coincide across faces are then welded (see above) so the seed is watertight.
+ *
+ * @private
+ * @param {Float32Array | number[]} vertexPositions Flat xyz positions
+ * @param {number[][]} faces Vertex index groups
+ * @param {ComputeFaceFn} computeFace
+ * @returns {import("../../../../types.js").SimplicialComplexPolygon}
  */
 export function assembleFaces(vertexPositions, faces, computeFace) {
   const point = (i) => [

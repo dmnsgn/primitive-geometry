@@ -1,9 +1,6 @@
 /** @module star */
 import { concentric } from "../mappings.js";
-import {
-  TAU,
-  computeStarRatio,
-} from "../utils/common.js";
+import { TAU, computeStarRatio } from "../utils/common.js";
 import {
   computePolarGeometry,
   computePolarPathGeometry,
@@ -12,36 +9,37 @@ import {
 /**
  * @typedef {object} StarOptions
  * @property {number} [points=5]
- * @property {number} [density=2] Schläfli "skip" factor: must be `< points /
- *   2` (and coprime with `points` for a genuine, non-compound star polygon)
- *   or the auto-computed `notchRadius` degenerates.
+ * @property {number} [density=2] Schläfli "skip" factor: must be `< points / 2`
+ *   (and coprime with `points` for a genuine, non-compound star polygon) or the
+ *   auto-computed `notchRadius` degenerates.
  * @property {number} [radius=0.5]
  * @property {number} [notchRadius=radius*computeStarRatio(points,density)]
- *   Radius of the points/tips' flanking concave vertices, ie. how deep the
- *   star's notches cut in.
+ *   Radius of the points/tips' flanking concave vertices, ie. how deep the star's
+ *   notches cut in.
  * @property {number} [innerRadius=0] Like `annulus`'s: a hole radius the fill
  *   stops at instead of reaching the center. `0` (default): no hole, fill
  *   reaches the center (subject to `mergeCentroid`).
- * @property {boolean} [circularHole=false] Only relevant when `innerRadius`
- *   is non-zero: `false` (default) traces the hole as a smaller, self-similar
- *   copy of the outer star; `true` traces it as a plain circle.
+ * @property {boolean} [circularHole=false] Only relevant when `innerRadius` is
+ *   non-zero: `false` (default) traces the hole as a smaller, self-similar copy
+ *   of the outer star; `true` traces it as a plain circle.
  * @property {number} [innerSegments=16]
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
- * @property {boolean} [mergeCentroid] Defaults to `true` (fill to center)
- *   when `innerRadius` is `0`, `false` (leave the hole open) otherwise.
- * @property {Function} [mapping=mappings.concentric]
+ * @property {boolean} [mergeCentroid] Defaults to `true` (fill to center) when
+ *   `innerRadius` is `0`, `false` (leave the hole open) otherwise.
+ * @property {import("../mappings.js").MappingFn} [mapping=mappings.concentric]
  */
 
 /**
- * Regular {points/density} star polygon: `points` outer tips alternating
- * with `points` inner notches. `notchRadius` defaults to the tips' own
+ * Regular {points/density} star polygon: `points` outer tips alternating with
+ * `points` inner notches. `notchRadius` defaults to the tips' own
  * `{points/density}` ratio, so e.g. the default `star()` traces a regular
  * pentagram.
- * @see [Wolfram MathWorld – Star Polygon]{@link https://mathworld.wolfram.com/StarPolygon.html}
- * @alias module:star
+ *
  * @param {StarOptions} [options={}]
  * @returns {import("../../types.js").SimplicialComplex}
+ * @alias module:star
+ * @see [Wolfram MathWorld – Star Polygon]{@link https://mathworld.wolfram.com/StarPolygon.html}
  */
 export function star({
   points = 5,
@@ -97,13 +95,14 @@ export function star({
  */
 
 /**
- * Outline dual of `star`: `points` outer tips alternating with `points`
- * inner notches, connected by straight edges.
- * @alias module:starPath
+ * Outline dual of `star`: `points` outer tips alternating with `points` inner
+ * notches, connected by straight edges.
+ *
  * @param {StarPathOptions} [options={}]
  * @returns {import("../../types.js").SimplicialComplexPath} `points * 2`
  *   positions and a single path cell of that many indices (`+ 1`, repeating
  *   index `0`, when `closed`)
+ * @alias module:starPath
  */
 export function starPath({
   points = 5,

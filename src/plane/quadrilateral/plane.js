@@ -12,17 +12,22 @@ import { computePlane } from "../../utils/plane-grid.js";
  * @property {PlaneDirection} [direction="z"]
  */
 
-/**
- * @typedef {"x" | "-x" | "y" | "-y" | "z" | "-z"} PlaneDirection
- */
+/** @typedef {"x" | "-x" | "y" | "-y" | "z" | "-z"} PlaneDirection */
 
 /**
  * A flat rectangular grid, facing `direction`.
- * @alias module:plane
+ *
  * @param {PlaneOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:plane
  */
-export function plane({ sx = 1, sy = sx, nx = 1, ny = nx, direction = "z" } = {}) {
+export function plane({
+  sx = 1,
+  sy = sx,
+  nx = 1,
+  ny = nx,
+  direction = "z",
+} = {}) {
   const size = (nx + 1) * (ny + 1);
 
   return computePlane(
@@ -51,12 +56,13 @@ export function plane({ sx = 1, sy = sx, nx = 1, ny = nx, direction = "z" } = {}
  */
 
 /**
- * Outline dual of `plane`: just its `z`-facing boundary loop, walked
- * directly (bottom-left → bottom-right → top-right → top-left) rather than
- * extracted from the full grid.
- * @alias module:rectanglePath
+ * Outline dual of `plane`: just its `z`-facing boundary loop, walked directly
+ * (bottom-left → bottom-right → top-right → top-left) rather than extracted
+ * from the full grid.
+ *
  * @param {RectanglePathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @alias module:rectanglePath
  */
 export function rectanglePath({ sx = 1, sy = 0.5, nx = 1, ny = nx } = {}) {
   const x = sx * 0.5;

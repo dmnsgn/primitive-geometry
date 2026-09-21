@@ -6,15 +6,17 @@ import { octahedronFaces } from "../regular/octahedron.js";
  * @typedef {object} OctasphereOptions
  * @property {number} [radius=0.5]
  * @property {number} [subdivisions=2]
- * @property {"gnomonic"|"spherical"} [projection="gnomonic"]
- * @property {Function} [mapping=mappings.spherical]
+ * @property {"gnomonic" | "spherical"} [projection="gnomonic"]
+ * @property {import("../../../mappings.js").MappingFn} [mapping=mappings.spherical]
  */
 
 /**
- * A geodesic sphere built by radially projecting and welding a subdivided octahedron.
- * @alias module:octasphere
+ * A geodesic sphere built by radially projecting and welding a subdivided
+ * octahedron.
+ *
  * @param {OctasphereOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
+ * @alias module:octasphere
  */
 export function octasphere({
   radius = 0.5,
@@ -22,7 +24,6 @@ export function octasphere({
   projection,
   mapping,
 } = {}) {
-
   return computePolyhedron(octahedronFaces({ radius }), {
     radius,
     subdivisions,

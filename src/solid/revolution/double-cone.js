@@ -1,9 +1,6 @@
 /** @module doubleCone */
 import { rectangular } from "../../mappings.js";
-import {
-  TAU,
-  concatGeometries,
-} from "../../utils/common.js";
+import { TAU, concatGeometries } from "../../utils/common.js";
 import { computeConeSegment } from "./cone.js";
 
 /**
@@ -18,19 +15,19 @@ import { computeConeSegment } from "./cone.js";
  * @property {number} [capBaseSegments=capSegments]
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
- * @property {Function} [capMapping=mappings.rectangular]
+ * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
  * @property {number} [sx=1] End ring x scale, elliptical when != sz
  * @property {number} [sz=1] End ring z scale, elliptical when != sx
  */
 
 /**
  * Two right circular cones joined apex-to-apex at the waist (an hourglass of
- * revolution) - the wide top/bottom ends are flat, so unlike `bicone` it
- * takes the same capBase/capApex/capSegments/capMapping options as
- * `cylinder`.
- * @alias module:doubleCone
+ * revolution) - the wide top/bottom ends are flat, so unlike `bicone` it takes
+ * the same capBase/capApex/capSegments/capMapping options as `cylinder`.
+ *
  * @param {DoubleConeOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:doubleCone
  */
 export function doubleCone({
   height = 1,
@@ -47,7 +44,6 @@ export function doubleCone({
   sx = 1,
   sz = 1,
 } = {}) {
-
   const halfHeight = height / 2;
 
   const segment = (yFrom, yTo, rFrom, rTo, capOptions) =>

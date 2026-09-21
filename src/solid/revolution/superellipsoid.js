@@ -18,27 +18,28 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @property {number} [rz=ry]
  * @property {number} [n1=3] North-south (meridian) roundness exponent
  * @property {number} [n2=n1] East-west (cross-section) roundness exponent
- * @property {number} [theta=Math.PI] Meridian sweep length, silently clamped
- * to [-thetaOffset, PI - thetaOffset] - see ellipsoid.js's EllipsoidOptions
- * for why.
- * @property {number} [thetaOffset=0] Meridian sweep start, silently clamped
- * to [0, PI] - see theta.
+ * @property {number} [theta=Math.PI] Meridian sweep length, silently clamped to
+ *   [-thetaOffset, PI - thetaOffset] - see ellipsoid.js's EllipsoidOptions for
+ *   why.
+ * @property {number} [thetaOffset=0] Meridian sweep start, silently clamped to
+ *   [0, PI] - see theta.
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
- * @property {Function} [vDistribution=utils.linear]
+ * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
  */
 
 /**
  * Superquadric ellipsoid (Barr 1981): generalizes ellipsoid by raising its
- * meridian (n1) and cross-section (n2) sin/cos terms to signed powers -
- * n = 2 is a plain ellipsoid, n < 2 rounds toward a box, n > 2 (the default,
- * n1 = n2 = 3) pinches toward a star/octahedron. See superegg for the n2 = 2
- * (circular cross-section) special case.
- * @see [Wolfram MathWorld – Superellipsoid]{@link https://mathworld.wolfram.com/Superellipsoid.html}
- * @see [Wikipedia – Superellipsoid]{@link https://en.wikipedia.org/wiki/Superellipsoid}
- * @alias module:superellipsoid
+ * meridian (n1) and cross-section (n2) sin/cos terms to signed powers - n = 2
+ * is a plain ellipsoid, n < 2 rounds toward a box, n > 2 (the default, n1 = n2
+ * = 3) pinches toward a star/octahedron. See superegg for the n2 = 2 (circular
+ * cross-section) special case.
+ *
  * @param {SuperellipsoidOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:superellipsoid
+ * @see [Wolfram MathWorld – Superellipsoid]{@link https://mathworld.wolfram.com/Superellipsoid.html}
+ * @see [Wikipedia – Superellipsoid]{@link https://en.wikipedia.org/wiki/Superellipsoid}
  */
 export function superellipsoid({
   radius = 1,
@@ -55,7 +56,6 @@ export function superellipsoid({
   phiOffset = 0,
   vDistribution = linear,
 } = {}) {
-
   const e1 = 2 / n1;
   const e2 = 2 / n2;
 

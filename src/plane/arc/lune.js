@@ -5,31 +5,31 @@ import { concatGeometries } from "../../utils/common.js";
 
 /**
  * @typedef {object} LuneOptions
- * @property {number} [radius=0.5] Radius of the big circle (`b` in
- *   MathWorld's notation), centered at the origin.
- * @property {number} [innerRadius=radius] Radius of the small circle
- *   (`a`), whose disk is subtracted from the big one. Must be `< radius`.
- * @property {number} [distance=radius*0.5] Offset of the small circle's
- *   center from the origin, along +x (`c`). For a proper crescent (both
- *   arcs contributing to the boundary) `distance + innerRadius` must exceed
- *   `radius`, ie. the small circle actually pokes through the big one's
- *   edge rather than sitting fully inside it.
+ * @property {number} [radius=0.5] Radius of the big circle (`b` in MathWorld's
+ *   notation), centered at the origin.
+ * @property {number} [innerRadius=radius] Radius of the small circle (`a`),
+ *   whose disk is subtracted from the big one. Must be `< radius`.
+ * @property {number} [distance=radius*0.5] Offset of the small circle's center
+ *   from the origin, along +x (`c`). For a proper crescent (both arcs
+ *   contributing to the boundary) `distance + innerRadius` must exceed
+ *   `radius`, ie. the small circle actually pokes through the big one's edge
+ *   rather than sitting fully inside it.
  * @property {number} [segments=32] Column count, swept left to right.
  * @property {number} [innerSegments=16] Row count between the two halves'
  *   near/far boundary at each column.
- * @property {Function} [mapping=mappings.rectangular] Uv mapping function.
+ * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular] Uv mapping function.
  *   Defaults to a flat, bounding-box-relative unwrap; pass a function using
- *   `uRatio`/`vRatio` (the swept parametrization) to follow the arcs
- *   instead.
+ *   `uRatio`/`vRatio` (the swept parametrization) to follow the arcs instead.
  */
 
 /**
  * Lune: a crescent, the region inside the big circle and outside the offset
  * small one.
- * @see [Wolfram MathWorld – Lune]{@link https://mathworld.wolfram.com/Lune.html}
- * @alias module:lune
+ *
  * @param {LuneOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:lune
+ * @see [Wolfram MathWorld – Lune]{@link https://mathworld.wolfram.com/Lune.html}
  */
 export function lune({
   radius = 0.5,
@@ -39,7 +39,6 @@ export function lune({
   innerSegments = 16,
   mapping = rectangular,
 } = {}) {
-
   const b = radius;
   const a = innerRadius;
   const d = distance;

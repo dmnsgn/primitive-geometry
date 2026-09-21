@@ -1,8 +1,5 @@
 /** @module roundedCube */
-import {
-  getCellsTypedArray,
-  normalize,
-} from "../../utils/common.js";
+import { getCellsTypedArray, normalize } from "../../utils/common.js";
 import { TMP } from "../../utils/revolution.js";
 import {
   PLANE_DIRECTIONS,
@@ -10,9 +7,7 @@ import {
   getPlaneCoordinate,
 } from "../../utils/plane-grid.js";
 
-/**
- * @typedef {"all" | "x" | "y" | "z"} RoundedCubeDirection
- */
+/** @typedef {"all" | "x" | "y" | "z"} RoundedCubeDirection */
 
 /**
  * @typedef {object} RoundedCubeOptions
@@ -22,8 +17,7 @@ import {
  * @property {number} [radius=sx * 0.25]
  * @property {number} [roundSegments=8]
  * @property {number} [edgeSegments=1]
- * @property {number} [nx=edgeSegments] Segments along the straight x
- *   sections.
+ * @property {number} [nx=edgeSegments] Segments along the straight x sections.
  * @property {number} [ny=nx] Segments along the straight y sections.
  * @property {number} [nz=nx] Segments along the straight z sections.
  * @property {RoundedCubeDirection} [roundDirection="all"]
@@ -31,9 +25,10 @@ import {
 
 /**
  * A cuboid with rounded edges and corners.
- * @alias module:roundedCube
+ *
  * @param {RoundedCubeOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:roundedCube
  */
 export function roundedCube({
   sx = 1,
@@ -47,7 +42,6 @@ export function roundedCube({
   nz = nx,
   roundDirection = "all",
 } = {}) {
-
   const r2 = radius * 2;
   const widthX = sx - r2;
   const widthY = sy - r2;

@@ -9,9 +9,10 @@ import { computePolyhedron } from "../../../utils/polyhedron.js";
  */
 
 /**
- * Small stellated dodecahedron: the same 12 vertices and pentagon groupings
- * as the great dodecahedron, with each face's 5 corners connected as a
- * pentagram (skip-one star) instead of a convex pentagon.
+ * Small stellated dodecahedron: the same 12 vertices and pentagon groupings as
+ * the great dodecahedron, with each face's 5 corners connected as a pentagram
+ * (skip-one star) instead of a convex pentagon.
+ *
  * @param {SmallStellatedDodecahedronFacesOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplexPolygon}
  */
@@ -27,14 +28,15 @@ export function smallStellatedDodecahedronFaces({ radius = 0.5 } = {}) {
  * @typedef {object} SmallStellatedDodecahedronOptions
  * @property {number} [radius=0.5]
  * @property {number} [subdivisions=0]
- * @property {Function} [mapping=mappings.rectangular]
+ * @property {import("../../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  */
 
 /**
  * Small stellated dodecahedron.
- * @alias module:smallStellatedDodecahedron
+ *
  * @param {SmallStellatedDodecahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
+ * @alias module:smallStellatedDodecahedron
  */
 export function smallStellatedDodecahedron({
   radius = 0.5,

@@ -24,8 +24,8 @@ function computeTriangleCorners(sx, sy, apexOffset) {
 
 /**
  * @typedef {object} TriangleOptions
- * @property {number} [sx=1] Base half-width: the base corners sit at
- *   `x = -sx`/`x = sx`.
+ * @property {number} [sx=1] Base half-width: the base corners sit at `x =
+ *   -sx`/`x = sx`.
  * @property {number} [sy=1] Half-height: the base sits at `y = -sy`, the apex
  *   at `y = sy`.
  * @property {number} [apexOffset=0] Horizontal shift of the apex, in the same
@@ -39,19 +39,20 @@ function computeTriangleCorners(sx, sy, apexOffset) {
  * @property {number} [theta=TAU] Negative values aren't supported: the corner
  *   lookup assumes `t - thetaOffset` stays non-negative.
  * @property {number} [thetaOffset=0]
- * @property {boolean} [mergeCentroid=innerRadius === 0]
- * @property {Function} [mapping=mappings.rectangular] Uv mapping function.
- *   Defaults to a flat, bounding-box-relative unwrap.
+ * @property {boolean} [mergeCentroid=true]
+ * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
+ *   Uv mapping function. Defaults to a flat, bounding-box-relative unwrap.
  */
 
 /**
  * A triangle: a horizontal base with the apex placed anywhere above it via
- * `apexOffset`. `thetaOffset=0` starts at the bottom-left corner and sweeps
- * CCW through bottom-right, apex.
- * @see [Wolfram MathWorld – Triangle]{@link https://mathworld.wolfram.com/Triangle.html}
- * @alias module:triangle
+ * `apexOffset`. `thetaOffset=0` starts at the bottom-left corner and sweeps CCW
+ * through bottom-right, apex.
+ *
  * @param {TriangleOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:triangle
+ * @see [Wolfram MathWorld – Triangle]{@link https://mathworld.wolfram.com/Triangle.html}
  */
 export function triangle({
   sx = 1,
@@ -111,9 +112,10 @@ export function triangle({
 /**
  * Outline dual of `triangle`: the same 3 corners, walked directly instead of
  * fanned.
- * @alias module:trianglePath
+ *
  * @param {TrianglePathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @alias module:trianglePath
  */
 export function trianglePath({
   sx = 1,

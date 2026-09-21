@@ -14,20 +14,21 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @property {boolean} [capBase=true]
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
- * @property {Function} [capMapping=mappings.rectangular]
- * @property {Function} [vDistribution=utils.linear]
+ * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
+ * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
  */
 
 /**
  * Circular paraboloid (revolution of x² + z² = k·(apexY - y), the classic
  * satellite-dish/reflector shape) - apex up, rim down, same orientation as
- * `cone`, and like `cone` only the rim end takes a cap option. Unlike a
- * cone's apex, the surface here is smooth at the apex (no crease), with a
- * single well-defined normal there.
- * @see [Wolfram MathWorld – Paraboloid]{@link https://mathworld.wolfram.com/Paraboloid.html}
- * @alias module:paraboloid
+ * `cone`, and like `cone` only the rim end takes a cap option. Unlike a cone's
+ * apex, the surface here is smooth at the apex (no crease), with a single
+ * well-defined normal there.
+ *
  * @param {ParaboloidOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:paraboloid
+ * @see [Wolfram MathWorld – Paraboloid]{@link https://mathworld.wolfram.com/Paraboloid.html}
  */
 export function paraboloid({
   height = 1,
@@ -41,7 +42,6 @@ export function paraboloid({
   capMapping = rectangular,
   vDistribution = linear,
 } = {}) {
-
   const halfHeight = height / 2;
   // r² = k·(halfHeight - y), fixed by r = radius at the rim (y = -halfHeight)
   const k = (radius * radius) / height;

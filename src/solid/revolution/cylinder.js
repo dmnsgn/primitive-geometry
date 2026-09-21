@@ -1,9 +1,6 @@
 /** @module cylinder */
 import { rectangular } from "../../mappings.js";
-import {
-  TAU,
-  lerp,
-} from "../../utils/common.js";
+import { TAU, lerp } from "../../utils/common.js";
 import { linear } from "../../utils/distribution.js";
 import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
@@ -20,22 +17,23 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @property {number} [capBaseSegments=capSegments]
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
- * @property {Function} [capMapping=mappings.rectangular]
+ * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
  * @property {number} [sx=1] Base ring x scale, elliptical when != sz
  * @property {number} [sz=1] Base ring z scale, elliptical when != sx
  * @property {number} [sxApex=sx] Apex ring x scale, independent of the base
  * @property {number} [szApex=sz] Apex ring z scale, independent of the base
- * @property {Function} [vDistribution=utils.linear]
+ * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
  */
 
 /**
  * Right circular cylinder by default. Other shapes fall out of the same
  * parameters: a tube (capBase/capApex false, any radii), a frustum/cone
- * (radiusApex != radius, 0 for a true cone apex), and an elliptical cylinder
- * or frustum (sx != sz, optionally different per end via sxApex/szApex).
- * @alias module:cylinder
+ * (radiusApex != radius, 0 for a true cone apex), and an elliptical cylinder or
+ * frustum (sx != sz, optionally different per end via sxApex/szApex).
+ *
  * @param {CylinderOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:cylinder
  */
 export function cylinder({
   height = 1,
@@ -58,7 +56,6 @@ export function cylinder({
   szApex = sz,
   vDistribution = linear,
 } = {}) {
-
   const halfHeight = height / 2;
 
   // Ellipse scale varies linearly with height like radius/radiusApex; the

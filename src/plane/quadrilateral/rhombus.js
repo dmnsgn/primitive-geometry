@@ -1,10 +1,7 @@
 /** @module rhombus */
 import { polygon, polygonPath } from "../polygon.js";
 import { concentric } from "../../mappings.js";
-import {
-  HALF_PI,
-  TAU,
-} from "../../utils/common.js";
+import { HALF_PI, TAU } from "../../utils/common.js";
 
 /**
  * @typedef {object} RhombusOptions
@@ -16,17 +13,18 @@ import {
  * @property {number} [innerRadius=0]
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=HALF_PI]
- * @property {boolean} [mergeCentroid=innerRadius === 0]
- * @property {Function} [mapping=mappings.concentric]
+ * @property {boolean} [mergeCentroid=true]
+ * @property {import("../../mappings.js").MappingFn} [mapping=mappings.concentric]
  */
 
 /**
  * A rhombus: a diamond with vertices at top/right/bottom/left, sx and sy
  * independently scaling the horizontal and vertical diagonals. Equal sx/sy
  * gives a square rotated 45°.
- * @alias module:rhombus
+ *
  * @param {RhombusOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:rhombus
  */
 export function rhombus({
   sx = 1,
@@ -68,9 +66,10 @@ export function rhombus({
 
 /**
  * Outline dual of `rhombus`: `polygonPath` with sides fixed to `4`.
- * @alias module:rhombusPath
+ *
  * @param {RhombusPathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @alias module:rhombusPath
  */
 export function rhombusPath({
   sx = 1,

@@ -12,30 +12,30 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
 /**
  * @typedef {object} SphericalRingOptions
  * @property {number} [radius=0.5] Sphere radius
- * @property {number} [innerRadius=radius*0.5] Cylindrical bore radius,
- * silently clamped to [0, radius] - a bore wider than the sphere has no
- * sensible rim to meet
+ * @property {number} [innerRadius=radius*0.5] Cylindrical bore radius, silently
+ *   clamped to [0, radius] - a bore wider than the sphere has no sensible rim
+ *   to meet
  * @property {number} [nx=32]
  * @property {number} [ny=16] Outer spherical band meridian segments
  * @property {number} [holeSegments=1] Inner bore wall segments
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
- * @property {Function} [vDistribution=utils.linear] Applies to the outer
- * spherical band only - the inner bore wall is a plain cylinder.
+ * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear] Applies to the outer
+ *   spherical band only - the inner bore wall is a plain cylinder.
  */
 
 /**
  * A sphere with a cylindrical hole drilled through its center - MathWorld's
- * Spherical Ring, aka a napkin ring. Unlike what "ring" might suggest,
- * there's no flat annulus at either end: at the rim (height
- * `sqrt(radius² - innerRadius²)`), the sphere's and bore's surfaces meet
- * directly, so the meridian cross-section is a single closed loop -
- * topologically a torus with a lens-shaped minor curve instead of a
- * circular one.
- * @see [Wolfram MathWorld – Spherical Ring]{@link https://mathworld.wolfram.com/SphericalRing.html}
- * @alias module:sphericalRing
+ * Spherical Ring, aka a napkin ring. Unlike what "ring" might suggest, there's
+ * no flat annulus at either end: at the rim (height `sqrt(radius² -
+ * innerRadius²)`), the sphere's and bore's surfaces meet directly, so the
+ * meridian cross-section is a single closed loop - topologically a torus with a
+ * lens-shaped minor curve instead of a circular one.
+ *
  * @param {SphericalRingOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:sphericalRing
+ * @see [Wolfram MathWorld – Spherical Ring]{@link https://mathworld.wolfram.com/SphericalRing.html}
  */
 export function sphericalRing({
   radius = 0.5,
@@ -47,7 +47,6 @@ export function sphericalRing({
   phiOffset = 0,
   vDistribution = linear,
 } = {}) {
-
   const clampedInnerRadius = clamp(innerRadius, 0, radius);
 
   // Polar angle from the pole to the rim where the bore meets the sphere

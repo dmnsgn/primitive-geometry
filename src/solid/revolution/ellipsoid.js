@@ -1,9 +1,5 @@
 /** @module ellipsoid */
-import {
-  TAU,
-  clampMeridianSweep,
-  snapToZero,
-} from "../../utils/common.js";
+import { TAU, clampMeridianSweep, snapToZero } from "../../utils/common.js";
 import { linear } from "../../utils/distribution.js";
 import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
@@ -15,30 +11,31 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @property {number} [rx=0.5]
  * @property {number} [ry=0.25]
  * @property {number} [rz=ry]
- * @property {number} [theta=Math.PI] Meridian sweep length, silently
- * clamped to [-thetaOffset, PI - thetaOffset]: a pole can only sit at the
- * sweep's own start or end, never partway through.
+ * @property {number} [theta=Math.PI] Meridian sweep length, silently clamped to
+ *   [-thetaOffset, PI - thetaOffset]: a pole can only sit at the sweep's own
+ *   start or end, never partway through.
  * @property {number} [thetaOffset=0] Meridian sweep start (0 = north pole),
- * silently clamped to [0, PI] - see theta.
+ *   silently clamped to [0, PI] - see theta.
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
- * @property {Function} [vDistribution=utils.linear]
+ * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
  */
 
 /**
- * Unit-sphere direction cosines for a given meridian angle t (0 = north
- * pole) and (already computed) equatorial cosPhi/sinPhi: the [dx, dy, dz]
- * this module's own `equation` scales by radius/rx/ry/rz for position, and
- * by 1/rx/1/ry/1/rz for its gradient-based normal. Exported so other
- * spherical shapes (eg. `hollowSphere`'s theta/phi cut caps) can place a
- * point on - or a direction from - the exact same sphere without
- * re-deriving the formula. This guarantees bit-identical positions where
- * they must weld to an `ellipsoid`/`sphere` surface.
+ * Unit-sphere direction cosines for a given meridian angle t (0 = north pole)
+ * and (already computed) equatorial cosPhi/sinPhi: the [dx, dy, dz] this
+ * module's own `equation` scales by radius/rx/ry/rz for position, and by
+ * 1/rx/1/ry/1/rz for its gradient-based normal. Exported so other spherical
+ * shapes (eg. `hollowSphere`'s theta/phi cut caps) can place a point on - or a
+ * direction from - the exact same sphere without re-deriving the formula. This
+ * guarantees bit-identical positions where they must weld to an
+ * `ellipsoid`/`sphere` surface.
+ *
+ * @private
  * @param {number} t Meridian angle, 0 at the north pole
  * @param {number} cosPhi
  * @param {number} sinPhi
  * @returns {[number, number, number]}
- * @private
  */
 export function sphereDirection(t, cosPhi, sinPhi) {
   const cosTheta = snapToZero(Math.cos(t));
@@ -52,9 +49,10 @@ export function sphereDirection(t, cosPhi, sinPhi) {
 
 /**
  * Default to an oblate spheroid.
- * @alias module:ellipsoid
+ *
  * @param {EllipsoidOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:ellipsoid
  */
 export function ellipsoid({
   radius = 1,
@@ -69,7 +67,6 @@ export function ellipsoid({
   phiOffset = 0,
   vDistribution = linear,
 } = {}) {
-
   const [clampedTheta, clampedThetaOffset] = clampMeridianSweep(
     theta,
     thetaOffset,

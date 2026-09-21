@@ -1,8 +1,5 @@
 /** @module triquetra */
-import {
-  computeChebyshevColumn,
-  computeSweptArc,
-} from "../../utils/polar.js";
+import { computeChebyshevColumn, computeSweptArc } from "../../utils/polar.js";
 import { rectangular } from "../../mappings.js";
 import {
   TAU,
@@ -12,26 +9,26 @@ import {
 
 /**
  * @typedef {object} TriquetraOptions
- * @property {number} [radius=0.5] Radius of each of the 3 circles, and the
- *   side length of the equilateral triangle formed by their centers - a
- *   canonical Triquetra has no separate spacing parameter.
- * @property {number} [segments=32] Column count, swept angularly per wedge,
- *   for both the core and the petals.
- * @property {number} [innerSegments=16] Row count between the two
- *   boundaries at each column.
- * @property {Function} [mapping=mappings.rectangular] Uv mapping function.
+ * @property {number} [radius=0.5] Radius of each of the 3 circles, and the side
+ *   length of the equilateral triangle formed by their centers - a canonical
+ *   Triquetra has no separate spacing parameter.
+ * @property {number} [segments=32] Column count, swept angularly per wedge, for
+ *   both the core and the petals.
+ * @property {number} [innerSegments=16] Row count between the two boundaries at
+ *   each column.
+ * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular] Uv mapping function.
  *   Defaults to a flat, bounding-box-relative unwrap; pass a function using
- *   `uRatio`/`vRatio` (the swept parametrization) to follow the arcs
- *   instead.
+ *   `uRatio`/`vRatio` (the swept parametrization) to follow the arcs instead.
  */
 
 /**
- * Triquetra: three mutually intersecting vesica piscis lenses, centered at
- * the vertices of an equilateral triangle of side `radius`.
- * @see [Wolfram MathWorld – Triquetra]{@link https://mathworld.wolfram.com/Triquetra.html}
- * @alias module:triquetra
+ * Triquetra: three mutually intersecting vesica piscis lenses, centered at the
+ * vertices of an equilateral triangle of side `radius`.
+ *
  * @param {TriquetraOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:triquetra
+ * @see [Wolfram MathWorld – Triquetra]{@link https://mathworld.wolfram.com/Triquetra.html}
  */
 export function triquetra({
   radius = 0.5,
@@ -39,7 +36,6 @@ export function triquetra({
   innerSegments = 16,
   mapping = rectangular,
 } = {}) {
-
   const r = radius;
   const R = radius / Math.sqrt(3);
 

@@ -7,24 +7,31 @@ import {
   invert,
   normalize,
 } from "../../utils/common.js";
-import {
-  TMP,
-  computeGridQuad,
-} from "../../utils/revolution.js";
+import { TMP, computeGridQuad } from "../../utils/revolution.js";
 import { sphere } from "./sphere.js";
 import { sphereDirection } from "./ellipsoid.js";
 
 /**
  * Flat annular wall at a fixed meridian angle t (a theta cut, ie. where the
  * theta sweep stops short of a pole): r sweeps innerRadius -> radius, phi
- * sweeps the same phiOffset/phi range as the outer/inner bands, sampled on
- * the exact same nx grid so its rim welds bit-identically to theirs. flip
- * (1 or -1) picks which of the 2 possible caps this is (t = the sweep's
- * start or end), driving both the outward normal (the +-theta tangent of
- * `sphereDirection`) and winding.
+ * sweeps the same phiOffset/phi range as the outer/inner bands, sampled on the
+ * exact same nx grid so its rim welds bit-identically to theirs. flip (1 or -1)
+ * picks which of the 2 possible caps this is (t = the sweep's start or end),
+ * driving both the outward normal (the +-theta tangent of `sphereDirection`)
+ * and winding.
+ *
  * @private
  */
-function thetaCap({ t, phi, phiOffset, nx, capSegments, radius, innerRadius, flip }) {
+function thetaCap({
+  t,
+  phi,
+  phiOffset,
+  nx,
+  capSegments,
+  radius,
+  innerRadius,
+  flip,
+}) {
   const wrap = phi % TAU === 0;
   const cols = nx + 1;
   const size = (capSegments + 1) * cols;
@@ -74,16 +81,26 @@ function thetaCap({ t, phi, phiOffset, nx, capSegments, radius, innerRadius, fli
 }
 
 /**
- * Flat annular wall at a fixed equatorial angle p (a phi cut, ie. where the
- * phi sweep is a partial revolution): r sweeps innerRadius -> radius, theta
- * sweeps the same clamped thetaOffset/theta range as the outer/inner bands,
- * sampled on the exact same ny grid so its rim welds bit-identically to
- * theirs. flip (1 or -1) picks which of the 2 possible caps this is (p =
- * the sweep's start or end), driving both the outward normal (the +-phi
- * tangent of `sphereDirection`) and winding.
+ * Flat annular wall at a fixed equatorial angle p (a phi cut, ie. where the phi
+ * sweep is a partial revolution): r sweeps innerRadius -> radius, theta sweeps
+ * the same clamped thetaOffset/theta range as the outer/inner bands, sampled on
+ * the exact same ny grid so its rim welds bit-identically to theirs. flip (1 or
+ * -1) picks which of the 2 possible caps this is (p = the sweep's start or
+ * end), driving both the outward normal (the +-phi tangent of
+ * `sphereDirection`) and winding.
+ *
  * @private
  */
-function phiCap({ p, theta, thetaOffset, ny, capSegments, radius, innerRadius, flip }) {
+function phiCap({
+  p,
+  theta,
+  thetaOffset,
+  ny,
+  capSegments,
+  radius,
+  innerRadius,
+  flip,
+}) {
   const rows = ny + 1;
   const size = (capSegments + 1) * rows;
 
@@ -140,23 +157,24 @@ function phiCap({ p, theta, thetaOffset, ny, capSegments, radius, innerRadius, f
  * @property {number} [nx=32]
  * @property {number} [ny=16]
  * @property {number} [capSegments=1] Radial segments of each cut cap
- * @property {number} [theta=Math.PI / 2] Meridian sweep length, silently clamped
- * like `ellipsoid`'s
- * @property {number} [thetaOffset=Math.PI / 4] Meridian sweep start, silently clamped
- * like `ellipsoid`'s
+ * @property {number} [theta=Math.PI / 2] Meridian sweep length, silently
+ *   clamped like `ellipsoid`'s
+ * @property {number} [thetaOffset=Math.PI / 4] Meridian sweep start, silently
+ *   clamped like `ellipsoid`'s
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
  */
 
 /**
  * A sphere with a smaller, concentric sphere hollowed out of it: a shell of
- * uniform wall thickness. Defaults to a quarter band (theta/thetaOffset)
- * rather than a full sphere, since a closed hollow sphere looks identical to
- * a plain `sphere` from outside - the partial default exposes the cavity
- * and cut caps immediately.
- * @alias module:hollowSphere
+ * uniform wall thickness. Defaults to a quarter band (theta/thetaOffset) rather
+ * than a full sphere, since a closed hollow sphere looks identical to a plain
+ * `sphere` from outside - the partial default exposes the cavity and cut caps
+ * immediately.
+ *
  * @param {HollowSphereOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:hollowSphere
  */
 export function hollowSphere({
   radius = 0.5,
@@ -169,7 +187,6 @@ export function hollowSphere({
   phi = TAU,
   phiOffset = 0,
 } = {}) {
-
   const [clampedTheta, clampedThetaOffset] = clampMeridianSweep(
     theta,
     thetaOffset,
@@ -179,7 +196,17 @@ export function hollowSphere({
 
   const pieces = [
     sphere({ radius, nx, ny, theta, thetaOffset, phi, phiOffset }),
-    invert(sphere({ radius: innerRadius, nx, ny, theta, thetaOffset, phi, phiOffset })),
+    invert(
+      sphere({
+        radius: innerRadius,
+        nx,
+        ny,
+        theta,
+        thetaOffset,
+        phi,
+        phiOffset,
+      }),
+    ),
   ];
 
   if (thetaStart % Math.PI !== 0) {

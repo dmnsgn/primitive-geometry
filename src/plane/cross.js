@@ -31,30 +31,29 @@ function computeCrossOutline(r, w) {
 
 /**
  * @typedef {object} CrossOptions
- * @property {number} [radius=0.5] Distance from the center to each arm's
- *   tip.
- * @property {number} [armWidth=radius/3] Half-width of each arm. Defaults to
- *   a third of `radius`, the classic Greek cross made of 5 equal squares.
- * @property {number} [segments=1] Column count per outline edge (the cross
- *   is a 12-sided, non-regular dodecagon), swept around the outline.
+ * @property {number} [radius=0.5] Distance from the center to each arm's tip.
+ * @property {number} [armWidth=radius/3] Half-width of each arm. Defaults to a
+ *   third of `radius`, the classic Greek cross made of 5 equal squares.
+ * @property {number} [segments=1] Column count per outline edge (the cross is a
+ *   12-sided, non-regular dodecagon), swept around the outline.
  * @property {number} [innerSegments=16] Row count between the center and the
  *   outline at each column.
  * @property {number} [innerRadius=0] Like `star`'s: a hole radius the fill
- *   stops at instead of reaching the center, traced as a smaller, self-
- *   similar copy of the outer cross. `0` (default): no hole, fill reaches
- *   the center.
- * @property {boolean} [mergeCentroid=innerRadius === 0]
- * @property {Function} [mapping=mappings.rectangular] Uv mapping function.
- *   Defaults to a flat, bounding-box-relative unwrap.
+ *   stops at instead of reaching the center, traced as a smaller, self- similar
+ *   copy of the outer cross. `0` (default): no hole, fill reaches the center.
+ * @property {boolean} [mergeCentroid=true]
+ * @property {import("../mappings.js").MappingFn} [mapping=mappings.rectangular]
+ *   Uv mapping function. Defaults to a flat, bounding-box-relative unwrap.
  */
 
 /**
  * Greek cross: a plus-sign shaped non-regular dodecagon - 4 equal arms
  * extending from a square center, filled with a fan from the center.
- * @see [Wolfram MathWorld – Greek Cross]{@link https://mathworld.wolfram.com/GreekCross.html}
- * @alias module:cross
+ *
  * @param {CrossOptions} [options={}]
  * @returns {import("../../types.js").SimplicialComplex}
+ * @alias module:cross
+ * @see [Wolfram MathWorld – Greek Cross]{@link https://mathworld.wolfram.com/GreekCross.html}
  */
 export function cross({
   radius = 0.5,
@@ -98,11 +97,12 @@ export function cross({
  */
 
 /**
- * Outline dual of `cross`: the same 12-corner outline, walked directly
- * instead of fanned from the center.
- * @alias module:crossPath
+ * Outline dual of `cross`: the same 12-corner outline, walked directly instead
+ * of fanned from the center.
+ *
  * @param {CrossPathOptions} [options={}]
  * @returns {import("../../types.js").SimplicialComplexPath}
+ * @alias module:crossPath
  */
 export function crossPath({
   radius = 0.5,

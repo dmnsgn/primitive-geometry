@@ -1,35 +1,31 @@
 /** @module apple */
-import {
-  TAU,
-  clamp,
-} from "../../utils/common.js";
+import { TAU, clamp } from "../../utils/common.js";
 import { linear } from "../../utils/distribution.js";
 import { computeSpindleArcRevolution } from "../../utils/revolution.js";
 
 /**
  * @typedef {object} AppleOptions
  * @property {number} [radius=0.5] Equatorial (belly) radius
- * @property {number} [height=radius] Full height between the two dimple
- * points, silently clamped to (0, radius*2] - the generating circle's own
- * radius must exceed its offset from the axis (see below), which fails past
- * that bound
+ * @property {number} [height=radius] Full height between the two dimple points,
+ *   silently clamped to (0, radius*2] - the generating circle's own radius must
+ *   exceed its offset from the axis (see below), which fails past that bound
  * @property {number} [nx=32]
  * @property {number} [ny=16]
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
- * @property {Function} [vDistribution=utils.linear]
+ * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
  */
 
 /**
- * MathWorld's Apple Surface: "more than half of a circular arc rotated
- * about an axis passing through the [arc's] endpoints" - the outer lobe of
- * a spindle torus. Poles are true cusps (dimples), not smooth tangent
- * points like a sphere's - each pole's normal varies per column, same as
- * `cone`'s apex.
- * @see [Wolfram MathWorld – Apple Surface]{@link https://mathworld.wolfram.com/AppleSurface.html}
- * @alias module:apple
+ * MathWorld's Apple Surface: "more than half of a circular arc rotated about an
+ * axis passing through the [arc's] endpoints" - the outer lobe of a spindle
+ * torus. Poles are true cusps (dimples), not smooth tangent points like a
+ * sphere's - each pole's normal varies per column, same as `cone`'s apex.
+ *
  * @param {AppleOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:apple
+ * @see [Wolfram MathWorld – Apple Surface]{@link https://mathworld.wolfram.com/AppleSurface.html}
  */
 export function apple({
   radius = 0.5,
@@ -40,7 +36,6 @@ export function apple({
   phiOffset = 0,
   vDistribution = linear,
 } = {}) {
-
   const halfHeight = clamp(height, 0, radius * 2) / 2;
 
   // Solve the generating circle's radius (a) and axis offset (d) - with

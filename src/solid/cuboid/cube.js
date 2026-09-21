@@ -11,8 +11,9 @@ import { computePlane } from "../../utils/plane-grid.js";
  */
 
 /**
- * Cuboid faces: 8 positions and 6 quad faces (indices into positions).
- * Cells order: +x, -x, +y, -y, +z, -z.
+ * Cuboid faces: 8 positions and 6 quad faces (indices into positions). Cells
+ * order: +x, -x, +y, -y, +z, -z.
+ *
  * @param {CubeFacesOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPolygon}
  */
@@ -56,9 +57,10 @@ export function cubeFaces({ sx = 1, sy = sx, sz = sx } = {}) {
 /**
  * A cuboid, as raw quad faces rather than a triangulated mesh - see
  * `cubeFaces`.
- * @alias module:box
+ *
  * @param {BoxOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPolygon}
+ * @alias module:box
  */
 export function box({ sx = 1, sy = sx, sz = sx } = {}) {
   return cubeFaces({ sx, sy, sz });
@@ -76,11 +78,19 @@ export function box({ sx = 1, sy = sx, sz = sx } = {}) {
 
 /**
  * A cuboid (rectangular box).
- * @alias module:cube
+ *
  * @param {CubeOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:cube
  */
-export function cube({ sx = 1, sy = sx, sz = sx, nx = 1, ny = nx, nz = nx } = {}) {
+export function cube({
+  sx = 1,
+  sy = sx,
+  sz = sx,
+  nx = 1,
+  ny = nx,
+  nz = nx,
+} = {}) {
   const size =
     (nx + 1) * (ny + 1) * 2 + (nx + 1) * (nz + 1) * 2 + (nz + 1) * (ny + 1) * 2;
 

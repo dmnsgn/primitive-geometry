@@ -11,15 +11,16 @@ import { TAU } from "../../utils/common.js";
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
  * @property {boolean} [mergeCentroid=true]
- * @property {Function} [mapping=mappings.lamé]
+ * @property {import("../../mappings.js").MappingFn} [mapping=mappings.lamé]
  */
 
 /**
  * Hypocycloid with 4 cusps: a superellipse special case (m = n = 2/3).
- * @see [Wolfram MathWorld – Astroid]{@link https://mathworld.wolfram.com/Astroid.html}
- * @alias module:astroid
+ *
  * @param {AstroidOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:astroid
+ * @see [Wolfram MathWorld – Astroid]{@link https://mathworld.wolfram.com/Astroid.html}
  */
 export function astroid({
   radius = 0.5,
@@ -56,9 +57,10 @@ export function astroid({
 
 /**
  * Outline dual of `astroid`: `superellipsePath` with `m = n = 2 / 3`.
- * @alias module:astroidPath
+ *
  * @param {AstroidPathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @alias module:astroidPath
  */
 export function astroidPath({
   radius = 0.5,

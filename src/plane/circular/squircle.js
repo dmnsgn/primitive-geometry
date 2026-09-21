@@ -1,10 +1,6 @@
 /** @module squircle */
 import { fgSquircular } from "../../mappings.js";
-import {
-  HALF_PI,
-  SQRT2,
-  TAU,
-} from "../../utils/common.js";
+import { HALF_PI, SQRT2, TAU } from "../../utils/common.js";
 import {
   computePolarGeometry,
   computePolarPathGeometry,
@@ -17,25 +13,34 @@ import {
 function computeSquircleEdge(rx, ry, cosTheta, sinTheta, t, squareness) {
   // Fix singularities
   // https://codereview.stackexchange.com/questions/233496/handling-singularities-in-squircle-parametric-equations
-  if (t === 0 || t === TAU) {
-    return [rx, 0];
-  } else if (t === HALF_PI) {
-    return [0, ry];
-  } else if (t === Math.PI) {
-    return [-rx, 0];
-  } else if (t === TAU - HALF_PI) {
-    return [0, -ry];
-  } else {
-    const sqrt = Math.sqrt(
-      1 - Math.sqrt(1 - squareness ** 2 * Math.sin(2 * t) ** 2),
-    );
+  switch (t) {
+    case 0:
+    case TAU: {
+      return [rx, 0];
+    }
+    case HALF_PI: {
+      return [0, ry];
+    }
+    case Math.PI: {
+      return [-rx, 0];
+    }
+    case TAU - HALF_PI: {
+      return [0, -ry];
+    }
+    default: {
+      const sqrt = Math.sqrt(
+        1 - Math.sqrt(1 - squareness ** 2 * Math.sin(2 * t) ** 2),
+      );
 
-    return [
-      ((rx * Math.sign(cosTheta)) / (squareness * SQRT2 * Math.abs(sinTheta))) *
-        sqrt,
-      ((ry * Math.sign(sinTheta)) / (squareness * SQRT2 * Math.abs(cosTheta))) *
-        sqrt,
-    ];
+      return [
+        ((rx * Math.sign(cosTheta)) /
+          (squareness * SQRT2 * Math.abs(sinTheta))) *
+          sqrt,
+        ((ry * Math.sign(sinTheta)) /
+          (squareness * SQRT2 * Math.abs(cosTheta))) *
+          sqrt,
+      ];
+    }
   }
 }
 
@@ -49,17 +54,17 @@ function computeSquircleEdge(rx, ry, cosTheta, sinTheta, t, squareness) {
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
  * @property {boolean} [mergeCentroid=true]
- * @property {Function} [mapping=mappings.fgSquircular]
+ * @property {import("../../mappings.js").MappingFn} [mapping=mappings.fgSquircular]
  * @property {number} [squareness=0.95] Squareness (0 < s <= 1)
  */
 
 /**
  * Fernández-Guasti squircle
- * @see [Squircular Calculations – Chamberlain Fong]{@link https://arxiv.org/vc/arxiv/papers/1604/1604.02174v1.pdf}
  *
- * @alias module:squircle
  * @param {SquircleOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:squircle
+ * @see [Squircular Calculations – Chamberlain Fong]{@link https://arxiv.org/vc/arxiv/papers/1604/1604.02174v1.pdf}
  */
 export function squircle({
   sx = 1,
@@ -101,11 +106,12 @@ export function squircle({
  */
 
 /**
- * Outline dual of `squircle`: the same Fernández-Guasti curve, sampled
- * directly with no radial fill.
- * @alias module:squirclePath
+ * Outline dual of `squircle`: the same Fernández-Guasti curve, sampled directly
+ * with no radial fill.
+ *
  * @param {SquirclePathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @alias module:squirclePath
  */
 export function squirclePath({
   sx = 1,

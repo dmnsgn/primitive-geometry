@@ -9,6 +9,7 @@ import { PHI } from "../../../utils/common.js";
 
 /**
  * Regular icosahedron.
+ *
  * @param {IcosahedronFacesOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplexPolygon}
  */
@@ -61,14 +62,15 @@ export function icosahedronFaces({ radius = 0.5 } = {}) {
  * @typedef {object} IcosahedronOptions
  * @property {number} [radius=0.5]
  * @property {number} [subdivisions=0]
- * @property {Function} [mapping=mappings.rectangular]
+ * @property {import("../../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  */
 
 /**
  * Regular icosahedron.
- * @alias module:icosahedron
+ *
  * @param {IcosahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
+ * @alias module:icosahedron
  */
 export function icosahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
   return computePolyhedron(icosahedronFaces({ radius }), {

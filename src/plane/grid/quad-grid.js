@@ -1,6 +1,5 @@
 /** @module quadGrid */
 
-
 /**
  * @typedef {object} QuadGridOptions
  * @property {number} [sx=1]
@@ -11,12 +10,12 @@
 
 /**
  * Regular grid
- * @alias module:quadGrid
+ *
  * @param {QuadGridOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPolygon}
+ * @alias module:quadGrid
  */
 export function quadGrid({ sx = 1, sy = sx, nx = 10, ny = nx } = {}) {
-
   const positions = new Float32Array((nx + 1) * (ny + 1) * 3);
   const cells = [];
 

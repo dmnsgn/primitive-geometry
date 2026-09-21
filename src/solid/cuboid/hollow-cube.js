@@ -1,23 +1,20 @@
 /** @module hollowCube */
 import { getCellsTypedArray } from "../../utils/common.js";
-import {
-  PLANE_DIRECTIONS,
-  computePlane,
-} from "../../utils/plane-grid.js";
+import { PLANE_DIRECTIONS, computePlane } from "../../utils/plane-grid.js";
 
 const DIRECTIONS = ["x", "-x", "y", "-y", "z", "-z"];
 
 /**
- * Emit one box's 6 faces (`cube`'s own per-face computePlane calls,
- * generalized to an off-center box). Each face's uvScale/uvOffset is
- * remapped so it lands exactly where it'd fall within a *single*
- * computePlane call spanning the whole hollow cube's face (fullSize) - ie.
- * every piece's outer face tiles into one continuous 0-1 UV square per
- * direction, like a plain `cube`'s, instead of each small piece getting its
- * own independent 0-1 range. This applies uniformly to every face, not just
- * the ones that end up on the outer boundary: interior/tunnel-facing faces
- * get a well-defined, harmless UV this way too, since they're never
- * visible.
+ * Emit one box's 6 faces (`cube`'s own per-face computePlane calls, generalized
+ * to an off-center box). Each face's uvScale/uvOffset is remapped so it lands
+ * exactly where it'd fall within a _single_ computePlane call spanning the
+ * whole hollow cube's face (fullSize) - ie. every piece's outer face tiles into
+ * one continuous 0-1 UV square per direction, like a plain `cube`'s, instead of
+ * each small piece getting its own independent 0-1 range. This applies
+ * uniformly to every face, not just the ones that end up on the outer boundary:
+ * interior/tunnel-facing faces get a well-defined, harmless UV this way too,
+ * since they're never visible.
+ *
  * @private
  */
 function computeBox(geometry, indices, dims, center, fullSize) {
@@ -55,19 +52,24 @@ function computeBox(geometry, indices, dims, center, fullSize) {
  * @property {number} [sy=sx]
  * @property {number} [sz=sx]
  * @property {number} [thickness=sx*0.2] Uniform beam/wall size (must stay <
- * half of the smallest of sx/sy/sz for positive-length beams)
+ *   half of the smallest of sx/sy/sz for positive-length beams)
  */
 
 /**
- * A cube with a square hole through the center of each face, like a single
- * cell of a Menger sponge: the 8 corners stay solid (t x t x t blocks) and
- * the 12 edges become beams of the same cross-section running between them.
- * @alias module:hollowCube
+ * A cube with a square hole through the center of each face, like a single cell
+ * of a Menger sponge: the 8 corners stay solid (t x t x t blocks) and the 12
+ * edges become beams of the same cross-section running between them.
+ *
  * @param {HollowCubeOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:hollowCube
  */
-export function hollowCube({ sx = 1, sy = sx, sz = sx, thickness = sx * 0.2 } = {}) {
-
+export function hollowCube({
+  sx = 1,
+  sy = sx,
+  sz = sx,
+  thickness = sx * 0.2,
+} = {}) {
   const fullSize = [sx, sy, sz];
   const half = [sx * 0.5, sy * 0.5, sz * 0.5];
   const t = thickness;

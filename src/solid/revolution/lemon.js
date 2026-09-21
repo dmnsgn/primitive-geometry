@@ -7,27 +7,28 @@ import { computeSpindleArcRevolution } from "../../utils/revolution.js";
  * @typedef {object} LemonOptions
  * @property {number} [radius=0.3] Equatorial (widest) radius
  * @property {number} [height=1] Full height between the two pointed ends,
- * silently raised to at least radius*2 - below that the generating circle's
- * center offset would go negative, no longer tracing the lemon's own
- * (minor, less-than-half-circle) arc; height = radius*2 exactly degenerates
- * to a plain sphere (the offset hits 0)
+ *   silently raised to at least radius_2 - below that the generating circle's
+ *   center offset would go negative, no longer tracing the lemon's own (minor,
+ *   less-than-half-circle) arc; height = radius_2 exactly degenerates to a
+ *   plain sphere (the offset hits 0)
  * @property {number} [nx=32]
  * @property {number} [ny=16]
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
- * @property {Function} [vDistribution=utils.linear]
+ * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
  */
 
 /**
- * Lemon (geometry): "a circular arc of angle less than half of a full
- * circle" rotated about the chord through its own endpoints - `apple`'s
- * exact complementary half. Unlike apple, the meridian is plain
- * y-monotonic: no dimple, just a smooth convex taper to a point (still a
- * cusp, not a tangent point, at each pole).
- * @see [Wikipedia – Lemon (geometry)]{@link https://en.wikipedia.org/wiki/Lemon_(geometry)}
- * @alias module:lemon
+ * Lemon (geometry): "a circular arc of angle less than half of a full circle"
+ * rotated about the chord through its own endpoints - `apple`'s exact
+ * complementary half. Unlike apple, the meridian is plain y-monotonic: no
+ * dimple, just a smooth convex taper to a point (still a cusp, not a tangent
+ * point, at each pole).
+ *
  * @param {LemonOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:lemon
+ * @see [Wikipedia – Lemon (geometry)]{@link https://en.wikipedia.org/wiki/Lemon_(geometry)}
  */
 export function lemon({
   radius = 0.3,
@@ -38,7 +39,6 @@ export function lemon({
   phiOffset = 0,
   vDistribution = linear,
 } = {}) {
-
   const halfHeight = Math.max(height, radius * 2) / 2;
 
   // Same a (generating circle radius) / d (its axis offset) solve as

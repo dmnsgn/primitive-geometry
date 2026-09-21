@@ -14,14 +14,22 @@ import {
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
  * @property {boolean} [mergeCentroid=true]
- * @property {Function} [mapping=mappings.concentric]
+ * @property {import("../mappings.js").MappingFn} [mapping=mappings.concentric]
  * @property {number} [n=3]
  */
 
 // Reuleaux polygon boundary point at angle t, unit radius - shared by
 // reuleaux's radial fill (scaled by rx per ring) and reuleauxPath's outline
 // (scaled by radius directly, no ring interpolation).
-function computeReuleauxEdge(n, cosN, PIoverN, thetaOffset, cosOffset, sinOffset, t) {
+function computeReuleauxEdge(
+  n,
+  cosN,
+  PIoverN,
+  thetaOffset,
+  cosOffset,
+  sinOffset,
+  t,
+) {
   const s = t - thetaOffset;
   const phi = PIoverN * (2 * Math.floor((n * s) / TAU) + 1);
   const px = cosN * Math.cos(0.5 * (s + phi)) - Math.cos(phi);
@@ -31,12 +39,13 @@ function computeReuleauxEdge(n, cosN, PIoverN, thetaOffset, cosOffset, sinOffset
 }
 
 /**
- * A Reuleaux polygon: a constant-width curve built from n circular arcs,
- * each centered on the opposite vertex.
- * @see [Parametric equations for regular and Reuleaux polygons]{@link https://tpfto.wordpress.com/2011/09/15/parametric-equations-for-regular-and-reuleaux-polygons/}
- * @alias module:reuleaux
+ * A Reuleaux polygon: a constant-width curve built from n circular arcs, each
+ * centered on the opposite vertex.
+ *
  * @param {ReuleauxOptions} [options={}]
  * @returns {import("../../types.js").SimplicialComplex}
+ * @alias module:reuleaux
+ * @see [Parametric equations for regular and Reuleaux polygons]{@link https://tpfto.wordpress.com/2011/09/15/parametric-equations-for-regular-and-reuleaux-polygons/}
  */
 export function reuleaux({
   radius = 0.5,
@@ -89,11 +98,12 @@ export function reuleaux({
  */
 
 /**
- * Outline dual of `reuleaux`: same parametric boundary, sampled directly
- * with no radial fill.
- * @alias module:reuleauxPath
+ * Outline dual of `reuleaux`: same parametric boundary, sampled directly with
+ * no radial fill.
+ *
  * @param {ReuleauxPathOptions} [options={}]
  * @returns {import("../../types.js").SimplicialComplexPath}
+ * @alias module:reuleauxPath
  */
 export function reuleauxPath({
   radius = 0.5,

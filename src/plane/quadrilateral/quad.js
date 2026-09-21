@@ -10,9 +10,10 @@ import { triangulateFaces } from "../../utils/common.js";
 
 /**
  * A square, filled with 2 triangles.
- * @alias module:quad
+ *
  * @param {QuadOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:quad
  */
 export function quad({ scale = 0.5 } = {}) {
   const { positions, cells } = squarePath({ scale });
@@ -47,9 +48,10 @@ export function quad({ scale = 0.5 } = {}) {
 /**
  * Outline dual of `quad`: `rectanglePath` with equal sx/sy, same as `quad`
  * itself is built from it.
- * @alias module:squarePath
+ *
  * @param {SquarePathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @alias module:squarePath
  */
 export function squarePath({ scale = 0.5, nx = 1, ny = nx } = {}) {
   return rectanglePath({ sx: scale * 2, sy: scale * 2, nx, ny });

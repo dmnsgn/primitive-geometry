@@ -6,27 +6,27 @@ import { rectangular } from "../../mappings.js";
  * @typedef {object} LensOptions
  * @property {number} [radius=0.5] Radius of the first circle, centered at
  *   `-distance / 2`.
- * @property {number} [radius2=radius] Radius of the second circle, centered
- *   at `distance / 2`. Equal to `radius` (a symmetric lens) by default.
+ * @property {number} [radius2=radius] Radius of the second circle, centered at
+ *   `distance / 2`. Equal to `radius` (a symmetric lens) by default.
  * @property {number} [distance=radius] Distance between the two circles'
  *   centers.
  * @property {number} [segments=32] Column count, swept left to right.
  * @property {number} [innerSegments=16] Row count between the bottom and top
  *   boundary at each column.
- * @property {Function} [mapping=mappings.rectangular] Uv mapping function.
+ * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular] Uv mapping function.
  *   Defaults to a flat, bounding-box-relative unwrap; pass a function using
- *   `uRatio`/`vRatio` (the swept parametrization) to follow the arcs
- *   instead.
+ *   `uRatio`/`vRatio` (the swept parametrization) to follow the arcs instead.
  */
 
 /**
- * Lens: the convex region where two circles overlap, centered on the x axis
- * and offset symmetrically by `distance`. Defaults to a Vesica Piscis.
- * @see [Wolfram MathWorld – Lens]{@link https://mathworld.wolfram.com/Lens.html}
- * @see [Wolfram MathWorld – Vesica Piscis]{@link https://mathworld.wolfram.com/VesicaPiscis.html}
- * @alias module:lens
+ * Lens: the convex region where two circles overlap, centered on the x axis and
+ * offset symmetrically by `distance`. Defaults to a Vesica Piscis.
+ *
  * @param {LensOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:lens
+ * @see [Wolfram MathWorld – Lens]{@link https://mathworld.wolfram.com/Lens.html}
+ * @see [Wolfram MathWorld – Vesica Piscis]{@link https://mathworld.wolfram.com/VesicaPiscis.html}
  */
 export function lens({
   radius = 0.5,
@@ -36,7 +36,6 @@ export function lens({
   innerSegments = 16,
   mapping = rectangular,
 } = {}) {
-
   const r1 = radius;
   const r2 = radius2;
   const c1 = -distance / 2;

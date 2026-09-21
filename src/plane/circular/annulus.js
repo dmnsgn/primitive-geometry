@@ -13,14 +13,15 @@ import { TAU } from "../../utils/common.js";
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
  * @property {number} [innerRadius=radius * 0.5]
- * @property {Function} [mapping=mappings.concentric]
+ * @property {import("../../mappings.js").MappingFn} [mapping=mappings.concentric]
  */
 
 /**
  * An annulus (ring): the region between two concentric circles.
- * @alias module:annulus
+ *
  * @param {AnnulusOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:annulus
  */
 export function annulus({
   sx = 1,
@@ -61,11 +62,12 @@ export function annulus({
 
 /**
  * Outline dual of `annulus`: unlike every other path in this module, an
- * annulus's boundary is 2 disjoint loops, not one - 2 path cells (outer
- * loop first, inner second).
- * @alias module:annulusPath
+ * annulus's boundary is 2 disjoint loops, not one - 2 path cells (outer loop
+ * first, inner second).
+ *
  * @param {AnnulusPathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @alias module:annulusPath
  */
 export function annulusPath({
   sx = 1,
@@ -79,7 +81,15 @@ export function annulusPath({
 } = {}) {
   // 2 disjoint ellipsePath loops concatenated into one geometry, rather than
   // fanned into a single ring of triangles between them.
-  const outer = ellipsePath({ sx, sy, radius, segments, theta, thetaOffset, closed });
+  const outer = ellipsePath({
+    sx,
+    sy,
+    radius,
+    segments,
+    theta,
+    thetaOffset,
+    closed,
+  });
   const inner = ellipsePath({
     sx,
     sy,

@@ -11,6 +11,7 @@ import { computePolyhedron } from "../../../utils/polyhedron.js";
  * Great icosahedron, sharing the icosahedron's 12 vertices; each of its 20
  * triangular faces connects a vertex to two of its "second-shell" neighbors
  * (rather than its 5 immediate ones), deeply interpenetrating the rest.
+ *
  * @param {GreatIcosahedronFacesOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplexPolygon}
  */
@@ -48,16 +49,21 @@ export function greatIcosahedronFaces({ radius = 0.5 } = {}) {
  * @typedef {object} GreatIcosahedronOptions
  * @property {number} [radius=0.5]
  * @property {number} [subdivisions=0]
- * @property {Function} [mapping=mappings.rectangular]
+ * @property {import("../../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  */
 
 /**
  * Great icosahedron.
- * @alias module:greatIcosahedron
+ *
  * @param {GreatIcosahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
+ * @alias module:greatIcosahedron
  */
-export function greatIcosahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
+export function greatIcosahedron({
+  radius = 0.5,
+  subdivisions = 0,
+  mapping,
+} = {}) {
   return computePolyhedron(greatIcosahedronFaces({ radius }), {
     radius,
     subdivisions,

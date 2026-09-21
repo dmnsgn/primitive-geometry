@@ -30,37 +30,37 @@ function computeTrapezoidCorners(sx, sy, topRatio, topOffset) {
 /**
  * @typedef {object} TrapezoidOptions
  * @property {number} [sx=1] Bottom edge half-width.
- * @property {number} [sy=1] Half-height: the bottom/top edges sit at
- *   `y = -sy`/`y = sy`.
- * @property {number} [topRatio=0.5] Top edge half-width, as a fraction of
- *   `sx`. `1` matches the bottom edge's width (a parallelogram once
- *   `topOffset` shifts it off-center); `0` collapses the top edge to a
- *   point (a triangle).
- * @property {number} [topOffset=0] Horizontal shift of the top edge's
- *   center, as a fraction of `sx`. `0` (default) keeps both legs symmetric
- *   (an isosceles trapezoid); a non-zero shift skews it into a right/scalene
+ * @property {number} [sy=1] Half-height: the bottom/top edges sit at `y =
+ *   -sy`/`y = sy`.
+ * @property {number} [topRatio=0.5] Top edge half-width, as a fraction of `sx`.
+ *   `1` matches the bottom edge's width (a parallelogram once `topOffset`
+ *   shifts it off-center); `0` collapses the top edge to a point (a triangle).
+ * @property {number} [topOffset=0] Horizontal shift of the top edge's center,
+ *   as a fraction of `sx`. `0` (default) keeps both legs symmetric (an
+ *   isosceles trapezoid); a non-zero shift skews it into a right/scalene
  *   trapezoid.
  * @property {number} [radius=0.5]
  * @property {number} [edgeSegments=1]
  * @property {number} [innerSegments=16]
  * @property {number} [innerRadius=0]
- * @property {number} [theta=TAU] Negative values aren't supported: the
- *   corner lookup assumes `t - thetaOffset` stays non-negative.
+ * @property {number} [theta=TAU] Negative values aren't supported: the corner
+ *   lookup assumes `t - thetaOffset` stays non-negative.
  * @property {number} [thetaOffset=0]
- * @property {boolean} [mergeCentroid=innerRadius === 0]
- * @property {Function} [mapping=mappings.rectangular] Uv mapping function.
- *   Defaults to a flat, bounding-box-relative unwrap.
+ * @property {boolean} [mergeCentroid=true]
+ * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
+ *   Uv mapping function. Defaults to a flat, bounding-box-relative unwrap.
  */
 
 /**
  * A trapezoid: a quad with horizontal top/bottom edges, the top narrowed to
- * `topRatio` of the bottom's width and optionally shifted by `topOffset`.
- * The default `thetaOffset=0` starts at the bottom-left corner and sweeps
- * CCW through bottom-right, top-right, top-left.
- * @see [Wolfram MathWorld – Trapezoid]{@link https://mathworld.wolfram.com/Trapezoid.html}
- * @alias module:trapezoid
+ * `topRatio` of the bottom's width and optionally shifted by `topOffset`. The
+ * default `thetaOffset=0` starts at the bottom-left corner and sweeps CCW
+ * through bottom-right, top-right, top-left.
+ *
  * @param {TrapezoidOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:trapezoid
+ * @see [Wolfram MathWorld – Trapezoid]{@link https://mathworld.wolfram.com/Trapezoid.html}
  */
 export function trapezoid({
   sx = 1,
@@ -121,11 +121,12 @@ export function trapezoid({
  */
 
 /**
- * Outline dual of `trapezoid`: the same 4 corners, walked directly instead
- * of fanned.
- * @alias module:trapezoidPath
+ * Outline dual of `trapezoid`: the same 4 corners, walked directly instead of
+ * fanned.
+ *
  * @param {TrapezoidPathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @alias module:trapezoidPath
  */
 export function trapezoidPath({
   sx = 1,

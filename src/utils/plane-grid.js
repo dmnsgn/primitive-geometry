@@ -1,8 +1,6 @@
 /** @module planeGrid */
 
-/**
- * @private
- */
+/** @private */
 export const PLANE_DIRECTIONS = {
   z: [0, 1, 2, 1, -1, 1],
   "-z": [0, 1, 2, -1, -1, -1],
@@ -13,9 +11,10 @@ export const PLANE_DIRECTIONS = {
 };
 
 /**
- * Piecewise sampling so region boundaries are computed once and bit-exact.
- * n = 0 collapses the straight section to a single column; cornerSegments = 0
+ * Piecewise sampling so region boundaries are computed once and bit-exact. n =
+ * 0 collapses the straight section to a single column; cornerSegments = 0
  * collapses to a plain -size/2 + index * size/n grid.
+ *
  * @private
  */
 export function getPlaneCoordinate(
@@ -34,13 +33,14 @@ export function getPlaneCoordinate(
 }
 
 /**
- * Remap a 2D offset from a corner reference point onto the true circular arc
- * of the same radius: preserves the offset's angle and rescales its distance
- * from Chebyshev (the flat square grid extension) to Euclidean (the circle).
+ * Remap a 2D offset from a corner reference point onto the true circular arc of
+ * the same radius: preserves the offset's angle and rescales its distance from
+ * Chebyshev (the flat square grid extension) to Euclidean (the circle).
+ *
+ * @private
  * @param {number} dx
  * @param {number} dy
  * @returns {[number, number]}
- * @private
  */
 export function remapCornerOffset(dx, dy) {
   const scale = Math.max(Math.abs(dx), Math.abs(dy)) / Math.hypot(dx, dy);
@@ -50,6 +50,7 @@ export function remapCornerOffset(dx, dy) {
 /**
  * Whether a plane grid index falls in the rounded-corner range (before 0 or
  * after n), given cornerSegments straight-section columns/rows on each side.
+ *
  * @private
  */
 export function isPlaneCorner(index, n, cornerSegments) {
@@ -57,8 +58,9 @@ export function isPlaneCorner(index, n, cornerSegments) {
 }
 
 /**
- * Reference corner coordinate a rounded value is beyond, or null when it
- * sits within the straight [-half, half] span (no rounding needed there).
+ * Reference corner coordinate a rounded value is beyond, or null when it sits
+ * within the straight [-half, half] span (no rounding needed there).
+ *
  * @private
  */
 export function getPlaneCornerReference(value, half) {
@@ -66,10 +68,11 @@ export function getPlaneCornerReference(value, half) {
 }
 
 /**
- * Whether the corner a value pair [cx, cy] sits in (relative to plane
- * center, by sign) is selected by roundCorners: a uniform true/false, or a
- * 4-item boolean array indexing [-u-v, +u-v, +u+v, -u+v]. False when either
- * is null (getPlaneCornerReference's sentinel for "not in a corner").
+ * Whether the corner a value pair [cx, cy] sits in (relative to plane center,
+ * by sign) is selected by roundCorners: a uniform true/false, or a 4-item
+ * boolean array indexing [-u-v, +u-v, +u+v, -u+v]. False when either is null
+ * (getPlaneCornerReference's sentinel for "not in a corner").
+ *
  * @private
  */
 export function isPlaneCornerRounded(cx, cy, roundCorners) {
@@ -89,6 +92,7 @@ export function isPlaneCornerRounded(cx, cy, roundCorners) {
  * false (none rounded), true (all 4 rounded), or a 4-item boolean array
  * selecting which of [-u-v, +u-v, +u+v, -u+v] round. Unselected corners stay
  * flat/square - their raw grid extension left as-is.
+ *
  * @private
  */
 export function computePlane(

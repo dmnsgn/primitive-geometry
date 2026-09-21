@@ -11,14 +11,15 @@ import { TAU } from "../../utils/common.js";
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
  * @property {boolean} [mergeCentroid=true]
- * @property {Function} [mapping=mappings.concentric]
+ * @property {import("../../mappings.js").MappingFn} [mapping=mappings.concentric]
  */
 
 /**
  * A disc: `ellipse` with sx = sy = 1.
- * @alias module:disc
+ *
  * @param {DiscOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:disc
  */
 export function disc({
   radius = 0.5,
@@ -53,11 +54,12 @@ export function disc({
 
 /**
  * Outline dual of `disc`: `ellipsePath` with sx = sy = 1.
- * @alias module:circlePath
+ *
  * @param {CirclePathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath} `segments`
  *   positions and a single path cell of `segments` indices (`segments + 1`,
  *   repeating index `0`, when `closed`)
+ * @alias module:circlePath
  */
 export function circlePath({
   radius = 0.5,

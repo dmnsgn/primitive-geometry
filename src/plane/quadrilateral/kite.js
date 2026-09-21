@@ -1,9 +1,6 @@
 /** @module kite */
 import { concentric } from "../../mappings.js";
-import {
-  HALF_PI,
-  TAU,
-} from "../../utils/common.js";
+import { HALF_PI, TAU } from "../../utils/common.js";
 import {
   computePolarGeometry,
   computePolarPathGeometry,
@@ -23,16 +20,17 @@ import {
  * @property {number} [innerRadius=0]
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=HALF_PI]
- * @property {boolean} [mergeCentroid=innerRadius === 0]
- * @property {Function} [mapping=mappings.concentric]
+ * @property {boolean} [mergeCentroid=true]
+ * @property {import("../../mappings.js").MappingFn} [mapping=mappings.concentric]
  */
 
 /**
- * A kite: a rhombus with its bottom vertex pulled toward the center (by
- * ratio) while the top, left and right vertices stay put.
- * @alias module:kite
+ * A kite: a rhombus with its bottom vertex pulled toward the center (by ratio)
+ * while the top, left and right vertices stay put.
+ *
  * @param {KiteOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:kite
  */
 export function kite({
   sx = 1,
@@ -76,11 +74,12 @@ export function kite({
  */
 
 /**
- * Outline dual of `kite`: same shape, `ratio` pulling the bottom vertex
- * toward the center.
- * @alias module:kitePath
+ * Outline dual of `kite`: same shape, `ratio` pulling the bottom vertex toward
+ * the center.
+ *
  * @param {KitePathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @alias module:kitePath
  */
 export function kitePath({
   sx = 1,

@@ -1,9 +1,6 @@
 /** @module antiprism */
 import { rectangular } from "../../mappings.js";
-import {
-  TAU,
-  getCellsTypedArray,
-} from "../../utils/common.js";
+import { TAU, getCellsTypedArray } from "../../utils/common.js";
 import {
   computePolygonCap,
   computePolygonCorner,
@@ -15,19 +12,19 @@ import {
  * @property {number} [height=1]
  * @property {number} [sides=6]
  * @property {number} [phiOffset=0]
- * @property {Function} [capMapping=mappings.rectangular]
+ * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
  */
 
 /**
- * Antiprism: like `prism`, but the top sides-gon is rotated by half a
- * sector relative to the bottom one, so the two rings connect through a
- * zigzag band of 2 * sides flat triangles (each with its own hard-edged
- * normal) instead of prism's sides flat rectangles. The 2 end caps are
- * otherwise identical to prism's own, just with the top one rotated to
- * match its own ring.
- * @alias module:antiprism
+ * Antiprism: like `prism`, but the top sides-gon is rotated by half a sector
+ * relative to the bottom one, so the two rings connect through a zigzag band of
+ * 2 * sides flat triangles (each with its own hard-edged normal) instead of
+ * prism's sides flat rectangles. The 2 end caps are otherwise identical to
+ * prism's own, just with the top one rotated to match its own ring.
+ *
  * @param {AntiprismOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:antiprism
  */
 export function antiprism({
   radius = 0.25,
@@ -36,7 +33,6 @@ export function antiprism({
   phiOffset = 0,
   capMapping = rectangular,
 } = {}) {
-
   const halfHeight = height / 2;
   const topOffset = phiOffset + TAU / sides / 2;
 
@@ -119,23 +115,9 @@ export function antiprism({
     // Base on the bottom ring's edge, apex on the top ring (directly above
     // that edge's own midpoint, since the top ring is offset by half a
     // sector)
-    writeTriangle(
-      bottomA,
-      bottomB,
-      topA,
-      [u0, 0],
-      [u1, 0],
-      [uMid, 1],
-    );
+    writeTriangle(bottomA, bottomB, topA, [u0, 0], [u1, 0], [uMid, 1]);
     // Base on the top ring's edge, apex on the bottom ring
-    writeTriangle(
-      topB,
-      topA,
-      bottomB,
-      [u1, 1],
-      [u0, 1],
-      [u1, 0],
-    );
+    writeTriangle(topB, topA, bottomB, [u1, 1], [u0, 1], [u1, 0]);
   }
 
   const geometry = { positions, normals, uvs, cells };

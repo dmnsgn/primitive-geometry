@@ -12,9 +12,10 @@ import { SQRT3 } from "../../utils/common.js";
 
 /**
  * Isometric grid tiling equilateral triangles
- * @alias module:triangularGrid
+ *
  * @param {TriangularGridOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPolygon}
+ * @alias module:triangularGrid
  */
 export function triangularGrid({
   sx = 1,
@@ -22,7 +23,6 @@ export function triangularGrid({
   ny = 10,
   inscribed = true,
 } = {}) {
-
   const dx = sx / nx;
   const dy = (dx * SQRT3) / 2;
   const halfHeight = (ny * dy) / 2;

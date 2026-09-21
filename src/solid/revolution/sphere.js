@@ -14,9 +14,10 @@ import { ellipsoid } from "./ellipsoid.js";
 
 /**
  * A sphere: `ellipsoid` with rx = ry = 1.
- * @alias module:sphere
+ *
  * @param {SphereOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:sphere
  */
 export function sphere({
   radius = 0.5,
@@ -27,7 +28,6 @@ export function sphere({
   phi,
   phiOffset,
 } = {}) {
-
   return ellipsoid({
     radius,
     nx,

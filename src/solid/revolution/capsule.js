@@ -1,8 +1,5 @@
 /** @module capsule */
-import {
-  TAU,
-  snapToZero,
-} from "../../utils/common.js";
+import { TAU, snapToZero } from "../../utils/common.js";
 import { linear } from "../../utils/distribution.js";
 import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
@@ -12,18 +9,19 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @property {number} [radius=0.25]
  * @property {number} [nx=16]
  * @property {number} [ny=1]
- * @property {number} [roundSegments=16] `0` collapses both hemispheres
- *   away, leaving an open tube.
+ * @property {number} [roundSegments=16] `0` collapses both hemispheres away,
+ *   leaving an open tube.
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
- * @property {Function} [vDistribution=utils.linear]
+ * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
  */
 
 /**
  * A cylindrical body capped with two hemispheres (a "pill" shape).
- * @alias module:capsule
+ *
  * @param {CapsuleOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:capsule
  */
 export function capsule({
   height = 0.5,
@@ -35,7 +33,6 @@ export function capsule({
   phiOffset = 0,
   vDistribution = linear,
 } = {}) {
-
   const halfHeight = height / 2;
   const halfPi = Math.PI / 2;
 

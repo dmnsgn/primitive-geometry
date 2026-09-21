@@ -53,6 +53,7 @@
   ],
   "license": "MIT",
   "author": "Damien Seguin (https://github.com/dmnsgn)",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {
@@ -60,8 +61,8 @@
       "default": "./index.js"
     }
   },
-  "main": "index.js",
-  "types": "types/index.d.ts",
+  "main": "./index.js",
+  "types": "./types/index.d.ts",
   "scripts": {
     "build": "npx snowdev build",
     "deps": "npx snowdev install",
@@ -71,16 +72,16 @@
   "devDependencies": {
     "async-preloader": "^9.0.0",
     "cameras": "^3.1.1",
-    "es-module-shims": "^2.8.2",
+    "es-module-shims": "^2.8.4",
     "gl-matrix": "^3.4.4",
     "pex-context": "^4.1.0",
-    "pex-geom": "^3.1.1",
+    "pex-geom": "^3.1.2",
     "tweakpane": "^4.0.5",
     "typed-array-interleave": "^2.0.1"
   },
+  "packageManager": "npm@10.5.1",
   "engines": {
     "node": ">=22.0.0",
-    "npm": ">=10.5.1",
-    "snowdev": "3.0.0-alpha.0"
+    "snowdev": ">=3.0.0-alpha.1"
   }
 }

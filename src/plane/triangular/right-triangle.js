@@ -3,9 +3,8 @@ import { triangle, trianglePath } from "./triangle.js";
 
 /**
  * @typedef {object} RightTriangleOptions
- * @property {number} [sx=1] Horizontal leg half-length: the leg itself runs
- *   the full `2 * sx`, from the right-angle corner to the opposite base
- *   corner.
+ * @property {number} [sx=1] Horizontal leg half-length: the leg itself runs the
+ *   full `2 * sx`, from the right-angle corner to the opposite base corner.
  * @property {number} [sy=1] Vertical leg half-length, likewise doubled.
  * @property {number} [radius=0.5]
  * @property {number} [edgeSegments=1]
@@ -13,16 +12,17 @@ import { triangle, trianglePath } from "./triangle.js";
  * @property {number} [innerRadius=0]
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
- * @property {boolean} [mergeCentroid=innerRadius === 0]
- * @property {Function} [mapping=mappings.rectangular]
+ * @property {boolean} [mergeCentroid=true]
+ * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  */
 
 /**
  * A right triangle: `triangle` with its apex pulled directly above the
  * bottom-left corner (`apexOffset = -sx`), landing the right angle there.
- * @alias module:rightTriangle
+ *
  * @param {RightTriangleOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:rightTriangle
  */
 export function rightTriangle({
   sx = 1,
@@ -65,9 +65,10 @@ export function rightTriangle({
 /**
  * Outline dual of `rightTriangle`: `trianglePath` with `apexOffset` fixed to
  * `-sx`.
- * @alias module:rightTrianglePath
+ *
  * @param {RightTrianglePathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @alias module:rightTrianglePath
  */
 export function rightTrianglePath({
   sx = 1,

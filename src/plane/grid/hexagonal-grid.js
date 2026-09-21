@@ -17,9 +17,10 @@ const WELD_KEY_SCALE = 1e9;
 
 /**
  * Hexagonal grid tiling regular hexagons
- * @alias module:hexagonalGrid
+ *
  * @param {HexagonalGridOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPolygon}
+ * @alias module:hexagonalGrid
  */
 export function hexagonalGrid({
   sx = 1,
@@ -27,7 +28,6 @@ export function hexagonalGrid({
   ny = 10,
   inscribed = true,
 } = {}) {
-
   const dx = sx / nx;
   const r = dx / SQRT3;
   const dy = 1.5 * r;

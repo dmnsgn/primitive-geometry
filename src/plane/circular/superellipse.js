@@ -26,19 +26,19 @@ function computeSuperellipseEdge(rx, ry, cosTheta, sinTheta, m, n) {
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
  * @property {boolean} [mergeCentroid=true]
- * @property {Function} [mapping=mappings.lamé]
+ * @property {import("../../mappings.js").MappingFn} [mapping=mappings.lamé]
  * @property {number} [m=2]
  * @property {number} [n=m]
  */
 
 /**
- * Lamé curve
- * See elliptical-mapping example for a few special cases
- * @see [Wolfram MathWorld – Superellipse]{@link https://mathworld.wolfram.com/Superellipse.html}
- * @see [Wikipedia – Superellipse]{@link https://en.wikipedia.org/wiki/Superellipse}
- * @alias module:superellipse
+ * Lamé curve See elliptical-mapping example for a few special cases
+ *
  * @param {SuperellipseOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:superellipse
+ * @see [Wolfram MathWorld – Superellipse]{@link https://mathworld.wolfram.com/Superellipse.html}
+ * @see [Wikipedia – Superellipse]{@link https://en.wikipedia.org/wiki/Superellipse}
  */
 export function superellipse({
   sx = 1,
@@ -82,11 +82,12 @@ export function superellipse({
  */
 
 /**
- * Outline dual of `superellipse`: the same Lamé curve, sampled directly with
- * no radial fill.
- * @alias module:superellipsePath
+ * Outline dual of `superellipse`: the same Lamé curve, sampled directly with no
+ * radial fill.
+ *
  * @param {SuperellipsePathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @alias module:superellipsePath
  */
 export function superellipsePath({
   sx = 1,

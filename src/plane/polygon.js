@@ -18,19 +18,19 @@ import {
  * @property {number} [innerRadius=0]
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
- * @property {boolean} [mergeCentroid=innerRadius === 0]
- * @property {Function} [mapping=mappings.concentric]
+ * @property {boolean} [mergeCentroid=true]
+ * @property {import("../mappings.js").MappingFn} [mapping=mappings.concentric]
  */
 
 /**
- * A regular polygon: sides corners evenly spaced around a circle, connected
- * by straight edges rather than ellipse's elliptical arc (rhombus is this
- * shape's sides=4 case). sx/sy independently scale the two axes; equal
- * values keep it regular, different values stretch it into an
- * ellipse-inscribed polygon.
- * @alias module:polygon
+ * A regular polygon: sides corners evenly spaced around a circle, connected by
+ * straight edges rather than ellipse's elliptical arc (rhombus is this shape's
+ * sides=4 case). sx/sy independently scale the two axes; equal values keep it
+ * regular, different values stretch it into an ellipse-inscribed polygon.
+ *
  * @param {PolygonOptions} [options={}]
  * @returns {import("../../types.js").SimplicialComplex}
+ * @alias module:polygon
  */
 export function polygon({
   sides = 6,
@@ -56,7 +56,8 @@ export function polygon({
     thetaOffset,
     mergeCentroid,
     mapping,
-    equation: ({ rx, ry, t }) => computePolygonEdge(thetaOffset, sides, rx, ry, t),
+    equation: ({ rx, ry, t }) =>
+      computePolygonEdge(thetaOffset, sides, rx, ry, t),
   });
 }
 
@@ -75,11 +76,12 @@ export function polygon({
 /**
  * Outline dual of `polygon`: sides corners evenly spaced around a circle,
  * connected by straight edges (rhombus is this shape's sides=4 case).
- * @alias module:polygonPath
+ *
  * @param {PolygonPathOptions} [options={}]
  * @returns {import("../../types.js").SimplicialComplexPath} `edgeSegments *
- *   sides` positions and a single path cell of that many indices
- *   (`+ 1`, repeating index `0`, when `closed`)
+ *   sides` positions and a single path cell of that many indices (`+ 1`,
+ *   repeating index `0`, when `closed`)
+ * @alias module:polygonPath
  */
 export function polygonPath({
   sides = 6,

@@ -1,21 +1,18 @@
 /** @module tetrahedron */
 import { computePolyhedron } from "../../../utils/polyhedron.js";
-import {
-  SQRT2,
-  SQRT3,
-  SQRT6,
-} from "../../../utils/common.js";
+import { SQRT2, SQRT3, SQRT6 } from "../../../utils/common.js";
 
 /**
  * @typedef {object} TetrahedronFacesOptions
  * @property {number} [radius=0.5]
- * @property {boolean} [center=true] Center the bounding box at the origin.
- * Set to false to keep every vertex at exactly the circumradius from the
- * origin - needed as-is wherever radial projection applies.
+ * @property {boolean} [center=true] Center the bounding box at the origin. Set
+ *   to false to keep every vertex at exactly the circumradius from the origin -
+ *   needed as-is wherever radial projection applies.
  */
 
 /**
  * Regular tetrahedron, apex-up, bounding box centered at the origin.
+ *
  * @param {TetrahedronFacesOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplexPolygon}
  */
@@ -57,14 +54,15 @@ export function tetrahedronFaces({ radius = 0.5, center = true } = {}) {
  * @typedef {object} TetrahedronOptions
  * @property {number} [radius=0.5]
  * @property {number} [subdivisions=0]
- * @property {Function} [mapping=mappings.rectangular]
+ * @property {import("../../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  */
 
 /**
  * Regular tetrahedron.
- * @alias module:tetrahedron
+ *
  * @param {TetrahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
+ * @alias module:tetrahedron
  */
 export function tetrahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
   return computePolyhedron(tetrahedronFaces({ radius }), {

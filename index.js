@@ -1,5 +1,6 @@
 /**
  * Re-export all geometries, UV mappings functions and utils.
+ *
  * @module index
  */
 

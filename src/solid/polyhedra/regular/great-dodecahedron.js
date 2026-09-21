@@ -9,8 +9,9 @@ import { computePolyhedron } from "../../../utils/polyhedron.js";
 
 /**
  * Great dodecahedron, sharing the icosahedron's 12 vertices; each of its 12
- * pentagonal faces is the convex pentagon formed by one vertex's 5
- * neighbors, deeply interpenetrating the other 11 faces.
+ * pentagonal faces is the convex pentagon formed by one vertex's 5 neighbors,
+ * deeply interpenetrating the other 11 faces.
+ *
  * @param {GreatDodecahedronFacesOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplexPolygon}
  */
@@ -40,16 +41,21 @@ export function greatDodecahedronFaces({ radius = 0.5 } = {}) {
  * @typedef {object} GreatDodecahedronOptions
  * @property {number} [radius=0.5]
  * @property {number} [subdivisions=0]
- * @property {Function} [mapping=mappings.rectangular]
+ * @property {import("../../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  */
 
 /**
  * Great dodecahedron.
- * @alias module:greatDodecahedron
+ *
  * @param {GreatDodecahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
+ * @alias module:greatDodecahedron
  */
-export function greatDodecahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
+export function greatDodecahedron({
+  radius = 0.5,
+  subdivisions = 0,
+  mapping,
+} = {}) {
   return computePolyhedron(greatDodecahedronFaces({ radius }), {
     radius,
     subdivisions,

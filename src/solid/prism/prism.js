@@ -1,9 +1,6 @@
 /** @module prism */
 import { rectangular } from "../../mappings.js";
-import {
-  TAU,
-  getCellsTypedArray,
-} from "../../utils/common.js";
+import { TAU, getCellsTypedArray } from "../../utils/common.js";
 import {
   computePolygonCap,
   computePolygonCorner,
@@ -15,17 +12,18 @@ import {
  * @property {number} [height=1]
  * @property {number} [sides=6]
  * @property {number} [phiOffset=0]
- * @property {Function} [capMapping=mappings.rectangular]
+ * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
  */
 
 /**
- * Right prism: a regular sides-gon extruded into sides flat rectangular
- * side faces, each with its own hard-edged normal - unlike `cylinder`'s
- * smooth per-vertex normal, which just makes a large-nx cylinder look
- * faceted rather than actually being one.
- * @alias module:prism
+ * Right prism: a regular sides-gon extruded into sides flat rectangular side
+ * faces, each with its own hard-edged normal - unlike `cylinder`'s smooth
+ * per-vertex normal, which just makes a large-nx cylinder look faceted rather
+ * than actually being one.
+ *
  * @param {PrismOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:prism
  */
 export function prism({
   radius = 0.25,
@@ -34,7 +32,6 @@ export function prism({
   phiOffset = 0,
   capMapping = rectangular,
 } = {}) {
-
   const halfHeight = height / 2;
 
   // Shared by both the wall corners and the cap rim below, so a wall

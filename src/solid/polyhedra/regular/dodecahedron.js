@@ -9,6 +9,7 @@ import { PHI } from "../../../utils/common.js";
 
 /**
  * Regular dodecahedron.
+ *
  * @param {DodecahedronFacesOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplexPolygon}
  */
@@ -62,14 +63,15 @@ export function dodecahedronFaces({ radius = 0.5 } = {}) {
  * @typedef {object} DodecahedronOptions
  * @property {number} [radius=0.5]
  * @property {number} [subdivisions=0]
- * @property {Function} [mapping=mappings.rectangular]
+ * @property {import("../../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  */
 
 /**
  * Regular dodecahedron.
- * @alias module:dodecahedron
+ *
  * @param {DodecahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
+ * @alias module:dodecahedron
  */
 export function dodecahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
   return computePolyhedron(dodecahedronFaces({ radius }), {

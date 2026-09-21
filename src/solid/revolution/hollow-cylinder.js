@@ -1,9 +1,5 @@
 /** @module hollowCylinder */
-import {
-  TAU,
-  concatGeometries,
-  invert,
-} from "../../utils/common.js";
+import { TAU, concatGeometries, invert } from "../../utils/common.js";
 import { cylinder } from "./cylinder.js";
 import { computeConeSegment } from "./cone.js";
 
@@ -23,12 +19,13 @@ import { computeConeSegment } from "./cone.js";
 
 /**
  * A cylinder with a concentric cylindrical bore through it - a washer/pipe
- * extruded to a given height. Doesn't close the `phi < TAU` wedge cut (no
- * wall between the outer/inner walls or the 2 caps there) - same limitation
- * as a plain `cylinder({ phi: <TAU })`.
- * @alias module:hollowCylinder
+ * extruded to a given height. Doesn't close the `phi < TAU` wedge cut (no wall
+ * between the outer/inner walls or the 2 caps there) - same limitation as a
+ * plain `cylinder({ phi: <TAU })`.
+ *
  * @param {HollowCylinderOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:hollowCylinder
  */
 export function hollowCylinder({
   height = 1,
@@ -42,7 +39,6 @@ export function hollowCylinder({
   phi = TAU,
   phiOffset = 0,
 } = {}) {
-
   const halfHeight = height / 2;
 
   // A flat annular ring: computeConeSegment with yFrom = yTo degenerates its

@@ -6,15 +6,17 @@ import { icosahedronFaces } from "../regular/icosahedron.js";
  * @typedef {object} IcosphereOptions
  * @property {number} [radius=0.5]
  * @property {number} [subdivisions=2]
- * @property {"gnomonic"|"spherical"} [projection="gnomonic"]
- * @property {Function} [mapping=mappings.spherical]
+ * @property {"gnomonic" | "spherical"} [projection="gnomonic"]
+ * @property {import("../../../mappings.js").MappingFn} [mapping=mappings.spherical]
  */
 
 /**
- * A geodesic sphere built by radially projecting and welding a subdivided icosahedron.
- * @alias module:icosphere
+ * A geodesic sphere built by radially projecting and welding a subdivided
+ * icosahedron.
+ *
  * @param {IcosphereOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
+ * @alias module:icosphere
  */
 export function icosphere({
   radius = 0.5,
@@ -22,7 +24,6 @@ export function icosphere({
   projection,
   mapping,
 } = {}) {
-
   return computePolyhedron(icosahedronFaces({ radius }), {
     radius,
     subdivisions,

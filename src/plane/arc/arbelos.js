@@ -5,30 +5,30 @@ import { concatGeometries } from "../../utils/common.js";
 
 /**
  * @typedef {object} ArbelosOptions
- * @property {number} [radius=0.5] Outer (enclosing) semicircle's radius:
- *   half the total baseline width.
+ * @property {number} [radius=0.5] Outer (enclosing) semicircle's radius: half
+ *   the total baseline width.
  * @property {number} [innerRadius=radius*0.25] Radius of the left of the 2
- *   inner semicircles, both bulging the *same* way as the enclosing one
- *   (up, above the baseline) and tangent to each other where they meet it:
+ *   inner semicircles, both bulging the _same_ way as the enclosing one (up,
+ *   above the baseline) and tangent to each other where they meet it:
  *   `innerRadius` and `radius - innerRadius` apart from the enclosing
  *   semicircle's left/right ends, respectively.
  * @property {number} [segments=32] Column count, swept left to right.
  * @property {number} [innerSegments=16] Row count between the bottom and top
  *   boundary at each column.
- * @property {Function} [mapping=mappings.rectangular] Uv mapping function.
+ * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular] Uv mapping function.
  *   Defaults to a flat, bounding-box-relative unwrap; pass a function using
- *   `uRatio`/`vRatio` (the swept parametrization) to follow the arcs
- *   instead.
+ *   `uRatio`/`vRatio` (the swept parametrization) to follow the arcs instead.
  */
 
 /**
- * Arbelos ("shoemaker's knife"): the region inside a big semicircle and
- * outside 2 smaller ones sharing its baseline, tangent where their
- * diameters meet. Area: `pi * innerRadius * (radius - innerRadius)`.
- * @see [Wolfram MathWorld – Arbelos]{@link https://mathworld.wolfram.com/Arbelos.html}
- * @alias module:arbelos
+ * Arbelos ("shoemaker's knife"): the region inside a big semicircle and outside
+ * 2 smaller ones sharing its baseline, tangent where their diameters meet.
+ * Area: `pi * innerRadius * (radius - innerRadius)`.
+ *
  * @param {ArbelosOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:arbelos
+ * @see [Wolfram MathWorld – Arbelos]{@link https://mathworld.wolfram.com/Arbelos.html}
  */
 export function arbelos({
   radius = 0.5,
@@ -37,7 +37,6 @@ export function arbelos({
   innerSegments = 16,
   mapping = rectangular,
 } = {}) {
-
   const R = radius;
   const r1 = innerRadius;
   const r2 = R - r1;
@@ -49,13 +48,9 @@ export function arbelos({
   // Exactly 0 at the shared tangent point, rather than 2 formulas that
   // agree only up to floating-point noise.
   const leftInner = (x) =>
-    x === splitX
-      ? 0
-      : Math.sqrt(Math.max(r1 * r1 - (x - leftCenter) ** 2, 0));
+    x === splitX ? 0 : Math.sqrt(Math.max(r1 * r1 - (x - leftCenter) ** 2, 0));
   const rightInner = (x) =>
-    x === splitX
-      ? 0
-      : Math.sqrt(Math.max(r2 * r2 - (x - rightCenter) ** 2, 0));
+    x === splitX ? 0 : Math.sqrt(Math.max(r2 * r2 - (x - rightCenter) ** 2, 0));
 
   const center = [0, R / 2];
   const sx = R;

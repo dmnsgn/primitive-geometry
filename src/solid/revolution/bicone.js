@@ -1,8 +1,5 @@
 /** @module bicone */
-import {
-  TAU,
-  concatGeometries,
-} from "../../utils/common.js";
+import { TAU, concatGeometries } from "../../utils/common.js";
 import { computeConeSegment } from "./cone.js";
 
 /**
@@ -18,12 +15,13 @@ import { computeConeSegment } from "./cone.js";
  */
 
 /**
- * Two right circular cones joined base-to-base at the equator (a bipyramid
- * of revolution/spinning-top shape) - both ends come to a point, so unlike
+ * Two right circular cones joined base-to-base at the equator (a bipyramid of
+ * revolution/spinning-top shape) - both ends come to a point, so unlike
  * `cylinder`/`doubleCone` there are no cap options.
- * @alias module:bicone
+ *
  * @param {BiconeOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:bicone
  */
 export function bicone({
   height = 1,
@@ -35,7 +33,6 @@ export function bicone({
   sx = 1,
   sz = 1,
 } = {}) {
-
   const halfHeight = height / 2;
 
   const segment = (yFrom, yTo, rFrom, rTo) =>

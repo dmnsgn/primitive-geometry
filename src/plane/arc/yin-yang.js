@@ -1,42 +1,38 @@
 /** @module yinYang */
 import { computeSweptArc } from "../../utils/polar.js";
 import { rectangular } from "../../mappings.js";
-import {
-  clamp,
-  concatGeometries,
-} from "../../utils/common.js";
+import { clamp, concatGeometries } from "../../utils/common.js";
 
 /**
  * @typedef {object} YinYangOptions
  * @property {number} [radius=0.5] Radius of the enclosing circle.
  * @property {number} [dotRadius=radius/6] Radius of the hole cut at each
  *   returned half's own dot position. `0` omits the hole(s).
- * @property {"yin"|"yang"|"yin-yang"} [part="yin-yang"] `"yin"`/`"yang"`
- *   return one S-curve-divided half (bounded by half the outer circle and
- *   the S-curve), with its dot hole centered at the other half's bulge
- *   (`(0, -radius/2)` for yang, `(0, radius/2)` for yin). `"yin-yang"`
- *   merges both into one mesh; without per-face material/color the S-curve
- *   seam is then invisible (indistinguishable from a disc with two holes).
+ * @property {"yin" | "yang" | "yin-yang"} [part="yin-yang"] `"yin"`/`"yang"`
+ *   return one S-curve-divided half (bounded by half the outer circle and the
+ *   S-curve), with its dot hole centered at the other half's bulge (`(0,
+ *   -radius/2)` for yang, `(0, radius/2)` for yin). `"yin-yang"` merges both
+ *   into one mesh; without per-face material/color the S-curve seam is then
+ *   invisible (indistinguishable from a disc with two holes).
  * @property {number} [segments=32] Row count for the outer circle/S-curve
  *   boundary, swept bottom to top.
- * @property {number} [holeSegments=16] Row count for a dot hole's own
- *   boundary, independent of the outer boundary's `segments`.
- * @property {number} [innerSegments=16] Column count spanning each side of
- *   a dot hole (or the whole half, where the hole doesn't reach) at each
- *   row.
- * @property {Function} [mapping=mappings.rectangular] Uv mapping function.
+ * @property {number} [holeSegments=16] Row count for a dot hole's own boundary,
+ *   independent of the outer boundary's `segments`.
+ * @property {number} [innerSegments=16] Column count spanning each side of a
+ *   dot hole (or the whole half, where the hole doesn't reach) at each row.
+ * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular] Uv mapping function.
  *   Defaults to a flat, bounding-box-relative unwrap; pass a function using
- *   `uRatio`/`vRatio` (the swept parametrization) to follow the arcs
- *   instead.
+ *   `uRatio`/`vRatio` (the swept parametrization) to follow the arcs instead.
  */
 
 /**
  * Yin-Yang (taijitu): a circle divided by an S-shaped seam of two opposing
  * semicircles, each side holed by a dot at the other's bulge.
- * @see [Wolfram MathWorld – Yin-Yang]{@link https://mathworld.wolfram.com/Yin-Yang.html}
- * @alias module:yinYang
+ *
  * @param {YinYangOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:yinYang
+ * @see [Wolfram MathWorld – Yin-Yang]{@link https://mathworld.wolfram.com/Yin-Yang.html}
  */
 export function yinYang({
   radius = 0.5,
@@ -47,7 +43,6 @@ export function yinYang({
   innerSegments = 16,
   mapping = rectangular,
 } = {}) {
-
   const R = radius;
 
   const curve = (y) =>
@@ -83,7 +78,7 @@ export function yinYang({
   function buildHalf(isYin, center, sx, sy) {
     const outerMin = (y) => (isYin ? -diskEdge(y) : curve(y));
     const outerMax = (y) => (isYin ? curve(y) : diskEdge(y));
-    const dotCenterY = isYin ? R / 2 : -R / 2;
+    const dotCenterY = (isYin ? R : -R) / 2;
     const dotBottom = isYin ? yinDotBottom : yangDotBottom;
     const dotTop = isYin ? yinDotTop : yangDotTop;
 
@@ -124,8 +119,12 @@ export function yinYang({
       });
 
     return concatGeometries([
-      ...schedule.map(([uMin, uMax, rows]) => sweep(uMin, uMax, rows, leftBounds)),
-      ...schedule.map(([uMin, uMax, rows]) => sweep(uMin, uMax, rows, rightBounds)),
+      ...schedule.map(([uMin, uMax, rows]) =>
+        sweep(uMin, uMax, rows, leftBounds),
+      ),
+      ...schedule.map(([uMin, uMax, rows]) =>
+        sweep(uMin, uMax, rows, rightBounds),
+      ),
     ]);
   }
 
@@ -133,7 +132,7 @@ export function yinYang({
     const isYin = part === "yin";
     // Bounding box is asymmetric in x (the S-curve bulges further one way)
     // but always spans [-R, R] in y.
-    return buildHalf(isYin, [isYin ? -R / 4 : R / 4, 0], (3 * R) / 4, R);
+    return buildHalf(isYin, [(isYin ? -R : R) / 4, 0], (3 * R) / 4, R);
   }
 
   const wholeCenter = [0, 0];

@@ -8,6 +8,7 @@ import { computePolyhedron } from "../../../utils/polyhedron.js";
 
 /**
  * Regular octahedron.
+ *
  * @param {OctahedronFacesOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplexPolygon}
  */
@@ -39,14 +40,15 @@ export function octahedronFaces({ radius = 0.5 } = {}) {
  * @typedef {object} OctahedronOptions
  * @property {number} [radius=0.5]
  * @property {number} [subdivisions=0]
- * @property {Function} [mapping=mappings.rectangular]
+ * @property {import("../../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  */
 
 /**
  * Regular octahedron.
- * @alias module:octahedron
+ *
  * @param {OctahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
+ * @alias module:octahedron
  */
 export function octahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
   return computePolyhedron(octahedronFaces({ radius }), {

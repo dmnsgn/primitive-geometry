@@ -10,16 +10,18 @@ import { PHI } from "../../../utils/common.js";
 
 /**
  * @typedef {object} GreatStellatedDodecahedronFacesOptions
- * @property {number} [radius=0.5] Radius the star's tips touch (box half-extent)
+ * @property {number} [radius=0.5] Radius the star's tips touch (box
+ *   half-extent)
  */
 
 /**
  * Great stellated dodecahedron: the 3rd (outermost) stellation of the
- * dodecahedron. Each face's 5 edges, extended within its own plane, first
- * cross at a "depth 1" ring (exactly the icosahedron's vertex positions -
- * small stellated dodecahedron's own tips) before crossing a second,
- * further ring at "depth 2" - the true tips here, a plain radial scale of
- * the dodecahedron's own vertices by `phi^3`.
+ * dodecahedron. Each face's 5 edges, extended within its own plane, first cross
+ * at a "depth 1" ring (exactly the icosahedron's vertex positions - small
+ * stellated dodecahedron's own tips) before crossing a second, further ring at
+ * "depth 2" - the true tips here, a plain radial scale of the dodecahedron's
+ * own vertices by `phi^3`.
+ *
  * @param {GreatStellatedDodecahedronFacesOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplexPolygon}
  */
@@ -50,15 +52,17 @@ export function greatStellatedDodecahedronFaces({ radius = 0.5 } = {}) {
 /**
  * @typedef {object} GreatStellatedDodecahedronOptions
  * @property {number} [radius=0.5]
- * @property {number} [subdivisions=0] Barycentric grid subdivisions per triangle
- * @property {Function} [mapping=mappings.rectangular]
+ * @property {number} [subdivisions=0] Barycentric grid subdivisions per
+ *   triangle
+ * @property {import("../../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  */
 
 /**
  * Great stellated dodecahedron.
- * @alias module:greatStellatedDodecahedron
+ *
  * @param {GreatStellatedDodecahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
+ * @alias module:greatStellatedDodecahedron
  */
 export function greatStellatedDodecahedron({
   radius = 0.5,

@@ -1,4 +1,4 @@
-import { r as __toESM, t as __commonJSMin } from "./_chunks/rolldown-runtime-DUFJ1jAm.js";
+import { r as __toESM, t as __commonJSMin } from "./_chunks/rolldown-runtime-og5q1MHW.js";
 
 var require_fontfaceobserver_umd = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 	(function(e, t) {

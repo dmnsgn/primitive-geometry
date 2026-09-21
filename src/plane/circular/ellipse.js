@@ -15,20 +15,33 @@ import {
  * @property {number} [innerSegments=16]
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
- * @property {number} [innerRadius=0] Like `annulus`'s: a hole radius the
- *   fill stops at instead of reaching the center. `0` (default): no hole,
- *   fill reaches the center (subject to `mergeCentroid`).
- * @property {boolean} [mergeCentroid=innerRadius === 0]
- * @property {Function} [mapping=mappings.elliptical]
- * @property {Function} [equation] Maps each (rx, ry, cosTheta, sinTheta)
- *   sample to its [x, y] position, defaulting to an ellipse's arc.
+ * @property {number} [innerRadius=0] Like `annulus`'s: a hole radius the fill
+ *   stops at instead of reaching the center. `0` (default): no hole, fill
+ *   reaches the center (subject to `mergeCentroid`).
+ * @property {boolean} [mergeCentroid=true]
+ * @property {import("../../mappings.js").MappingFn} [mapping=mappings.elliptical]
+ * @property {EllipseEquationFn} [equation] Maps each (rx, ry, cosTheta,
+ *   sinTheta) sample to its [x, y] position, defaulting to an ellipse's arc.
+ */
+
+/**
+ * @callback EllipseEquationFn
+ * @param {object} sample
+ * @param {number} sample.rx Scaled ring radius along x
+ * @param {number} sample.ry Scaled ring radius along y
+ * @param {number} sample.cosTheta
+ * @param {number} sample.sinTheta
+ * @param {number} sample.s Radius ratio (0..1, innerRadius to radius)
+ * @param {number} sample.t Angle
+ * @returns {number[]} [x, y]
  */
 
 /**
  * An ellipse (or circle when `sx = sy`).
- * @alias module:ellipse
+ *
  * @param {EllipseOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:ellipse
  */
 export function ellipse({
   sx = 1,
@@ -72,11 +85,12 @@ export function ellipse({
 /**
  * Outline dual of `ellipse`: sx/sy independently scale the two axes, same as
  * `circlePath` with sx = sy = 1.
- * @alias module:ellipsePath
+ *
  * @param {EllipsePathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath} `segments`
  *   positions and a single path cell of `segments` indices (`segments + 1`,
  *   repeating index `0`, when `closed`)
+ * @alias module:ellipsePath
  */
 export function ellipsePath({
   sx = 1,

@@ -14,9 +14,10 @@ import { roundedRectangle, roundedRectanglePath } from "./rounded-rectangle.js";
 /**
  * A stadium (discorectangle): `roundedRectangle` with `radius` fixed to half
  * the shorter side.
- * @alias module:stadium
+ *
  * @param {StadiumOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:stadium
  */
 export function stadium({
   sx = 1,
@@ -49,12 +50,13 @@ export function stadium({
  */
 
 /**
- * Outline dual of `stadium`: `roundedRectanglePath` with `radius` fixed to
- * half the shorter side, collapsing that axis's straight section to 0 (two
+ * Outline dual of `stadium`: `roundedRectanglePath` with `radius` fixed to half
+ * the shorter side, collapsing that axis's straight section to 0 (two
  * semicircular caps joined by straight edges).
- * @alias module:stadiumPath
+ *
  * @param {StadiumPathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @alias module:stadiumPath
  */
 export function stadiumPath({
   sx = 1,

@@ -1,5 +1,5 @@
-import { r as __toESM, t as __commonJSMin } from "./_chunks/rolldown-runtime-DUFJ1jAm.js";
-import { A as ortho, D as invert, E as frustum, F as common_exports, O as lookAt, S as transformQuat, T as create$1, _ as fromValues, a as subtract, b as sub, f as rotationTo, g as create, h as copy$2, i as set, j as perspective, l as create$3, m as add, n as create$2, r as distance, s as zero, t as copy$1, u as invert$1, v as length, w as copy, x as subtract$1, y as scale } from "./_chunks/esm-CZPTq1E-.js";
+import { r as __toESM, t as __commonJSMin } from "./_chunks/rolldown-runtime-og5q1MHW.js";
+import { A as ortho, D as invert, E as frustum, F as common_exports, O as lookAt, S as transformQuat, T as create$1, _ as fromValues, a as subtract, b as sub, f as rotationTo, g as create, h as copy$2, i as set, j as perspective, l as create$3, m as add, n as create$2, r as distance, s as zero, t as copy$1, u as invert$1, v as length, w as copy, x as subtract$1, y as scale } from "./_chunks/esm-C8gJK0YD.js";
 
 var CameraType;
 (function(CameraType) {
@@ -535,12 +535,14 @@ var require_normalizeWheel = /* @__PURE__ */ __commonJSMin(((exports, module) =>
 		pY = sY * PIXEL_STEP;
 		if ("deltaY" in event) pY = event.deltaY;
 		if ("deltaX" in event) pX = event.deltaX;
-		if ((pX || pY) && event.deltaMode) if (event.deltaMode == 1) {
-			pX *= LINE_HEIGHT;
-			pY *= LINE_HEIGHT;
-		} else {
-			pX *= PAGE_HEIGHT;
-			pY *= PAGE_HEIGHT;
+		if ((pX || pY) && event.deltaMode) {
+			if (event.deltaMode == 1) {
+				pX *= LINE_HEIGHT;
+				pY *= LINE_HEIGHT;
+			} else {
+				pX *= PAGE_HEIGHT;
+				pY *= PAGE_HEIGHT;
+			}
 		}
 		if (pX && !sX) sX = pX < 1 ? -1 : 1;
 		if (pY && !sY) sY = pY < 1 ? -1 : 1;
@@ -780,10 +782,7 @@ var Controls = class Controls {
 			case PointerManagerState.MouseMiddle:
 				delta *= 20;
 				break;
-			case PointerManagerState.TouchTwo:
-				delta /= 20;
-				break;
-			default: break;
+			case PointerManagerState.TouchTwo: delta /= 20;
 		}
 		this.sphericalTarget[2] += (0, import_clamp.default)(delta * this.dollySpeed, -this.dollyMaxDelta, this.dollyMaxDelta);
 	}

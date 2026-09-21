@@ -5,15 +5,16 @@ import { linear } from "../../utils/distribution.js";
 import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
 /**
- * A single right-circular-cone-frustum segment of a meridian sweep between
- * two arbitrary y's. It's cylinder.js's elliptical-frustum case, minus the
- * per-end ellipse (sx/sz are constant across the segment, since a frustum
- * end that isn't a single point never occurs here), generalized from a
- * height/halfHeight-centered span to an arbitrary yFrom/yTo. `cone` below
- * is one such segment (apex at one end); bicone.js and doubleCone.js each
+ * A single right-circular-cone-frustum segment of a meridian sweep between two
+ * arbitrary y's. It's cylinder.js's elliptical-frustum case, minus the per-end
+ * ellipse (sx/sz are constant across the segment, since a frustum end that
+ * isn't a single point never occurs here), generalized from a
+ * height/halfHeight-centered span to an arbitrary yFrom/yTo. `cone` below is
+ * one such segment (apex at one end); bicone.js and doubleCone.js each
  * concatenate two others at their shared seam, instead of using a single
- * function with a v = 0.5 kink - see bicone.js for why that shared-row
- * approach can't be wound correctly on both sides.
+ * function with a v = 0.5 kink - see bicone.js for why that shared-row approach
+ * can't be wound correctly on both sides.
+ *
  * @private
  */
 export function computeConeSegment({
@@ -41,11 +42,7 @@ export function computeConeSegment({
       position: [r * sx * cosPhi, yFrom + yPrime * v, r * sz * sinPhi],
       // Same r-factored tangent cross-product as cylinder's cone case, with
       // sx/sz constant (no per-end ellipse - each end is a point)
-      normal: [
-        yPrime * sz * cosPhi,
-        -(rPrime * sx * sz),
-        yPrime * sx * sinPhi,
-      ],
+      normal: [yPrime * sz * cosPhi, -(rPrime * sx * sz), yPrime * sx * sinPhi],
       collapsed: r === 0,
     };
   }
@@ -71,20 +68,21 @@ export function computeConeSegment({
  * @property {boolean} [capBase=true]
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
- * @property {Function} [capMapping=mappings.rectangular]
+ * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
  * @property {number} [sx=1] Base ring x scale, elliptical when != sz
  * @property {number} [sz=1] Base ring z scale, elliptical when != sx
- * @property {Function} [vDistribution=utils.linear]
+ * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
  */
 
 /**
- * Right circular cone by default. Other shapes fall out of the same
- * parameters: an open cone/funnel (capBase false) and an elliptical cone
- * (sx != sz). There's no apex-side ellipse - the apex is always a single
- * point, so any apex scale would be a no-op.
- * @alias module:cone
+ * Right circular cone by default. Other shapes fall out of the same parameters:
+ * an open cone/funnel (capBase false) and an elliptical cone (sx != sz).
+ * There's no apex-side ellipse - the apex is always a single point, so any apex
+ * scale would be a no-op.
+ *
  * @param {ConeOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:cone
  */
 export function cone({
   height = 1,
@@ -100,7 +98,6 @@ export function cone({
   sz = 1,
   vDistribution = linear,
 } = {}) {
-
   const halfHeight = height / 2;
 
   const { positions, normals, uvs, cells } = computeConeSegment({

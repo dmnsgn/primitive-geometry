@@ -1,15 +1,7 @@
 /** @module torus */
 import { rectangular } from "../../mappings.js";
-import {
-  TAU,
-  getCellsTypedArray,
-  normalize,
-} from "../../utils/common.js";
-import {
-  TMP,
-  computeCap,
-  computeGridQuad,
-} from "../../utils/revolution.js";
+import { TAU, getCellsTypedArray, normalize } from "../../utils/common.js";
+import { TMP, computeCap, computeGridQuad } from "../../utils/revolution.js";
 
 /**
  * @typedef {object} TorusOptions
@@ -26,22 +18,27 @@ import {
  * @property {boolean} [capEnd=true]
  * @property {number} [capStartSegments=capSegments]
  * @property {number} [capEndSegments=capSegments]
- * @property {Function} [capMapping=mappings.rectangular]
- * @property {number} [sx=1] Major sweep x scale (footprint), elliptical when != sy
- * @property {number} [sy=1] Major sweep y scale (footprint), elliptical when != sx
- * @property {number} [minorSx=1] Tube radial scale (meridian cross-section), elliptical when != minorSy
- * @property {number} [minorSy=1] Tube z scale (meridian cross-section), elliptical when != minorSx
+ * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
+ * @property {number} [sx=1] Major sweep x scale (footprint), elliptical when !=
+ *   sy
+ * @property {number} [sy=1] Major sweep y scale (footprint), elliptical when !=
+ *   sx
+ * @property {number} [minorSx=1] Tube radial scale (meridian cross-section),
+ *   elliptical when != minorSy
+ * @property {number} [minorSy=1] Tube z scale (meridian cross-section),
+ *   elliptical when != minorSx
  */
 
 /**
  * Ring torus by default. Other shapes fall out of the same parameters: a
  * partial/open torus (phi < TAU, optionally capped via capStart/capEnd), an
- * elliptical torus (sx != sy, an oval/racetrack footprint), and a tube with
- * an elliptical cross-section (minorSx != minorSy, like a flattened or
+ * elliptical torus (sx != sy, an oval/racetrack footprint), and a tube with an
+ * elliptical cross-section (minorSx != minorSy, like a flattened or
  * spindle-shaped bagel).
- * @alias module:torus
+ *
  * @param {TorusOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:torus
  */
 export function torus({
   radius = 0.4,
@@ -66,7 +63,6 @@ export function torus({
   minorSx = 1,
   minorSy = 1,
 } = {}) {
-
   // Wrap the last column/ring to the exact first angle for full revolutions
   const wrapPhi = phi % TAU === 0;
   const wrapTheta = theta % TAU === 0;

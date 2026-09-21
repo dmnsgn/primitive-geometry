@@ -6,15 +6,17 @@ import { tetrahedronFaces } from "../regular/tetrahedron.js";
  * @typedef {object} TetrasphereOptions
  * @property {number} [radius=0.5]
  * @property {number} [subdivisions=2]
- * @property {"gnomonic"|"spherical"} [projection="gnomonic"]
- * @property {Function} [mapping=mappings.spherical]
+ * @property {"gnomonic" | "spherical"} [projection="gnomonic"]
+ * @property {import("../../../mappings.js").MappingFn} [mapping=mappings.spherical]
  */
 
 /**
- * A geodesic sphere built by radially projecting and welding a subdivided tetrahedron.
- * @alias module:tetrasphere
+ * A geodesic sphere built by radially projecting and welding a subdivided
+ * tetrahedron.
+ *
  * @param {TetrasphereOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
+ * @alias module:tetrasphere
  */
 export function tetrasphere({
   radius = 0.5,
@@ -22,7 +24,6 @@ export function tetrasphere({
   projection,
   mapping,
 } = {}) {
-
   return computePolyhedron(tetrahedronFaces({ radius, center: false }), {
     radius,
     subdivisions,

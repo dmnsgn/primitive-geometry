@@ -39,16 +39,26 @@ const POLE_KEY_BASE = MAX_VERTICES;
  * subdivided into a barycentric grid. By default each face keeps its own
  * vertices for flat per-face normals. `project` instead normalizes vertices
  * onto `radius` and welds them across faces into a geodesic sphere.
- * @param {import("../../types.js").SimplicialComplexPolygon} seed Seed polyhedron: flat xyz positions (radius already baked in by the caller) and CCW n-gon faces (indices into positions)
+ *
+ * @private
+ * @param {import("../../types.js").SimplicialComplexPolygon} seed Seed
+ *   polyhedron: flat xyz positions (radius already baked in by the caller) and
+ *   CCW n-gon faces (indices into positions)
  * @param {object} [options={}]
- * @param {number} [options.radius=0.5] Only used to re-normalize when project is true
- * @param {number} [options.subdivisions=0] Barycentric grid subdivisions per fan triangle
- * @param {boolean} [options.project=false] Radially project and weld across faces
- * @param {"gnomonic"|"spherical"} [options.projection="gnomonic"] How subdivided points are placed when project is true: "gnomonic" subdivides flat then projects (denser near seed vertices); "spherical" interpolates along great circles instead
- * @param {Function} [options.mapping] Defaults to mappings.spherical when project, mappings.rectangular otherwise
+ * @param {number} [options.radius=0.5] Only used to re-normalize when project
+ *   is true
+ * @param {number} [options.subdivisions=0] Barycentric grid subdivisions per
+ *   fan triangle
+ * @param {boolean} [options.project=false] Radially project and weld across
+ *   faces
+ * @param {"gnomonic" | "spherical"} [options.projection="gnomonic"] How
+ *   subdivided points are placed when project is true: "gnomonic" subdivides
+ *   flat then projects (denser near seed vertices); "spherical" interpolates
+ *   along great circles instead
+ * @param {import("../mappings.js").MappingFn} [options.mapping] Defaults to mappings.spherical when
+ *   project, mappings.rectangular otherwise
  * @returns {import("../../types.js").SimplicialComplex}
  * @throws {Error} If subdivisions would produce more than 1e7 vertices
- * @private
  */
 export function computePolyhedron(
   { positions: seedPositions, cells: seedCells },

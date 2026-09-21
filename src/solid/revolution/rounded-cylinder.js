@@ -1,9 +1,5 @@
 /** @module roundedCylinder */
-import {
-  TAU,
-  clamp,
-  snapToZero,
-} from "../../utils/common.js";
+import { TAU, clamp, snapToZero } from "../../utils/common.js";
 import { linear } from "../../utils/distribution.js";
 import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
@@ -12,26 +8,27 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @property {number} [height=1]
  * @property {number} [radius=0.25]
  * @property {number} [roundRadius=radius*0.3] Fillet radius at the top/bottom
- * rim, silently clamped to [0, min(radius, height/2)] - the fillet can
- * neither exceed the body's own radius nor meet itself across the height
+ *   rim, silently clamped to [0, min(radius, height/2)] - the fillet can
+ *   neither exceed the body's own radius nor meet itself across the height
  * @property {number} [nx=16]
  * @property {number} [ny=1] Straight side segments
  * @property {number} [roundSegments=8] Fillet segments (each end)
  * @property {number} [capSegments=1] Flat cap segments (each end)
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
- * @property {Function} [vDistribution=utils.linear]
+ * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
  */
 
 /**
- * A cylinder with its top/bottom rim edges filleted instead of sharp - a
- * flat cap blended into the straight side by a quarter-circle fillet, both
- * ends symmetric. `roundRadius = 0` gives a plain flat-capped `cylinder`;
+ * A cylinder with its top/bottom rim edges filleted instead of sharp - a flat
+ * cap blended into the straight side by a quarter-circle fillet, both ends
+ * symmetric. `roundRadius = 0` gives a plain flat-capped `cylinder`;
  * `roundRadius = radius = height / 2` pinches the flat cap away entirely,
  * becoming `capsule`'s hemisphere.
- * @alias module:roundedCylinder
+ *
  * @param {RoundedCylinderOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:roundedCylinder
  */
 export function roundedCylinder({
   height = 1,
@@ -45,7 +42,6 @@ export function roundedCylinder({
   phiOffset = 0,
   vDistribution = linear,
 } = {}) {
-
   const halfHeight = height / 2;
   const clampedRoundRadius = clamp(
     roundRadius,

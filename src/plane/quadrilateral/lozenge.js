@@ -12,15 +12,16 @@ import { rhombus, rhombusPath } from "./rhombus.js";
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=HALF_PI]
  * @property {boolean} [mergeCentroid=true]
- * @property {Function} [mapping=mappings.concentric]
+ * @property {import("../../mappings.js").MappingFn} [mapping=mappings.concentric]
  */
 
 /**
- * A rhombus elongated along its vertical diagonal by default (sy = sx * 2),
- * the classic narrow diamond look.
- * @alias module:lozenge
+ * A rhombus elongated along its vertical diagonal by default (sy = sx * 2), the
+ * classic narrow diamond look.
+ *
  * @param {LozengeOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:lozenge
  */
 export function lozenge({
   sx = 0.5,
@@ -62,9 +63,10 @@ export function lozenge({
 /**
  * Outline dual of `lozenge`: `rhombusPath` elongated along its vertical
  * diagonal by default (sy = sx * 2).
- * @alias module:lozengePath
+ *
  * @param {LozengePathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @alias module:lozengePath
  */
 export function lozengePath({
   sx = 0.5,

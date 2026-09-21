@@ -8,10 +8,10 @@ import { computeFlatRevolutionGeometry } from "../../utils/revolution.js";
  * @typedef {object} FunnelOptions
  * @property {number} [height=1]
  * @property {number} [radius=0.1] Spout radius, at y = -height/2
- * @property {number} [radiusTop=radius*5] Mouth radius, at y = height/2 -
- * must be > radius for the usual flared-outward shape; radiusTop = radius
- * degenerates to a plain cylinder, radiusTop < radius flips the taper (still
- * a valid, NaN-free surface, just narrowing toward the top instead)
+ * @property {number} [radiusTop=radius*5] Mouth radius, at y = height/2 - must
+ *   be > radius for the usual flared-outward shape; radiusTop = radius
+ *   degenerates to a plain cylinder, radiusTop < radius flips the taper (still
+ *   a valid, NaN-free surface, just narrowing toward the top instead)
  * @property {number} [nx=32]
  * @property {number} [ny=16]
  * @property {number} [capSegments=1]
@@ -19,19 +19,20 @@ import { computeFlatRevolutionGeometry } from "../../utils/revolution.js";
  * @property {boolean} [capBase=true]
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
- * @property {Function} [capMapping=mappings.rectangular]
- * @property {Function} [vDistribution=utils.linear]
+ * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
+ * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
  */
 
 /**
  * Revolution of y = a·ln(r) (equivalently r = radius·e^(k·(y+height/2)), an
- * exponential - not linear (`cone`) or hyperbolic (`hyperboloid`) - radius
- * law) between a narrow spout and a wide mouth. Both ends stay flat, open
- * rings, cappable exactly like `hyperboloid`'s.
- * @see [Wolfram MathWorld – Funnel]{@link https://mathworld.wolfram.com/Funnel.html}
- * @alias module:funnel
+ * exponential - not linear (`cone`) or hyperbolic (`hyperboloid`) - radius law)
+ * between a narrow spout and a wide mouth. Both ends stay flat, open rings,
+ * cappable exactly like `hyperboloid`'s.
+ *
  * @param {FunnelOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:funnel
+ * @see [Wolfram MathWorld – Funnel]{@link https://mathworld.wolfram.com/Funnel.html}
  */
 export function funnel({
   height = 1,
@@ -47,9 +48,7 @@ export function funnel({
   capMapping = rectangular,
   vDistribution = linear,
 } = {}) {
-
-  const halfHeight = height / 2;
-  // r = radius·e^(k·(y+halfHeight)), fixed by r = radiusTop at y = halfHeight
+  // r = radius·e^(k·(y + height/2)), fixed by r = radiusTop at y = height/2
   const k = Math.log(radiusTop / radius) / height;
 
   const { positions, normals, uvs, cells } = computeFlatRevolutionGeometry({
@@ -63,7 +62,7 @@ export function funnel({
     capSegments,
     capMapping,
     vDistribution,
-    profile: (y, v) => {
+    profile: (_, v) => {
       const r = radius * (radiusTop / radius) ** v;
       // Gradient of x² + z² - r(y)² = 0, ie. (2x, -2k·r², 2z)
       return [r, -k * (r * r)];

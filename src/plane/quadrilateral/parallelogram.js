@@ -6,8 +6,8 @@ import { trapezoid, trapezoidPath } from "./trapezoid.js";
  * @property {number} [sx=0.5] Narrower than `trapezoid`'s default so the
  *   sheared top edge still fits the unit box.
  * @property {number} [sy=1]
- * @property {number} [shear=0.3] Horizontal shift of the top edge's center,
- *   as a fraction of `sx`.
+ * @property {number} [shear=0.3] Horizontal shift of the top edge's center, as
+ *   a fraction of `sx`.
  * @property {number} [radius=0.5]
  * @property {number} [edgeSegments=1]
  * @property {number} [innerSegments=16]
@@ -15,15 +15,16 @@ import { trapezoid, trapezoidPath } from "./trapezoid.js";
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
  * @property {boolean} [mergeCentroid=true]
- * @property {Function} [mapping=mappings.rectangular]
+ * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  */
 
 /**
  * A parallelogram: `trapezoid` with `topRatio` fixed to `1` (top and bottom
  * edges the same width) and shifted sideways by `shear`.
- * @alias module:parallelogram
+ *
  * @param {ParallelogramOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
+ * @alias module:parallelogram
  */
 export function parallelogram({
   sx = 0.5,
@@ -69,9 +70,10 @@ export function parallelogram({
 /**
  * Outline dual of `parallelogram`: `trapezoidPath` with `topRatio` fixed to
  * `1`, shifted sideways by `shear`.
- * @alias module:parallelogramPath
+ *
  * @param {ParallelogramPathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @alias module:parallelogramPath
  */
 export function parallelogramPath({
   sx = 0.5,
