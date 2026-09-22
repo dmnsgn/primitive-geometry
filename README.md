@@ -10,13 +10,13 @@
 [![linted with eslint](https://img.shields.io/badge/linted_with-ES_Lint-4B32C3.svg?logo=eslint)](https://github.com/eslint/eslint)
 [![license](https://img.shields.io/github/license/dmnsgn/primitive-geometry)](https://github.com/dmnsgn/primitive-geometry/blob/main/LICENSE.md)
 
-Geometries for 3D rendering, including normals, UVs and cell indices (faces). Perfect if you want to supercharge your dependency folder... with 30KB of geometries.
+Geometries for 3D rendering: planes, grids, solids, polyhedra and outline paths, with normals, UVs and cell indices (faces). Perfect if you want to supercharge your dependency folder... with 20KB of geometries.
 
 [![paypal](https://img.shields.io/badge/donate-paypal-informational?logo=paypal)](https://paypal.me/dmnsgn)
 [![coinbase](https://img.shields.io/badge/donate-coinbase-informational?logo=coinbase)](https://commerce.coinbase.com/checkout/56cbdf28-e323-48d8-9c98-7019e72c97f3)
 [![twitter](https://img.shields.io/twitter/follow/dmnsgn?style=social)](https://twitter.com/dmnsgn)
 
-![](https://raw.githubusercontent.com/dmnsgn/primitive-geometry/main/screenshot.gif)
+[![primitive-geometry screenshot](https://raw.githubusercontent.com/dmnsgn/primitive-geometry/main/screenshot.gif)](https://dmnsgn.github.io/primitive-geometry/)
 
 ## Installation
 
@@ -26,13 +26,13 @@ npm install primitive-geometry
 
 ## Features
 
-- Common API: options object in, simplicial complex out
-- Outputs TypedArray (`Float32Array` for geometry data and `Uint8Array|Uint16Array|Uint32Array` for cells)
-- Zero dependency
-- Same parameters naming: radius (or rx/ry/rz), scale (or height/sx/sy/sz), segments (or nx/ny/nz) and a few specific parameters for icosphere/cylinder/cone/torus.
-- Different **Elliptical mappings**: see the [comparison images](examples/elliptical-mapping/elliptical-mapping.md) and the [demo](https://dmnsgn.github.io/primitive-geometry/?id=elliptical-mapping).
-
-See difference with v1 [here](#License).
+- **72 geometries**: planes and grids, quadrilaterals and arcs, solids of revolution, prisms, platonic and stellated polyhedra, geodesic spheres - plus 21 outline paths.
+- **Common API**: options object in, simplicial complex out. Parameters are named the same everywhere (`sx/sy/sz`, `nx/ny/nz`, `radius`, `segments`, `theta`/`phi`).
+- **TypedArray out**: `Float32Array` for positions, normals and uvs, cells narrowed to `Uint8Array|Uint16Array|Uint32Array` by vertex count (or pinned with `setTypedArrayType`).
+- **Welded, crack-free meshes**: vertices shared between patches are bit-identical, not merely close. Every geometry is checked for cracks, non-manifold edges, degenerate cells, winding and uv continuity across [101 configurations](test/seams.test.js).
+- **Partial shapes**: `theta`/`phi` sweeps with optional caps, hollow variants, and `vDistribution` to choose how rows spread along a revolution's meridian.
+- **17 UV mappings**, swappable per compatible geometry: see the [comparison images](examples/elliptical-mapping/elliptical-mapping.md) and the [demo](https://dmnsgn.github.io/primitive-geometry/?id=elliptical-mapping).
+- **Zero dependency, tree-shakeable**: ~1.7KB min+gzip for a single geometry, ~21KB for all of them.
 
 ## Usage
 
@@ -41,34 +41,89 @@ See the [example](https://dmnsgn.github.io/primitive-geometry/) and its [source]
 ```js
 import * as Primitives from "primitive-geometry";
 
-const quadGeometry = Primitives.quad({
-  scale: 0.5,
-});
-console.log(quadGeometry);
+const { mappings, utils } = Primitives;
+
+const geometry = Primitives.quad({ scale: 0.5 });
+console.log(geometry);
 // {
 //   positions: Float32Array [x, y, z, x, y, z,  ...],
 //   normals: Float32Array [x, y, z, x, y, z, ...]
 //   uvs: Float32Array [u, v, u, v, ...],
 //   cells: Uint8/16/32/Array [a, b, c, a, b, c, ...],
 // }
-const planeGeometry = Primitives.plane({
+
+// Every geometry below, with its options set to their defaults. Grids
+// return an n-gon complex: positions and cells only, no normals or uvs. Most
+// plane geometries also have a `*Path` outline variant, and the polyhedra a
+// `*Faces` n-gon seed variant: see the API below.
+
+// Plane
+const quadGrid = Primitives.quadGrid({
+  sx: 1,
+  sy: 1,
+  nx: 10,
+  ny: 10,
+});
+const triangularGrid = Primitives.triangularGrid({
+  sx: 1,
+  nx: 10,
+  ny: 10,
+  inscribed: true,
+});
+const hexagonalGrid = Primitives.hexagonalGrid({
+  sx: 1,
+  nx: 10,
+  ny: 10,
+  inscribed: true,
+});
+
+const triangle = Primitives.triangle({
+  sx: 1,
+  sy: 1,
+  apexOffset: 0,
+  radius: 0.5,
+  edgeSegments: 1,
+  innerSegments: 16,
+  innerRadius: 0,
+  theta: Math.PI * 2,
+  thetaOffset: 0,
+  mergeCentroid: true,
+  mapping: mappings.rectangular,
+});
+const rightTriangle = Primitives.rightTriangle({
+  sx: 1,
+  sy: 1,
+  radius: 0.5,
+  edgeSegments: 1,
+  innerSegments: 16,
+  innerRadius: 0,
+  theta: Math.PI * 2,
+  thetaOffset: 0,
+  mergeCentroid: true,
+  mapping: mappings.rectangular,
+});
+
+const quad = Primitives.quad({
+  scale: 0.5,
+});
+const plane = Primitives.plane({
   sx: 1,
   sy: 1,
   nx: 1,
   ny: 1,
   direction: "z",
-  quads: false,
 });
-const roundedRectangleGeometry = Primitives.roundedRectangle({
+const roundedRectangle = Primitives.roundedRectangle({
   sx: 1,
   sy: 1,
-  nx: 1,
-  ny: 1,
   radius: 0.25,
   roundSegments: 8,
   edgeSegments: 1,
+  nx: 1,
+  ny: 1,
+  roundedCorners: ["top-left", "top-right", "bottom-right", "bottom-left"],
 });
-const stadiumGeometry = Primitives.stadium({
+const stadium = Primitives.stadium({
   sx: 1,
   sy: 0.5,
   nx: 1,
@@ -77,7 +132,118 @@ const stadiumGeometry = Primitives.stadium({
   edgeSegments: 1,
 });
 
-const ellipseGeometry = Primitives.ellipse({
+const kite = Primitives.kite({
+  sx: 1,
+  sy: 1,
+  ratio: 0.5,
+  radius: 0.5,
+  edgeSegments: 1,
+  innerSegments: 16,
+  innerRadius: 0,
+  theta: Math.PI * 2,
+  thetaOffset: Math.PI / 2,
+  mergeCentroid: true,
+  mapping: mappings.concentric,
+});
+const rhombus = Primitives.rhombus({
+  sx: 1,
+  sy: 1,
+  radius: 0.5,
+  edgeSegments: 1,
+  innerSegments: 16,
+  innerRadius: 0,
+  theta: Math.PI * 2,
+  thetaOffset: Math.PI / 2,
+  mergeCentroid: true,
+  mapping: mappings.concentric,
+});
+const lozenge = Primitives.lozenge({
+  sx: 0.5,
+  sy: 1,
+  radius: 0.5,
+  edgeSegments: 1,
+  innerSegments: 16,
+  innerRadius: 0,
+  theta: Math.PI * 2,
+  thetaOffset: Math.PI / 2,
+  mergeCentroid: true,
+  mapping: mappings.concentric,
+});
+const trapezoid = Primitives.trapezoid({
+  sx: 1,
+  sy: 1,
+  topRatio: 0.5,
+  topOffset: 0,
+  radius: 0.5,
+  edgeSegments: 1,
+  innerSegments: 16,
+  innerRadius: 0,
+  theta: Math.PI * 2,
+  thetaOffset: 0,
+  mergeCentroid: true,
+  mapping: mappings.rectangular,
+});
+const parallelogram = Primitives.parallelogram({
+  sx: 0.5,
+  sy: 1,
+  shear: 0.3,
+  radius: 0.5,
+  edgeSegments: 1,
+  innerSegments: 16,
+  innerRadius: 0,
+  theta: Math.PI * 2,
+  thetaOffset: 0,
+  mergeCentroid: true,
+  mapping: mappings.rectangular,
+});
+
+const arbelos = Primitives.arbelos({
+  radius: 0.5,
+  innerRadius: 0.125,
+  segments: 32,
+  innerSegments: 16,
+  mapping: mappings.rectangular,
+});
+const lens = Primitives.lens({
+  radius: 0.5,
+  radius2: 0.5,
+  distance: 0.5,
+  segments: 32,
+  innerSegments: 16,
+  mapping: mappings.rectangular,
+});
+const lune = Primitives.lune({
+  radius: 0.5,
+  innerRadius: 0.5,
+  distance: 0.25,
+  segments: 32,
+  innerSegments: 16,
+  mapping: mappings.rectangular,
+});
+const salinon = Primitives.salinon({
+  radius: 0.5,
+  innerRadius: 0.125,
+  segments: 32,
+  innerSegments: 16,
+  mapping: mappings.rectangular,
+});
+const triquetra = Primitives.triquetra({
+  radius: 0.5,
+  segments: 32,
+  innerSegments: 16,
+  mapping: mappings.rectangular,
+});
+const yinYang = Primitives.yinYang({
+  radius: 0.5,
+  dotRadius: 0.5 / 6,
+  part: "yin-yang",
+  segments: 32,
+  holeSegments: 16,
+  innerSegments: 16,
+  mapping: mappings.rectangular,
+});
+
+const ellipse = Primitives.ellipse({
   sx: 1,
   sy: 0.5,
   radius: 0.5,
@@ -85,6 +251,7 @@ const ellipseGeometry = Primitives.ellipse({
   innerSegments: 16,
   theta: Math.PI * 2,
   thetaOffset: 0,
+  innerRadius: 0,
   mergeCentroid: true,
   mapping: mappings.elliptical,
 });
@@ -122,6 +289,15 @@ const squircle = Primitives.squircle({
   mapping: mappings.fgSquircular,
   squareness: 0.95,
 });
+const astroid = Primitives.astroid({
+  radius: 0.5,
+  segments: 32,
+  innerSegments: 16,
+  theta: Math.PI * 2,
+  thetaOffset: 0,
+  mergeCentroid: true,
+  mapping: mappings.lamé,
+});
 const annulus = Primitives.annulus({
   sx: 1,
   sy: 1,
@@ -131,6 +307,20 @@ const annulus = Primitives.annulus({
   theta: Math.PI * 2,
   thetaOffset: 0,
   innerRadius: 0.25,
+  mapping: mappings.concentric,
+});
+
+const polygon = Primitives.polygon({
+  sides: 6,
+  sx: 1,
+  sy: 1,
+  radius: 0.5,
+  edgeSegments: 1,
+  innerSegments: 16,
+  innerRadius: 0,
+  theta: Math.PI * 2,
+  thetaOffset: 0,
+  mergeCentroid: true,
   mapping: mappings.concentric,
 });
 const reuleaux = Primitives.reuleaux({
@@ -143,8 +333,30 @@ const reuleaux = Primitives.reuleaux({
   mapping: mappings.concentric,
   n: 3,
 });
+const star = Primitives.star({
+  points: 5,
+  density: 2,
+  radius: 0.5,
+  notchRadius: 0.5 * utils.computeStarRatio(5, 2),
+  innerRadius: 0,
+  circularHole: false,
+  innerSegments: 16,
+  theta: Math.PI * 2,
+  thetaOffset: 0,
+  mapping: mappings.concentric,
+});
+const cross = Primitives.cross({
+  radius: 0.5,
+  armWidth: 0.5 / 3,
+  segments: 1,
+  innerSegments: 16,
+  innerRadius: 0,
+  mergeCentroid: true,
+  mapping: mappings.rectangular,
+});
 
-const cubeGeometry = Primitives.cube({
+// Solid
+const cube = Primitives.cube({
   sx: 1,
   sy: 1,
   sz: 1,
@@ -152,19 +364,26 @@ const cubeGeometry = Primitives.cube({
   ny: 1,
   nz: 1,
 });
-const roundedCubeGeometry = Primitives.roundedCube({
+const hollowCube = Primitives.hollowCube({
   sx: 1,
   sy: 1,
   sz: 1,
-  nx: 1,
-  ny: 1,
-  nz: 1,
+  thickness: 0.2,
+});
+const roundedCube = Primitives.roundedCube({
+  sx: 1,
+  sy: 1,
+  sz: 1,
   radius: 0.25,
   roundSegments: 8,
   edgeSegments: 1,
+  nx: 1,
+  ny: 1,
+  nz: 1,
+  roundDirection: "all",
 });
 
-const sphereGeometry = Primitives.sphere({
+const sphere = Primitives.sphere({
   radius: 0.5,
   nx: 32,
   ny: 16,
@@ -173,11 +392,46 @@ const sphereGeometry = Primitives.sphere({
   phi: Math.PI * 2,
   phiOffset: 0,
 });
-const icosphereGeometry = Primitives.icosphere({
+const hollowSphere = Primitives.hollowSphere({
   radius: 0.5,
-  subdivisions: 2,
+  innerRadius: 0.25,
+  nx: 32,
+  ny: 16,
+  capSegments: 1,
+  theta: Math.PI / 2,
+  thetaOffset: Math.PI / 4,
+  phi: Math.PI * 2,
+  phiOffset: 0,
 });
-const ellipsoidGeometry = Primitives.ellipsoid({
+const ellipsoid = Primitives.ellipsoid({
+  radius: 1,
+  nx: 32,
+  ny: 16,
+  rx: 0.5,
+  ry: 0.25,
+  rz: 0.25,
+  theta: Math.PI,
+  thetaOffset: 0,
+  phi: Math.PI * 2,
+  phiOffset: 0,
+  vDistribution: utils.linear,
+});
+const superellipsoid = Primitives.superellipsoid({
+  radius: 1,
+  nx: 32,
+  ny: 16,
+  rx: 0.5,
+  ry: 0.25,
+  rz: 0.25,
+  n1: 3,
+  n2: 3,
+  theta: Math.PI,
+  thetaOffset: 0,
+  phi: Math.PI * 2,
+  phiOffset: 0,
+  vDistribution: utils.linear,
+});
+const astroidalEllipsoid = Primitives.astroidalEllipsoid({
   radius: 1,
   nx: 32,
   ny: 16,
@@ -189,8 +443,20 @@ const ellipsoidGeometry = Primitives.ellipsoid({
   phi: Math.PI * 2,
   phiOffset: 0,
 });
+const superegg = Primitives.superegg({
+  radius: 0.5,
+  ry: (0.5 * 5) / 6,
+  nx: 32,
+  ny: 16,
+  n: 2.5,
+  theta: Math.PI,
+  thetaOffset: 0,
+  phi: Math.PI * 2,
+  phiOffset: 0,
+  vDistribution: utils.linear,
+});
 
-const cylinderGeometry = Primitives.cylinder({
+const cylinder = Primitives.cylinder({
   height: 1,
   radius: 0.25,
   nx: 16,
@@ -201,25 +467,95 @@ const cylinderGeometry = Primitives.cylinder({
   capBase: true,
   capBaseSegments: 1,
   phi: Math.PI * 2,
+  phiOffset: 0,
+  capMapping: mappings.rectangular,
+  sx: 1,
+  sz: 1,
+  sxApex: 1,
+  szApex: 1,
+  vDistribution: utils.linear,
 });
-const coneGeometry = Primitives.cone({
+const hollowCylinder = Primitives.hollowCylinder({
+  height: 1,
+  radius: 0.5,
+  innerRadius: 0.25,
+  nx: 32,
+  ny: 1,
+  capSegments: 1,
+  capApex: true,
+  capBase: true,
+  phi: Math.PI * 2,
+  phiOffset: 0,
+});
+const roundedCylinder = Primitives.roundedCylinder({
+  height: 1,
+  radius: 0.25,
+  roundRadius: 0.075,
+  nx: 16,
+  ny: 1,
+  roundSegments: 8,
+  capSegments: 1,
+  phi: Math.PI * 2,
+  phiOffset: 0,
+  vDistribution: utils.linear,
+});
+
+const cone = Primitives.cone({
   height: 1,
   radius: 0.25,
   nx: 16,
   ny: 1,
   capSegments: 1,
   capBase: true,
-  theta: Math.PI * 2,
+  phi: Math.PI * 2,
+  phiOffset: 0,
+  capMapping: mappings.rectangular,
+  sx: 1,
+  sz: 1,
+  vDistribution: utils.linear,
 });
-const capsuleGeometry = Primitives.capsule({
+const bicone = Primitives.bicone({
+  height: 1,
+  radius: 0.5,
+  nx: 16,
+  ny: 1,
+  phi: Math.PI * 2,
+  phiOffset: 0,
+  sx: 1,
+  sz: 1,
+});
+const sphericon = Primitives.sphericon({
+  radius: 0.5,
+  nx: 16,
+  ny: 1,
+});
+const doubleCone = Primitives.doubleCone({
+  height: 1,
+  radius: 0.5,
+  nx: 16,
+  ny: 1,
+  capSegments: 1,
+  capApex: true,
+  capBase: true,
+  capBaseSegments: 1,
+  phi: Math.PI * 2,
+  phiOffset: 0,
+  capMapping: mappings.rectangular,
+  sx: 1,
+  sz: 1,
+});
+const capsule = Primitives.capsule({
   height: 0.5,
   radius: 0.25,
   nx: 16,
   ny: 1,
   roundSegments: 16,
-  theta: Math.PI * 2,
+  phi: Math.PI * 2,
+  phiOffset: 0,
+  vDistribution: utils.linear,
 });
-const torusGeometry = Primitives.torus({
+
+const torus = Primitives.torus({
   radius: 0.4,
   segments: 64,
   minorRadius: 0.1,
@@ -228,27 +564,192 @@ const torusGeometry = Primitives.torus({
   thetaOffset: 0,
   phi: Math.PI * 2,
   phiOffset: 0,
+  capSegments: 1,
+  capStart: true,
+  capEnd: true,
+  capStartSegments: 1,
+  capEndSegments: 1,
+  capMapping: mappings.rectangular,
+  sx: 1,
+  sy: 1,
+  minorSx: 1,
+  minorSy: 1,
+});
+const apple = Primitives.apple({
+  radius: 0.5,
+  height: 0.5,
+  nx: 32,
+  ny: 16,
+  phi: Math.PI * 2,
+  phiOffset: 0,
+  vDistribution: utils.linear,
+});
+const lemon = Primitives.lemon({
+  radius: 0.3,
+  height: 1,
+  nx: 32,
+  ny: 16,
+  phi: Math.PI * 2,
+  phiOffset: 0,
+  vDistribution: utils.linear,
+});
+const sphericalRing = Primitives.sphericalRing({
+  radius: 0.5,
+  innerRadius: 0.25,
+  nx: 32,
+  ny: 16,
+  holeSegments: 1,
+  phi: Math.PI * 2,
+  phiOffset: 0,
+  vDistribution: utils.linear,
+});
+
+const prism = Primitives.prism({
+  radius: 0.25,
+  height: 1,
+  sides: 6,
+  phiOffset: 0,
+  capMapping: mappings.rectangular,
+});
+const antiprism = Primitives.antiprism({
+  radius: 0.25,
+  height: 1,
+  sides: 6,
+  phiOffset: 0,
+  capMapping: mappings.rectangular,
+});
+
+const paraboloid = Primitives.paraboloid({
+  height: 1,
+  radius: 0.5,
+  nx: 32,
+  ny: 16,
+  capSegments: 1,
+  capBase: true,
+  phi: Math.PI * 2,
+  phiOffset: 0,
+  capMapping: mappings.rectangular,
+  vDistribution: utils.linear,
+});
+const hyperboloid = Primitives.hyperboloid({
+  height: 1,
+  radius: 0.25,
+  radiusTop: 0.5,
+  nx: 32,
+  ny: 16,
+  capSegments: 1,
+  capApex: true,
+  capBase: true,
+  phi: Math.PI * 2,
+  phiOffset: 0,
+  capMapping: mappings.rectangular,
+  vDistribution: utils.linear,
+});
+const barrel = Primitives.barrel({
+  height: 1,
+  radius: 0.5,
+  endRadius: 0.35,
+  nx: 32,
+  ny: 16,
+  capSegments: 1,
+  capApex: true,
+  capBase: true,
+  phi: Math.PI * 2,
+  phiOffset: 0,
+  capMapping: mappings.rectangular,
+  vDistribution: utils.linear,
+});
+const funnel = Primitives.funnel({
+  height: 1,
+  radius: 0.1,
+  radiusTop: 0.5,
+  nx: 32,
+  ny: 16,
+  capSegments: 1,
+  capApex: true,
+  capBase: true,
+  phi: Math.PI * 2,
+  phiOffset: 0,
+  capMapping: mappings.rectangular,
+  vDistribution: utils.linear,
 });
 
 const tetrahedron = Primitives.tetrahedron({
   radius: 0.5,
+  subdivisions: 0,
+  mapping: mappings.rectangular,
+});
+const hexahedron = Primitives.hexahedron({
+  radius: 0.5,
+  subdivisions: 0,
+  mapping: mappings.rectangular,
+});
+const octahedron = Primitives.octahedron({
+  radius: 0.5,
+  subdivisions: 0,
+  mapping: mappings.rectangular,
+});
+const dodecahedron = Primitives.dodecahedron({
+  radius: 0.5,
+  subdivisions: 0,
+  mapping: mappings.rectangular,
 });
 const icosahedron = Primitives.icosahedron({
   radius: 0.5,
+  subdivisions: 0,
+  mapping: mappings.rectangular,
 });
 
-// without normals/uvs
-const boxGeometry = Primitives.box({
-  sx: 1,
-  sy: 1,
-  sz: 1,
-});
-const circleGeometry = Primitives.circle({
+const greatDodecahedron = Primitives.greatDodecahedron({
   radius: 0.5,
-  segments: 32,
-  closed: false,
-  theta: Math.PI * 2,
-  thetaOffset: 0,
+  subdivisions: 0,
+  mapping: mappings.rectangular,
+});
+const greatIcosahedron = Primitives.greatIcosahedron({
+  radius: 0.5,
+  subdivisions: 0,
+  mapping: mappings.rectangular,
+});
+const smallStellatedDodecahedron = Primitives.smallStellatedDodecahedron({
+  radius: 0.5,
+  subdivisions: 0,
+  mapping: mappings.rectangular,
+});
+const greatStellatedDodecahedron = Primitives.greatStellatedDodecahedron({
+  radius: 0.5,
+  subdivisions: 0,
+  mapping: mappings.rectangular,
+});
+
+const tetrasphere = Primitives.tetrasphere({
+  radius: 0.5,
+  subdivisions: 2,
+  projection: "gnomonic",
+  mapping: mappings.spherical,
+});
+const hexasphere = Primitives.hexasphere({
+  radius: 0.5,
+  subdivisions: 2,
+  projection: "gnomonic",
+  mapping: mappings.spherical,
+});
+const octasphere = Primitives.octasphere({
+  radius: 0.5,
+  subdivisions: 2,
+  projection: "gnomonic",
+  mapping: mappings.spherical,
+});
+const dodecasphere = Primitives.dodecasphere({
+  radius: 0.5,
+  subdivisions: 2,
+  projection: "gnomonic",
+  mapping: mappings.spherical,
+});
+const icosphere = Primitives.icosphere({
+  radius: 0.5,
+  subdivisions: 2,
+  projection: "gnomonic",
+  mapping: mappings.spherical,
 });
 ```
 

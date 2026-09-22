@@ -21,7 +21,7 @@ const ctx = createContext({
 
 const hasGeometry = params.has("geometry");
 const camera = new PerspectiveCamera({
-  fov: hasGeometry ? Math.PI / 4 : Math.PI / 6,
+  fov: hasGeometry ? Math.PI / 4 : Math.PI / 8,
   near: 0.1,
   far: 100,
   viewport: [0, 0, window.innerWidth, window.innerHeight],
@@ -32,9 +32,9 @@ const controls = new Controls({
         position: [0, 0, 2],
       }
     : {
-        phi: Math.PI / 3.5,
-        // theta: -Math.PI / 12,
-        distance: 50 * (window.innerHeight / window.innerWidth),
+        phi: Math.PI / 2.5,
+        theta: Math.PI / 4,
+        distance: 55 * (window.innerHeight / window.innerWidth),
       }),
   element: ctx.gl.canvas,
   camera,
