@@ -133,6 +133,33 @@ export function computePolarGeometry({
   let vertexIndex = mergeCentroid ? 1 : 0;
   let cellIndex = 0;
 
+  // The innermost ring fans to the merged centroid, whose index is 0 - left
+  // as the triangle's untouched third slot. Every later ring bridges to the
+  // one before it with a quad.
+  const writeCells = (j, ringOffset, i, i1) => {
+    if (mergeCentroid && j === 1) {
+      cells[cellIndex] = ringOffset + i;
+      cells[cellIndex + 1] = ringOffset + i1;
+
+      cellIndex += 3;
+    } else if (j > (mergeCentroid ? 1 : 0)) {
+      const a = ringOffset - cols + i;
+      const b = ringOffset + i;
+      const c = ringOffset + i1;
+      const d = ringOffset - cols + i1;
+
+      cells[cellIndex] = a;
+      cells[cellIndex + 1] = b;
+      cells[cellIndex + 2] = d;
+
+      cells[cellIndex + 3] = b;
+      cells[cellIndex + 4] = c;
+      cells[cellIndex + 5] = d;
+
+      cellIndex += 6;
+    }
+  };
+
   for (let j = mergeCentroid ? 1 : 0; j <= innerSegments; j++) {
     const radiusRatio = j / innerSegments;
 
@@ -177,32 +204,8 @@ export function computePolarGeometry({
         sy,
       });
 
-      if (i < segments) {
-        // Next column, sharing the first one on the wrap for closed shapes
-        const i1 = (i + 1) % cols;
-
-        if (mergeCentroid && j === 1) {
-          cells[cellIndex] = ringOffset + i;
-          cells[cellIndex + 1] = ringOffset + i1;
-
-          cellIndex += 3;
-        } else if (j > (mergeCentroid ? 1 : 0)) {
-          const a = ringOffset - cols + i;
-          const b = ringOffset + i;
-          const c = ringOffset + i1;
-          const d = ringOffset - cols + i1;
-
-          cells[cellIndex] = a;
-          cells[cellIndex + 1] = b;
-          cells[cellIndex + 2] = d;
-
-          cells[cellIndex + 3] = b;
-          cells[cellIndex + 4] = c;
-          cells[cellIndex + 5] = d;
-
-          cellIndex += 6;
-        }
-      }
+      // Next column, sharing the first one on the wrap for closed shapes
+      if (i < segments) writeCells(j, ringOffset, i, (i + 1) % cols);
     }
   }
 
@@ -358,15 +361,18 @@ export function computeSweptArc({
     vertexCount += collapsed[i] ? 1 : rows;
   }
 
+  // A collapsed column is a single vertex: the strip beside it fans with one
+  // triangle per row instead of a quad's two, and a strip between two of them
+  // has no area at all.
+  const stripCellCount = (i) =>
+    collapsed[i] && collapsed[i + 1]
+      ? 0
+      : collapsed[i] || collapsed[i + 1]
+        ? (rows - 1) * 3
+        : (rows - 1) * 6;
+
   let cellCount = 0;
-  for (let i = 0; i < segments; i++) {
-    cellCount +=
-      collapsed[i] && collapsed[i + 1]
-        ? 0
-        : collapsed[i] || collapsed[i + 1]
-          ? (rows - 1) * 3
-          : (rows - 1) * 6;
-  }
+  for (let i = 0; i < segments; i++) cellCount += stripCellCount(i);
 
   const positions = new Float32Array(vertexCount * 3);
   const normals = new Float32Array(vertexCount * 3);
@@ -377,9 +383,7 @@ export function computeSweptArc({
   let vertexIndex = 0;
   let cellIndex = 0;
 
-  for (let i = 0; i < cols; i++) {
-    columnOffsets[i] = vertexIndex;
-
+  const writeColumn = (i) => {
     const [u, vMin, vMax] = columnBounds[i];
     const uRatio = i / segments;
     const rowCount = collapsed[i] ? 1 : rows;
@@ -413,35 +417,58 @@ export function computeSweptArc({
         uvs[vertexIndex * 2 + 1] = vRatio;
       }
     }
+  };
+
+  for (let i = 0; i < cols; i++) {
+    columnOffsets[i] = vertexIndex;
+    writeColumn(i);
   }
 
-  for (let i = 0; i < segments; i++) {
+  // Winding: `flip` swaps the two corners around the one a triangle keeps in
+  // place - the apex for a fan, the first corner for a quad's halves.
+  const [rim0, rim1] = flip ? [2, 1] : [1, 2];
+  const [end0, end1] = flip ? [2, 0] : [0, 2];
+
+  const writeStrip = (i) => {
+    // Both columns collapsed: zero-width sliver, nothing to fill.
+    if (collapsed[i] && collapsed[i + 1]) return;
+
     const a = columnOffsets[i];
     const b = columnOffsets[i + 1];
 
-    if (collapsed[i] && collapsed[i + 1]) {
-      // Both columns collapsed: zero-width sliver, nothing to fill.
-    } else if (collapsed[i]) {
+    if (collapsed[i]) {
       for (let j = 0; j < rows - 1; j++, cellIndex += 3) {
-        const t = flip ? [a, b + j + 1, b + j] : [a, b + j, b + j + 1];
-        cells.set(t, cellIndex);
+        cells[cellIndex] = a;
+        cells[cellIndex + rim0] = b + j;
+        cells[cellIndex + rim1] = b + j + 1;
       }
-    } else if (collapsed[i + 1]) {
-      for (let j = 0; j < rows - 1; j++, cellIndex += 3) {
-        const t = flip ? [a + j + 1, b, a + j] : [a + j, b, a + j + 1];
-        cells.set(t, cellIndex);
-      }
-    } else {
-      for (let j = 0; j < rows - 1; j++, cellIndex += 6) {
-        const p = a + j;
-        const q = b + j;
-        const t = flip
-          ? [p, q + 1, q, p, p + 1, q + 1]
-          : [p, q, q + 1, p, q + 1, p + 1];
-        cells.set(t, cellIndex);
-      }
+      return;
     }
-  }
+
+    if (collapsed[i + 1]) {
+      for (let j = 0; j < rows - 1; j++, cellIndex += 3) {
+        cells[cellIndex + end0] = a + j;
+        cells[cellIndex + 1] = b;
+        cells[cellIndex + end1] = a + j + 1;
+      }
+      return;
+    }
+
+    for (let j = 0; j < rows - 1; j++, cellIndex += 6) {
+      const p = a + j;
+      const q = b + j;
+
+      cells[cellIndex] = p;
+      cells[cellIndex + rim0] = q;
+      cells[cellIndex + rim1] = q + 1;
+
+      cells[cellIndex + 3] = p;
+      cells[cellIndex + 3 + rim0] = q + 1;
+      cells[cellIndex + 3 + rim1] = p + 1;
+    }
+  };
+
+  for (let i = 0; i < segments; i++) writeStrip(i);
 
   return { positions, normals, uvs, cells };
 }

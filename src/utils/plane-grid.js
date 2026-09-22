@@ -126,6 +126,71 @@ export function computePlane(
 
   const vertexOffset = indices.vertex;
 
+  // Triangle vertex slots, swapped to reverse winding when ccw is false
+  const [s1, s2, s4, s5] = ccw ? [1, 2, 4, 5] : [2, 1, 5, 4];
+
+  const writeVertex = (x0, y0) => {
+    let x = x0;
+    let y = y0;
+
+    // Corner quad: remap the flat square extension onto the true circular
+    // arc, preserving angle from the inner corner and scaling its distance
+    // from Chebyshev (square) to Euclidean (circle). isPlaneCornerRounded
+    // is false unless the raw coordinate is strictly beyond both straight
+    // spans (cx/cy non-null), so dx/dy below are guaranteed non-zero - no
+    // 0/0 divide.
+    if (cornerRadius > 0) {
+      const cx = getPlaneCornerReference(x0, su / 2);
+      const cy = getPlaneCornerReference(y0, sv / 2);
+
+      if (isPlaneCornerRounded(cx, cy, roundCorners)) {
+        const [dx, dy] = remapCornerOffset(x0 - cx, y0 - cy);
+        x = cx + dx;
+        y = cy + dy;
+      }
+    }
+
+    positions[indices.vertex * 3 + u] = x * flipU + center[u];
+    positions[indices.vertex * 3 + v] = y * flipV + center[v];
+    positions[indices.vertex * 3 + w] = pw + center[w];
+
+    normals[indices.vertex * 3 + w] = normal;
+
+    uvs[indices.vertex * 2] =
+      ((x0 + width / 2) / width) * uvScale[0] + uvOffset[0];
+    uvs[indices.vertex * 2 + 1] =
+      (1 - (y0 + height / 2) / height) * uvScale[1] + uvOffset[1];
+
+    indices.vertex++;
+  };
+
+  // `radial` splits the quad along its anti-diagonal, so corner quad seams
+  // run radially out from the corner center
+  const writeQuad = (i, j, radial) => {
+    const n = vertexOffset + j * (cols + 1) + i;
+    const o = n + cols + 1;
+
+    if (radial) {
+      cells[indices.cell] = n + 1;
+      cells[indices.cell + s1] = n;
+      cells[indices.cell + s2] = o;
+
+      cells[indices.cell + 3] = n + 1;
+      cells[indices.cell + s4] = o;
+      cells[indices.cell + s5] = o + 1;
+    } else {
+      cells[indices.cell] = n;
+      cells[indices.cell + s1] = o;
+      cells[indices.cell + s2] = o + 1;
+
+      cells[indices.cell + 3] = n;
+      cells[indices.cell + s4] = o + 1;
+      cells[indices.cell + s5] = n + 1;
+    }
+
+    indices.cell += 6;
+  };
+
   for (let j = 0; j <= rows; j++) {
     const y0 = getPlaneCoordinate(j, nv, sv, cornerRadius, cornerSegments);
     const cornerV = isPlaneCorner(j, nv, cornerSegments);
@@ -134,62 +199,14 @@ export function computePlane(
       const x0 = getPlaneCoordinate(i, nu, su, cornerRadius, cornerSegments);
       const cornerU = isPlaneCorner(i, nu, cornerSegments);
 
-      let x = x0;
-      let y = y0;
-
-      // Corner quad: remap the flat square extension onto the true circular
-      // arc, preserving angle from the inner corner and scaling its distance
-      // from Chebyshev (square) to Euclidean (circle). isPlaneCornerRounded
-      // is false unless the raw coordinate is strictly beyond both straight
-      // spans (cx/cy non-null), so dx/dy below are guaranteed non-zero - no
-      // 0/0 divide.
-      if (cornerRadius > 0) {
-        const cx = getPlaneCornerReference(x0, su / 2);
-        const cy = getPlaneCornerReference(y0, sv / 2);
-
-        if (isPlaneCornerRounded(cx, cy, roundCorners)) {
-          const [dx, dy] = remapCornerOffset(x0 - cx, y0 - cy);
-          x = cx + dx;
-          y = cy + dy;
-        }
-      }
-
-      positions[indices.vertex * 3 + u] = x * flipU + center[u];
-      positions[indices.vertex * 3 + v] = y * flipV + center[v];
-      positions[indices.vertex * 3 + w] = pw + center[w];
-
-      normals[indices.vertex * 3 + w] = normal;
-
-      uvs[indices.vertex * 2] =
-        ((x0 + width / 2) / width) * uvScale[0] + uvOffset[0];
-      uvs[indices.vertex * 2 + 1] =
-        (1 - (y0 + height / 2) / height) * uvScale[1] + uvOffset[1];
-
-      indices.vertex++;
+      writeVertex(x0, y0);
 
       if (j < rows && i < cols) {
-        const n = vertexOffset + j * (cols + 1) + i;
-        const o = n + cols + 1;
-
-        if (cornerU && cornerV && i < cornerSegments !== j < cornerSegments) {
-          // Anti-diagonal so corner quad seams are radial
-          cells[indices.cell] = n + 1;
-          cells[indices.cell + (ccw ? 1 : 2)] = n;
-          cells[indices.cell + (ccw ? 2 : 1)] = o;
-
-          cells[indices.cell + 3] = n + 1;
-          cells[indices.cell + (ccw ? 4 : 5)] = o;
-          cells[indices.cell + (ccw ? 5 : 4)] = o + 1;
-        } else {
-          cells[indices.cell] = n;
-          cells[indices.cell + (ccw ? 1 : 2)] = o;
-          cells[indices.cell + (ccw ? 2 : 1)] = o + 1;
-
-          cells[indices.cell + 3] = n;
-          cells[indices.cell + (ccw ? 4 : 5)] = o + 1;
-          cells[indices.cell + (ccw ? 5 : 4)] = n + 1;
-        }
-        indices.cell += 6;
+        writeQuad(
+          i,
+          j,
+          cornerU && cornerV && i < cornerSegments !== j < cornerSegments,
+        );
       }
     }
   }

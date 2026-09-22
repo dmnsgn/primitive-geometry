@@ -167,34 +167,42 @@ export function roundedRectanglePath({
 
   let vertexIndex = 0;
 
-  for (let c = 0; c < 4; c++) {
+  const writeVertex = (px, py) => {
+    positions[vertexIndex * 3] = px;
+    positions[vertexIndex * 3 + 1] = py;
+    path[vertexIndex] = vertexIndex;
+    vertexIndex++;
+  };
+
+  const writeCorner = (c) => {
     for (let s = 0; s < cornerCounts[c]; s++) {
       const [px, py] = point(
         c,
         isRounded[c] ? (s / roundSegments) * HALF_PI : 0,
       );
-      positions[vertexIndex * 3] = px;
-      positions[vertexIndex * 3 + 1] = py;
-      path[vertexIndex] = vertexIndex;
-      vertexIndex++;
+      writeVertex(px, py);
     }
+  };
 
+  const writeEdge = (c) => {
     const n = [nx, ny, nx, ny][c];
-    if (n > 0) {
-      const [x0, y0] = point(c, HALF_PI);
-      const [x1, y1] = point((c + 1) % 4, 0);
-      // Skips t = 0 on an unrounded corner: its exit point is already
-      // written as that corner's own single vertex.
-      const start = isRounded[c] ? 0 : 1;
+    if (n <= 0) return;
 
-      for (let i = start; i < n; i++) {
-        const t = i / n;
-        positions[vertexIndex * 3] = x0 + (x1 - x0) * t;
-        positions[vertexIndex * 3 + 1] = y0 + (y1 - y0) * t;
-        path[vertexIndex] = vertexIndex;
-        vertexIndex++;
-      }
+    const [x0, y0] = point(c, HALF_PI);
+    const [x1, y1] = point((c + 1) % 4, 0);
+    // Skips t = 0 on an unrounded corner: its exit point is already
+    // written as that corner's own single vertex.
+    const start = isRounded[c] ? 0 : 1;
+
+    for (let i = start; i < n; i++) {
+      const t = i / n;
+      writeVertex(x0 + (x1 - x0) * t, y0 + (y1 - y0) * t);
     }
+  };
+
+  for (let c = 0; c < 4; c++) {
+    writeCorner(c);
+    writeEdge(c);
   }
 
   if (closed) path[size] = 0;

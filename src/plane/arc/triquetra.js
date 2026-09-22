@@ -74,6 +74,7 @@ export function triquetra({
 
   const uMin = angleC0;
   const uMax = angleC1;
+  const cols = segments + 1;
 
   // Shared bounding box, so a uv mapping stays continuous across pieces.
   const center = [0, 0];
@@ -114,12 +115,44 @@ export function triquetra({
   // petals'.
   const columnAngle = (i) => computeChebyshevColumn(i, segments, uMin, uMax);
 
-  const core = (k) => {
-    const offset = offsets[k];
-    const start = vertices[k];
-    const end = vertices[(k + 1) % 3];
+  // Angle, radius and position of ring `j`, column `i` of core wedge `k`. Both
+  // end columns lie on a circle center, so the outer ring returns the
+  // precomputed vertex rather than a point re-derived from a rotated angle.
+  const coreColumn = (k, i, j) => {
+    const theta = columnAngle(i);
+    const isEnd = i === 0 || i === segments;
+    const v = (isEnd ? R : seam(theta)) * (j / innerSegments);
 
-    const cols = segments + 1;
+    if (isEnd && j === innerSegments) {
+      return [theta, v, vertices[(i === 0 ? k : k + 1) % 3]];
+    }
+
+    const angle = theta + offsets[k];
+    return [theta, v, [v * Math.cos(angle), v * Math.sin(angle)]];
+  };
+
+  // The first ring fans from the shared apex at index 0, the rest bridge to the
+  // ring before them.
+  const writeCoreCells = (cells, cellIndex, ringOffset, isFirstRing) => {
+    if (isFirstRing) {
+      for (let i = 0; i < segments; i++, cellIndex += 3) {
+        cells.set([0, ringOffset + i, ringOffset + i + 1], cellIndex);
+      }
+      return cellIndex;
+    }
+
+    const prevRingOffset = ringOffset - cols;
+    for (let i = 0; i < segments; i++, cellIndex += 6) {
+      const a = prevRingOffset + i;
+      const b = ringOffset + i;
+      const c = ringOffset + i + 1;
+      const d = prevRingOffset + i + 1;
+      cells.set([a, b, d, b, c, d], cellIndex);
+    }
+    return cellIndex;
+  };
+
+  const core = (k) => {
     const size = 1 + innerSegments * cols;
     const positions = new Float32Array(size * 3);
     const normals = new Float32Array(size * 3);
@@ -146,21 +179,10 @@ export function triquetra({
     let vertexIndex = 1;
     let cellIndex = 0;
     for (let j = 1; j <= innerSegments; j++) {
-      const radiusRatio = j / innerSegments;
       const ringOffset = vertexIndex;
 
       for (let i = 0; i <= segments; i++, vertexIndex++) {
-        const theta = columnAngle(i);
-        const outerV = i === 0 || i === segments ? R : seam(theta);
-        const v = outerV * radiusRatio;
-        const [x, y] =
-          j < innerSegments
-            ? [v * Math.cos(theta + offset), v * Math.sin(theta + offset)]
-            : i === 0
-              ? start
-              : i === segments
-                ? end
-                : [v * Math.cos(theta + offset), v * Math.sin(theta + offset)];
+        const [theta, v, [x, y]] = coreColumn(k, i, j);
 
         positions[vertexIndex * 3] = x;
         positions[vertexIndex * 3 + 1] = y;
@@ -177,24 +199,11 @@ export function triquetra({
           u: theta,
           v,
           uRatio: i / segments,
-          vRatio: radiusRatio,
+          vRatio: j / innerSegments,
         });
       }
 
-      if (j === 1) {
-        for (let i = 0; i < segments; i++, cellIndex += 3) {
-          cells.set([0, ringOffset + i, ringOffset + i + 1], cellIndex);
-        }
-      } else {
-        const prevRingOffset = ringOffset - cols;
-        for (let i = 0; i < segments; i++, cellIndex += 6) {
-          const a = prevRingOffset + i;
-          const b = ringOffset + i;
-          const c = ringOffset + i + 1;
-          const d = prevRingOffset + i + 1;
-          cells.set([a, b, d, b, c, d], cellIndex);
-        }
-      }
+      cellIndex = writeCoreCells(cells, cellIndex, ringOffset, j === 1);
     }
 
     return { positions, normals, uvs, cells };

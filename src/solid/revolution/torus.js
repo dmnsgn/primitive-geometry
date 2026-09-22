@@ -95,17 +95,24 @@ export function torus({
 
   const indices = { vertex: 0, cell: 0 };
 
+  // Last ring/column reuses the first angle exactly on a full revolution, so
+  // the wrap welds instead of landing a hair away from it
+  const angleAt = (j) => {
+    const v = j / minorSegments;
+    const t = (wrapTheta && j === minorSegments ? 0 : v) * theta + thetaOffset;
+    return { cos: -Math.cos(t), sin: Math.sin(t), t };
+  };
+  const phiAngleAt = (i) =>
+    (wrapPhi && i === segments ? 0 : i / segments) * phi + phiOffset;
+
   for (let j = 0; j <= minorSegments; j++) {
     const v = j / minorSegments;
-
-    const t = (wrapTheta && j === minorSegments ? 0 : v) * theta + thetaOffset;
-    const cosTheta = -Math.cos(t);
-    const sinTheta = Math.sin(t);
+    const { cos: cosTheta, sin: sinTheta } = angleAt(j);
 
     for (let i = 0; i <= segments; i++, indices.vertex++) {
       const u = i / segments;
 
-      const p = (wrapPhi && i === segments ? 0 : u) * phi + phiOffset;
+      const p = phiAngleAt(i);
       const cosPhi = -Math.cos(p);
       const sinPhi = Math.sin(p);
 
@@ -143,12 +150,6 @@ export function torus({
       if (j > 0 && i > 0) computeGridQuad(cells, indices, segments + 1, -1);
     }
   }
-
-  const angleAt = (j) => {
-    const v = j / minorSegments;
-    const t = (wrapTheta && j === minorSegments ? 0 : v) * theta + thetaOffset;
-    return { cos: -Math.cos(t), sin: Math.sin(t), t };
-  };
 
   // Basis for the cap's local 2D plane at a fixed phi angle: local x runs
   // along the meridian's radial (cos) direction, local y along the torus

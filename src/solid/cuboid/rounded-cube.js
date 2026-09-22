@@ -96,15 +96,76 @@ export function roundedCube({
     [widthX, widthY, nx, ny, "-z", -halfSZ],
   ];
 
-  for (let i = 0; i < PLANES.length; i++) {
-    const [su, sv, nu, nv, direction, pw] = PLANES[i];
+  // Blend one face's flat grid vertex onto the rounded shell: clamp it into
+  // the inner box, then push it back out by radius along whatever the clamp
+  // took off. A vertex inside the box is untouched, so flat sections stay flat.
+  const roundVertex = (vertexIndex, position) => {
+    TMP[0] = position[0];
+    TMP[1] = position[1];
+    TMP[2] = position[2];
+
+    for (let k = 0; k < 3; k++) {
+      if (k === excludedAxis) continue;
+      const bound = bounds[k];
+      if (position[k] < -bound) {
+        position[k] = -bound;
+      } else if (position[k] > bound) {
+        position[k] = bound;
+      }
+    }
+
+    for (let k = 0; k < 3; k++) {
+      TMP[k] = k === excludedAxis ? 0 : TMP[k] - position[k];
+    }
+
+    normalize(TMP);
+
+    geometry.normals[vertexIndex] = TMP[0];
+    geometry.normals[vertexIndex + 1] = TMP[1];
+    geometry.normals[vertexIndex + 2] = TMP[2];
+
+    geometry.positions[vertexIndex] = position[0] + radius * TMP[0];
+    geometry.positions[vertexIndex + 1] = position[1] + radius * TMP[1];
+    geometry.positions[vertexIndex + 2] = position[2] + radius * TMP[2];
+  };
+
+  const roundFace = (plane, startVertex) => {
+    const [su, sv, nu, nv, direction, pw] = plane;
     const [u, v, w, flipU, flipV] = PLANE_DIRECTIONS[direction];
+
+    const cols = 2 * roundSegments + nu;
+    const rows = 2 * roundSegments + nv;
+
+    for (let j = 0; j <= rows; j++) {
+      const y0 = getPlaneCoordinate(j, nv, sv, radius, roundSegments);
+
+      for (let x = 0; x <= cols; x++) {
+        const x0 = getPlaneCoordinate(x, nu, su, radius, roundSegments);
+
+        // Recomputed in double precision, not read back from the
+        // Float32Array, so this vertex stays bit-identical to the matching
+        // corner vertex on a neighboring face rounded by computePlane's 2D
+        // corners - reading the rounded value back would drift by ~1 ULP
+        // and crack their shared boundary.
+        const position = [0, 0, 0];
+        position[u] = x0 * flipU;
+        position[v] = y0 * flipV;
+        position[w] = pw;
+
+        roundVertex((startVertex + j * (cols + 1) + x) * 3, position);
+      }
+    }
+  };
+
+  for (const plane of PLANES) {
+    const [su, sv, nu, nv, direction, pw] = plane;
+    const outOfPlaneAxis = PLANE_DIRECTIONS[direction][2];
     const startVertex = indices.vertex;
 
     // False when this face's own (out-of-plane) axis is the excluded one: the
     // face is flat along it, so its corners are rounded by computePlane's 2D
-    // corner mapping instead of the 3D blend below.
-    const axisActive = w !== excludedAxis;
+    // corner mapping instead of the 3D blend above.
+    const axisActive = outOfPlaneAxis !== excludedAxis;
 
     computePlane(
       geometry,
@@ -124,58 +185,7 @@ export function roundedCube({
       !axisActive,
     );
 
-    if (axisActive) {
-      const cols = 2 * roundSegments + nu;
-      const rows = 2 * roundSegments + nv;
-
-      for (let j = 0; j <= rows; j++) {
-        const y0 = getPlaneCoordinate(j, nv, sv, radius, roundSegments);
-
-        for (let x = 0; x <= cols; x++) {
-          const x0 = getPlaneCoordinate(x, nu, su, radius, roundSegments);
-
-          // Recomputed in double precision, not read back from the
-          // Float32Array, so this vertex stays bit-identical to the matching
-          // corner vertex on a neighboring face rounded by computePlane's 2D
-          // corners - reading the rounded value back would drift by ~1 ULP
-          // and crack their shared boundary.
-          const position = [0, 0, 0];
-          position[u] = x0 * flipU;
-          position[v] = y0 * flipV;
-          position[w] = pw;
-
-          TMP[0] = position[0];
-          TMP[1] = position[1];
-          TMP[2] = position[2];
-
-          for (let k = 0; k < 3; k++) {
-            if (k === excludedAxis) continue;
-            const bound = bounds[k];
-            if (position[k] < -bound) {
-              position[k] = -bound;
-            } else if (position[k] > bound) {
-              position[k] = bound;
-            }
-          }
-
-          for (let k = 0; k < 3; k++) {
-            TMP[k] = k === excludedAxis ? 0 : TMP[k] - position[k];
-          }
-
-          normalize(TMP);
-
-          const vertexIndex = (startVertex + j * (cols + 1) + x) * 3;
-
-          geometry.normals[vertexIndex] = TMP[0];
-          geometry.normals[vertexIndex + 1] = TMP[1];
-          geometry.normals[vertexIndex + 2] = TMP[2];
-
-          geometry.positions[vertexIndex] = position[0] + radius * TMP[0];
-          geometry.positions[vertexIndex + 1] = position[1] + radius * TMP[1];
-          geometry.positions[vertexIndex + 2] = position[2] + radius * TMP[2];
-        }
-      }
-    }
+    if (axisActive) roundFace(plane, startVertex);
   }
 
   return geometry;

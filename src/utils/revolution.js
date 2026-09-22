@@ -93,6 +93,15 @@ export function computeCap(
     }
   }
 
+  // flip = -1 reverses winding by swapping the two corners after the first
+  const [second, third] = flip === 1 ? [1, 2] : [2, 1];
+  const writeTriangle = (a, b, c) => {
+    cells[indices.cell] = a;
+    cells[indices.cell + second] = b;
+    cells[indices.cell + third] = c;
+    indices.cell += 3;
+  };
+
   const m = ringSegments + 1;
   for (let r = 0; r < capSegments; r++) {
     for (let j = 0; j < ringSegments; j++) {
@@ -104,29 +113,9 @@ export function computeCap(
 
       // The innermost ring is collapsed at the center: fan with a single
       // triangle, skipping the degenerate one
-      if (r > 0) {
-        if (flip === 1) {
-          cells[indices.cell] = a;
-          cells[indices.cell + 1] = c;
-          cells[indices.cell + 2] = d;
-        } else {
-          cells[indices.cell] = a;
-          cells[indices.cell + 1] = d;
-          cells[indices.cell + 2] = c;
-        }
-        indices.cell += 3;
-      }
+      if (r > 0) writeTriangle(a, c, d);
 
-      if (flip === 1) {
-        cells[indices.cell] = a;
-        cells[indices.cell + 1] = d;
-        cells[indices.cell + 2] = b;
-      } else {
-        cells[indices.cell] = a;
-        cells[indices.cell + 1] = b;
-        cells[indices.cell + 2] = d;
-      }
-      indices.cell += 3;
+      writeTriangle(a, d, b);
     }
   }
 }
@@ -245,24 +234,22 @@ export function computeRevolutionGeometry({
 
   // Rings collapsed to a point (poles, apexes) fan with a single triangle per
   // quad instead of two, skipping the degenerate one
-  const collapsedAt = Array.from({ length: ny + 1 });
-  let fans = 0;
-  for (let y = 0; y <= ny; y++) {
-    collapsedAt[y] = equation({
-      v: vDistribution(y / ny),
-      cosPhi: 1,
-      sinPhi: 0,
-    }).collapsed;
-    if (collapsedAt[y]) fans += y === 0 || y === ny ? 1 : 2;
-  }
+  const collapsedAt = Array.from(
+    { length: ny + 1 },
+    (_, y) =>
+      equation({ v: vDistribution(y / ny), cosPhi: 1, sinPhi: 0 }).collapsed,
+  );
+  const fans = collapsedAt.reduce(
+    (sum, collapsed, y) =>
+      sum + (collapsed ? (y === 0 || y === ny ? 1 : 2) : 0),
+    0,
+  );
 
   const hasCapBase = capBase && !collapsedAt[0];
   const hasCapApex = capApex && !collapsedAt[ny];
   const capBaseCount = hasCapBase ? capBaseSegments : 0;
   const capApexCount = hasCapApex ? capApexSegments : 0;
-  const capFans =
-    (hasCapBase && capBaseSegments > 0 ? 1 : 0) +
-    (hasCapApex && capApexSegments > 0 ? 1 : 0);
+  const capFans = (capBaseCount > 0 ? 1 : 0) + (capApexCount > 0 ? 1 : 0);
 
   const size =
     (ny + 1) * (nx + 1) + (nx + 1) * 2 * (capBaseCount + capApexCount);
@@ -280,100 +267,106 @@ export function computeRevolutionGeometry({
   let vertexIndex = 0;
   let cellIndex = 0;
 
+  // The last column reuses the first angle exactly on a full revolution, so
+  // the wrap welds instead of landing a hair away from it
+  const phiAt = (x) => (wrap && x === nx ? 0 : x / nx) * phi + phiOffset;
+
+  const writeVertex = (x, v, t) => {
+    const p = phiAt(x);
+
+    const {
+      position,
+      normal,
+      v: uvV = t,
+    } = equation({ v, cosPhi: Math.cos(p), sinPhi: Math.sin(p) });
+
+    positions[vertexIndex * 3] = position[0];
+    positions[vertexIndex * 3 + 1] = position[1];
+    positions[vertexIndex * 3 + 2] = position[2];
+
+    TMP[0] = normal[0];
+    TMP[1] = normal[1];
+    TMP[2] = normal[2];
+    normalize(TMP);
+
+    normals[vertexIndex * 3] = TMP[0];
+    normals[vertexIndex * 3 + 1] = TMP[1];
+    normals[vertexIndex * 3 + 2] = TMP[2];
+
+    uvs[vertexIndex * 2] = x / nx;
+    uvs[vertexIndex * 2 + 1] = uvV;
+  };
+
+  // Quads between the row just written and the one before it, each half
+  // skipped when the ring it fans from is collapsed
+  const writeRowQuads = (y) => {
+    const rowOffset = vertexIndex - 2 * (nx + 1);
+
+    for (let x = 0; x < nx; x++) {
+      const a = rowOffset + x;
+      const b = a + 1;
+      const c = a + nx + 1;
+      const d = a + nx + 2;
+
+      if (!collapsedAt[y - 1]) {
+        cells[cellIndex] = a;
+        cells[cellIndex + 1] = b;
+        cells[cellIndex + 2] = c;
+
+        cellIndex += 3;
+      }
+
+      if (!collapsedAt[y]) {
+        cells[cellIndex] = c;
+        cells[cellIndex + 1] = b;
+        cells[cellIndex + 2] = d;
+
+        cellIndex += 3;
+      }
+    }
+  };
+
   for (let y = 0; y <= ny; y++) {
     const t = y / ny;
     const v = vDistribution(t);
 
-    for (let x = 0; x <= nx; x++, vertexIndex++) {
-      const u = x / nx;
-      const p = (wrap && x === nx ? 0 : u) * phi + phiOffset;
-      const cosPhi = Math.cos(p);
-      const sinPhi = Math.sin(p);
+    for (let x = 0; x <= nx; x++, vertexIndex++) writeVertex(x, v, t);
 
-      const { position, normal, v: uvV = t } = equation({ v, cosPhi, sinPhi });
-
-      positions[vertexIndex * 3] = position[0];
-      positions[vertexIndex * 3 + 1] = position[1];
-      positions[vertexIndex * 3 + 2] = position[2];
-
-      TMP[0] = normal[0];
-      TMP[1] = normal[1];
-      TMP[2] = normal[2];
-      normalize(TMP);
-
-      normals[vertexIndex * 3] = TMP[0];
-      normals[vertexIndex * 3 + 1] = TMP[1];
-      normals[vertexIndex * 3 + 2] = TMP[2];
-
-      uvs[vertexIndex * 2] = u;
-      uvs[vertexIndex * 2 + 1] = uvV;
-    }
-
-    if (y > 0) {
-      const rowOffset = vertexIndex - 2 * (nx + 1);
-
-      for (let x = 0; x < nx; x++) {
-        const a = rowOffset + x;
-        const b = a + 1;
-        const c = a + nx + 1;
-        const d = a + nx + 2;
-
-        if (!collapsedAt[y - 1]) {
-          cells[cellIndex] = a;
-          cells[cellIndex + 1] = b;
-          cells[cellIndex + 2] = c;
-
-          cellIndex += 3;
-        }
-
-        if (!collapsedAt[y]) {
-          cells[cellIndex] = c;
-          cells[cellIndex + 1] = b;
-          cells[cellIndex + 2] = d;
-
-          cellIndex += 3;
-        }
-      }
-    }
+    if (y > 0) writeRowQuads(y);
   }
 
   const geometry = { positions, normals, uvs, cells };
   const indices = { vertex: vertexIndex, cell: cellIndex };
 
-  if (hasCapBase || hasCapApex) {
-    const angleAt = (i) => {
-      const u = i / nx;
-      const p = (wrap && i === nx ? 0 : u) * phi + phiOffset;
-      return { cos: Math.cos(p), sin: Math.sin(p), t: p };
-    };
+  // The rim's x/z extent, probed from the equation itself rather than passed
+  // in; its sign is folded into the cap's own cos/sin so the reconstructed rim
+  // lands bit-exactly on the body's boundary ring while sx/sy stay positive.
+  const addCap = (v, capSegments, flip, normalY) => {
+    const atCos = equation({ v, cosPhi: 1, sinPhi: 0 });
+    const atSin = equation({ v, cosPhi: 0, sinPhi: 1 });
 
-    const addCap = (v, capSegments, flip, normalY) => {
-      const atCos = equation({ v, cosPhi: 1, sinPhi: 0 });
-      const atSin = equation({ v, cosPhi: 0, sinPhi: 1 });
+    const xSign = atCos.position[0] < 0 ? -1 : 1;
+    const zSign = atSin.position[2] < 0 ? -1 : 1;
 
-      const xSign = atCos.position[0] < 0 ? -1 : 1;
-      const zSign = atSin.position[2] < 0 ? -1 : 1;
+    computeCap(geometry, indices, {
+      ringSegments: nx,
+      capSegments,
+      capRadius: 1,
+      sx: xSign * atCos.position[0],
+      sy: zSign * atSin.position[2],
+      flip,
+      angleAt: (i) => {
+        const p = phiAt(i);
+        return { cos: xSign * Math.cos(p), sin: zSign * Math.sin(p), t: p };
+      },
+      point: (x, y) => [x, atCos.position[1], y],
+      normal: [0, normalY, 0],
+      mapping: capMapping,
+    });
+  };
 
-      computeCap(geometry, indices, {
-        ringSegments: nx,
-        capSegments,
-        capRadius: 1,
-        sx: xSign * atCos.position[0],
-        sy: zSign * atSin.position[2],
-        flip,
-        angleAt: (i) => {
-          const { cos, sin, t } = angleAt(i);
-          return { cos: xSign * cos, sin: zSign * sin, t };
-        },
-        point: (x, y) => [x, atCos.position[1], y],
-        normal: [0, normalY, 0],
-        mapping: capMapping,
-      });
-    };
-
-    if (hasCapBase) addCap(0, capBaseSegments, 1, -1);
-    if (hasCapApex) addCap(1, capApexSegments, -1, 1);
-  }
+  if (hasCapBase) addCap(0, capBaseSegments, 1, -1);
+  if (hasCapApex) addCap(1, capApexSegments, -1, 1);
 
   return { positions, normals, uvs, cells, indices };
 }
