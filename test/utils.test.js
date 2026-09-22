@@ -15,7 +15,8 @@ describe("fullscreenTriangle", () => {
   });
 
   it("winds CCW, facing +z", () => {
-    const [ax, ay, bx, by, cx, cy] = Primitives.utils.fullscreenTriangle().positions;
+    const [ax, ay, bx, by, cx, cy] =
+      Primitives.utils.fullscreenTriangle().positions;
     const ux = bx - ax;
     const uy = by - ay;
     const vx = cx - ax;

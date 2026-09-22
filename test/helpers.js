@@ -1,6 +1,4 @@
-/**
- * Shared mesh analysis helpers for seam/discontinuity tests.
- */
+/** Shared mesh analysis helpers for seam/discontinuity tests. */
 
 const EPSILON = 1e-4;
 
@@ -27,13 +25,14 @@ const triangleNormal = (positions, a, b, c) => {
 
 /**
  * Analyse a triangle mesh:
- * - nan/outOfBounds/degenerate/unused: allocation and cell defects
- * - nonManifold: edges used by more than two triangles
- * - boundaries: single-use edges with no coincident partner (open shapes)
- * - seams: coincident duplicated edges with bit-identical positions
- *   (intentional: UV atlas borders, texture wrap columns...)
- * - cracks: coincident duplicated edges with non-identical positions
- *   (always a defect)
+ *
+ * - Nan/outOfBounds/degenerate/unused: allocation and cell defects
+ * - NonManifold: edges used by more than two triangles
+ * - Boundaries: single-use edges with no coincident partner (open shapes)
+ * - Seams: coincident duplicated edges with bit-identical positions (intentional:
+ *   UV atlas borders, texture wrap columns...)
+ * - Cracks: coincident duplicated edges with non-identical positions (always a
+ *   defect)
  */
 export function analyze(geometry, epsilon = EPSILON) {
   const { positions, cells } = geometry;
@@ -223,12 +222,12 @@ export function inwardTriangles(geometry) {
 }
 
 /**
- * Number of triangles whose geometric winding disagrees with their own
- * vertex normal (negative dot product between the two). Unlike
- * inwardTriangles (which assumes convexity around the origin), this works
- * for any shape - concave, elliptical, off-center - since it only checks
- * that each triangle's winding is consistent with the normal already baked
- * into its vertices. Degenerate triangles are ignored.
+ * Number of triangles whose geometric winding disagrees with their own vertex
+ * normal (negative dot product between the two). Unlike inwardTriangles (which
+ * assumes convexity around the origin), this works for any shape - concave,
+ * elliptical, off-center - since it only checks that each triangle's winding is
+ * consistent with the normal already baked into its vertices. Degenerate
+ * triangles are ignored.
  */
 export function flippedNormalTriangles(geometry) {
   const { positions, normals, cells } = geometry;
@@ -246,9 +245,9 @@ export function flippedNormalTriangles(geometry) {
 
 /**
  * Diagonal slope signs of quad pairs lying in the rounded corner regions of a
- * planar rounded rectangle: quadrant -> Set of Math.sign((bx-ax) * (by-ay))
- * for the diagonal edge shared by each triangle pair.
- * Radial corner seams: +1 in -x-y/+x+y, -1 in +x-y/-x+y.
+ * planar rounded rectangle: quadrant -> Set of Math.sign((bx-ax) * (by-ay)) for
+ * the diagonal edge shared by each triangle pair. Radial corner seams: +1 in
+ * -x-y/+x+y, -1 in +x-y/-x+y.
  */
 export function cornerDiagonalSlopes(geometry, rx, ry) {
   const { positions, cells } = geometry;

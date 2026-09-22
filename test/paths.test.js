@@ -128,7 +128,13 @@ describe("roundedRectanglePath", () => {
     const ny = 2;
     const sx = 1.2;
     const sy = 0.8;
-    const rounded = Primitives.roundedRectanglePath({ sx, sy, nx, ny, radius: 0 });
+    const rounded = Primitives.roundedRectanglePath({
+      sx,
+      sy,
+      nx,
+      ny,
+      radius: 0,
+    });
     const rect = Primitives.rectanglePath({ sx, sy, nx, ny });
 
     assert.deepEqual(rounded.positions, rect.positions);
@@ -198,7 +204,12 @@ describe("roundedRectanglePath", () => {
     const sy = 0.6;
     const radius = 0.2;
     const roundSegments = 6;
-    const g = Primitives.roundedRectanglePath({ sx, sy, radius, roundSegments });
+    const g = Primitives.roundedRectanglePath({
+      sx,
+      sy,
+      radius,
+      roundSegments,
+    });
 
     const centers = {
       "bottom-left": [-sx / 2 + radius, -sy / 2 + radius],
@@ -230,7 +241,12 @@ describe("roundedRectanglePath", () => {
     const sy = 0.5;
     const radius = Math.min(sx, sy) * 0.5;
     const roundSegments = 8;
-    const g = Primitives.roundedRectanglePath({ sx, sy, radius, roundSegments });
+    const g = Primitives.roundedRectanglePath({
+      sx,
+      sy,
+      radius,
+      roundSegments,
+    });
 
     // widthY collapses to 0: only the two nx-segment straight edges remain
     assert.equal(g.positions.length / 3, 4 * roundSegments + 2 * 1);
@@ -412,7 +428,9 @@ describe("reuleauxPath", () => {
     const angles = (g) => {
       const out = [];
       for (let i = 0; i < g.positions.length; i += 3) {
-        if (Math.abs(Math.hypot(g.positions[i], g.positions[i + 1]) - 1) < 1e-4) {
+        if (
+          Math.abs(Math.hypot(g.positions[i], g.positions[i + 1]) - 1) < 1e-4
+        ) {
           out.push(wrap(Math.atan2(g.positions[i + 1], g.positions[i])));
         }
       }

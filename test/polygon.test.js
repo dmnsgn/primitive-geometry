@@ -36,7 +36,10 @@ describe("polygon", () => {
 
     for (let i = 0; i < sides; i++) {
       const angle = (i / sides) * Math.PI * 2;
-      assertClose(ring[i], [radius * Math.cos(angle), radius * Math.sin(angle)]);
+      assertClose(ring[i], [
+        radius * Math.cos(angle),
+        radius * Math.sin(angle),
+      ]);
     }
   });
 
@@ -202,7 +205,10 @@ describe("cross", () => {
     const g = Primitives.cross({ radius });
 
     function bbox({ positions }) {
-      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      let minX = Infinity,
+        maxX = -Infinity,
+        minY = Infinity,
+        maxY = -Infinity;
       for (let i = 0; i < positions.length; i += 3) {
         minX = Math.min(minX, positions[i]);
         maxX = Math.max(maxX, positions[i]);

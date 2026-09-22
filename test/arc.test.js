@@ -127,7 +127,10 @@ describe("arbelos", () => {
           minYAtSplit = Math.min(minYAtSplit, g.positions[i * 3 + 1]);
         }
       }
-      assert.ok(close(minYAtSplit, 0), `segments=${segments}: got ${minYAtSplit}`);
+      assert.ok(
+        close(minYAtSplit, 0),
+        `segments=${segments}: got ${minYAtSplit}`,
+      );
     }
   });
 
@@ -266,10 +269,7 @@ describe("lune", () => {
       return (
         r * r * Math.acos((d * d + r * r - R * R) / (2 * d * r)) +
         R * R * Math.acos((d * d + R * R - r * r) / (2 * d * R)) -
-        0.5 *
-          Math.sqrt(
-            (-d + r + R) * (d + r - R) * (d - r + R) * (d + r + R),
-          )
+        0.5 * Math.sqrt((-d + r + R) * (d + r - R) * (d - r + R) * (d + r + R))
       );
     }
 
@@ -428,7 +428,9 @@ describe("yinYang", () => {
 
     let maxError = 0;
     let dotBoundaryPoints = 0;
-    for (const [, [a]] of [...groups].filter(([, edges]) => edges.length === 1)) {
+    for (const [, [a]] of [...groups].filter(
+      ([, edges]) => edges.length === 1,
+    )) {
       const ax = positions[a * 3];
       const ay = positions[a * 3 + 1];
       const distFromDotCenter = Math.hypot(ax, ay - dotCenterY);
@@ -464,7 +466,10 @@ describe("yinYang", () => {
       const yinYs = ySamples(yin);
       assert.equal(yangYs.size, yinYs.size, JSON.stringify(options));
       for (const y of yangYs) {
-        assert.ok(yinYs.has(y), `y=${y} missing from yin, ${JSON.stringify(options)}`);
+        assert.ok(
+          yinYs.has(y),
+          `y=${y} missing from yin, ${JSON.stringify(options)}`,
+        );
       }
     }
   });
@@ -503,7 +508,10 @@ describe("yinYang", () => {
     const yang = Primitives.yinYang({ radius, part: "yang" });
     const yin = Primitives.yinYang({ radius, part: "yin" });
 
-    assert.equal(whole.positions.length, yang.positions.length + yin.positions.length);
+    assert.equal(
+      whole.positions.length,
+      yang.positions.length + yin.positions.length,
+    );
     assert.equal(whole.cells.length, yang.cells.length + yin.cells.length);
 
     const { minX, maxX, minY, maxY } = bbox(whole);

@@ -127,13 +127,12 @@ if (params.has("screenshot")) {
 
 setInterval(() => {
   if (!CONFIG.cycleMapping) {
-  	return;
+    return;
   }
 
   CONFIG.mapping =
     mappingOptions[
-      (mappingOptions.indexOf(CONFIG.mapping) + 1) %
-        mappingOptions.length
+      (mappingOptions.indexOf(CONFIG.mapping) + 1) % mappingOptions.length
     ];
 
   pane.refresh();

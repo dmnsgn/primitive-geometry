@@ -40,7 +40,10 @@ const cases = [
   ["star", () => Primitives.star()],
   ["star points=7 density=3", () => Primitives.star({ points: 7, density: 3 })],
   ["star thetaOffset=0.5", () => Primitives.star({ thetaOffset: 0.5 })],
-  ["star innerRadius=0.1 (self-similar hole)", () => Primitives.star({ innerRadius: 0.1 })],
+  [
+    "star innerRadius=0.1 (self-similar hole)",
+    () => Primitives.star({ innerRadius: 0.1 }),
+  ],
   [
     "star innerRadius=0.1 circularHole",
     () => Primitives.star({ innerRadius: 0.1, circularHole: true }),
@@ -59,9 +62,21 @@ const cases = [
   // collapsed columns at shared boundaries orphan a few vertices.
   // "yin-yang" reuses this build twice, doubling the count.
   ["yinYang", () => Primitives.yinYang(), { unused: 132 }],
-  ["yinYang part=yang", () => Primitives.yinYang({ part: "yang" }), { unused: 66 }],
-  ["yinYang part=yin", () => Primitives.yinYang({ part: "yin" }), { unused: 66 }],
-  ["yinYang dotRadius=0", () => Primitives.yinYang({ dotRadius: 0 }), { unused: 32 }],
+  [
+    "yinYang part=yang",
+    () => Primitives.yinYang({ part: "yang" }),
+    { unused: 66 },
+  ],
+  [
+    "yinYang part=yin",
+    () => Primitives.yinYang({ part: "yin" }),
+    { unused: 66 },
+  ],
+  [
+    "yinYang dotRadius=0",
+    () => Primitives.yinYang({ dotRadius: 0 }),
+    { unused: 32 },
+  ],
 
   ["roundedRectangle", () => Primitives.roundedRectangle()],
   [
@@ -78,7 +93,10 @@ const cases = [
   ["stadium sx=sy", () => Primitives.stadium({ sy: 1 })],
 
   ["polygon", () => Primitives.polygon()],
-  ["polygon sides=5 edgeSegments=3", () => Primitives.polygon({ sides: 5, edgeSegments: 3 })],
+  [
+    "polygon sides=5 edgeSegments=3",
+    () => Primitives.polygon({ sides: 5, edgeSegments: 3 }),
+  ],
   ["rhombus", () => Primitives.rhombus()],
   ["rhombus thetaOffset=0.5", () => Primitives.rhombus({ thetaOffset: 0.5 })],
   ["rhombus edgeSegments=3", () => Primitives.rhombus({ edgeSegments: 3 })],
@@ -113,10 +131,7 @@ const cases = [
     "hollowCube non-uniform",
     () => Primitives.hollowCube({ sy: 0.6, sz: 1.5, thickness: 0.1 }),
   ],
-  [
-    "hollowCube thin walls",
-    () => Primitives.hollowCube({ thickness: 0.05 }),
-  ],
+  ["hollowCube thin walls", () => Primitives.hollowCube({ thickness: 0.05 })],
 
   ["sphere", () => Primitives.sphere(), { unused: 2 }],
   ["sphere nx=15", () => Primitives.sphere({ nx: 15 }), { unused: 2 }],
@@ -161,11 +176,7 @@ const cases = [
     () => Primitives.ellipsoid({ thetaOffset: 0.3 }),
     { unused: 1 },
   ],
-  [
-    "superellipsoid",
-    () => Primitives.superellipsoid(),
-    { unused: 2 },
-  ],
+  ["superellipsoid", () => Primitives.superellipsoid(), { unused: 2 }],
   [
     "superellipsoid n1=n2=4 (pinched/star)",
     () => Primitives.superellipsoid({ n1: 4, n2: 4 }),
@@ -181,16 +192,8 @@ const cases = [
     () => Primitives.astroidalEllipsoid(),
     { unused: 2, epsilon: 1e-5 },
   ],
-  [
-    "superegg",
-    () => Primitives.superegg(),
-    { unused: 2 },
-  ],
-  [
-    "superegg n=4",
-    () => Primitives.superegg({ n: 4 }),
-    { unused: 2 },
-  ],
+  ["superegg", () => Primitives.superegg(), { unused: 2 }],
+  ["superegg n=4", () => Primitives.superegg({ n: 4 }), { unused: 2 }],
   ["barrel", () => Primitives.barrel(), { unused: 2 }],
   ["barrel nx=15", () => Primitives.barrel({ nx: 15 }), { unused: 2 }],
   [
@@ -216,11 +219,7 @@ const cases = [
     () => Primitives.lemon({ height: 1 }),
     { unused: 2 },
   ],
-  [
-    "lemon very slender",
-    () => Primitives.lemon({ height: 10 }),
-    { unused: 2 },
-  ],
+  ["lemon very slender", () => Primitives.lemon({ height: 10 }), { unused: 2 }],
   ["icosphere", () => Primitives.icosphere()],
 
   ["cylinder", () => Primitives.cylinder(), { unused: 2 }],
@@ -265,11 +264,7 @@ const cases = [
     () => Primitives.hollowCylinder({ innerRadius: 0.45 }),
   ],
   ["cone", () => Primitives.cone(), { unused: 2 }],
-  [
-    "cone elliptical",
-    () => Primitives.cone({ sx: 2, sz: 0.5 }),
-    { unused: 2 },
-  ],
+  ["cone elliptical", () => Primitives.cone({ sx: 2, sz: 0.5 }), { unused: 2 }],
   ["hyperboloid", () => Primitives.hyperboloid(), { unused: 2 }],
   [
     "hyperboloid nx=15",
@@ -281,11 +276,7 @@ const cases = [
     () => Primitives.hyperboloid({ capApex: false, capBase: false }),
   ],
   ["paraboloid", () => Primitives.paraboloid(), { unused: 2 }],
-  [
-    "paraboloid nx=15",
-    () => Primitives.paraboloid({ nx: 15 }),
-    { unused: 2 },
-  ],
+  ["paraboloid nx=15", () => Primitives.paraboloid({ nx: 15 }), { unused: 2 }],
   [
     "paraboloid no cap",
     () => Primitives.paraboloid({ capBase: false }),
@@ -305,11 +296,7 @@ const cases = [
     { unused: 2 },
   ],
   ["doubleCone", () => Primitives.doubleCone(), { unused: 4 }],
-  [
-    "doubleCone nx=15",
-    () => Primitives.doubleCone({ nx: 15 }),
-    { unused: 4 },
-  ],
+  ["doubleCone nx=15", () => Primitives.doubleCone({ nx: 15 }), { unused: 4 }],
   [
     "doubleCone elliptical",
     () => Primitives.doubleCone({ sx: 2, sz: 0.5 }),
@@ -363,7 +350,6 @@ const cases = [
       }),
     { unused: 2 },
   ],
-
 
   // The fan center's own wrap-column duplicate (1 per cap) is never
   // referenced by a cell - same benign pattern as torus's capped case

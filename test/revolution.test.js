@@ -54,7 +54,11 @@ describe("roundedCylinder", () => {
     for (const g of [
       Primitives.roundedCylinder(),
       Primitives.roundedCylinder({ roundRadius: 0 }), // plain flat-capped cylinder
-      Primitives.roundedCylinder({ roundRadius: 0.25, radius: 0.25, height: 0.5 }), // capsule limit
+      Primitives.roundedCylinder({
+        roundRadius: 0.25,
+        radius: 0.25,
+        height: 0.5,
+      }), // capsule limit
       Primitives.roundedCylinder({ roundRadius: 10 }), // clamped
       Primitives.roundedCylinder({ ny: 4, roundSegments: 3, capSegments: 2 }),
       Primitives.roundedCylinder({ phi: Math.PI }),
@@ -249,9 +253,7 @@ describe("paraboloid", () => {
       // +0 vs -0 (r * cosPhi at r = 0, sign of cosPhi varies per column) is
       // the same normal direction, so compare with tolerance, not ===
       assert.ok(Math.abs(normals[i * 3] - normals[apex[0] * 3]) < 1e-9);
-      assert.ok(
-        Math.abs(normals[i * 3 + 1] - normals[apex[0] * 3 + 1]) < 1e-9,
-      );
+      assert.ok(Math.abs(normals[i * 3 + 1] - normals[apex[0] * 3 + 1]) < 1e-9);
       assert.ok(Math.abs(normals[i * 3 + 2] - normals[apex[0] * 3 + 2]) < 1e-9);
     }
 
@@ -785,7 +787,9 @@ describe("torus", () => {
       capSegments: 1,
     });
     assert.ok(
-      start.positions.slice(0, mainSize * 3).every((_, i) => i % 3 !== 1 || start.positions[i] >= -1e-6),
+      start.positions
+        .slice(0, mainSize * 3)
+        .every((_, i) => i % 3 !== 1 || start.positions[i] >= -1e-6),
       "sanity: body should lie entirely at Y >= 0",
     );
     assert.ok(start.normals[outerRimAtTheta0 * 3 + 1] < 0);
@@ -799,7 +803,9 @@ describe("torus", () => {
       capSegments: 1,
     });
     assert.ok(
-      end.positions.slice(0, mainSize * 3).every((_, i) => i % 3 !== 0 || end.positions[i] <= 1e-6),
+      end.positions
+        .slice(0, mainSize * 3)
+        .every((_, i) => i % 3 !== 0 || end.positions[i] <= 1e-6),
       "sanity: body should lie entirely at X <= 0",
     );
     assert.ok(end.normals[outerRimAtTheta0 * 3] > 0);
@@ -957,11 +963,19 @@ describe("phiOffset", () => {
 
 describe("capMapping", () => {
   const cases = [
-    ["cylinder", (capMapping) => Primitives.cylinder({ nx: 8, capSegments: 2, capMapping })],
-    ["cone", (capMapping) => Primitives.cone({ nx: 8, capSegments: 2, capMapping })],
+    [
+      "cylinder",
+      (capMapping) =>
+        Primitives.cylinder({ nx: 8, capSegments: 2, capMapping }),
+    ],
+    [
+      "cone",
+      (capMapping) => Primitives.cone({ nx: 8, capSegments: 2, capMapping }),
+    ],
     [
       "doubleCone",
-      (capMapping) => Primitives.doubleCone({ nx: 8, capSegments: 2, capMapping }),
+      (capMapping) =>
+        Primitives.doubleCone({ nx: 8, capSegments: 2, capMapping }),
     ],
     [
       "torus",
@@ -981,12 +995,18 @@ describe("capMapping", () => {
       const withDefault = create(rectangular);
       const withPolar = create(polar);
 
-      assert.notDeepEqual(Array.from(withPolar.uvs), Array.from(withDefault.uvs));
+      assert.notDeepEqual(
+        Array.from(withPolar.uvs),
+        Array.from(withDefault.uvs),
+      );
       assert.deepEqual(
         Array.from(withPolar.positions),
         Array.from(withDefault.positions),
       );
-      assert.deepEqual(Array.from(withPolar.cells), Array.from(withDefault.cells));
+      assert.deepEqual(
+        Array.from(withPolar.cells),
+        Array.from(withDefault.cells),
+      );
 
       const result = analyze(withPolar);
       assert.equal(result.cracks, 0);
@@ -1089,10 +1109,22 @@ describe("vDistribution", () => {
   });
 
   const cases = [
-    ["paraboloid", (vDistribution) => Primitives.paraboloid({ nx: 8, ny: 8, vDistribution })],
-    ["ellipsoid", (vDistribution) => Primitives.ellipsoid({ nx: 8, ny: 8, vDistribution })],
-    ["barrel", (vDistribution) => Primitives.barrel({ nx: 8, ny: 8, vDistribution })],
-    ["apple", (vDistribution) => Primitives.apple({ nx: 8, ny: 8, vDistribution })],
+    [
+      "paraboloid",
+      (vDistribution) => Primitives.paraboloid({ nx: 8, ny: 8, vDistribution }),
+    ],
+    [
+      "ellipsoid",
+      (vDistribution) => Primitives.ellipsoid({ nx: 8, ny: 8, vDistribution }),
+    ],
+    [
+      "barrel",
+      (vDistribution) => Primitives.barrel({ nx: 8, ny: 8, vDistribution }),
+    ],
+    [
+      "apple",
+      (vDistribution) => Primitives.apple({ nx: 8, ny: 8, vDistribution }),
+    ],
   ];
 
   const nonLinearDistributions = [
@@ -1203,10 +1235,7 @@ describe("elliptical revolution solids", () => {
         sxApex: 1,
         szApex: 1,
       });
-      assert.deepEqual(
-        Array.from(plain.normals),
-        Array.from(explicit.normals),
-      );
+      assert.deepEqual(Array.from(plain.normals), Array.from(explicit.normals));
       assert.deepEqual(
         Array.from(plain.positions),
         Array.from(explicit.positions),
@@ -1281,10 +1310,7 @@ describe("elliptical revolution solids", () => {
         minorSx: 1,
         minorSy: 1,
       });
-      assert.deepEqual(
-        Array.from(plain.normals),
-        Array.from(explicit.normals),
-      );
+      assert.deepEqual(Array.from(plain.normals), Array.from(explicit.normals));
       assert.deepEqual(
         Array.from(plain.positions),
         Array.from(explicit.positions),
@@ -1292,7 +1318,12 @@ describe("elliptical revolution solids", () => {
     });
 
     it("elliptical footprint: watertight and correctly wound", () => {
-      const g = Primitives.torus({ segments: 32, minorSegments: 16, sx: 2, sy: 0.5 });
+      const g = Primitives.torus({
+        segments: 32,
+        minorSegments: 16,
+        sx: 2,
+        sy: 0.5,
+      });
       const result = analyze(g);
       assert.equal(result.cracks, 0);
       assert.equal(result.degenerate, 0);
@@ -1306,7 +1337,12 @@ describe("elliptical revolution solids", () => {
         [3, 1], // radial-only elongation
         [0.4, 2.5], // both axes, asymmetric
       ]) {
-        const g = Primitives.torus({ segments: 32, minorSegments: 16, minorSx, minorSy });
+        const g = Primitives.torus({
+          segments: 32,
+          minorSegments: 16,
+          minorSx,
+          minorSy,
+        });
         const result = analyze(g);
         const label = `minorSx=${minorSx} minorSy=${minorSy}`;
         assert.equal(result.cracks, 0, label);

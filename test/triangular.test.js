@@ -189,7 +189,10 @@ describe("rightTriangle", () => {
     const g = Primitives.rightTriangle({ sx, sy, radius, innerSegments: 1 });
     const [bottomLeft, bottomRight, apex] = outerRing(g);
 
-    const legA = [bottomRight[0] - bottomLeft[0], bottomRight[1] - bottomLeft[1]];
+    const legA = [
+      bottomRight[0] - bottomLeft[0],
+      bottomRight[1] - bottomLeft[1],
+    ];
     const legB = [apex[0] - bottomLeft[0], apex[1] - bottomLeft[1]];
     assert.ok(Math.abs(legA[0] * legB[0] + legA[1] * legB[1]) < 1e-6);
   });

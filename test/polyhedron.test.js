@@ -92,7 +92,11 @@ describe("polyhedron (flat platonic solids)", () => {
       const normalsAtSeam = normalsAtFirstDuplicatePosition(g);
       assert.ok(normalsAtSeam.length > 1, "shares at least one seam position");
       const [a, b] = normalsAtSeam;
-      assert.notDeepEqual(a, b, "hard edge: duplicated vertices keep distinct normals");
+      assert.notDeepEqual(
+        a,
+        b,
+        "hard edge: duplicated vertices keep distinct normals",
+      );
     });
   }
 
@@ -115,7 +119,10 @@ describe("polyhedron (flat platonic solids)", () => {
       ["hexahedron", () => Primitives.hexahedron({ radius })],
       ["octahedron", () => Primitives.octahedron({ radius })],
       ["dodecahedron", () => Primitives.dodecahedron({ radius })],
-      ["icosahedron", () => Primitives.icosahedron({ radius, subdivisions: 0 })],
+      [
+        "icosahedron",
+        () => Primitives.icosahedron({ radius, subdivisions: 0 }),
+      ],
     ]) {
       const { positions } = create();
       const half = [0, 0, 0];
@@ -173,7 +180,11 @@ describe("polyhedron (flat platonic solids)", () => {
     const corners = [];
     const seen = new Set();
     for (let i = 0; i < g.positions.length / 3; i++) {
-      const p = [g.positions[i * 3], g.positions[i * 3 + 1], g.positions[i * 3 + 2]];
+      const p = [
+        g.positions[i * 3],
+        g.positions[i * 3 + 1],
+        g.positions[i * 3 + 2],
+      ];
       const key = p.map((v) => v.toFixed(4)).join(",");
       if (!seen.has(key)) {
         seen.add(key);
@@ -194,7 +205,10 @@ describe("polyhedron (flat platonic solids)", () => {
       assert.ok(Math.abs(min + max) < 1e-6, `axis ${axis} not centered`);
       tallest = Math.max(tallest, max);
     }
-    assert.ok(Math.abs(tallest - radius) < 1e-6, "tallest axis must touch radius");
+    assert.ok(
+      Math.abs(tallest - radius) < 1e-6,
+      "tallest axis must touch radius",
+    );
 
     // Still a true regular tetrahedron: all 6 edges equal
     const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
@@ -208,9 +222,18 @@ describe("polyhedron (flat platonic solids)", () => {
   });
 
   it("tetrahedron/octahedron/dodecahedron have no project option (use tetrasphere/octasphere/dodecasphere instead)", () => {
-    assert.equal(Primitives.tetrahedron({ project: true }).positions.length, Primitives.tetrahedron().positions.length);
-    assert.equal(Primitives.octahedron({ project: true }).positions.length, Primitives.octahedron().positions.length);
-    assert.equal(Primitives.dodecahedron({ project: true }).positions.length, Primitives.dodecahedron().positions.length);
+    assert.equal(
+      Primitives.tetrahedron({ project: true }).positions.length,
+      Primitives.tetrahedron().positions.length,
+    );
+    assert.equal(
+      Primitives.octahedron({ project: true }).positions.length,
+      Primitives.octahedron().positions.length,
+    );
+    assert.equal(
+      Primitives.dodecahedron({ project: true }).positions.length,
+      Primitives.dodecahedron().positions.length,
+    );
   });
 
   it("icosahedron subdivisions > 0 behaves like the other regular polyhedra (flat, no cross-face welding, still watertight)", () => {
@@ -243,7 +266,10 @@ describe("Kepler-Poinsot solids", () => {
 
   it("greatDodecahedron/greatIcosahedron touch a radius-sized unit box on all 6 faces (same convention as icosahedron)", () => {
     const radius = 0.5;
-    for (const create of [Primitives.greatDodecahedron, Primitives.greatIcosahedron]) {
+    for (const create of [
+      Primitives.greatDodecahedron,
+      Primitives.greatIcosahedron,
+    ]) {
       const { positions } = create({ radius });
       const half = [0, 0, 0];
       for (let i = 0; i < positions.length / 3; i++) {
@@ -308,7 +334,11 @@ describe("Kepler-Poinsot solids", () => {
     function uniquePositionsByRadius(g) {
       const seen = new Map();
       for (let i = 0; i < g.positions.length / 3; i++) {
-        const p = [g.positions[i * 3], g.positions[i * 3 + 1], g.positions[i * 3 + 2]];
+        const p = [
+          g.positions[i * 3],
+          g.positions[i * 3 + 1],
+          g.positions[i * 3 + 2],
+        ];
         const r = Math.hypot(...p).toFixed(4);
         const key = p.map((v) => v.toFixed(4)).join(",");
         if (!seen.has(key)) seen.set(key, r);
@@ -318,11 +348,15 @@ describe("Kepler-Poinsot solids", () => {
       return [...counts.entries()].sort((a, b) => b[0] - a[0]);
     }
 
-    const ssd = uniquePositionsByRadius(Primitives.smallStellatedDodecahedron());
+    const ssd = uniquePositionsByRadius(
+      Primitives.smallStellatedDodecahedron(),
+    );
     assert.equal(ssd.length, 2, "one tip radius, one inner radius");
     assert.equal(ssd[0][1], 12, "smallStellatedDodecahedron tip count");
 
-    const gsd = uniquePositionsByRadius(Primitives.greatStellatedDodecahedron());
+    const gsd = uniquePositionsByRadius(
+      Primitives.greatStellatedDodecahedron(),
+    );
     assert.equal(gsd.length, 2, "one tip radius, one inner radius");
     assert.equal(gsd[0][1], 20, "greatStellatedDodecahedron tip count");
   });
@@ -379,8 +413,7 @@ describe("tetrasphere / hexasphere / octasphere / dodecasphere / icosphere", () 
     const vy = g.positions[c * 3 + 1] - ay;
     const vz = g.positions[c * 3 + 2] - az;
     return (
-      0.5 *
-      Math.hypot(uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx)
+      0.5 * Math.hypot(uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx)
     );
   }
 
@@ -419,28 +452,24 @@ describe("tetrasphere / hexasphere / octasphere / dodecasphere / icosphere", () 
   it("subdivisions = 0 keeps just the seed vertex count (no-op projection of an already-regular solid, mapping: rectangular isolates from the uv-seam zipper)", () => {
     const mapping = rectangular;
     assert.equal(
-      Primitives.tetrasphere({ subdivisions: 0, mapping }).positions.length /
-        3,
+      Primitives.tetrasphere({ subdivisions: 0, mapping }).positions.length / 3,
       4,
     );
     assert.equal(
-      Primitives.hexasphere({ subdivisions: 0, mapping }).positions.length /
-        3,
+      Primitives.hexasphere({ subdivisions: 0, mapping }).positions.length / 3,
       8,
     );
     assert.equal(
-      Primitives.octasphere({ subdivisions: 0, mapping }).positions.length /
-        3,
+      Primitives.octasphere({ subdivisions: 0, mapping }).positions.length / 3,
       6,
     );
     assert.equal(
-      Primitives.dodecasphere({ subdivisions: 0, mapping }).positions
-        .length / 3,
+      Primitives.dodecasphere({ subdivisions: 0, mapping }).positions.length /
+        3,
       20,
     );
     assert.equal(
-      Primitives.icosphere({ subdivisions: 0, mapping }).positions.length /
-        3,
+      Primitives.icosphere({ subdivisions: 0, mapping }).positions.length / 3,
       12,
     );
   });
@@ -460,7 +489,10 @@ describe("tetrasphere / hexasphere / octasphere / dodecasphere / icosphere", () 
       for (let i = 0; i < g.cells.length; i += 3) {
         const u = [0, 1, 2].map((k) => g.uvs[g.cells[i + k] * 2]);
         const spread = Math.max(...u) - Math.min(...u);
-        assert.ok(spread <= 0.5, `${name} triangle ${i / 3}: u spread ${spread}`);
+        assert.ok(
+          spread <= 0.5,
+          `${name} triangle ${i / 3}: u spread ${spread}`,
+        );
       }
     }
   });
@@ -527,7 +559,10 @@ describe("polyhedron (subdivisions / project, direct)", () => {
   it("project mode welds a pentagon seed across shared edges too", () => {
     const seed = dodecahedronSeed();
     const flat = computePolyhedron(seed, { subdivisions: 2 });
-    const projected = computePolyhedron(seed, { subdivisions: 2, project: true });
+    const projected = computePolyhedron(seed, {
+      subdivisions: 2,
+      project: true,
+    });
     // Same triangle topology, fewer vertices once shared edges are welded
     assert.equal(flat.cells.length, projected.cells.length);
     assert.ok(projected.positions.length < flat.positions.length);
