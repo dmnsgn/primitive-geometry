@@ -1,4 +1,7 @@
-/** @module roundedRectangle */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { HALF_PI, getCellsTypedArray } from "../../utils/common.js";
 import { computePlane } from "../../utils/plane-grid.js";
 
@@ -24,7 +27,6 @@ const CORNER_ORDER = ["top-left", "top-right", "bottom-right", "bottom-left"];
  *
  * @param {RoundedRectangleOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:roundedRectangle
  */
 export function roundedRectangle({
   sx = 1,
@@ -114,7 +116,6 @@ const PATH_CORNERS = [
  *
  * @param {RoundedRectanglePathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
- * @alias module:roundedRectanglePath
  */
 export function roundedRectanglePath({
   sx = 1,

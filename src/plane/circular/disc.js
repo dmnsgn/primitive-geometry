@@ -1,4 +1,7 @@
-/** @module disc */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { ellipse, ellipsePath } from "./ellipse.js";
 import { concentric } from "../../mappings.js";
 import { TAU } from "../../utils/common.js";
@@ -19,7 +22,6 @@ import { TAU } from "../../utils/common.js";
  *
  * @param {DiscOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:disc
  */
 export function disc({
   radius = 0.5,
@@ -59,7 +61,6 @@ export function disc({
  * @returns {import("../../../types.js").SimplicialComplexPath} `segments`
  *   positions and a single path cell of `segments` indices (`segments + 1`,
  *   repeating index `0`, when `closed`)
- * @alias module:circlePath
  */
 export function circlePath({
   radius = 0.5,

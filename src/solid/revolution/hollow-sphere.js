@@ -1,4 +1,7 @@
-/** @module hollowSphere */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import {
   TAU,
   clampMeridianSweep,
@@ -174,7 +177,6 @@ function phiCap({
  *
  * @param {HollowSphereOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:hollowSphere
  */
 export function hollowSphere({
   radius = 0.5,

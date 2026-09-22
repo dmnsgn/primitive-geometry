@@ -1,4 +1,7 @@
-/** @module trapezoid */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { rectangular } from "../../mappings.js";
 import { TAU } from "../../utils/common.js";
 import {
@@ -59,7 +62,6 @@ function computeTrapezoidCorners(sx, sy, topRatio, topOffset) {
  *
  * @param {TrapezoidOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:trapezoid
  * @see [Wolfram MathWorld – Trapezoid]{@link https://mathworld.wolfram.com/Trapezoid.html}
  */
 export function trapezoid({
@@ -126,7 +128,6 @@ export function trapezoid({
  *
  * @param {TrapezoidPathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
- * @alias module:trapezoidPath
  */
 export function trapezoidPath({
   sx = 1,

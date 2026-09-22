@@ -1,4 +1,7 @@
-/** @module ellipse */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { elliptical } from "../../mappings.js";
 import { TAU } from "../../utils/common.js";
 import {
@@ -33,7 +36,7 @@ import {
  * @param {number} sample.sinTheta
  * @param {number} sample.s Radius ratio (0..1, innerRadius to radius)
  * @param {number} sample.t Angle
- * @returns {number[]} [x, y]
+ * @returns {[x, y]}
  */
 
 /**
@@ -41,7 +44,6 @@ import {
  *
  * @param {EllipseOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:ellipse
  */
 export function ellipse({
   sx = 1,
@@ -90,7 +92,6 @@ export function ellipse({
  * @returns {import("../../../types.js").SimplicialComplexPath} `segments`
  *   positions and a single path cell of `segments` indices (`segments + 1`,
  *   repeating index `0`, when `closed`)
- * @alias module:ellipsePath
  */
 export function ellipsePath({
   sx = 1,

@@ -1279,7 +1279,9 @@ See original packages used in v1:
 - [primitive-box](https://npmjs.com/package/primitive-box)
 - [primitive-circle](https://npmjs.com/package/primitive-circle)
 
-Differences with v1:
+v3: geometry generators consolidation and expansion
+
+v2 differences with v1:
 
 - [x] use 3D positions for circle
 - [x] base disc on ellispse and add inner segments

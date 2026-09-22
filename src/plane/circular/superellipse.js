@@ -1,4 +1,7 @@
-/** @module superellipse */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { lamé } from "../../mappings.js";
 import { TAU } from "../../utils/common.js";
 import {
@@ -36,7 +39,6 @@ function computeSuperellipseEdge(rx, ry, cosTheta, sinTheta, m, n) {
  *
  * @param {SuperellipseOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:superellipse
  * @see [Wolfram MathWorld – Superellipse]{@link https://mathworld.wolfram.com/Superellipse.html}
  * @see [Wikipedia – Superellipse]{@link https://en.wikipedia.org/wiki/Superellipse}
  */
@@ -87,7 +89,6 @@ export function superellipse({
  *
  * @param {SuperellipsePathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
- * @alias module:superellipsePath
  */
 export function superellipsePath({
   sx = 1,

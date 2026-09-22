@@ -1,4 +1,7 @@
-/** @module greatIcosahedron */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { icosahedronFaces } from "./icosahedron.js";
 import { computePolyhedron } from "../../../utils/polyhedron.js";
 
@@ -57,7 +60,6 @@ export function greatIcosahedronFaces({ radius = 0.5 } = {}) {
  *
  * @param {GreatIcosahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
- * @alias module:greatIcosahedron
  */
 export function greatIcosahedron({
   radius = 0.5,

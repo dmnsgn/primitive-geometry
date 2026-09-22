@@ -1,4 +1,7 @@
-/** @module revolution */
+/**
+ * @module utils
+ * @ignore
+ */
 
 import { TAU, getCellsTypedArray, normalize, snapToZero } from "./common.js";
 import { linear } from "./distribution.js";

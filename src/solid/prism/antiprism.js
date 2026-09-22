@@ -1,4 +1,7 @@
-/** @module antiprism */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { rectangular } from "../../mappings.js";
 import { TAU, getCellsTypedArray } from "../../utils/common.js";
 import {
@@ -24,7 +27,6 @@ import {
  *
  * @param {AntiprismOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:antiprism
  */
 export function antiprism({
   radius = 0.25,

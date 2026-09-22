@@ -1,4 +1,7 @@
-/** @module polyhedron */
+/**
+ * @module utils
+ * @ignore
+ */
 
 import { rectangular, spherical } from "../mappings.js";
 import {
@@ -55,8 +58,8 @@ const POLE_KEY_BASE = MAX_VERTICES;
  *   subdivided points are placed when project is true: "gnomonic" subdivides
  *   flat then projects (denser near seed vertices); "spherical" interpolates
  *   along great circles instead
- * @param {import("../mappings.js").MappingFn} [options.mapping] Defaults to mappings.spherical when
- *   project, mappings.rectangular otherwise
+ * @param {import("../mappings.js").MappingFn} [options.mapping] Defaults to
+ *   mappings.spherical when project, mappings.rectangular otherwise
  * @returns {import("../../types.js").SimplicialComplex}
  * @throws {Error} If subdivisions would produce more than 1e7 vertices
  */

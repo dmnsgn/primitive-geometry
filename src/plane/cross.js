@@ -1,4 +1,7 @@
-/** @module cross */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { rectangular } from "../mappings.js";
 import { TAU } from "../utils/common.js";
 import {
@@ -52,7 +55,6 @@ function computeCrossOutline(r, w) {
  *
  * @param {CrossOptions} [options={}]
  * @returns {import("../../types.js").SimplicialComplex}
- * @alias module:cross
  * @see [Wolfram MathWorld – Greek Cross]{@link https://mathworld.wolfram.com/GreekCross.html}
  */
 export function cross({
@@ -102,7 +104,6 @@ export function cross({
  *
  * @param {CrossPathOptions} [options={}]
  * @returns {import("../../types.js").SimplicialComplexPath}
- * @alias module:crossPath
  */
 export function crossPath({
   radius = 0.5,

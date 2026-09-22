@@ -1,4 +1,7 @@
-/** @module polygon */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { concentric } from "../mappings.js";
 import { TAU } from "../utils/common.js";
 import {
@@ -30,7 +33,6 @@ import {
  *
  * @param {PolygonOptions} [options={}]
  * @returns {import("../../types.js").SimplicialComplex}
- * @alias module:polygon
  */
 export function polygon({
   sides = 6,
@@ -81,7 +83,6 @@ export function polygon({
  * @returns {import("../../types.js").SimplicialComplexPath} `edgeSegments *
  *   sides` positions and a single path cell of that many indices (`+ 1`,
  *   repeating index `0`, when `closed`)
- * @alias module:polygonPath
  */
 export function polygonPath({
   sides = 6,

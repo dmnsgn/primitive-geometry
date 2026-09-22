@@ -1,4 +1,7 @@
-/** @module quad */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 
 import { rectanglePath } from "./plane.js";
 import { triangulateFaces } from "../../utils/common.js";
@@ -13,7 +16,6 @@ import { triangulateFaces } from "../../utils/common.js";
  *
  * @param {QuadOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:quad
  */
 export function quad({ scale = 0.5 } = {}) {
   const { positions, cells } = squarePath({ scale });
@@ -51,7 +53,6 @@ export function quad({ scale = 0.5 } = {}) {
  *
  * @param {SquarePathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
- * @alias module:squarePath
  */
 export function squarePath({ scale = 0.5, nx = 1, ny = nx } = {}) {
   return rectanglePath({ sx: scale * 2, sy: scale * 2, nx, ny });

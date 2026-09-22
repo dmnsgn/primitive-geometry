@@ -1,4 +1,7 @@
-/** @module star */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { concentric } from "../mappings.js";
 import { TAU, computeStarRatio } from "../utils/common.js";
 import {
@@ -38,7 +41,6 @@ import {
  *
  * @param {StarOptions} [options={}]
  * @returns {import("../../types.js").SimplicialComplex}
- * @alias module:star
  * @see [Wolfram MathWorld – Star Polygon]{@link https://mathworld.wolfram.com/StarPolygon.html}
  */
 export function star({
@@ -102,7 +104,6 @@ export function star({
  * @returns {import("../../types.js").SimplicialComplexPath} `points * 2`
  *   positions and a single path cell of that many indices (`+ 1`, repeating
  *   index `0`, when `closed`)
- * @alias module:starPath
  */
 export function starPath({
   points = 5,

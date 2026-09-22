@@ -1,4 +1,7 @@
-/** @module paraboloid */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { rectangular } from "../../mappings.js";
 import { TAU } from "../../utils/common.js";
 import { linear } from "../../utils/distribution.js";
@@ -27,7 +30,6 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  *
  * @param {ParaboloidOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:paraboloid
  * @see [Wolfram MathWorld – Paraboloid]{@link https://mathworld.wolfram.com/Paraboloid.html}
  */
 export function paraboloid({

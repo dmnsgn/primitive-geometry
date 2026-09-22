@@ -1,4 +1,7 @@
-/** @module planeGrid */
+/**
+ * @module utils
+ * @ignore
+ */
 
 /** @private */
 export const PLANE_DIRECTIONS = {

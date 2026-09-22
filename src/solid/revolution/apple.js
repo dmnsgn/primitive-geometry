@@ -1,4 +1,7 @@
-/** @module apple */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { TAU, clamp } from "../../utils/common.js";
 import { linear } from "../../utils/distribution.js";
 import { computeSpindleArcRevolution } from "../../utils/revolution.js";
@@ -24,7 +27,6 @@ import { computeSpindleArcRevolution } from "../../utils/revolution.js";
  *
  * @param {AppleOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:apple
  * @see [Wolfram MathWorld – Apple Surface]{@link https://mathworld.wolfram.com/AppleSurface.html}
  */
 export function apple({

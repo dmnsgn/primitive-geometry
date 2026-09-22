@@ -1,4 +1,7 @@
-/** @module hollowCylinder */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { TAU, concatGeometries, invert } from "../../utils/common.js";
 import { cylinder } from "./cylinder.js";
 import { computeConeSegment } from "./cone.js";
@@ -25,7 +28,6 @@ import { computeConeSegment } from "./cone.js";
  *
  * @param {HollowCylinderOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:hollowCylinder
  */
 export function hollowCylinder({
   height = 1,

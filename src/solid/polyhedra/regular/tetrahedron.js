@@ -1,4 +1,7 @@
-/** @module tetrahedron */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { computePolyhedron } from "../../../utils/polyhedron.js";
 import { SQRT2, SQRT3, SQRT6 } from "../../../utils/common.js";
 
@@ -62,7 +65,6 @@ export function tetrahedronFaces({ radius = 0.5, center = true } = {}) {
  *
  * @param {TetrahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
- * @alias module:tetrahedron
  */
 export function tetrahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
   return computePolyhedron(tetrahedronFaces({ radius }), {

@@ -1,4 +1,7 @@
-/** @module astroidal-ellipsoid */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { superellipsoid } from "./superellipsoid.js";
 import { TAU } from "../../utils/common.js";
 
@@ -28,7 +31,6 @@ import { TAU } from "../../utils/common.js";
  *
  * @param {AstroidalEllipsoidOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:astroidalEllipsoid
  * @see [Wolfram MathWorld – Astroidal Ellipsoid]{@link https://mathworld.wolfram.com/AstroidalEllipsoid.html}
  */
 export function astroidalEllipsoid({

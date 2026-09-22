@@ -1,4 +1,7 @@
-/** @module stadium */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { roundedRectangle, roundedRectanglePath } from "./rounded-rectangle.js";
 
 /**
@@ -17,7 +20,6 @@ import { roundedRectangle, roundedRectanglePath } from "./rounded-rectangle.js";
  *
  * @param {StadiumOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:stadium
  */
 export function stadium({
   sx = 1,
@@ -56,7 +58,6 @@ export function stadium({
  *
  * @param {StadiumPathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
- * @alias module:stadiumPath
  */
 export function stadiumPath({
   sx = 1,

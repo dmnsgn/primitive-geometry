@@ -1,4 +1,7 @@
-/** @module rhombus */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { polygon, polygonPath } from "../polygon.js";
 import { concentric } from "../../mappings.js";
 import { HALF_PI, TAU } from "../../utils/common.js";
@@ -24,7 +27,6 @@ import { HALF_PI, TAU } from "../../utils/common.js";
  *
  * @param {RhombusOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:rhombus
  */
 export function rhombus({
   sx = 1,
@@ -69,7 +71,6 @@ export function rhombus({
  *
  * @param {RhombusPathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
- * @alias module:rhombusPath
  */
 export function rhombusPath({
   sx = 1,

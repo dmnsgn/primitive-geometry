@@ -1,4 +1,7 @@
-/** @module sphericalRing */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import {
   TAU,
   clamp,
@@ -20,8 +23,9 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @property {number} [holeSegments=1] Inner bore wall segments
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
- * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear] Applies to the outer
- *   spherical band only - the inner bore wall is a plain cylinder.
+ * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
+ *   Applies to the outer spherical band only - the inner bore wall is a plain
+ *   cylinder.
  */
 
 /**
@@ -34,7 +38,6 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  *
  * @param {SphericalRingOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:sphericalRing
  * @see [Wolfram MathWorld – Spherical Ring]{@link https://mathworld.wolfram.com/SphericalRing.html}
  */
 export function sphericalRing({

@@ -1,4 +1,7 @@
-/** @module roundedCylinder */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { TAU, clamp, snapToZero } from "../../utils/common.js";
 import { linear } from "../../utils/distribution.js";
 import { computeRevolutionGeometry } from "../../utils/revolution.js";
@@ -28,7 +31,6 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  *
  * @param {RoundedCylinderOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:roundedCylinder
  */
 export function roundedCylinder({
   height = 1,

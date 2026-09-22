@@ -1,4 +1,7 @@
-/** @module lemon */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { TAU } from "../../utils/common.js";
 import { linear } from "../../utils/distribution.js";
 import { computeSpindleArcRevolution } from "../../utils/revolution.js";
@@ -27,7 +30,6 @@ import { computeSpindleArcRevolution } from "../../utils/revolution.js";
  *
  * @param {LemonOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:lemon
  * @see [Wikipedia – Lemon (geometry)]{@link https://en.wikipedia.org/wiki/Lemon_(geometry)}
  */
 export function lemon({

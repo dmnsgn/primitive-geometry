@@ -1,4 +1,7 @@
-/** @module lens */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { computeSweptArc } from "../../utils/polar.js";
 import { rectangular } from "../../mappings.js";
 
@@ -13,9 +16,10 @@ import { rectangular } from "../../mappings.js";
  * @property {number} [segments=32] Column count, swept left to right.
  * @property {number} [innerSegments=16] Row count between the bottom and top
  *   boundary at each column.
- * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular] Uv mapping function.
- *   Defaults to a flat, bounding-box-relative unwrap; pass a function using
- *   `uRatio`/`vRatio` (the swept parametrization) to follow the arcs instead.
+ * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
+ *   Uv mapping function. Defaults to a flat, bounding-box-relative unwrap; pass a
+ *   function using `uRatio`/`vRatio` (the swept parametrization) to follow the
+ *   arcs instead.
  */
 
 /**
@@ -24,7 +28,6 @@ import { rectangular } from "../../mappings.js";
  *
  * @param {LensOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:lens
  * @see [Wolfram MathWorld – Lens]{@link https://mathworld.wolfram.com/Lens.html}
  * @see [Wolfram MathWorld – Vesica Piscis]{@link https://mathworld.wolfram.com/VesicaPiscis.html}
  */

@@ -1,4 +1,7 @@
-/** @module funnel */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { rectangular } from "../../mappings.js";
 import { TAU } from "../../utils/common.js";
 import { linear } from "../../utils/distribution.js";
@@ -31,7 +34,6 @@ import { computeFlatRevolutionGeometry } from "../../utils/revolution.js";
  *
  * @param {FunnelOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:funnel
  * @see [Wolfram MathWorld – Funnel]{@link https://mathworld.wolfram.com/Funnel.html}
  */
 export function funnel({

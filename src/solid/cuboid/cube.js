@@ -1,4 +1,7 @@
-/** @module cube */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 
 import { getCellsTypedArray } from "../../utils/common.js";
 import { computePlane } from "../../utils/plane-grid.js";
@@ -60,7 +63,6 @@ export function cubeFaces({ sx = 1, sy = sx, sz = sx } = {}) {
  *
  * @param {BoxOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPolygon}
- * @alias module:box
  */
 export function box({ sx = 1, sy = sx, sz = sx } = {}) {
   return cubeFaces({ sx, sy, sz });
@@ -81,7 +83,6 @@ export function box({ sx = 1, sy = sx, sz = sx } = {}) {
  *
  * @param {CubeOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:cube
  */
 export function cube({
   sx = 1,

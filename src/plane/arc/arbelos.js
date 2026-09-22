@@ -1,4 +1,7 @@
-/** @module arbelos */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { computeSweptArc } from "../../utils/polar.js";
 import { rectangular } from "../../mappings.js";
 import { concatGeometries } from "../../utils/common.js";
@@ -15,9 +18,10 @@ import { concatGeometries } from "../../utils/common.js";
  * @property {number} [segments=32] Column count, swept left to right.
  * @property {number} [innerSegments=16] Row count between the bottom and top
  *   boundary at each column.
- * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular] Uv mapping function.
- *   Defaults to a flat, bounding-box-relative unwrap; pass a function using
- *   `uRatio`/`vRatio` (the swept parametrization) to follow the arcs instead.
+ * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
+ *   Uv mapping function. Defaults to a flat, bounding-box-relative unwrap; pass a
+ *   function using `uRatio`/`vRatio` (the swept parametrization) to follow the
+ *   arcs instead.
  */
 
 /**
@@ -27,7 +31,6 @@ import { concatGeometries } from "../../utils/common.js";
  *
  * @param {ArbelosOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:arbelos
  * @see [Wolfram MathWorld – Arbelos]{@link https://mathworld.wolfram.com/Arbelos.html}
  */
 export function arbelos({

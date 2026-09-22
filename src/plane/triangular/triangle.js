@@ -1,4 +1,7 @@
-/** @module triangle */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { rectangular } from "../../mappings.js";
 import { TAU } from "../../utils/common.js";
 import {
@@ -51,7 +54,6 @@ function computeTriangleCorners(sx, sy, apexOffset) {
  *
  * @param {TriangleOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:triangle
  * @see [Wolfram MathWorld – Triangle]{@link https://mathworld.wolfram.com/Triangle.html}
  */
 export function triangle({
@@ -115,7 +117,6 @@ export function triangle({
  *
  * @param {TrianglePathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
- * @alias module:trianglePath
  */
 export function trianglePath({
   sx = 1,

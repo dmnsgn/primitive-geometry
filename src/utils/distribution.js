@@ -1,4 +1,7 @@
-/** @module distribution */
+/**
+ * @module utils
+ * @ignore
+ */
 
 /**
  * @callback DistributionFn

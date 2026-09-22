@@ -1,4 +1,7 @@
-/** @module barrel */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { rectangular } from "../../mappings.js";
 import { TAU } from "../../utils/common.js";
 import { linear } from "../../utils/distribution.js";
@@ -32,7 +35,6 @@ import { computeFlatRevolutionGeometry } from "../../utils/revolution.js";
  *
  * @param {BarrelOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:barrel
  */
 export function barrel({
   height = 1,

@@ -1,4 +1,7 @@
-/** @module sphericon */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { concatGeometries, snapToZero } from "../../utils/common.js";
 import { computeConeSegment } from "./cone.js";
 
@@ -61,7 +64,6 @@ function twist({ positions, normals, uvs, cells }) {
  *
  * @param {SphericonOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:sphericon
  * @see [Wolfram MathWorld – Sphericon]{@link https://mathworld.wolfram.com/Sphericon.html}
  */
 export function sphericon({ radius = 0.5, nx = 16, ny = 1 } = {}) {

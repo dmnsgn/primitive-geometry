@@ -1,4 +1,7 @@
-/** @module hexahedron */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { computePolyhedron } from "../../../utils/polyhedron.js";
 import { cubeFaces } from "../../cuboid/cube.js";
 
@@ -31,7 +34,6 @@ export function hexahedronFaces({ radius = 0.5 } = {}) {
  *
  * @param {HexahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
- * @alias module:hexahedron
  */
 export function hexahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
   return computePolyhedron(hexahedronFaces({ radius }), {

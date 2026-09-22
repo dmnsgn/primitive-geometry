@@ -1,4 +1,7 @@
-/** @module lune */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { computeSweptArc } from "../../utils/polar.js";
 import { rectangular } from "../../mappings.js";
 import { concatGeometries } from "../../utils/common.js";
@@ -17,9 +20,10 @@ import { concatGeometries } from "../../utils/common.js";
  * @property {number} [segments=32] Column count, swept left to right.
  * @property {number} [innerSegments=16] Row count between the two halves'
  *   near/far boundary at each column.
- * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular] Uv mapping function.
- *   Defaults to a flat, bounding-box-relative unwrap; pass a function using
- *   `uRatio`/`vRatio` (the swept parametrization) to follow the arcs instead.
+ * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
+ *   Uv mapping function. Defaults to a flat, bounding-box-relative unwrap; pass a
+ *   function using `uRatio`/`vRatio` (the swept parametrization) to follow the
+ *   arcs instead.
  */
 
 /**
@@ -28,7 +32,6 @@ import { concatGeometries } from "../../utils/common.js";
  *
  * @param {LuneOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:lune
  * @see [Wolfram MathWorld – Lune]{@link https://mathworld.wolfram.com/Lune.html}
  */
 export function lune({

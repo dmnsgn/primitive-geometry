@@ -1,4 +1,7 @@
-/** @module torus */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { rectangular } from "../../mappings.js";
 import { TAU, getCellsTypedArray, normalize } from "../../utils/common.js";
 import { TMP, computeCap, computeGridQuad } from "../../utils/revolution.js";
@@ -38,7 +41,6 @@ import { TMP, computeCap, computeGridQuad } from "../../utils/revolution.js";
  *
  * @param {TorusOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:torus
  */
 export function torus({
   radius = 0.4,

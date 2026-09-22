@@ -1,4 +1,7 @@
-/** @module prism */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { rectangular } from "../../mappings.js";
 import { TAU, getCellsTypedArray } from "../../utils/common.js";
 import {
@@ -23,7 +26,6 @@ import {
  *
  * @param {PrismOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:prism
  */
 export function prism({
   radius = 0.25,

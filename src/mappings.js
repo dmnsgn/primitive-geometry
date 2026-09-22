@@ -26,23 +26,27 @@ const isNegligeable = (x) => Math.abs(x) < Number.EPSILON * 2;
 const remapRectangular = (x, radius) => (x / radius + 1) / 2;
 const remap = (x) => (x + 1) / 2; // From [-1, 1] to [0, 1]
 
+/** @type {MappingsFn} */
 export function rectangular({ uvs, index, x, y, radius, sx = 1, sy = 1 }) {
   uvs[index] = remapRectangular(x, radius * sx);
   uvs[index + 1] = remapRectangular(y, radius * sy);
 }
 
+/** @type {MappingsFn} */
 export function polar({ uvs, index, radiusRatio, thetaRatio }) {
   uvs[index] = radiusRatio;
   uvs[index + 1] = thetaRatio;
 }
 
 // Longitude/latitude from a normalized direction vector
+/** @type {MappingsFn} */
 export function spherical({ uvs, index, nx, ny, nz }) {
   uvs[index] = -Math.atan2(nz, nx) / TAU + 0.5;
   uvs[index + 1] = Math.asin(Math.min(1, Math.max(-1, ny))) / Math.PI + 0.5;
 }
 
 // Basic
+/** @type {MappingsFn} */
 export function radial({ uvs, index, u, v }) {
   const x = safeDivide(
     // eslint-disable-next-line unicorn/prefer-modern-math-apis
@@ -56,6 +60,7 @@ export function radial({ uvs, index, u, v }) {
 
 const FOUR_OVER_PI = 4 / Math.PI;
 
+/** @type {MappingsFn} */
 export function concentric({ uvs, index, u, v }) {
   const u2 = u ** 2;
   const v2 = v ** 2;
@@ -73,12 +78,14 @@ export function concentric({ uvs, index, u, v }) {
     uvs[index + 1] = remap(x * Math.sign(v));
   }
 }
+/** @type {MappingsFn} */
 export function lamé({ uvs, index, u, v }) {
   const u2 = u ** 2;
   const v2 = v ** 2;
   uvs[index] = remap(Math.sign(u) * Math.abs(u) ** (1 - u2 - v2));
   uvs[index + 1] = remap(Math.sign(v) * Math.abs(v) ** (1 - u2 - v2));
 }
+/** @type {MappingsFn} */
 export function elliptical({ uvs, index, u, v }) {
   const t = u ** 2 - v ** 2;
   const pu1 = 0.5 * safeSqrt(2 + t + 2 * SQRT2 * u);
@@ -100,6 +107,7 @@ function fixFGSingularities(uvs, index, u, v) {
   }
 }
 
+/** @type {MappingsFn} */
 export function fgSquircular({ uvs, index, u, v }) {
   const ok = fixFGSingularities(uvs, index, u, v);
   if (!ok) return;
@@ -111,6 +119,7 @@ export function fgSquircular({ uvs, index, u, v }) {
   uvs[index] = remap((sign / (v * SQRT2)) * sqrtUV);
   uvs[index + 1] = remap((sign / (u * SQRT2)) * sqrtUV);
 }
+/** @type {MappingsFn} */
 export function twoSquircular({ uvs, index, u, v }) {
   const ok = fixFGSingularities(uvs, index, u, v);
   if (!ok) return;
@@ -119,6 +128,7 @@ export function twoSquircular({ uvs, index, u, v }) {
   uvs[index] = remap((sign / (v * SQRT2)) * sqrtUV);
   uvs[index + 1] = remap((sign / (u * SQRT2)) * sqrtUV);
 }
+/** @type {MappingsFn} */
 export function threeSquircular({ uvs, index, u, v }) {
   const ok = fixFGSingularities(uvs, index, u, v);
   if (ok) return;
@@ -131,6 +141,7 @@ export function threeSquircular({ uvs, index, u, v }) {
   uvs[index] = remap((sign / v) * sqrtUV);
   uvs[index + 1] = remap((sign / u) * sqrtUV);
 }
+/** @type {MappingsFn} */
 export function cornerificTapered2({ uvs, index, u, v }) {
   const ok = fixFGSingularities(uvs, index, u, v);
   if (!ok) return;
@@ -145,6 +156,7 @@ export function cornerificTapered2({ uvs, index, u, v }) {
   uvs[index] = remap((sign / v) * sqrtUV);
   uvs[index + 1] = remap((sign / u) * sqrtUV);
 }
+/** @type {MappingsFn} */
 export function tapered4({ uvs, index, u, v }) {
   const ok = fixFGSingularities(uvs, index, u, v);
   if (!ok) return;
@@ -163,6 +175,7 @@ export function tapered4({ uvs, index, u, v }) {
 // Non-axial
 const FOURTH_SQRT2 = 2 ** (1 / 4);
 
+/** @type {MappingsFn} */
 export function nonAxial2Pinch({ uvs, index, u, v }) {
   const u2 = u ** 2;
   const v2 = v ** 2;
@@ -185,6 +198,7 @@ export function nonAxial2Pinch({ uvs, index, u, v }) {
     );
   }
 }
+/** @type {MappingsFn} */
 export function nonAxialHalfPinch({ uvs, index, u, v }) {
   const u2 = u ** 2;
   const v2 = v ** 2;
@@ -207,6 +221,7 @@ export function nonAxialHalfPinch({ uvs, index, u, v }) {
 }
 
 // Variations of elliptical
+/** @type {MappingsFn} */
 export function squelched({ uvs, index, u, v, t }) {
   uvs[index] = [HALF_PI, TAU - HALF_PI].includes(t)
     ? 0.5
@@ -215,12 +230,14 @@ export function squelched({ uvs, index, u, v, t }) {
     ? 0.5
     : remap(v / Math.sqrt(1 - u ** 2));
 }
+/** @type {MappingsFn} */
 export function squelchedVertical({ uvs, index, u, v, t }) {
   uvs[index] = remap(u);
   uvs[index + 1] = [0, TAU, Math.PI].includes(t)
     ? 0.5
     : remap(v / Math.sqrt(1 - u ** 2));
 }
+/** @type {MappingsFn} */
 export function squelchedHorizontal({ uvs, index, u, v, t }) {
   uvs[index] = [HALF_PI, TAU - HALF_PI].includes(t)
     ? 0.5

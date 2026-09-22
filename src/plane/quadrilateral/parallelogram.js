@@ -1,4 +1,7 @@
-/** @module parallelogram */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { trapezoid, trapezoidPath } from "./trapezoid.js";
 
 /**
@@ -24,7 +27,6 @@ import { trapezoid, trapezoidPath } from "./trapezoid.js";
  *
  * @param {ParallelogramOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:parallelogram
  */
 export function parallelogram({
   sx = 0.5,
@@ -73,7 +75,6 @@ export function parallelogram({
  *
  * @param {ParallelogramPathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
- * @alias module:parallelogramPath
  */
 export function parallelogramPath({
   sx = 0.5,

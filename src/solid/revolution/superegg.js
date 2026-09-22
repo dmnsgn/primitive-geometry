@@ -1,4 +1,7 @@
-/** @module superegg */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import {
   TAU,
   clampMeridianSweep,
@@ -35,7 +38,6 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  *
  * @param {SupereggOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:superegg
  * @see [Wolfram MathWorld – Superegg]{@link https://mathworld.wolfram.com/Superegg.html}
  * @see [Wikipedia – Superegg]{@link https://en.wikipedia.org/wiki/Superegg}
  */

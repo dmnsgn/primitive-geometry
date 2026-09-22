@@ -1,4 +1,7 @@
-/** @module cylinder */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { rectangular } from "../../mappings.js";
 import { TAU, lerp } from "../../utils/common.js";
 import { linear } from "../../utils/distribution.js";
@@ -33,7 +36,6 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  *
  * @param {CylinderOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:cylinder
  */
 export function cylinder({
   height = 1,

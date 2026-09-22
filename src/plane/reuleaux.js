@@ -1,4 +1,7 @@
-/** @module reuleaux */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { concentric } from "../mappings.js";
 import { TAU } from "../utils/common.js";
 import {
@@ -44,7 +47,6 @@ function computeReuleauxEdge(
  *
  * @param {ReuleauxOptions} [options={}]
  * @returns {import("../../types.js").SimplicialComplex}
- * @alias module:reuleaux
  * @see [Parametric equations for regular and Reuleaux polygons]{@link https://tpfto.wordpress.com/2011/09/15/parametric-equations-for-regular-and-reuleaux-polygons/}
  */
 export function reuleaux({
@@ -103,7 +105,6 @@ export function reuleaux({
  *
  * @param {ReuleauxPathOptions} [options={}]
  * @returns {import("../../types.js").SimplicialComplexPath}
- * @alias module:reuleauxPath
  */
 export function reuleauxPath({
   radius = 0.5,

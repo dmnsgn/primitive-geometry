@@ -1,4 +1,7 @@
-/** @module superellipsoid */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import {
   TAU,
   clampMeridianSweep,
@@ -37,7 +40,6 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  *
  * @param {SuperellipsoidOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:superellipsoid
  * @see [Wolfram MathWorld – Superellipsoid]{@link https://mathworld.wolfram.com/Superellipsoid.html}
  * @see [Wikipedia – Superellipsoid]{@link https://en.wikipedia.org/wiki/Superellipsoid}
  */

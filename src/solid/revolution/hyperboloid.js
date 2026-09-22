@@ -1,4 +1,7 @@
-/** @module hyperboloid */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { rectangular } from "../../mappings.js";
 import { TAU } from "../../utils/common.js";
 import { linear } from "../../utils/distribution.js";
@@ -32,7 +35,6 @@ import { computeFlatRevolutionGeometry } from "../../utils/revolution.js";
  *
  * @param {HyperboloidOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:hyperboloid
  * @see [Wolfram MathWorld – One-Sheeted Hyperboloid]{@link https://mathworld.wolfram.com/One-SheetedHyperboloid.html}
  */
 export function hyperboloid({

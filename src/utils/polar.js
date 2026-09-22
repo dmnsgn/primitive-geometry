@@ -1,4 +1,7 @@
-/** @module polar */
+/**
+ * @module utils
+ * @ignore
+ */
 
 import { TAU, getCellsTypedArray } from "./common.js";
 

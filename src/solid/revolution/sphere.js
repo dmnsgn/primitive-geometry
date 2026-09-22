@@ -1,4 +1,7 @@
-/** @module sphere */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { ellipsoid } from "./ellipsoid.js";
 
 /**
@@ -17,7 +20,6 @@ import { ellipsoid } from "./ellipsoid.js";
  *
  * @param {SphereOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:sphere
  */
 export function sphere({
   radius = 0.5,

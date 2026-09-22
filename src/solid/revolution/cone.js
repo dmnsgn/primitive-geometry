@@ -1,4 +1,7 @@
-/** @module cone */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { rectangular } from "../../mappings.js";
 import { TAU } from "../../utils/common.js";
 import { linear } from "../../utils/distribution.js";
@@ -82,7 +85,6 @@ export function computeConeSegment({
  *
  * @param {ConeOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:cone
  */
 export function cone({
   height = 1,

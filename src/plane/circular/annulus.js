@@ -1,4 +1,7 @@
-/** @module annulus */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { ellipse, ellipsePath } from "./ellipse.js";
 import { concentric } from "../../mappings.js";
 import { TAU } from "../../utils/common.js";
@@ -21,7 +24,6 @@ import { TAU } from "../../utils/common.js";
  *
  * @param {AnnulusOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:annulus
  */
 export function annulus({
   sx = 1,
@@ -67,7 +69,6 @@ export function annulus({
  *
  * @param {AnnulusPathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
- * @alias module:annulusPath
  */
 export function annulusPath({
   sx = 1,

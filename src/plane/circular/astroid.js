@@ -1,4 +1,7 @@
-/** @module astroid */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { superellipse, superellipsePath } from "./superellipse.js";
 import { lamé } from "../../mappings.js";
 import { TAU } from "../../utils/common.js";
@@ -19,7 +22,6 @@ import { TAU } from "../../utils/common.js";
  *
  * @param {AstroidOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:astroid
  * @see [Wolfram MathWorld – Astroid]{@link https://mathworld.wolfram.com/Astroid.html}
  */
 export function astroid({
@@ -60,7 +62,6 @@ export function astroid({
  *
  * @param {AstroidPathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
- * @alias module:astroidPath
  */
 export function astroidPath({
   radius = 0.5,

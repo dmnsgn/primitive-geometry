@@ -1,4 +1,7 @@
-/** @module capsule */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { TAU, snapToZero } from "../../utils/common.js";
 import { linear } from "../../utils/distribution.js";
 import { computeRevolutionGeometry } from "../../utils/revolution.js";
@@ -21,7 +24,6 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  *
  * @param {CapsuleOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:capsule
  */
 export function capsule({
   height = 0.5,

@@ -1,4 +1,7 @@
-/** @module squircle */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { fgSquircular } from "../../mappings.js";
 import { HALF_PI, SQRT2, TAU } from "../../utils/common.js";
 import {
@@ -63,7 +66,6 @@ function computeSquircleEdge(rx, ry, cosTheta, sinTheta, t, squareness) {
  *
  * @param {SquircleOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:squircle
  * @see [Squircular Calculations – Chamberlain Fong]{@link https://arxiv.org/vc/arxiv/papers/1604/1604.02174v1.pdf}
  */
 export function squircle({
@@ -111,7 +113,6 @@ export function squircle({
  *
  * @param {SquirclePathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
- * @alias module:squirclePath
  */
 export function squirclePath({
   sx = 1,

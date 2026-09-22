@@ -1,7 +1,7 @@
 /**
  * Re-export all geometries, UV mappings functions and utils.
  *
- * @module index
+ * @module primitiveGeometry
  */
 
 // Plane
@@ -140,3 +140,5 @@ export { icosphere } from "./src/solid/polyhedra/geodesic-dome/icosphere.js";
 export * as mappings from "./src/mappings.js";
 
 export * as utils from "./src/utils/index.js";
+
+export * from "./types.js";

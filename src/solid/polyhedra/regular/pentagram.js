@@ -1,4 +1,7 @@
-/** @module pentagram */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { computeStarRatio } from "../../../utils/common.js";
 
 /**

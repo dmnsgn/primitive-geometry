@@ -1,4 +1,7 @@
-/** @module doubleCone */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { rectangular } from "../../mappings.js";
 import { TAU, concatGeometries } from "../../utils/common.js";
 import { computeConeSegment } from "./cone.js";
@@ -27,7 +30,6 @@ import { computeConeSegment } from "./cone.js";
  *
  * @param {DoubleConeOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:doubleCone
  */
 export function doubleCone({
   height = 1,

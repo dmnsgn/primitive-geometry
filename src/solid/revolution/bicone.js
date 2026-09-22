@@ -1,4 +1,7 @@
-/** @module bicone */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { TAU, concatGeometries } from "../../utils/common.js";
 import { computeConeSegment } from "./cone.js";
 
@@ -21,7 +24,6 @@ import { computeConeSegment } from "./cone.js";
  *
  * @param {BiconeOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:bicone
  */
 export function bicone({
   height = 1,

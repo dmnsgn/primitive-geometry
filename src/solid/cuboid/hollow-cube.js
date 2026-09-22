@@ -1,4 +1,7 @@
-/** @module hollowCube */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { getCellsTypedArray } from "../../utils/common.js";
 import { PLANE_DIRECTIONS, computePlane } from "../../utils/plane-grid.js";
 
@@ -62,7 +65,6 @@ function computeBox(geometry, indices, dims, center, fullSize) {
  *
  * @param {HollowCubeOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:hollowCube
  */
 export function hollowCube({
   sx = 1,

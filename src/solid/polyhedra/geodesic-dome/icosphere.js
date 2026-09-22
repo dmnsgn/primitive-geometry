@@ -1,4 +1,7 @@
-/** @module icosphere */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { computePolyhedron } from "../../../utils/polyhedron.js";
 import { icosahedronFaces } from "../regular/icosahedron.js";
 
@@ -16,7 +19,6 @@ import { icosahedronFaces } from "../regular/icosahedron.js";
  *
  * @param {IcosphereOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
- * @alias module:icosphere
  */
 export function icosphere({
   radius = 0.5,

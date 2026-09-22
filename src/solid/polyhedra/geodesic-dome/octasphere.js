@@ -1,4 +1,7 @@
-/** @module octasphere */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { computePolyhedron } from "../../../utils/polyhedron.js";
 import { octahedronFaces } from "../regular/octahedron.js";
 
@@ -16,7 +19,6 @@ import { octahedronFaces } from "../regular/octahedron.js";
  *
  * @param {OctasphereOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
- * @alias module:octasphere
  */
 export function octasphere({
   radius = 0.5,

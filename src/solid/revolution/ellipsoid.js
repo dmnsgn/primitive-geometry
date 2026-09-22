@@ -1,4 +1,7 @@
-/** @module ellipsoid */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { TAU, clampMeridianSweep, snapToZero } from "../../utils/common.js";
 import { linear } from "../../utils/distribution.js";
 import { computeRevolutionGeometry } from "../../utils/revolution.js";
@@ -52,7 +55,6 @@ export function sphereDirection(t, cosPhi, sinPhi) {
  *
  * @param {EllipsoidOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:ellipsoid
  */
 export function ellipsoid({
   radius = 1,

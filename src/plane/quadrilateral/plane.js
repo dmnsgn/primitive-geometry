@@ -1,4 +1,7 @@
-/** @module plane */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 
 import { getCellsTypedArray } from "../../utils/common.js";
 import { computePlane } from "../../utils/plane-grid.js";
@@ -19,7 +22,6 @@ import { computePlane } from "../../utils/plane-grid.js";
  *
  * @param {PlaneOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:plane
  */
 export function plane({
   sx = 1,
@@ -62,7 +64,6 @@ export function plane({
  *
  * @param {RectanglePathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
- * @alias module:rectanglePath
  */
 export function rectanglePath({ sx = 1, sy = 0.5, nx = 1, ny = nx } = {}) {
   const x = sx * 0.5;

@@ -1,4 +1,7 @@
-/** @module roundedCube */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { getCellsTypedArray, normalize } from "../../utils/common.js";
 import { TMP } from "../../utils/revolution.js";
 import {
@@ -28,7 +31,6 @@ import {
  *
  * @param {RoundedCubeOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:roundedCube
  */
 export function roundedCube({
   sx = 1,

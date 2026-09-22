@@ -1,4 +1,7 @@
-/** @module greatStellatedDodecahedron */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { dodecahedronFaces } from "./dodecahedron.js";
 import {
   assembleFaces,
@@ -62,7 +65,6 @@ export function greatStellatedDodecahedronFaces({ radius = 0.5 } = {}) {
  *
  * @param {GreatStellatedDodecahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
- * @alias module:greatStellatedDodecahedron
  */
 export function greatStellatedDodecahedron({
   radius = 0.5,

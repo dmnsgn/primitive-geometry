@@ -1,4 +1,7 @@
-/** @module triangularGrid */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 
 import { SQRT3 } from "../../utils/common.js";
 
@@ -15,7 +18,6 @@ import { SQRT3 } from "../../utils/common.js";
  *
  * @param {TriangularGridOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPolygon}
- * @alias module:triangularGrid
  */
 export function triangularGrid({
   sx = 1,

@@ -1,4 +1,7 @@
-/** @module tetrasphere */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { computePolyhedron } from "../../../utils/polyhedron.js";
 import { tetrahedronFaces } from "../regular/tetrahedron.js";
 
@@ -16,7 +19,6 @@ import { tetrahedronFaces } from "../regular/tetrahedron.js";
  *
  * @param {TetrasphereOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
- * @alias module:tetrasphere
  */
 export function tetrasphere({
   radius = 0.5,

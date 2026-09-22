@@ -1,4 +1,7 @@
-/** @module dodecasphere */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { computePolyhedron } from "../../../utils/polyhedron.js";
 import { dodecahedronFaces } from "../regular/dodecahedron.js";
 
@@ -16,7 +19,6 @@ import { dodecahedronFaces } from "../regular/dodecahedron.js";
  *
  * @param {DodecasphereOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
- * @alias module:dodecasphere
  */
 export function dodecasphere({
   radius = 0.5,

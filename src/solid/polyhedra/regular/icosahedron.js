@@ -1,4 +1,7 @@
-/** @module icosahedron */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { computePolyhedron } from "../../../utils/polyhedron.js";
 import { PHI } from "../../../utils/common.js";
 
@@ -70,7 +73,6 @@ export function icosahedronFaces({ radius = 0.5 } = {}) {
  *
  * @param {IcosahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
- * @alias module:icosahedron
  */
 export function icosahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
   return computePolyhedron(icosahedronFaces({ radius }), {

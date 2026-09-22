@@ -1,4 +1,7 @@
-/** @module common */
+/**
+ * @module utils
+ * @ignore
+ */
 
 /**
  * Two times PI.

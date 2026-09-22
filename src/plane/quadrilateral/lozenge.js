@@ -1,4 +1,7 @@
-/** @module lozenge */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { rhombus, rhombusPath } from "./rhombus.js";
 
 /**
@@ -21,7 +24,6 @@ import { rhombus, rhombusPath } from "./rhombus.js";
  *
  * @param {LozengeOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:lozenge
  */
 export function lozenge({
   sx = 0.5,
@@ -66,7 +68,6 @@ export function lozenge({
  *
  * @param {LozengePathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
- * @alias module:lozengePath
  */
 export function lozengePath({
   sx = 0.5,

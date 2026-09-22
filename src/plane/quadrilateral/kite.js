@@ -1,4 +1,7 @@
-/** @module kite */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { concentric } from "../../mappings.js";
 import { HALF_PI, TAU } from "../../utils/common.js";
 import {
@@ -30,7 +33,6 @@ import {
  *
  * @param {KiteOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:kite
  */
 export function kite({
   sx = 1,
@@ -79,7 +81,6 @@ export function kite({
  *
  * @param {KitePathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
- * @alias module:kitePath
  */
 export function kitePath({
   sx = 1,

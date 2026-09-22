@@ -1,4 +1,7 @@
-/** @module hexasphere */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { computePolyhedron } from "../../../utils/polyhedron.js";
 import { hexahedronFaces } from "../regular/hexahedron.js";
 
@@ -17,7 +20,6 @@ import { hexahedronFaces } from "../regular/hexahedron.js";
  *
  * @param {HexasphereOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
- * @alias module:hexasphere
  */
 export function hexasphere({
   radius = 0.5,

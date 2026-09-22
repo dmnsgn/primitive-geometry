@@ -1,4 +1,7 @@
-/** @module dodecahedron */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { computePolyhedron } from "../../../utils/polyhedron.js";
 import { PHI } from "../../../utils/common.js";
 
@@ -71,7 +74,6 @@ export function dodecahedronFaces({ radius = 0.5 } = {}) {
  *
  * @param {DodecahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
- * @alias module:dodecahedron
  */
 export function dodecahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
   return computePolyhedron(dodecahedronFaces({ radius }), {

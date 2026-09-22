@@ -1,4 +1,7 @@
-/** @module hexagonalGrid */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 
 import { SQRT3 } from "../../utils/common.js";
 
@@ -20,7 +23,6 @@ const WELD_KEY_SCALE = 1e9;
  *
  * @param {HexagonalGridOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPolygon}
- * @alias module:hexagonalGrid
  */
 export function hexagonalGrid({
   sx = 1,

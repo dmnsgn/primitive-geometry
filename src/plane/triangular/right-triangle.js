@@ -1,4 +1,7 @@
-/** @module rightTriangle */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { triangle, trianglePath } from "./triangle.js";
 
 /**
@@ -22,7 +25,6 @@ import { triangle, trianglePath } from "./triangle.js";
  *
  * @param {RightTriangleOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:rightTriangle
  */
 export function rightTriangle({
   sx = 1,
@@ -68,7 +70,6 @@ export function rightTriangle({
  *
  * @param {RightTrianglePathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
- * @alias module:rightTrianglePath
  */
 export function rightTrianglePath({
   sx = 1,

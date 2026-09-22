@@ -1,4 +1,7 @@
-/** @module yinYang */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { computeSweptArc } from "../../utils/polar.js";
 import { rectangular } from "../../mappings.js";
 import { clamp, concatGeometries } from "../../utils/common.js";
@@ -20,9 +23,10 @@ import { clamp, concatGeometries } from "../../utils/common.js";
  *   independent of the outer boundary's `segments`.
  * @property {number} [innerSegments=16] Column count spanning each side of a
  *   dot hole (or the whole half, where the hole doesn't reach) at each row.
- * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular] Uv mapping function.
- *   Defaults to a flat, bounding-box-relative unwrap; pass a function using
- *   `uRatio`/`vRatio` (the swept parametrization) to follow the arcs instead.
+ * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
+ *   Uv mapping function. Defaults to a flat, bounding-box-relative unwrap; pass a
+ *   function using `uRatio`/`vRatio` (the swept parametrization) to follow the
+ *   arcs instead.
  */
 
 /**
@@ -31,7 +35,6 @@ import { clamp, concatGeometries } from "../../utils/common.js";
  *
  * @param {YinYangOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:yinYang
  * @see [Wolfram MathWorld – Yin-Yang]{@link https://mathworld.wolfram.com/Yin-Yang.html}
  */
 export function yinYang({

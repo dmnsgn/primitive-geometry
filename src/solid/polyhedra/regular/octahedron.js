@@ -1,4 +1,7 @@
-/** @module octahedron */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { computePolyhedron } from "../../../utils/polyhedron.js";
 
 /**
@@ -48,7 +51,6 @@ export function octahedronFaces({ radius = 0.5 } = {}) {
  *
  * @param {OctahedronOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}
- * @alias module:octahedron
  */
 export function octahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
   return computePolyhedron(octahedronFaces({ radius }), {

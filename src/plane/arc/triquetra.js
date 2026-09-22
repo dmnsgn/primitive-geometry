@@ -1,4 +1,7 @@
-/** @module triquetra */
+/**
+ * @module primitiveGeometry
+ * @ignore
+ */
 import { computeChebyshevColumn, computeSweptArc } from "../../utils/polar.js";
 import { rectangular } from "../../mappings.js";
 import {
@@ -16,9 +19,10 @@ import {
  *   both the core and the petals.
  * @property {number} [innerSegments=16] Row count between the two boundaries at
  *   each column.
- * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular] Uv mapping function.
- *   Defaults to a flat, bounding-box-relative unwrap; pass a function using
- *   `uRatio`/`vRatio` (the swept parametrization) to follow the arcs instead.
+ * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
+ *   Uv mapping function. Defaults to a flat, bounding-box-relative unwrap; pass a
+ *   function using `uRatio`/`vRatio` (the swept parametrization) to follow the
+ *   arcs instead.
  */
 
 /**
@@ -27,7 +31,6 @@ import {
  *
  * @param {TriquetraOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
- * @alias module:triquetra
  * @see [Wolfram MathWorld – Triquetra]{@link https://mathworld.wolfram.com/Triquetra.html}
  */
 export function triquetra({
