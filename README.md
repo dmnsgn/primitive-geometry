@@ -760,56 +760,10 @@ const icosphere = Primitives.icosphere({
 ## Modules
 
 <dl>
-<dt><a href="#module_index">index</a></dt>
+<dt><a href="#module_primitiveGeometry">primitiveGeometry</a></dt>
 <dd><p>Re-export all geometries, UV mappings functions and utils.</p>
 </dd>
-<dt><a href="#module_annulus">annulus</a></dt>
-<dd></dd>
-<dt><a href="#module_box">box</a></dt>
-<dd></dd>
-<dt><a href="#module_capsule">capsule</a></dt>
-<dd></dd>
-<dt><a href="#module_circle">circle</a></dt>
-<dd></dd>
-<dt><a href="#module_cone">cone</a></dt>
-<dd></dd>
-<dt><a href="#module_cube">cube</a></dt>
-<dd></dd>
-<dt><a href="#module_cylinder">cylinder</a></dt>
-<dd></dd>
-<dt><a href="#module_disc">disc</a></dt>
-<dd></dd>
-<dt><a href="#module_ellipse">ellipse</a></dt>
-<dd></dd>
-<dt><a href="#module_ellipsoid">ellipsoid</a></dt>
-<dd></dd>
-<dt><a href="#module_icosahedron">icosahedron</a></dt>
-<dd></dd>
-<dt><a href="#module_icosphere">icosphere</a></dt>
-<dd></dd>
 <dt><a href="#module_mappings">mappings</a></dt>
-<dd></dd>
-<dt><a href="#module_plane">plane</a></dt>
-<dd></dd>
-<dt><a href="#module_quad">quad</a></dt>
-<dd></dd>
-<dt><a href="#module_reuleux">reuleux</a></dt>
-<dd></dd>
-<dt><a href="#module_roundedCube">roundedCube</a></dt>
-<dd></dd>
-<dt><a href="#module_roundedRectangle">roundedRectangle</a></dt>
-<dd></dd>
-<dt><a href="#module_sphere">sphere</a></dt>
-<dd></dd>
-<dt><a href="#module_squircle">squircle</a></dt>
-<dd></dd>
-<dt><a href="#module_stadium">stadium</a></dt>
-<dd></dd>
-<dt><a href="#module_superellipse">superellipse</a></dt>
-<dd></dd>
-<dt><a href="#module_tetrahedron">tetrahedron</a></dt>
-<dd></dd>
-<dt><a href="#module_torus">torus</a></dt>
 <dd></dd>
 <dt><a href="#module_utils">utils</a></dt>
 <dd></dd>
@@ -818,145 +772,1969 @@ const icosphere = Primitives.icosphere({
 ## Typedefs
 
 <dl>
-<dt><a href="#BasicSimplicialComplex">BasicSimplicialComplex</a> : <code>object</code></dt>
-<dd><p>Geometry definition without normals and UVs.</p>
-</dd>
+<dt><a href="#TypedArrayLike">TypedArrayLike</a> : <code>Array.&lt;number&gt;</code> | <code>Uint8Array</code> | <code>Uint16Array</code> | <code>Uint32Array</code></dt>
+<dd></dd>
 <dt><a href="#SimplicialComplex">SimplicialComplex</a> : <code>object</code></dt>
 <dd><p>Geometry definition.</p>
 </dd>
+<dt><a href="#SimplicialComplexPolygon">SimplicialComplexPolygon</a> : <code>object</code></dt>
+<dd><p>Geometry polygon definition: each
+  cell is a closed n-gon face (implicitly wraps its last index back to its
+  first - never repeat the first index at the end).</p>
+</dd>
+<dt><a href="#SimplicialComplexPath">SimplicialComplexPath</a> : <code>object</code></dt>
+<dd><p>Geometry path definition: each cell
+  is an open polyline (no implicit closing edge between its last and first
+  index); repeat the first index at the end of a cell to close that loop
+  explicitly.</p>
+</dd>
 </dl>
 
-<a name="module_index"></a>
+<a name="module_primitiveGeometry"></a>
 
-## index
+## primitiveGeometry
 
 Re-export all geometries, UV mappings functions and utils.
 
-<a name="module_annulus"></a>
+- [primitiveGeometry](#module_primitiveGeometry)
+  - _static_
+    - [.cross([options])](#module_primitiveGeometry.cross) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.crossPath([options])](#module_primitiveGeometry.crossPath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.polygon([options])](#module_primitiveGeometry.polygon) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.polygonPath([options])](#module_primitiveGeometry.polygonPath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.reuleaux([options])](#module_primitiveGeometry.reuleaux) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.reuleauxPath([options])](#module_primitiveGeometry.reuleauxPath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.star([options])](#module_primitiveGeometry.star) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.starPath([options])](#module_primitiveGeometry.starPath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.arbelos([options])](#module_primitiveGeometry.arbelos) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.lens([options])](#module_primitiveGeometry.lens) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.lune([options])](#module_primitiveGeometry.lune) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.salinon([options])](#module_primitiveGeometry.salinon) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.triquetra([options])](#module_primitiveGeometry.triquetra) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.yinYang([options])](#module_primitiveGeometry.yinYang) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.annulus([options])](#module_primitiveGeometry.annulus) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.annulusPath([options])](#module_primitiveGeometry.annulusPath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.astroid([options])](#module_primitiveGeometry.astroid) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.astroidPath([options])](#module_primitiveGeometry.astroidPath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.disc([options])](#module_primitiveGeometry.disc) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.circlePath([options])](#module_primitiveGeometry.circlePath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.ellipse([options])](#module_primitiveGeometry.ellipse) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.ellipsePath([options])](#module_primitiveGeometry.ellipsePath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.squircle([options])](#module_primitiveGeometry.squircle) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.squirclePath([options])](#module_primitiveGeometry.squirclePath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.superellipse([options])](#module_primitiveGeometry.superellipse) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.superellipsePath([options])](#module_primitiveGeometry.superellipsePath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.hexagonalGrid([options])](#module_primitiveGeometry.hexagonalGrid) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+    - [.quadGrid([options])](#module_primitiveGeometry.quadGrid) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+    - [.triangularGrid([options])](#module_primitiveGeometry.triangularGrid) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+    - [.kite([options])](#module_primitiveGeometry.kite) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.kitePath([options])](#module_primitiveGeometry.kitePath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.lozenge([options])](#module_primitiveGeometry.lozenge) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.lozengePath([options])](#module_primitiveGeometry.lozengePath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.parallelogram([options])](#module_primitiveGeometry.parallelogram) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.parallelogramPath([options])](#module_primitiveGeometry.parallelogramPath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.plane([options])](#module_primitiveGeometry.plane) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.rectanglePath([options])](#module_primitiveGeometry.rectanglePath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.quad([options])](#module_primitiveGeometry.quad) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.squarePath([options])](#module_primitiveGeometry.squarePath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.rhombus([options])](#module_primitiveGeometry.rhombus) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.rhombusPath([options])](#module_primitiveGeometry.rhombusPath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.roundedRectangle([options])](#module_primitiveGeometry.roundedRectangle) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.roundedRectanglePath([options])](#module_primitiveGeometry.roundedRectanglePath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.stadium([options])](#module_primitiveGeometry.stadium) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.stadiumPath([options])](#module_primitiveGeometry.stadiumPath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.trapezoid([options])](#module_primitiveGeometry.trapezoid) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.trapezoidPath([options])](#module_primitiveGeometry.trapezoidPath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.rightTriangle([options])](#module_primitiveGeometry.rightTriangle) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.rightTrianglePath([options])](#module_primitiveGeometry.rightTrianglePath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.triangle([options])](#module_primitiveGeometry.triangle) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.trianglePath([options])](#module_primitiveGeometry.trianglePath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.cubeFaces([options])](#module_primitiveGeometry.cubeFaces) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+    - [.box([options])](#module_primitiveGeometry.box) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+    - [.cube([options])](#module_primitiveGeometry.cube) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.hollowCube([options])](#module_primitiveGeometry.hollowCube) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.roundedCube([options])](#module_primitiveGeometry.roundedCube) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.antiprism([options])](#module_primitiveGeometry.antiprism) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.prism([options])](#module_primitiveGeometry.prism) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.apple([options])](#module_primitiveGeometry.apple) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.astroidalEllipsoid([options])](#module_primitiveGeometry.astroidalEllipsoid) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.barrel([options])](#module_primitiveGeometry.barrel) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.bicone([options])](#module_primitiveGeometry.bicone) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.capsule([options])](#module_primitiveGeometry.capsule) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.cone([options])](#module_primitiveGeometry.cone) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.cylinder([options])](#module_primitiveGeometry.cylinder) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.doubleCone([options])](#module_primitiveGeometry.doubleCone) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.ellipsoid([options])](#module_primitiveGeometry.ellipsoid) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.funnel([options])](#module_primitiveGeometry.funnel) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.hollowCylinder([options])](#module_primitiveGeometry.hollowCylinder) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.hollowSphere([options])](#module_primitiveGeometry.hollowSphere) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.hyperboloid([options])](#module_primitiveGeometry.hyperboloid) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.lemon([options])](#module_primitiveGeometry.lemon) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.paraboloid([options])](#module_primitiveGeometry.paraboloid) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.roundedCylinder([options])](#module_primitiveGeometry.roundedCylinder) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.sphere([options])](#module_primitiveGeometry.sphere) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.sphericalRing([options])](#module_primitiveGeometry.sphericalRing) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.sphericon([options])](#module_primitiveGeometry.sphericon) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.superegg([options])](#module_primitiveGeometry.superegg) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.superellipsoid([options])](#module_primitiveGeometry.superellipsoid) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.torus([options])](#module_primitiveGeometry.torus) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.dodecasphere([options])](#module_primitiveGeometry.dodecasphere) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.hexasphere([options])](#module_primitiveGeometry.hexasphere) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.icosphere([options])](#module_primitiveGeometry.icosphere) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.octasphere([options])](#module_primitiveGeometry.octasphere) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.tetrasphere([options])](#module_primitiveGeometry.tetrasphere) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.dodecahedronFaces([options])](#module_primitiveGeometry.dodecahedronFaces) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+    - [.dodecahedron([options])](#module_primitiveGeometry.dodecahedron) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.greatDodecahedronFaces([options])](#module_primitiveGeometry.greatDodecahedronFaces) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+    - [.greatDodecahedron([options])](#module_primitiveGeometry.greatDodecahedron) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.greatIcosahedronFaces([options])](#module_primitiveGeometry.greatIcosahedronFaces) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+    - [.greatIcosahedron([options])](#module_primitiveGeometry.greatIcosahedron) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.greatStellatedDodecahedronFaces([options])](#module_primitiveGeometry.greatStellatedDodecahedronFaces) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+    - [.greatStellatedDodecahedron([options])](#module_primitiveGeometry.greatStellatedDodecahedron) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.hexahedronFaces([options])](#module_primitiveGeometry.hexahedronFaces) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+    - [.hexahedron([options])](#module_primitiveGeometry.hexahedron) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.icosahedronFaces([options])](#module_primitiveGeometry.icosahedronFaces) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+    - [.icosahedron([options])](#module_primitiveGeometry.icosahedron) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.octahedronFaces([options])](#module_primitiveGeometry.octahedronFaces) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+    - [.octahedron([options])](#module_primitiveGeometry.octahedron) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.smallStellatedDodecahedronFaces([options])](#module_primitiveGeometry.smallStellatedDodecahedronFaces) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+    - [.smallStellatedDodecahedron([options])](#module_primitiveGeometry.smallStellatedDodecahedron) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.tetrahedronFaces([options])](#module_primitiveGeometry.tetrahedronFaces) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+    - [.tetrahedron([options])](#module_primitiveGeometry.tetrahedron) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+  - _inner_
+    - [~CrossOptions](#module_primitiveGeometry..CrossOptions) : <code>object</code>
+    - [~CrossPathOptions](#module_primitiveGeometry..CrossPathOptions) : <code>object</code>
+    - [~PolygonOptions](#module_primitiveGeometry..PolygonOptions) : <code>object</code>
+    - [~PolygonPathOptions](#module_primitiveGeometry..PolygonPathOptions) : <code>object</code>
+    - [~ReuleauxOptions](#module_primitiveGeometry..ReuleauxOptions) : <code>object</code>
+    - [~ReuleauxPathOptions](#module_primitiveGeometry..ReuleauxPathOptions) : <code>object</code>
+    - [~StarOptions](#module_primitiveGeometry..StarOptions) : <code>object</code>
+    - [~StarPathOptions](#module_primitiveGeometry..StarPathOptions) : <code>object</code>
+    - [~ArbelosOptions](#module_primitiveGeometry..ArbelosOptions) : <code>object</code>
+    - [~LensOptions](#module_primitiveGeometry..LensOptions) : <code>object</code>
+    - [~LuneOptions](#module_primitiveGeometry..LuneOptions) : <code>object</code>
+    - [~SalinonOptions](#module_primitiveGeometry..SalinonOptions) : <code>object</code>
+    - [~TriquetraOptions](#module_primitiveGeometry..TriquetraOptions) : <code>object</code>
+    - [~YinYangOptions](#module_primitiveGeometry..YinYangOptions) : <code>object</code>
+    - [~AnnulusOptions](#module_primitiveGeometry..AnnulusOptions) : <code>object</code>
+    - [~AnnulusPathOptions](#module_primitiveGeometry..AnnulusPathOptions) : <code>object</code>
+    - [~AstroidOptions](#module_primitiveGeometry..AstroidOptions) : <code>object</code>
+    - [~AstroidPathOptions](#module_primitiveGeometry..AstroidPathOptions) : <code>object</code>
+    - [~DiscOptions](#module_primitiveGeometry..DiscOptions) : <code>object</code>
+    - [~CirclePathOptions](#module_primitiveGeometry..CirclePathOptions) : <code>object</code>
+    - [~EllipseOptions](#module_primitiveGeometry..EllipseOptions) : <code>object</code>
+    - [~EllipseEquationFn](#module_primitiveGeometry..EllipseEquationFn) ⇒ <code>[x, y]</code>
+    - [~EllipsePathOptions](#module_primitiveGeometry..EllipsePathOptions) : <code>object</code>
+    - [~SquircleOptions](#module_primitiveGeometry..SquircleOptions) : <code>object</code>
+    - [~SquirclePathOptions](#module_primitiveGeometry..SquirclePathOptions) : <code>object</code>
+    - [~SuperellipseOptions](#module_primitiveGeometry..SuperellipseOptions) : <code>object</code>
+    - [~SuperellipsePathOptions](#module_primitiveGeometry..SuperellipsePathOptions) : <code>object</code>
+    - [~HexagonalGridOptions](#module_primitiveGeometry..HexagonalGridOptions) : <code>object</code>
+    - [~QuadGridOptions](#module_primitiveGeometry..QuadGridOptions) : <code>object</code>
+    - [~TriangularGridOptions](#module_primitiveGeometry..TriangularGridOptions) : <code>object</code>
+    - [~KiteOptions](#module_primitiveGeometry..KiteOptions) : <code>object</code>
+    - [~KitePathOptions](#module_primitiveGeometry..KitePathOptions) : <code>object</code>
+    - [~LozengeOptions](#module_primitiveGeometry..LozengeOptions) : <code>object</code>
+    - [~LozengePathOptions](#module_primitiveGeometry..LozengePathOptions) : <code>object</code>
+    - [~ParallelogramOptions](#module_primitiveGeometry..ParallelogramOptions) : <code>object</code>
+    - [~ParallelogramPathOptions](#module_primitiveGeometry..ParallelogramPathOptions) : <code>object</code>
+    - [~PlaneOptions](#module_primitiveGeometry..PlaneOptions) : <code>object</code>
+    - [~PlaneDirection](#module_primitiveGeometry..PlaneDirection) : <code>&quot;x&quot;</code> \| <code>&quot;-x&quot;</code> \| <code>&quot;y&quot;</code> \| <code>&quot;-y&quot;</code> \| <code>&quot;z&quot;</code> \| <code>&quot;-z&quot;</code>
+    - [~RectanglePathOptions](#module_primitiveGeometry..RectanglePathOptions) : <code>object</code>
+    - [~QuadOptions](#module_primitiveGeometry..QuadOptions) : <code>object</code>
+    - [~SquarePathOptions](#module_primitiveGeometry..SquarePathOptions) : <code>object</code>
+    - [~RhombusOptions](#module_primitiveGeometry..RhombusOptions) : <code>object</code>
+    - [~RhombusPathOptions](#module_primitiveGeometry..RhombusPathOptions) : <code>object</code>
+    - [~RoundedRectangleCorner](#module_primitiveGeometry..RoundedRectangleCorner) : <code>&quot;top-left&quot;</code> \| <code>&quot;top-right&quot;</code> \| <code>&quot;bottom-right&quot;</code> \| <code>&quot;bottom-left&quot;</code>
+    - [~RoundedRectangleOptions](#module_primitiveGeometry..RoundedRectangleOptions) : <code>object</code>
+    - [~RoundedRectanglePathOptions](#module_primitiveGeometry..RoundedRectanglePathOptions) : <code>object</code>
+    - [~StadiumOptions](#module_primitiveGeometry..StadiumOptions) : <code>object</code>
+    - [~StadiumPathOptions](#module_primitiveGeometry..StadiumPathOptions) : <code>object</code>
+    - [~TrapezoidOptions](#module_primitiveGeometry..TrapezoidOptions) : <code>object</code>
+    - [~TrapezoidPathOptions](#module_primitiveGeometry..TrapezoidPathOptions) : <code>object</code>
+    - [~RightTriangleOptions](#module_primitiveGeometry..RightTriangleOptions) : <code>object</code>
+    - [~RightTrianglePathOptions](#module_primitiveGeometry..RightTrianglePathOptions) : <code>object</code>
+    - [~TriangleOptions](#module_primitiveGeometry..TriangleOptions) : <code>object</code>
+    - [~TrianglePathOptions](#module_primitiveGeometry..TrianglePathOptions) : <code>object</code>
+    - [~CubeFacesOptions](#module_primitiveGeometry..CubeFacesOptions) : <code>object</code>
+    - [~BoxOptions](#module_primitiveGeometry..BoxOptions) : <code>object</code>
+    - [~CubeOptions](#module_primitiveGeometry..CubeOptions) : <code>object</code>
+    - [~HollowCubeOptions](#module_primitiveGeometry..HollowCubeOptions) : <code>object</code>
+    - [~RoundedCubeDirection](#module_primitiveGeometry..RoundedCubeDirection) : <code>&quot;all&quot;</code> \| <code>&quot;x&quot;</code> \| <code>&quot;y&quot;</code> \| <code>&quot;z&quot;</code>
+    - [~RoundedCubeOptions](#module_primitiveGeometry..RoundedCubeOptions) : <code>object</code>
+    - [~AntiprismOptions](#module_primitiveGeometry..AntiprismOptions) : <code>object</code>
+    - [~PrismOptions](#module_primitiveGeometry..PrismOptions) : <code>object</code>
+    - [~AppleOptions](#module_primitiveGeometry..AppleOptions) : <code>object</code>
+    - [~AstroidalEllipsoidOptions](#module_primitiveGeometry..AstroidalEllipsoidOptions) : <code>object</code>
+    - [~BarrelOptions](#module_primitiveGeometry..BarrelOptions) : <code>object</code>
+    - [~BiconeOptions](#module_primitiveGeometry..BiconeOptions) : <code>object</code>
+    - [~CapsuleOptions](#module_primitiveGeometry..CapsuleOptions) : <code>object</code>
+    - [~ConeOptions](#module_primitiveGeometry..ConeOptions) : <code>object</code>
+    - [~CylinderOptions](#module_primitiveGeometry..CylinderOptions) : <code>object</code>
+    - [~DoubleConeOptions](#module_primitiveGeometry..DoubleConeOptions) : <code>object</code>
+    - [~EllipsoidOptions](#module_primitiveGeometry..EllipsoidOptions) : <code>object</code>
+    - [~FunnelOptions](#module_primitiveGeometry..FunnelOptions) : <code>object</code>
+    - [~HollowCylinderOptions](#module_primitiveGeometry..HollowCylinderOptions) : <code>object</code>
+    - [~HollowSphereOptions](#module_primitiveGeometry..HollowSphereOptions) : <code>object</code>
+    - [~HyperboloidOptions](#module_primitiveGeometry..HyperboloidOptions) : <code>object</code>
+    - [~LemonOptions](#module_primitiveGeometry..LemonOptions) : <code>object</code>
+    - [~ParaboloidOptions](#module_primitiveGeometry..ParaboloidOptions) : <code>object</code>
+    - [~RoundedCylinderOptions](#module_primitiveGeometry..RoundedCylinderOptions) : <code>object</code>
+    - [~SphereOptions](#module_primitiveGeometry..SphereOptions) : <code>object</code>
+    - [~SphericalRingOptions](#module_primitiveGeometry..SphericalRingOptions) : <code>object</code>
+    - [~SphericonOptions](#module_primitiveGeometry..SphericonOptions) : <code>object</code>
+    - [~SupereggOptions](#module_primitiveGeometry..SupereggOptions) : <code>object</code>
+    - [~SuperellipsoidOptions](#module_primitiveGeometry..SuperellipsoidOptions) : <code>object</code>
+    - [~TorusOptions](#module_primitiveGeometry..TorusOptions) : <code>object</code>
+    - [~DodecasphereOptions](#module_primitiveGeometry..DodecasphereOptions) : <code>object</code>
+    - [~HexasphereOptions](#module_primitiveGeometry..HexasphereOptions) : <code>object</code>
+    - [~IcosphereOptions](#module_primitiveGeometry..IcosphereOptions) : <code>object</code>
+    - [~OctasphereOptions](#module_primitiveGeometry..OctasphereOptions) : <code>object</code>
+    - [~TetrasphereOptions](#module_primitiveGeometry..TetrasphereOptions) : <code>object</code>
+    - [~DodecahedronFacesOptions](#module_primitiveGeometry..DodecahedronFacesOptions) : <code>object</code>
+    - [~DodecahedronOptions](#module_primitiveGeometry..DodecahedronOptions) : <code>object</code>
+    - [~GreatDodecahedronFacesOptions](#module_primitiveGeometry..GreatDodecahedronFacesOptions) : <code>object</code>
+    - [~GreatDodecahedronOptions](#module_primitiveGeometry..GreatDodecahedronOptions) : <code>object</code>
+    - [~GreatIcosahedronFacesOptions](#module_primitiveGeometry..GreatIcosahedronFacesOptions) : <code>object</code>
+    - [~GreatIcosahedronOptions](#module_primitiveGeometry..GreatIcosahedronOptions) : <code>object</code>
+    - [~GreatStellatedDodecahedronFacesOptions](#module_primitiveGeometry..GreatStellatedDodecahedronFacesOptions) : <code>object</code>
+    - [~GreatStellatedDodecahedronOptions](#module_primitiveGeometry..GreatStellatedDodecahedronOptions) : <code>object</code>
+    - [~HexahedronFacesOptions](#module_primitiveGeometry..HexahedronFacesOptions) : <code>object</code>
+    - [~HexahedronOptions](#module_primitiveGeometry..HexahedronOptions) : <code>object</code>
+    - [~IcosahedronFacesOptions](#module_primitiveGeometry..IcosahedronFacesOptions) : <code>object</code>
+    - [~IcosahedronOptions](#module_primitiveGeometry..IcosahedronOptions) : <code>object</code>
+    - [~OctahedronFacesOptions](#module_primitiveGeometry..OctahedronFacesOptions) : <code>object</code>
+    - [~OctahedronOptions](#module_primitiveGeometry..OctahedronOptions) : <code>object</code>
+    - [~SmallStellatedDodecahedronFacesOptions](#module_primitiveGeometry..SmallStellatedDodecahedronFacesOptions) : <code>object</code>
+    - [~SmallStellatedDodecahedronOptions](#module_primitiveGeometry..SmallStellatedDodecahedronOptions) : <code>object</code>
+    - [~TetrahedronFacesOptions](#module_primitiveGeometry..TetrahedronFacesOptions) : <code>object</code>
+    - [~TetrahedronOptions](#module_primitiveGeometry..TetrahedronOptions) : <code>object</code>
 
-## annulus
+<a name="module_primitiveGeometry.cross"></a>
 
-- [annulus](#module_annulus)
-  - [annulus([options])](#exp_module_annulus--annulus) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~AnnulusOptions](#module_annulus--annulus..AnnulusOptions) : <code>object</code>
+### primitiveGeometry.cross([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
 
-<a name="exp_module_annulus--annulus"></a>
+Greek cross: a plus-sign shaped non-regular dodecagon - 4 equal arms
+extending from a square center, filled with a fan from the center.
 
-### annulus([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**See**: [Wolfram MathWorld – Greek Cross](https://mathworld.wolfram.com/GreekCross.html)
 
-**Kind**: Exported function
+| Param     | Type                                                                 | Default         |
+| --------- | -------------------------------------------------------------------- | --------------- |
+| [options] | [<code>CrossOptions</code>](#module_primitiveGeometry..CrossOptions) | <code>{}</code> |
 
-| Param     | Type                                                                    | Default         |
-| --------- | ----------------------------------------------------------------------- | --------------- |
-| [options] | [<code>AnnulusOptions</code>](#module_annulus--annulus..AnnulusOptions) | <code>{}</code> |
+<a name="module_primitiveGeometry.crossPath"></a>
 
-<a name="module_annulus--annulus..AnnulusOptions"></a>
+### primitiveGeometry.crossPath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
 
-#### annulus~AnnulusOptions : <code>object</code>
+Outline dual of `cross`: the same 12-corner outline, walked directly instead
+of fanned from the center.
 
-**Kind**: inner typedef of [<code>annulus</code>](#exp_module_annulus--annulus)
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                         | Default         |
+| --------- | ---------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>CrossPathOptions</code>](#module_primitiveGeometry..CrossPathOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.polygon"></a>
+
+### primitiveGeometry.polygon([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A regular polygon: sides corners evenly spaced around a circle, connected by
+straight edges rather than ellipse's elliptical arc (rhombus is this shape's
+sides=4 case). sx/sy independently scale the two axes; equal values keep it
+regular, different values stretch it into an ellipse-inscribed polygon.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                     | Default         |
+| --------- | ------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>PolygonOptions</code>](#module_primitiveGeometry..PolygonOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.polygonPath"></a>
+
+### primitiveGeometry.polygonPath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+
+Outline dual of `polygon`: sides corners evenly spaced around a circle,
+connected by straight edges (rhombus is this shape's sides=4 case).
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Returns**: [<code>SimplicialComplexPath</code>](#SimplicialComplexPath) - `edgeSegments *
+  sides` positions and a single path cell of that many indices (`+ 1`,
+repeating index `0`, when `closed`)
+
+| Param     | Type                                                                             | Default         |
+| --------- | -------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>PolygonPathOptions</code>](#module_primitiveGeometry..PolygonPathOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.reuleaux"></a>
+
+### primitiveGeometry.reuleaux([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A Reuleaux polygon: a constant-width curve built from n circular arcs, each
+centered on the opposite vertex.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**See**: [Parametric equations for regular and Reuleaux polygons](https://tpfto.wordpress.com/2011/09/15/parametric-equations-for-regular-and-reuleaux-polygons/)
+
+| Param     | Type                                                                       | Default         |
+| --------- | -------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>ReuleauxOptions</code>](#module_primitiveGeometry..ReuleauxOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.reuleauxPath"></a>
+
+### primitiveGeometry.reuleauxPath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+
+Outline dual of `reuleaux`: same parametric boundary, sampled directly with
+no radial fill.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                               | Default         |
+| --------- | ---------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>ReuleauxPathOptions</code>](#module_primitiveGeometry..ReuleauxPathOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.star"></a>
+
+### primitiveGeometry.star([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Regular {points/density} star polygon: `points` outer tips alternating with
+`points` inner notches. `notchRadius` defaults to the tips' own
+`{points/density}` ratio, so e.g. the default `star()` traces a regular
+pentagram.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**See**: [Wolfram MathWorld – Star Polygon](https://mathworld.wolfram.com/StarPolygon.html)
+
+| Param     | Type                                                               | Default         |
+| --------- | ------------------------------------------------------------------ | --------------- |
+| [options] | [<code>StarOptions</code>](#module_primitiveGeometry..StarOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.starPath"></a>
+
+### primitiveGeometry.starPath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+
+Outline dual of `star`: `points` outer tips alternating with `points` inner
+notches, connected by straight edges.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Returns**: [<code>SimplicialComplexPath</code>](#SimplicialComplexPath) - `points * 2`
+positions and a single path cell of that many indices (`+ 1`, repeating
+index `0`, when `closed`)
+
+| Param     | Type                                                                       | Default         |
+| --------- | -------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>StarPathOptions</code>](#module_primitiveGeometry..StarPathOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.arbelos"></a>
+
+### primitiveGeometry.arbelos([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Arbelos ("shoemaker's knife"): the region inside a big semicircle and outside
+2 smaller ones sharing its baseline, tangent where their diameters meet.
+Area: `pi * innerRadius * (radius - innerRadius)`.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**See**: [Wolfram MathWorld – Arbelos](https://mathworld.wolfram.com/Arbelos.html)
+
+| Param     | Type                                                                     | Default         |
+| --------- | ------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>ArbelosOptions</code>](#module_primitiveGeometry..ArbelosOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.lens"></a>
+
+### primitiveGeometry.lens([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Lens: the convex region where two circles overlap, centered on the x axis and
+offset symmetrically by `distance`. Defaults to a Vesica Piscis.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**See**
+
+- [Wolfram MathWorld – Lens](https://mathworld.wolfram.com/Lens.html)
+- [Wolfram MathWorld – Vesica Piscis](https://mathworld.wolfram.com/VesicaPiscis.html)
+
+| Param     | Type                                                               | Default         |
+| --------- | ------------------------------------------------------------------ | --------------- |
+| [options] | [<code>LensOptions</code>](#module_primitiveGeometry..LensOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.lune"></a>
+
+### primitiveGeometry.lune([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Lune: a crescent, the region inside the big circle and outside the offset
+small one.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**See**: [Wolfram MathWorld – Lune](https://mathworld.wolfram.com/Lune.html)
+
+| Param     | Type                                                               | Default         |
+| --------- | ------------------------------------------------------------------ | --------------- |
+| [options] | [<code>LuneOptions</code>](#module_primitiveGeometry..LuneOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.salinon"></a>
+
+### primitiveGeometry.salinon([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Archimedes' salinon: a "salt cellar" bounded by four semicircles - one
+full-width on the bottom, a smaller one opposite it on top, and two "ear"
+semicircles filling the remaining top thirds. Area: `pi/4 * (radius +
+innerRadius) ** 2` (Archimedes' theorem).
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**See**: [Wolfram MathWorld – Salinon](https://mathworld.wolfram.com/Salinon.html)
+
+| Param     | Type                                                                     | Default         |
+| --------- | ------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>SalinonOptions</code>](#module_primitiveGeometry..SalinonOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.triquetra"></a>
+
+### primitiveGeometry.triquetra([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Triquetra: three mutually intersecting vesica piscis lenses, centered at the
+vertices of an equilateral triangle of side `radius`.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**See**: [Wolfram MathWorld – Triquetra](https://mathworld.wolfram.com/Triquetra.html)
+
+| Param     | Type                                                                         | Default         |
+| --------- | ---------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>TriquetraOptions</code>](#module_primitiveGeometry..TriquetraOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.yinYang"></a>
+
+### primitiveGeometry.yinYang([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Yin-Yang (taijitu): a circle divided by an S-shaped seam of two opposing
+semicircles, each side holed by a dot at the other's bulge.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**See**: [Wolfram MathWorld – Yin-Yang](https://mathworld.wolfram.com/Yin-Yang.html)
+
+| Param     | Type                                                                     | Default         |
+| --------- | ------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>YinYangOptions</code>](#module_primitiveGeometry..YinYangOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.annulus"></a>
+
+### primitiveGeometry.annulus([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+An annulus (ring): the region between two concentric circles.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                     | Default         |
+| --------- | ------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>AnnulusOptions</code>](#module_primitiveGeometry..AnnulusOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.annulusPath"></a>
+
+### primitiveGeometry.annulusPath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+
+Outline dual of `annulus`: unlike every other path in this module, an
+annulus's boundary is 2 disjoint loops, not one - 2 path cells (outer loop
+first, inner second).
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                             | Default         |
+| --------- | -------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>AnnulusPathOptions</code>](#module_primitiveGeometry..AnnulusPathOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.astroid"></a>
+
+### primitiveGeometry.astroid([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Hypocycloid with 4 cusps: a superellipse special case (m = n = 2/3).
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**See**: [Wolfram MathWorld – Astroid](https://mathworld.wolfram.com/Astroid.html)
+
+| Param     | Type                                                                     | Default         |
+| --------- | ------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>AstroidOptions</code>](#module_primitiveGeometry..AstroidOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.astroidPath"></a>
+
+### primitiveGeometry.astroidPath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+
+Outline dual of `astroid`: `superellipsePath` with `m = n = 2 / 3`.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                             | Default         |
+| --------- | -------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>AstroidPathOptions</code>](#module_primitiveGeometry..AstroidPathOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.disc"></a>
+
+### primitiveGeometry.disc([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A disc: `ellipse` with sx = sy = 1.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                               | Default         |
+| --------- | ------------------------------------------------------------------ | --------------- |
+| [options] | [<code>DiscOptions</code>](#module_primitiveGeometry..DiscOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.circlePath"></a>
+
+### primitiveGeometry.circlePath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+
+Outline dual of `disc`: `ellipsePath` with sx = sy = 1.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Returns**: [<code>SimplicialComplexPath</code>](#SimplicialComplexPath) - `segments`
+positions and a single path cell of `segments` indices (`segments + 1`,
+repeating index `0`, when `closed`)
+
+| Param     | Type                                                                           | Default         |
+| --------- | ------------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>CirclePathOptions</code>](#module_primitiveGeometry..CirclePathOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.ellipse"></a>
+
+### primitiveGeometry.ellipse([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+An ellipse (or circle when `sx = sy`).
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                     | Default         |
+| --------- | ------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>EllipseOptions</code>](#module_primitiveGeometry..EllipseOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.ellipsePath"></a>
+
+### primitiveGeometry.ellipsePath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+
+Outline dual of `ellipse`: sx/sy independently scale the two axes, same as
+`circlePath` with sx = sy = 1.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Returns**: [<code>SimplicialComplexPath</code>](#SimplicialComplexPath) - `segments`
+positions and a single path cell of `segments` indices (`segments + 1`,
+repeating index `0`, when `closed`)
+
+| Param     | Type                                                                             | Default         |
+| --------- | -------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>EllipsePathOptions</code>](#module_primitiveGeometry..EllipsePathOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.squircle"></a>
+
+### primitiveGeometry.squircle([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Fernández-Guasti squircle
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**See**: [Squircular Calculations – Chamberlain Fong](https://arxiv.org/vc/arxiv/papers/1604/1604.02174v1.pdf)
+
+| Param     | Type                                                                       | Default         |
+| --------- | -------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>SquircleOptions</code>](#module_primitiveGeometry..SquircleOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.squirclePath"></a>
+
+### primitiveGeometry.squirclePath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+
+Outline dual of `squircle`: the same Fernández-Guasti curve, sampled directly
+with no radial fill.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                               | Default         |
+| --------- | ---------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>SquirclePathOptions</code>](#module_primitiveGeometry..SquirclePathOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.superellipse"></a>
+
+### primitiveGeometry.superellipse([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Lamé curve See elliptical-mapping example for a few special cases
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**See**
+
+- [Wolfram MathWorld – Superellipse](https://mathworld.wolfram.com/Superellipse.html)
+- [Wikipedia – Superellipse](https://en.wikipedia.org/wiki/Superellipse)
+
+| Param     | Type                                                                               | Default         |
+| --------- | ---------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>SuperellipseOptions</code>](#module_primitiveGeometry..SuperellipseOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.superellipsePath"></a>
+
+### primitiveGeometry.superellipsePath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+
+Outline dual of `superellipse`: the same Lamé curve, sampled directly with no
+radial fill.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                                       | Default         |
+| --------- | ------------------------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>SuperellipsePathOptions</code>](#module_primitiveGeometry..SuperellipsePathOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.hexagonalGrid"></a>
+
+### primitiveGeometry.hexagonalGrid([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+
+Hexagonal grid tiling regular hexagons
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                                 | Default         |
+| --------- | ------------------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>HexagonalGridOptions</code>](#module_primitiveGeometry..HexagonalGridOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.quadGrid"></a>
+
+### primitiveGeometry.quadGrid([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+
+Regular grid
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                       | Default         |
+| --------- | -------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>QuadGridOptions</code>](#module_primitiveGeometry..QuadGridOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.triangularGrid"></a>
+
+### primitiveGeometry.triangularGrid([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+
+Isometric grid tiling equilateral triangles
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                                   | Default         |
+| --------- | -------------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>TriangularGridOptions</code>](#module_primitiveGeometry..TriangularGridOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.kite"></a>
+
+### primitiveGeometry.kite([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A kite: a rhombus with its bottom vertex pulled toward the center (by ratio)
+while the top, left and right vertices stay put.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                               | Default         |
+| --------- | ------------------------------------------------------------------ | --------------- |
+| [options] | [<code>KiteOptions</code>](#module_primitiveGeometry..KiteOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.kitePath"></a>
+
+### primitiveGeometry.kitePath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+
+Outline dual of `kite`: same shape, `ratio` pulling the bottom vertex toward
+the center.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                       | Default         |
+| --------- | -------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>KitePathOptions</code>](#module_primitiveGeometry..KitePathOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.lozenge"></a>
+
+### primitiveGeometry.lozenge([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A rhombus elongated along its vertical diagonal by default (sy = sx * 2), the
+classic narrow diamond look.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                     | Default         |
+| --------- | ------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>LozengeOptions</code>](#module_primitiveGeometry..LozengeOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.lozengePath"></a>
+
+### primitiveGeometry.lozengePath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+
+Outline dual of `lozenge`: `rhombusPath` elongated along its vertical
+diagonal by default (sy = sx * 2).
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                             | Default         |
+| --------- | -------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>LozengePathOptions</code>](#module_primitiveGeometry..LozengePathOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.parallelogram"></a>
+
+### primitiveGeometry.parallelogram([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A parallelogram: `trapezoid` with `topRatio` fixed to `1` (top and bottom
+edges the same width) and shifted sideways by `shear`.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                                 | Default         |
+| --------- | ------------------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>ParallelogramOptions</code>](#module_primitiveGeometry..ParallelogramOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.parallelogramPath"></a>
+
+### primitiveGeometry.parallelogramPath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+
+Outline dual of `parallelogram`: `trapezoidPath` with `topRatio` fixed to
+`1`, shifted sideways by `shear`.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                                         | Default         |
+| --------- | -------------------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>ParallelogramPathOptions</code>](#module_primitiveGeometry..ParallelogramPathOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.plane"></a>
+
+### primitiveGeometry.plane([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A flat rectangular grid, facing `direction`.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                 | Default         |
+| --------- | -------------------------------------------------------------------- | --------------- |
+| [options] | [<code>PlaneOptions</code>](#module_primitiveGeometry..PlaneOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.rectanglePath"></a>
+
+### primitiveGeometry.rectanglePath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+
+Outline dual of `plane`: just its `z`-facing boundary loop, walked directly
+(bottom-left → bottom-right → top-right → top-left) rather than extracted
+from the full grid.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                                 | Default         |
+| --------- | ------------------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>RectanglePathOptions</code>](#module_primitiveGeometry..RectanglePathOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.quad"></a>
+
+### primitiveGeometry.quad([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A square, filled with 2 triangles.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                               | Default         |
+| --------- | ------------------------------------------------------------------ | --------------- |
+| [options] | [<code>QuadOptions</code>](#module_primitiveGeometry..QuadOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.squarePath"></a>
+
+### primitiveGeometry.squarePath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+
+Outline dual of `quad`: `rectanglePath` with equal sx/sy, same as `quad`
+itself is built from it.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                           | Default         |
+| --------- | ------------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>SquarePathOptions</code>](#module_primitiveGeometry..SquarePathOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.rhombus"></a>
+
+### primitiveGeometry.rhombus([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A rhombus: a diamond with vertices at top/right/bottom/left, sx and sy
+independently scaling the horizontal and vertical diagonals. Equal sx/sy
+gives a square rotated 45°.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                     | Default         |
+| --------- | ------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>RhombusOptions</code>](#module_primitiveGeometry..RhombusOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.rhombusPath"></a>
+
+### primitiveGeometry.rhombusPath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+
+Outline dual of `rhombus`: `polygonPath` with sides fixed to `4`.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                             | Default         |
+| --------- | -------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>RhombusPathOptions</code>](#module_primitiveGeometry..RhombusPathOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.roundedRectangle"></a>
+
+### primitiveGeometry.roundedRectangle([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A rectangle with rounded corners.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                                       | Default         |
+| --------- | ------------------------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>RoundedRectangleOptions</code>](#module_primitiveGeometry..RoundedRectangleOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.roundedRectanglePath"></a>
+
+### primitiveGeometry.roundedRectanglePath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+
+Outline dual of `roundedRectangle`: same radius/segment/roundedCorners
+conventions, walked directly (bottom-left → bottom-right → top-right →
+top-left). A rounded corner contributes `roundSegments` samples along its
+quarter-circle arc; a sharp one contributes its single corner point. Produces
+identical output to `rectanglePath` when `radius` is `0`.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                                               | Default         |
+| --------- | -------------------------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>RoundedRectanglePathOptions</code>](#module_primitiveGeometry..RoundedRectanglePathOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.stadium"></a>
+
+### primitiveGeometry.stadium([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A stadium (discorectangle): `roundedRectangle` with `radius` fixed to half
+the shorter side.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                     | Default         |
+| --------- | ------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>StadiumOptions</code>](#module_primitiveGeometry..StadiumOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.stadiumPath"></a>
+
+### primitiveGeometry.stadiumPath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+
+Outline dual of `stadium`: `roundedRectanglePath` with `radius` fixed to half
+the shorter side, collapsing that axis's straight section to 0 (two
+semicircular caps joined by straight edges).
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                             | Default         |
+| --------- | -------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>StadiumPathOptions</code>](#module_primitiveGeometry..StadiumPathOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.trapezoid"></a>
+
+### primitiveGeometry.trapezoid([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A trapezoid: a quad with horizontal top/bottom edges, the top narrowed to
+`topRatio` of the bottom's width and optionally shifted by `topOffset`. The
+default `thetaOffset=0` starts at the bottom-left corner and sweeps CCW
+through bottom-right, top-right, top-left.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**See**: [Wolfram MathWorld – Trapezoid](https://mathworld.wolfram.com/Trapezoid.html)
+
+| Param     | Type                                                                         | Default         |
+| --------- | ---------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>TrapezoidOptions</code>](#module_primitiveGeometry..TrapezoidOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.trapezoidPath"></a>
+
+### primitiveGeometry.trapezoidPath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+
+Outline dual of `trapezoid`: the same 4 corners, walked directly instead of
+fanned.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                                 | Default         |
+| --------- | ------------------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>TrapezoidPathOptions</code>](#module_primitiveGeometry..TrapezoidPathOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.rightTriangle"></a>
+
+### primitiveGeometry.rightTriangle([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A right triangle: `triangle` with its apex pulled directly above the
+bottom-left corner (`apexOffset = -sx`), landing the right angle there.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                                 | Default         |
+| --------- | ------------------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>RightTriangleOptions</code>](#module_primitiveGeometry..RightTriangleOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.rightTrianglePath"></a>
+
+### primitiveGeometry.rightTrianglePath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+
+Outline dual of `rightTriangle`: `trianglePath` with `apexOffset` fixed to
+`-sx`.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                                         | Default         |
+| --------- | -------------------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>RightTrianglePathOptions</code>](#module_primitiveGeometry..RightTrianglePathOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.triangle"></a>
+
+### primitiveGeometry.triangle([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A triangle: a horizontal base with the apex placed anywhere above it via
+`apexOffset`. `thetaOffset=0` starts at the bottom-left corner and sweeps CCW
+through bottom-right, apex.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**See**: [Wolfram MathWorld – Triangle](https://mathworld.wolfram.com/Triangle.html)
+
+| Param     | Type                                                                       | Default         |
+| --------- | -------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>TriangleOptions</code>](#module_primitiveGeometry..TriangleOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.trianglePath"></a>
+
+### primitiveGeometry.trianglePath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+
+Outline dual of `triangle`: the same 3 corners, walked directly instead of
+fanned.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                               | Default         |
+| --------- | ---------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>TrianglePathOptions</code>](#module_primitiveGeometry..TrianglePathOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.cubeFaces"></a>
+
+### primitiveGeometry.cubeFaces([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+
+Cuboid faces: 8 positions and 6 quad faces (indices into positions). Cells
+order: +x, -x, +y, -y, +z, -z.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                         | Default         |
+| --------- | ---------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>CubeFacesOptions</code>](#module_primitiveGeometry..CubeFacesOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.box"></a>
+
+### primitiveGeometry.box([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+
+A cuboid, as raw quad faces rather than a triangulated mesh - see
+`cubeFaces`.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                             | Default         |
+| --------- | ---------------------------------------------------------------- | --------------- |
+| [options] | [<code>BoxOptions</code>](#module_primitiveGeometry..BoxOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.cube"></a>
+
+### primitiveGeometry.cube([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A cuboid (rectangular box).
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                               | Default         |
+| --------- | ------------------------------------------------------------------ | --------------- |
+| [options] | [<code>CubeOptions</code>](#module_primitiveGeometry..CubeOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.hollowCube"></a>
+
+### primitiveGeometry.hollowCube([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A cube with a square hole through the center of each face, like a single cell
+of a Menger sponge: the 8 corners stay solid (t x t x t blocks) and the 12
+edges become beams of the same cross-section running between them.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                           | Default         |
+| --------- | ------------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>HollowCubeOptions</code>](#module_primitiveGeometry..HollowCubeOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.roundedCube"></a>
+
+### primitiveGeometry.roundedCube([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A cuboid with rounded edges and corners.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                             | Default         |
+| --------- | -------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>RoundedCubeOptions</code>](#module_primitiveGeometry..RoundedCubeOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.antiprism"></a>
+
+### primitiveGeometry.antiprism([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Antiprism: like `prism`, but the top sides-gon is rotated by half a sector
+relative to the bottom one, so the two rings connect through a zigzag band of
+2 * sides flat triangles (each with its own hard-edged normal) instead of
+prism's sides flat rectangles. The 2 end caps are otherwise identical to
+prism's own, just with the top one rotated to match its own ring.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                         | Default         |
+| --------- | ---------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>AntiprismOptions</code>](#module_primitiveGeometry..AntiprismOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.prism"></a>
+
+### primitiveGeometry.prism([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Right prism: a regular sides-gon extruded into sides flat rectangular side
+faces, each with its own hard-edged normal - unlike `cylinder`'s smooth
+per-vertex normal, which just makes a large-nx cylinder look faceted rather
+than actually being one.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                 | Default         |
+| --------- | -------------------------------------------------------------------- | --------------- |
+| [options] | [<code>PrismOptions</code>](#module_primitiveGeometry..PrismOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.apple"></a>
+
+### primitiveGeometry.apple([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+MathWorld's Apple Surface: "more than half of a circular arc rotated about an
+axis passing through the [arc's] endpoints" - the outer lobe of a spindle
+torus. Poles are true cusps (dimples), not smooth tangent points like a
+sphere's - each pole's normal varies per column, same as `cone`'s apex.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**See**: [Wolfram MathWorld – Apple Surface](https://mathworld.wolfram.com/AppleSurface.html)
+
+| Param     | Type                                                                 | Default         |
+| --------- | -------------------------------------------------------------------- | --------------- |
+| [options] | [<code>AppleOptions</code>](#module_primitiveGeometry..AppleOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.astroidalEllipsoid"></a>
+
+### primitiveGeometry.astroidalEllipsoid([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A superellipsoid special case (n1 = n2 = 2/3): the surface
+
+|x/rx|^(2/3) + |y/ry|^(2/3) + |z/rz|^(2/3) = 1, pinched to 6 cusps along
+
+The axes.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**See**: [Wolfram MathWorld – Astroidal Ellipsoid](https://mathworld.wolfram.com/AstroidalEllipsoid.html)
+
+| Param     | Type                                                                                           | Default         |
+| --------- | ---------------------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>AstroidalEllipsoidOptions</code>](#module_primitiveGeometry..AstroidalEllipsoidOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.barrel"></a>
+
+### primitiveGeometry.barrel([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Barrel/cask: a cylinder that bulges outward at the equator and tapers back to
+a narrower flat rim at both ends. Unlike `superegg` (which also bulges but
+tapers all the way to a point at each pole), both ends here stay flat, open
+rings, cappable like `cylinder`'s.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                   | Default         |
+| --------- | ---------------------------------------------------------------------- | --------------- |
+| [options] | [<code>BarrelOptions</code>](#module_primitiveGeometry..BarrelOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.bicone"></a>
+
+### primitiveGeometry.bicone([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Two right circular cones joined base-to-base at the equator (a bipyramid of
+revolution/spinning-top shape) - both ends come to a point, so unlike
+`cylinder`/`doubleCone` there are no cap options.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                   | Default         |
+| --------- | ---------------------------------------------------------------------- | --------------- |
+| [options] | [<code>BiconeOptions</code>](#module_primitiveGeometry..BiconeOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.capsule"></a>
+
+### primitiveGeometry.capsule([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A cylindrical body capped with two hemispheres (a "pill" shape).
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                     | Default         |
+| --------- | ------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>CapsuleOptions</code>](#module_primitiveGeometry..CapsuleOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.cone"></a>
+
+### primitiveGeometry.cone([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Right circular cone by default. Other shapes fall out of the same parameters:
+an open cone/funnel (capBase false) and an elliptical cone (sx != sz).
+There's no apex-side ellipse - the apex is always a single point, so any apex
+scale would be a no-op.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                               | Default         |
+| --------- | ------------------------------------------------------------------ | --------------- |
+| [options] | [<code>ConeOptions</code>](#module_primitiveGeometry..ConeOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.cylinder"></a>
+
+### primitiveGeometry.cylinder([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Right circular cylinder by default. Other shapes fall out of the same
+parameters: a tube (capBase/capApex false, any radii), a frustum/cone
+(radiusApex != radius, 0 for a true cone apex), and an elliptical cylinder or
+frustum (sx != sz, optionally different per end via sxApex/szApex).
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                       | Default         |
+| --------- | -------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>CylinderOptions</code>](#module_primitiveGeometry..CylinderOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.doubleCone"></a>
+
+### primitiveGeometry.doubleCone([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Two right circular cones joined apex-to-apex at the waist (an hourglass of
+revolution) - the wide top/bottom ends are flat, so unlike `bicone` it takes
+the same capBase/capApex/capSegments/capMapping options as `cylinder`.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                           | Default         |
+| --------- | ------------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>DoubleConeOptions</code>](#module_primitiveGeometry..DoubleConeOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.ellipsoid"></a>
+
+### primitiveGeometry.ellipsoid([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Default to an oblate spheroid.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                         | Default         |
+| --------- | ---------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>EllipsoidOptions</code>](#module_primitiveGeometry..EllipsoidOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.funnel"></a>
+
+### primitiveGeometry.funnel([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Revolution of y = a·ln(r) (equivalently r = radius·e^(k·(y+height/2)), an
+exponential - not linear (`cone`) or hyperbolic (`hyperboloid`) - radius law)
+between a narrow spout and a wide mouth. Both ends stay flat, open rings,
+cappable exactly like `hyperboloid`'s.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**See**: [Wolfram MathWorld – Funnel](https://mathworld.wolfram.com/Funnel.html)
+
+| Param     | Type                                                                   | Default         |
+| --------- | ---------------------------------------------------------------------- | --------------- |
+| [options] | [<code>FunnelOptions</code>](#module_primitiveGeometry..FunnelOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.hollowCylinder"></a>
+
+### primitiveGeometry.hollowCylinder([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A cylinder with a concentric cylindrical bore through it - a washer/pipe
+extruded to a given height. Doesn't close the `phi < TAU` wedge cut (no wall
+between the outer/inner walls or the 2 caps there) - same limitation as a
+plain `cylinder({ phi: <TAU })`.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                                   | Default         |
+| --------- | -------------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>HollowCylinderOptions</code>](#module_primitiveGeometry..HollowCylinderOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.hollowSphere"></a>
+
+### primitiveGeometry.hollowSphere([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A sphere with a smaller, concentric sphere hollowed out of it: a shell of
+uniform wall thickness. Defaults to a quarter band (theta/thetaOffset) rather
+than a full sphere, since a closed hollow sphere looks identical to a plain
+`sphere` from outside - the partial default exposes the cavity and cut caps
+immediately.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                               | Default         |
+| --------- | ---------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>HollowSphereOptions</code>](#module_primitiveGeometry..HollowSphereOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.hyperboloid"></a>
+
+### primitiveGeometry.hyperboloid([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Hyperboloid of one sheet (revolution of x² + z² = radius² + k·y², a
+pinched-waist, flared-both-ends shape - cooling towers, gear/skew-roller
+profiles). Both ends are flat rings, not points, cappable like `cylinder`'s
+frustum.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**See**: [Wolfram MathWorld – One-Sheeted Hyperboloid](https://mathworld.wolfram.com/One-SheetedHyperboloid.html)
+
+| Param     | Type                                                                             | Default         |
+| --------- | -------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>HyperboloidOptions</code>](#module_primitiveGeometry..HyperboloidOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.lemon"></a>
+
+### primitiveGeometry.lemon([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Lemon (geometry): "a circular arc of angle less than half of a full circle"
+rotated about the chord through its own endpoints - `apple`'s exact
+complementary half. Unlike apple, the meridian is plain y-monotonic: no
+dimple, just a smooth convex taper to a point (still a cusp, not a tangent
+point, at each pole).
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**See**: [Wikipedia – Lemon (geometry)](<https://en.wikipedia.org/wiki/Lemon_(geometry)>)
+
+| Param     | Type                                                                 | Default         |
+| --------- | -------------------------------------------------------------------- | --------------- |
+| [options] | [<code>LemonOptions</code>](#module_primitiveGeometry..LemonOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.paraboloid"></a>
+
+### primitiveGeometry.paraboloid([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Circular paraboloid (revolution of x² + z² = k·(apexY - y), the classic
+satellite-dish/reflector shape) - apex up, rim down, same orientation as
+`cone`, and like `cone` only the rim end takes a cap option. Unlike a cone's
+apex, the surface here is smooth at the apex (no crease), with a single
+well-defined normal there.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**See**: [Wolfram MathWorld – Paraboloid](https://mathworld.wolfram.com/Paraboloid.html)
+
+| Param     | Type                                                                           | Default         |
+| --------- | ------------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>ParaboloidOptions</code>](#module_primitiveGeometry..ParaboloidOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.roundedCylinder"></a>
+
+### primitiveGeometry.roundedCylinder([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A cylinder with its top/bottom rim edges filleted instead of sharp - a flat
+cap blended into the straight side by a quarter-circle fillet, both ends
+symmetric. `roundRadius = 0` gives a plain flat-capped `cylinder`;
+`roundRadius = radius = height / 2` pinches the flat cap away entirely,
+becoming `capsule`'s hemisphere.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                                     | Default         |
+| --------- | ---------------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>RoundedCylinderOptions</code>](#module_primitiveGeometry..RoundedCylinderOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.sphere"></a>
+
+### primitiveGeometry.sphere([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A sphere: `ellipsoid` with rx = ry = 1.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                   | Default         |
+| --------- | ---------------------------------------------------------------------- | --------------- |
+| [options] | [<code>SphereOptions</code>](#module_primitiveGeometry..SphereOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.sphericalRing"></a>
+
+### primitiveGeometry.sphericalRing([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A sphere with a cylindrical hole drilled through its center - MathWorld's
+Spherical Ring, aka a napkin ring. Unlike what "ring" might suggest, there's
+no flat annulus at either end: at the rim (height `sqrt(radius² -
+innerRadius²)`), the sphere's and bore's surfaces meet directly, so the
+meridian cross-section is a single closed loop - topologically a torus with a
+lens-shaped minor curve instead of a circular one.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**See**: [Wolfram MathWorld – Spherical Ring](https://mathworld.wolfram.com/SphericalRing.html)
+
+| Param     | Type                                                                                 | Default         |
+| --------- | ------------------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>SphericalRingOptions</code>](#module_primitiveGeometry..SphericalRingOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.sphericon"></a>
+
+### primitiveGeometry.sphericon([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A right-circular bicone with a 90° apex angle, split along the plane through
+both apexes and reattached with one half rotated 90° - the classic
+4-quarter-cone rolling solid. No flat faces: a single continuous developable
+surface that rolls by wobbling in a straight line.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**See**: [Wolfram MathWorld – Sphericon](https://mathworld.wolfram.com/Sphericon.html)
+
+| Param     | Type                                                                         | Default         |
+| --------- | ---------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>SphericonOptions</code>](#module_primitiveGeometry..SphericonOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.superegg"></a>
+
+### primitiveGeometry.superegg([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Piet Hein's superegg: a superellipsoid special case (n2 = 2, rx = rz) with a
+circular cross-section at every height, ie. an actual surface of revolution -
+unlike the general superellipsoid, whose cross-sections are themselves
+superelliptical.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**See**
+
+- [Wolfram MathWorld – Superegg](https://mathworld.wolfram.com/Superegg.html)
+- [Wikipedia – Superegg](https://en.wikipedia.org/wiki/Superegg)
+
+| Param     | Type                                                                       | Default         |
+| --------- | -------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>SupereggOptions</code>](#module_primitiveGeometry..SupereggOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.superellipsoid"></a>
+
+### primitiveGeometry.superellipsoid([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Superquadric ellipsoid (Barr 1981): generalizes ellipsoid by raising its
+meridian (n1) and cross-section (n2) sin/cos terms to signed powers - n = 2
+is a plain ellipsoid, n < 2 rounds toward a box, n > 2 (the default, n1 = n2
+= 3) pinches toward a star/octahedron. See superegg for the n2 = 2 (circular
+cross-section) special case.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**See**
+
+- [Wolfram MathWorld – Superellipsoid](https://mathworld.wolfram.com/Superellipsoid.html)
+- [Wikipedia – Superellipsoid](https://en.wikipedia.org/wiki/Superellipsoid)
+
+| Param     | Type                                                                                   | Default         |
+| --------- | -------------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>SuperellipsoidOptions</code>](#module_primitiveGeometry..SuperellipsoidOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.torus"></a>
+
+### primitiveGeometry.torus([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Ring torus by default. Other shapes fall out of the same parameters: a
+partial/open torus (phi < TAU, optionally capped via capStart/capEnd), an
+elliptical torus (sx != sy, an oval/racetrack footprint), and a tube with an
+elliptical cross-section (minorSx != minorSy, like a flattened or
+spindle-shaped bagel).
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                 | Default         |
+| --------- | -------------------------------------------------------------------- | --------------- |
+| [options] | [<code>TorusOptions</code>](#module_primitiveGeometry..TorusOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.dodecasphere"></a>
+
+### primitiveGeometry.dodecasphere([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A geodesic sphere built by radially projecting and welding a subdivided
+dodecahedron
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                               | Default         |
+| --------- | ---------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>DodecasphereOptions</code>](#module_primitiveGeometry..DodecasphereOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.hexasphere"></a>
+
+### primitiveGeometry.hexasphere([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A geodesic sphere built by radially projecting and welding a subdivided
+hexahedron (cube) - an alternative to icosphere's topology, with
+cubemap-friendly UVs.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                           | Default         |
+| --------- | ------------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>HexasphereOptions</code>](#module_primitiveGeometry..HexasphereOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.icosphere"></a>
+
+### primitiveGeometry.icosphere([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A geodesic sphere built by radially projecting and welding a subdivided
+icosahedron.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                         | Default         |
+| --------- | ---------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>IcosphereOptions</code>](#module_primitiveGeometry..IcosphereOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.octasphere"></a>
+
+### primitiveGeometry.octasphere([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A geodesic sphere built by radially projecting and welding a subdivided
+octahedron.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                           | Default         |
+| --------- | ------------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>OctasphereOptions</code>](#module_primitiveGeometry..OctasphereOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.tetrasphere"></a>
+
+### primitiveGeometry.tetrasphere([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+A geodesic sphere built by radially projecting and welding a subdivided
+tetrahedron.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                             | Default         |
+| --------- | -------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>TetrasphereOptions</code>](#module_primitiveGeometry..TetrasphereOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.dodecahedronFaces"></a>
+
+### primitiveGeometry.dodecahedronFaces([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+
+Regular dodecahedron.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                                         | Default         |
+| --------- | -------------------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>DodecahedronFacesOptions</code>](#module_primitiveGeometry..DodecahedronFacesOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.dodecahedron"></a>
+
+### primitiveGeometry.dodecahedron([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Regular dodecahedron.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                               | Default         |
+| --------- | ---------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>DodecahedronOptions</code>](#module_primitiveGeometry..DodecahedronOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.greatDodecahedronFaces"></a>
+
+### primitiveGeometry.greatDodecahedronFaces([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+
+Great dodecahedron, sharing the icosahedron's 12 vertices; each of its 12
+pentagonal faces is the convex pentagon formed by one vertex's 5 neighbors,
+deeply interpenetrating the other 11 faces.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                                                   | Default         |
+| --------- | ------------------------------------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>GreatDodecahedronFacesOptions</code>](#module_primitiveGeometry..GreatDodecahedronFacesOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.greatDodecahedron"></a>
+
+### primitiveGeometry.greatDodecahedron([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Great dodecahedron.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                                         | Default         |
+| --------- | -------------------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>GreatDodecahedronOptions</code>](#module_primitiveGeometry..GreatDodecahedronOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.greatIcosahedronFaces"></a>
+
+### primitiveGeometry.greatIcosahedronFaces([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+
+Great icosahedron, sharing the icosahedron's 12 vertices; each of its 20
+triangular faces connects a vertex to two of its "second-shell" neighbors
+(rather than its 5 immediate ones), deeply interpenetrating the rest.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                                                 | Default         |
+| --------- | ---------------------------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>GreatIcosahedronFacesOptions</code>](#module_primitiveGeometry..GreatIcosahedronFacesOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.greatIcosahedron"></a>
+
+### primitiveGeometry.greatIcosahedron([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Great icosahedron.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                                       | Default         |
+| --------- | ------------------------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>GreatIcosahedronOptions</code>](#module_primitiveGeometry..GreatIcosahedronOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.greatStellatedDodecahedronFaces"></a>
+
+### primitiveGeometry.greatStellatedDodecahedronFaces([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+
+Great stellated dodecahedron: the 3rd (outermost) stellation of the
+dodecahedron. Each face's 5 edges, extended within its own plane, first cross
+at a "depth 1" ring (exactly the icosahedron's vertex positions - small
+stellated dodecahedron's own tips) before crossing a second, further ring at
+"depth 2" - the true tips here, a plain radial scale of the dodecahedron's
+own vertices by `phi^3`.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                                                                     | Default         |
+| --------- | ------------------------------------------------------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>GreatStellatedDodecahedronFacesOptions</code>](#module_primitiveGeometry..GreatStellatedDodecahedronFacesOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.greatStellatedDodecahedron"></a>
+
+### primitiveGeometry.greatStellatedDodecahedron([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Great stellated dodecahedron.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                                                           | Default         |
+| --------- | -------------------------------------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>GreatStellatedDodecahedronOptions</code>](#module_primitiveGeometry..GreatStellatedDodecahedronOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.hexahedronFaces"></a>
+
+### primitiveGeometry.hexahedronFaces([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+
+Regular hexahedron (cube) faces: 8 corners, cells order +x, -x, +y, -y, +z,
+-z - `cubeFaces`'s own layout, since a regular hexahedron is exactly a cube
+whose half-extent (`radius`) is the same on all 3 axes.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                                     | Default         |
+| --------- | ---------------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>HexahedronFacesOptions</code>](#module_primitiveGeometry..HexahedronFacesOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.hexahedron"></a>
+
+### primitiveGeometry.hexahedron([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Regular hexahedron (cube).
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                           | Default         |
+| --------- | ------------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>HexahedronOptions</code>](#module_primitiveGeometry..HexahedronOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.icosahedronFaces"></a>
+
+### primitiveGeometry.icosahedronFaces([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+
+Regular icosahedron.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                                       | Default         |
+| --------- | ------------------------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>IcosahedronFacesOptions</code>](#module_primitiveGeometry..IcosahedronFacesOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.icosahedron"></a>
+
+### primitiveGeometry.icosahedron([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Regular icosahedron.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                             | Default         |
+| --------- | -------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>IcosahedronOptions</code>](#module_primitiveGeometry..IcosahedronOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.octahedronFaces"></a>
+
+### primitiveGeometry.octahedronFaces([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+
+Regular octahedron.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                                     | Default         |
+| --------- | ---------------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>OctahedronFacesOptions</code>](#module_primitiveGeometry..OctahedronFacesOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.octahedron"></a>
+
+### primitiveGeometry.octahedron([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Regular octahedron.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                           | Default         |
+| --------- | ------------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>OctahedronOptions</code>](#module_primitiveGeometry..OctahedronOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.smallStellatedDodecahedronFaces"></a>
+
+### primitiveGeometry.smallStellatedDodecahedronFaces([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+
+Small stellated dodecahedron: the same 12 vertices and pentagon groupings as
+the great dodecahedron, with each face's 5 corners connected as a pentagram
+(skip-one star) instead of a convex pentagon.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                                                                     | Default         |
+| --------- | ------------------------------------------------------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>SmallStellatedDodecahedronFacesOptions</code>](#module_primitiveGeometry..SmallStellatedDodecahedronFacesOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.smallStellatedDodecahedron"></a>
+
+### primitiveGeometry.smallStellatedDodecahedron([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Small stellated dodecahedron.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                                                           | Default         |
+| --------- | -------------------------------------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>SmallStellatedDodecahedronOptions</code>](#module_primitiveGeometry..SmallStellatedDodecahedronOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.tetrahedronFaces"></a>
+
+### primitiveGeometry.tetrahedronFaces([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+
+Regular tetrahedron, apex-up, bounding box centered at the origin.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                                       | Default         |
+| --------- | ------------------------------------------------------------------------------------------ | --------------- |
+| [options] | [<code>TetrahedronFacesOptions</code>](#module_primitiveGeometry..TetrahedronFacesOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry.tetrahedron"></a>
+
+### primitiveGeometry.tetrahedron([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Regular tetrahedron.
+
+**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param     | Type                                                                             | Default         |
+| --------- | -------------------------------------------------------------------------------- | --------------- |
+| [options] | [<code>TetrahedronOptions</code>](#module_primitiveGeometry..TetrahedronOptions) | <code>{}</code> |
+
+<a name="module_primitiveGeometry..CrossOptions"></a>
+
+### primitiveGeometry~CrossOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name            | Type                  | Default                          |
-| --------------- | --------------------- | -------------------------------- |
-| [sx]            | <code>number</code>   | <code>1</code>                   |
-| [sy]            | <code>number</code>   | <code>1</code>                   |
-| [radius]        | <code>number</code>   | <code>0.5</code>                 |
-| [segments]      | <code>number</code>   | <code>32</code>                  |
-| [innerSegments] | <code>number</code>   | <code>16</code>                  |
-| [theta]         | <code>number</code>   | <code>TAU</code>                 |
-| [thetaOffset]   | <code>number</code>   | <code>0</code>                   |
-| [innerRadius]   | <code>number</code>   | <code>radius \* 0.5</code>       |
-| [mapping]       | <code>function</code> | <code>mappings.concentric</code> |
+| Name            | Type                   | Default                           | Description                                                                                                                                                                                 |
+| --------------- | ---------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [radius]        | <code>number</code>    | <code>0.5</code>                  | Distance from the center to each arm's tip.                                                                                                                                                 |
+| [armWidth]      | <code>number</code>    | <code>radius/3</code>             | Half-width of each arm. Defaults to a third of `radius`, the classic Greek cross made of 5 equal squares.                                                                                   |
+| [segments]      | <code>number</code>    | <code>1</code>                    | Column count per outline edge (the cross is a 12-sided, non-regular dodecagon), swept around the outline.                                                                                   |
+| [innerSegments] | <code>number</code>    | <code>16</code>                   | Row count between the center and the outline at each column.                                                                                                                                |
+| [innerRadius]   | <code>number</code>    | <code>0</code>                    | Like `star`'s: a hole radius the fill stops at instead of reaching the center, traced as a smaller, self- similar copy of the outer cross. `0` (default): no hole, fill reaches the center. |
+| [mergeCentroid] | <code>boolean</code>   | <code>true</code>                 |                                                                                                                                                                                             |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.rectangular</code> | Uv mapping function. Defaults to a flat, bounding-box-relative unwrap.                                                                                                                      |
 
-<a name="module_box"></a>
+<a name="module_primitiveGeometry..CrossPathOptions"></a>
 
-## box
+### primitiveGeometry~CrossPathOptions : <code>object</code>
 
-- [box](#module_box)
-  - [box([options])](#exp_module_box--box) ⇒ [<code>BasicSimplicialComplex</code>](#BasicSimplicialComplex) ⏏
-    - [~BoxOptions](#module_box--box..BoxOptions) : <code>object</code>
-
-<a name="exp_module_box--box"></a>
-
-### box([options]) ⇒ [<code>BasicSimplicialComplex</code>](#BasicSimplicialComplex) ⏏
-
-**Kind**: Exported function
-
-| Param     | Type                                                    | Default         |
-| --------- | ------------------------------------------------------- | --------------- |
-| [options] | [<code>BoxOptions</code>](#module_box--box..BoxOptions) | <code>{}</code> |
-
-<a name="module_box--box..BoxOptions"></a>
-
-#### box~BoxOptions : <code>object</code>
-
-**Kind**: inner typedef of [<code>box</code>](#exp_module_box--box)
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name | Type                | Default         |
-| ---- | ------------------- | --------------- |
-| [sx] | <code>number</code> | <code>1</code>  |
-| [sy] | <code>number</code> | <code>sx</code> |
-| [sz] | <code>number</code> | <code>sx</code> |
+| Name       | Type                 | Default               |
+| ---------- | -------------------- | --------------------- |
+| [radius]   | <code>number</code>  | <code>0.5</code>      |
+| [armWidth] | <code>number</code>  | <code>radius/3</code> |
+| [segments] | <code>number</code>  | <code>1</code>        |
+| [closed]   | <code>boolean</code> | <code>false</code>    |
 
-<a name="module_capsule"></a>
+<a name="module_primitiveGeometry..PolygonOptions"></a>
 
-## capsule
+### primitiveGeometry~PolygonOptions : <code>object</code>
 
-- [capsule](#module_capsule)
-  - [capsule([options])](#exp_module_capsule--capsule) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~CapsuleOptions](#module_capsule--capsule..CapsuleOptions) : <code>object</code>
-
-<a name="exp_module_capsule--capsule"></a>
-
-### capsule([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-
-**Kind**: Exported function
-
-| Param     | Type                                                                    | Default         |
-| --------- | ----------------------------------------------------------------------- | --------------- |
-| [options] | [<code>CapsuleOptions</code>](#module_capsule--capsule..CapsuleOptions) | <code>{}</code> |
-
-<a name="module_capsule--capsule..CapsuleOptions"></a>
-
-#### capsule~CapsuleOptions : <code>object</code>
-
-**Kind**: inner typedef of [<code>capsule</code>](#exp_module_capsule--capsule)
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name            | Type                | Default           |
-| --------------- | ------------------- | ----------------- |
-| [height]        | <code>number</code> | <code>0.5</code>  |
-| [radius]        | <code>number</code> | <code>0.25</code> |
-| [nx]            | <code>number</code> | <code>16</code>   |
-| [ny]            | <code>number</code> | <code>1</code>    |
-| [roundSegments] | <code>number</code> | <code>32</code>   |
-| [phi]           | <code>number</code> | <code>TAU</code>  |
+| Name            | Type                   | Default                          |
+| --------------- | ---------------------- | -------------------------------- |
+| [sides]         | <code>number</code>    | <code>6</code>                   |
+| [sx]            | <code>number</code>    | <code>1</code>                   |
+| [sy]            | <code>number</code>    | <code>1</code>                   |
+| [radius]        | <code>number</code>    | <code>0.5</code>                 |
+| [edgeSegments]  | <code>number</code>    | <code>1</code>                   |
+| [innerSegments] | <code>number</code>    | <code>16</code>                  |
+| [innerRadius]   | <code>number</code>    | <code>0</code>                   |
+| [theta]         | <code>number</code>    | <code>TAU</code>                 |
+| [thetaOffset]   | <code>number</code>    | <code>0</code>                   |
+| [mergeCentroid] | <code>boolean</code>   | <code>true</code>                |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.concentric</code> |
 
-<a name="module_circle"></a>
+<a name="module_primitiveGeometry..PolygonPathOptions"></a>
 
-## circle
+### primitiveGeometry~PolygonPathOptions : <code>object</code>
 
-- [circle](#module_circle)
-  - [circle([options])](#exp_module_circle--circle) ⇒ [<code>BasicSimplicialComplex</code>](#BasicSimplicialComplex) ⏏
-    - [~CircleOptions](#module_circle--circle..CircleOptions) : <code>object</code>
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
 
-<a name="exp_module_circle--circle"></a>
+| Name           | Type                 | Default            |
+| -------------- | -------------------- | ------------------ |
+| [sides]        | <code>number</code>  | <code>6</code>     |
+| [sx]           | <code>number</code>  | <code>1</code>     |
+| [sy]           | <code>number</code>  | <code>1</code>     |
+| [radius]       | <code>number</code>  | <code>0.5</code>   |
+| [edgeSegments] | <code>number</code>  | <code>1</code>     |
+| [theta]        | <code>number</code>  | <code>TAU</code>   |
+| [thetaOffset]  | <code>number</code>  | <code>0</code>     |
+| [closed]       | <code>boolean</code> | <code>false</code> |
 
-### circle([options]) ⇒ [<code>BasicSimplicialComplex</code>](#BasicSimplicialComplex) ⏏
+<a name="module_primitiveGeometry..ReuleauxOptions"></a>
 
-**Kind**: Exported function
+### primitiveGeometry~ReuleauxOptions : <code>object</code>
 
-| Param     | Type                                                                | Default         |
-| --------- | ------------------------------------------------------------------- | --------------- |
-| [options] | [<code>CircleOptions</code>](#module_circle--circle..CircleOptions) | <code>{}</code> |
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
 
-<a name="module_circle--circle..CircleOptions"></a>
+| Name            | Type                   | Default                          |
+| --------------- | ---------------------- | -------------------------------- |
+| [radius]        | <code>number</code>    | <code>0.5</code>                 |
+| [segments]      | <code>number</code>    | <code>32</code>                  |
+| [innerSegments] | <code>number</code>    | <code>16</code>                  |
+| [theta]         | <code>number</code>    | <code>TAU</code>                 |
+| [thetaOffset]   | <code>number</code>    | <code>0</code>                   |
+| [mergeCentroid] | <code>boolean</code>   | <code>true</code>                |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.concentric</code> |
+| [n]             | <code>number</code>    | <code>3</code>                   |
 
-#### circle~CircleOptions : <code>object</code>
+<a name="module_primitiveGeometry..ReuleauxPathOptions"></a>
 
-**Kind**: inner typedef of [<code>circle</code>](#exp_module_circle--circle)
+### primitiveGeometry~ReuleauxPathOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name          | Type                 | Default            |
+| ------------- | -------------------- | ------------------ |
+| [radius]      | <code>number</code>  | <code>0.5</code>   |
+| [segments]    | <code>number</code>  | <code>32</code>    |
+| [theta]       | <code>number</code>  | <code>TAU</code>   |
+| [thetaOffset] | <code>number</code>  | <code>0</code>     |
+| [n]           | <code>number</code>  | <code>3</code>     |
+| [closed]      | <code>boolean</code> | <code>false</code> |
+
+<a name="module_primitiveGeometry..StarOptions"></a>
+
+### primitiveGeometry~StarOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                   | Default                                              | Description                                                                                                                                                            |
+| --------------- | ---------------------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [points]        | <code>number</code>    | <code>5</code>                                       |                                                                                                                                                                        |
+| [density]       | <code>number</code>    | <code>2</code>                                       | Schläfli "skip" factor: must be `< points / 2` (and coprime with `points` for a genuine, non-compound star polygon) or the auto-computed `notchRadius` degenerates.    |
+| [radius]        | <code>number</code>    | <code>0.5</code>                                     |                                                                                                                                                                        |
+| [notchRadius]   | <code>number</code>    | <code>radius*computeStarRatio(points,density)</code> | Radius of the points/tips' flanking concave vertices, ie. how deep the star's notches cut in.                                                                          |
+| [innerRadius]   | <code>number</code>    | <code>0</code>                                       | Like `annulus`'s: a hole radius the fill stops at instead of reaching the center. `0` (default): no hole, fill reaches the center (subject to `mergeCentroid`).        |
+| [circularHole]  | <code>boolean</code>   | <code>false</code>                                   | Only relevant when `innerRadius` is non-zero: `false` (default) traces the hole as a smaller, self-similar copy of the outer star; `true` traces it as a plain circle. |
+| [innerSegments] | <code>number</code>    | <code>16</code>                                      |                                                                                                                                                                        |
+| [theta]         | <code>number</code>    | <code>TAU</code>                                     |                                                                                                                                                                        |
+| [thetaOffset]   | <code>number</code>    | <code>0</code>                                       |                                                                                                                                                                        |
+| [mergeCentroid] | <code>boolean</code>   |                                                      | Defaults to `true` (fill to center) when `innerRadius` is `0`, `false` (leave the hole open) otherwise.                                                                |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.concentric</code>                     |                                                                                                                                                                        |
+
+<a name="module_primitiveGeometry..StarPathOptions"></a>
+
+### primitiveGeometry~StarPathOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name          | Type                 | Default                                              |
+| ------------- | -------------------- | ---------------------------------------------------- |
+| [points]      | <code>number</code>  | <code>5</code>                                       |
+| [density]     | <code>number</code>  | <code>2</code>                                       |
+| [radius]      | <code>number</code>  | <code>0.5</code>                                     |
+| [notchRadius] | <code>number</code>  | <code>radius*computeStarRatio(points,density)</code> |
+| [theta]       | <code>number</code>  | <code>TAU</code>                                     |
+| [thetaOffset] | <code>number</code>  | <code>0</code>                                       |
+| [closed]      | <code>boolean</code> | <code>false</code>                                   |
+
+<a name="module_primitiveGeometry..ArbelosOptions"></a>
+
+### primitiveGeometry~ArbelosOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                   | Default                           | Description                                                                                                                                                                                                                                                                          |
+| --------------- | ---------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [radius]        | <code>number</code>    | <code>0.5</code>                  | Outer (enclosing) semicircle's radius: half the total baseline width.                                                                                                                                                                                                                |
+| [innerRadius]   | <code>number</code>    | <code>radius*0.25</code>          | Radius of the left of the 2 inner semicircles, both bulging the _same_ way as the enclosing one (up, above the baseline) and tangent to each other where they meet it: `innerRadius` and `radius - innerRadius` apart from the enclosing semicircle's left/right ends, respectively. |
+| [segments]      | <code>number</code>    | <code>32</code>                   | Column count, swept left to right.                                                                                                                                                                                                                                                   |
+| [innerSegments] | <code>number</code>    | <code>16</code>                   | Row count between the bottom and top boundary at each column.                                                                                                                                                                                                                        |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.rectangular</code> | Uv mapping function. Defaults to a flat, bounding-box-relative unwrap; pass a function using `uRatio`/`vRatio` (the swept parametrization) to follow the arcs instead.                                                                                                               |
+
+<a name="module_primitiveGeometry..LensOptions"></a>
+
+### primitiveGeometry~LensOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                   | Default                           | Description                                                                                                                                                            |
+| --------------- | ---------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [radius]        | <code>number</code>    | <code>0.5</code>                  | Radius of the first circle, centered at `-distance / 2`.                                                                                                               |
+| [radius2]       | <code>number</code>    | <code>radius</code>               | Radius of the second circle, centered at `distance / 2`. Equal to `radius` (a symmetric lens) by default.                                                              |
+| [distance]      | <code>number</code>    | <code>radius</code>               | Distance between the two circles' centers.                                                                                                                             |
+| [segments]      | <code>number</code>    | <code>32</code>                   | Column count, swept left to right.                                                                                                                                     |
+| [innerSegments] | <code>number</code>    | <code>16</code>                   | Row count between the bottom and top boundary at each column.                                                                                                          |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.rectangular</code> | Uv mapping function. Defaults to a flat, bounding-box-relative unwrap; pass a function using `uRatio`/`vRatio` (the swept parametrization) to follow the arcs instead. |
+
+<a name="module_primitiveGeometry..LuneOptions"></a>
+
+### primitiveGeometry~LuneOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                   | Default                           | Description                                                                                                                                                                                                                                                                            |
+| --------------- | ---------------------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [radius]        | <code>number</code>    | <code>0.5</code>                  | Radius of the big circle (`b` in MathWorld's notation), centered at the origin.                                                                                                                                                                                                        |
+| [innerRadius]   | <code>number</code>    | <code>radius</code>               | Radius of the small circle (`a`), whose disk is subtracted from the big one. Must be `< radius`.                                                                                                                                                                                       |
+| [distance]      | <code>number</code>    | <code>radius*0.5</code>           | Offset of the small circle's center from the origin, along +x (`c`). For a proper crescent (both arcs contributing to the boundary) `distance + innerRadius` must exceed `radius`, ie. the small circle actually pokes through the big one's edge rather than sitting fully inside it. |
+| [segments]      | <code>number</code>    | <code>32</code>                   | Column count, swept left to right.                                                                                                                                                                                                                                                     |
+| [innerSegments] | <code>number</code>    | <code>16</code>                   | Row count between the two halves' near/far boundary at each column.                                                                                                                                                                                                                    |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.rectangular</code> | Uv mapping function. Defaults to a flat, bounding-box-relative unwrap; pass a function using `uRatio`/`vRatio` (the swept parametrization) to follow the arcs instead.                                                                                                                 |
+
+<a name="module_primitiveGeometry..SalinonOptions"></a>
+
+### primitiveGeometry~SalinonOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                   | Default                           | Description                                                                                                                                                                                                                                                                                                                                      |
+| --------------- | ---------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [radius]        | <code>number</code>    | <code>0.5</code>                  | Outer (enclosing) radius: half the total width, and the radius of the semicircle forming the bottom boundary.                                                                                                                                                                                                                                    |
+| [innerRadius]   | <code>number</code>    | <code>radius*0.25</code>          | Radius of the central semicircle, bulging _opposite_ the enclosing one (up, above the baseline) over the middle third. The two flanking "ear" semicircles bulge the _same_ way as the enclosing one (down, a shallower dip below the baseline) over the outer two thirds, sized to meet it at the baseline: `(radius -   innerRadius) / 2` each. |
+| [segments]      | <code>number</code>    | <code>32</code>                   | Column count, swept left to right.                                                                                                                                                                                                                                                                                                               |
+| [innerSegments] | <code>number</code>    | <code>16</code>                   | Row count between the bottom and top boundary at each column.                                                                                                                                                                                                                                                                                    |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.rectangular</code> | Uv mapping function. Defaults to a flat, bounding-box-relative unwrap; pass a function using `uRatio`/`vRatio` (the swept parametrization) to follow the arcs instead.                                                                                                                                                                           |
+
+<a name="module_primitiveGeometry..TriquetraOptions"></a>
+
+### primitiveGeometry~TriquetraOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                   | Default                           | Description                                                                                                                                                            |
+| --------------- | ---------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [radius]        | <code>number</code>    | <code>0.5</code>                  | Radius of each of the 3 circles, and the side length of the equilateral triangle formed by their centers - a canonical Triquetra has no separate spacing parameter.    |
+| [segments]      | <code>number</code>    | <code>32</code>                   | Column count, swept angularly per wedge, for both the core and the petals.                                                                                             |
+| [innerSegments] | <code>number</code>    | <code>16</code>                   | Row count between the two boundaries at each column.                                                                                                                   |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.rectangular</code> | Uv mapping function. Defaults to a flat, bounding-box-relative unwrap; pass a function using `uRatio`/`vRatio` (the swept parametrization) to follow the arcs instead. |
+
+<a name="module_primitiveGeometry..YinYangOptions"></a>
+
+### primitiveGeometry~YinYangOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                                                                                               | Default                           | Description                                                                                                                                                                                                                                                                                                                                                                  |
+| --------------- | -------------------------------------------------------------------------------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [radius]        | <code>number</code>                                                                                | <code>0.5</code>                  | Radius of the enclosing circle.                                                                                                                                                                                                                                                                                                                                              |
+| [dotRadius]     | <code>number</code>                                                                                | <code>radius/6</code>             | Radius of the hole cut at each returned half's own dot position. `0` omits the hole(s).                                                                                                                                                                                                                                                                                      |
+| [part]          | <code>&quot;yin&quot;</code> \| <code>&quot;yang&quot;</code> \| <code>&quot;yin-yang&quot;</code> | <code>&quot;yin-yang&quot;</code> | `"yin"`/`"yang"` return one S-curve-divided half (bounded by half the outer circle and the S-curve), with its dot hole centered at the other half's bulge (`(0,   -radius/2)` for yang, `(0, radius/2)` for yin). `"yin-yang"` merges both into one mesh; without per-face material/color the S-curve seam is then invisible (indistinguishable from a disc with two holes). |
+| [segments]      | <code>number</code>                                                                                | <code>32</code>                   | Row count for the outer circle/S-curve boundary, swept bottom to top.                                                                                                                                                                                                                                                                                                        |
+| [holeSegments]  | <code>number</code>                                                                                | <code>16</code>                   | Row count for a dot hole's own boundary, independent of the outer boundary's `segments`.                                                                                                                                                                                                                                                                                     |
+| [innerSegments] | <code>number</code>                                                                                | <code>16</code>                   | Column count spanning each side of a dot hole (or the whole half, where the hole doesn't reach) at each row.                                                                                                                                                                                                                                                                 |
+| [mapping]       | <code>MappingFn</code>                                                                             | <code>mappings.rectangular</code> | Uv mapping function. Defaults to a flat, bounding-box-relative unwrap; pass a function using `uRatio`/`vRatio` (the swept parametrization) to follow the arcs instead.                                                                                                                                                                                                       |
+
+<a name="module_primitiveGeometry..AnnulusOptions"></a>
+
+### primitiveGeometry~AnnulusOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                   | Default                          |
+| --------------- | ---------------------- | -------------------------------- |
+| [sx]            | <code>number</code>    | <code>1</code>                   |
+| [sy]            | <code>number</code>    | <code>1</code>                   |
+| [radius]        | <code>number</code>    | <code>0.5</code>                 |
+| [segments]      | <code>number</code>    | <code>32</code>                  |
+| [innerSegments] | <code>number</code>    | <code>16</code>                  |
+| [theta]         | <code>number</code>    | <code>TAU</code>                 |
+| [thetaOffset]   | <code>number</code>    | <code>0</code>                   |
+| [innerRadius]   | <code>number</code>    | <code>radius * 0.5</code>        |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.concentric</code> |
+
+<a name="module_primitiveGeometry..AnnulusPathOptions"></a>
+
+### primitiveGeometry~AnnulusPathOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name          | Type                 | Default                   |
+| ------------- | -------------------- | ------------------------- |
+| [sx]          | <code>number</code>  | <code>1</code>            |
+| [sy]          | <code>number</code>  | <code>1</code>            |
+| [radius]      | <code>number</code>  | <code>0.5</code>          |
+| [segments]    | <code>number</code>  | <code>32</code>           |
+| [theta]       | <code>number</code>  | <code>TAU</code>          |
+| [thetaOffset] | <code>number</code>  | <code>0</code>            |
+| [innerRadius] | <code>number</code>  | <code>radius * 0.5</code> |
+| [closed]      | <code>boolean</code> | <code>false</code>        |
+
+<a name="module_primitiveGeometry..AstroidOptions"></a>
+
+### primitiveGeometry~AstroidOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                   | Default                    |
+| --------------- | ---------------------- | -------------------------- |
+| [radius]        | <code>number</code>    | <code>0.5</code>           |
+| [segments]      | <code>number</code>    | <code>32</code>            |
+| [innerSegments] | <code>number</code>    | <code>16</code>            |
+| [theta]         | <code>number</code>    | <code>TAU</code>           |
+| [thetaOffset]   | <code>number</code>    | <code>0</code>             |
+| [mergeCentroid] | <code>boolean</code>   | <code>true</code>          |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.lamé</code> |
+
+<a name="module_primitiveGeometry..AstroidPathOptions"></a>
+
+### primitiveGeometry~AstroidPathOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
 | Name          | Type                 | Default            |
@@ -967,64 +2745,645 @@ Re-export all geometries, UV mappings functions and utils.
 | [thetaOffset] | <code>number</code>  | <code>0</code>     |
 | [closed]      | <code>boolean</code> | <code>false</code> |
 
-<a name="module_cone"></a>
+<a name="module_primitiveGeometry..DiscOptions"></a>
 
-## cone
+### primitiveGeometry~DiscOptions : <code>object</code>
 
-- [cone](#module_cone)
-  - [cone([options])](#exp_module_cone--cone) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~ConeOptions](#module_cone--cone..ConeOptions) : <code>object</code>
-
-<a name="exp_module_cone--cone"></a>
-
-### cone([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-
-**Kind**: Exported function
-
-| Param     | Type                                                        | Default         |
-| --------- | ----------------------------------------------------------- | --------------- |
-| [options] | [<code>ConeOptions</code>](#module_cone--cone..ConeOptions) | <code>{}</code> |
-
-<a name="module_cone--cone..ConeOptions"></a>
-
-#### cone~ConeOptions : <code>object</code>
-
-**Kind**: inner typedef of [<code>cone</code>](#exp_module_cone--cone)
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name          | Type                 | Default           |
-| ------------- | -------------------- | ----------------- |
-| [height]      | <code>number</code>  | <code>1</code>    |
-| [radius]      | <code>number</code>  | <code>0.25</code> |
-| [nx]          | <code>number</code>  | <code>16</code>   |
-| [ny]          | <code>number</code>  | <code>1</code>    |
-| [capSegments] | <code>number</code>  | <code>1</code>    |
-| [capBase]     | <code>boolean</code> | <code>true</code> |
-| [phi]         | <code>number</code>  | <code>TAU</code>  |
+| Name            | Type                   | Default                          |
+| --------------- | ---------------------- | -------------------------------- |
+| [radius]        | <code>number</code>    | <code>0.5</code>                 |
+| [segments]      | <code>number</code>    | <code>32</code>                  |
+| [innerSegments] | <code>number</code>    | <code>16</code>                  |
+| [theta]         | <code>number</code>    | <code>TAU</code>                 |
+| [thetaOffset]   | <code>number</code>    | <code>0</code>                   |
+| [mergeCentroid] | <code>boolean</code>   | <code>true</code>                |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.concentric</code> |
 
-<a name="module_cube"></a>
+<a name="module_primitiveGeometry..CirclePathOptions"></a>
 
-## cube
+### primitiveGeometry~CirclePathOptions : <code>object</code>
 
-- [cube](#module_cube)
-  - [cube([options])](#exp_module_cube--cube) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~CubeOptions](#module_cube--cube..CubeOptions) : <code>object</code>
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
 
-<a name="exp_module_cube--cube"></a>
+| Name          | Type                 | Default            |
+| ------------- | -------------------- | ------------------ |
+| [radius]      | <code>number</code>  | <code>0.5</code>   |
+| [segments]    | <code>number</code>  | <code>32</code>    |
+| [theta]       | <code>number</code>  | <code>TAU</code>   |
+| [thetaOffset] | <code>number</code>  | <code>0</code>     |
+| [closed]      | <code>boolean</code> | <code>false</code> |
 
-### cube([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
+<a name="module_primitiveGeometry..EllipseOptions"></a>
 
-**Kind**: Exported function
+### primitiveGeometry~EllipseOptions : <code>object</code>
 
-| Param     | Type                                                        | Default         |
-| --------- | ----------------------------------------------------------- | --------------- |
-| [options] | [<code>CubeOptions</code>](#module_cube--cube..CubeOptions) | <code>{}</code> |
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
 
-<a name="module_cube--cube..CubeOptions"></a>
+| Name            | Type                           | Default                          | Description                                                                                                                                                     |
+| --------------- | ------------------------------ | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [sx]            | <code>number</code>            | <code>1</code>                   |                                                                                                                                                                 |
+| [sy]            | <code>number</code>            | <code>0.5</code>                 |                                                                                                                                                                 |
+| [radius]        | <code>number</code>            | <code>0.5</code>                 |                                                                                                                                                                 |
+| [segments]      | <code>number</code>            | <code>32</code>                  |                                                                                                                                                                 |
+| [innerSegments] | <code>number</code>            | <code>16</code>                  |                                                                                                                                                                 |
+| [theta]         | <code>number</code>            | <code>TAU</code>                 |                                                                                                                                                                 |
+| [thetaOffset]   | <code>number</code>            | <code>0</code>                   |                                                                                                                                                                 |
+| [innerRadius]   | <code>number</code>            | <code>0</code>                   | Like `annulus`'s: a hole radius the fill stops at instead of reaching the center. `0` (default): no hole, fill reaches the center (subject to `mergeCentroid`). |
+| [mergeCentroid] | <code>boolean</code>           | <code>true</code>                |                                                                                                                                                                 |
+| [mapping]       | <code>MappingFn</code>         | <code>mappings.elliptical</code> |                                                                                                                                                                 |
+| [equation]      | <code>EllipseEquationFn</code> |                                  | Maps each (rx, ry, cosTheta, sinTheta) sample to its [x, y] position, defaulting to an ellipse's arc.                                                           |
 
-#### cube~CubeOptions : <code>object</code>
+<a name="module_primitiveGeometry..EllipseEquationFn"></a>
 
-**Kind**: inner typedef of [<code>cube</code>](#exp_module_cube--cube)
+### primitiveGeometry~EllipseEquationFn ⇒ <code>[x, y]</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+
+| Param           | Type                | Description                                |
+| --------------- | ------------------- | ------------------------------------------ |
+| sample          | <code>object</code> |                                            |
+| sample.rx       | <code>number</code> | Scaled ring radius along x                 |
+| sample.ry       | <code>number</code> | Scaled ring radius along y                 |
+| sample.cosTheta | <code>number</code> |                                            |
+| sample.sinTheta | <code>number</code> |                                            |
+| sample.s        | <code>number</code> | Radius ratio (0..1, innerRadius to radius) |
+| sample.t        | <code>number</code> | Angle                                      |
+
+<a name="module_primitiveGeometry..EllipsePathOptions"></a>
+
+### primitiveGeometry~EllipsePathOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name          | Type                 | Default            |
+| ------------- | -------------------- | ------------------ |
+| [sx]          | <code>number</code>  | <code>1</code>     |
+| [sy]          | <code>number</code>  | <code>0.5</code>   |
+| [radius]      | <code>number</code>  | <code>0.5</code>   |
+| [segments]    | <code>number</code>  | <code>32</code>    |
+| [theta]       | <code>number</code>  | <code>TAU</code>   |
+| [thetaOffset] | <code>number</code>  | <code>0</code>     |
+| [closed]      | <code>boolean</code> | <code>false</code> |
+
+<a name="module_primitiveGeometry..SquircleOptions"></a>
+
+### primitiveGeometry~SquircleOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                   | Default                            | Description             |
+| --------------- | ---------------------- | ---------------------------------- | ----------------------- |
+| [sx]            | <code>number</code>    | <code>1</code>                     |                         |
+| [sy]            | <code>number</code>    | <code>1</code>                     |                         |
+| [radius]        | <code>number</code>    | <code>0.5</code>                   |                         |
+| [segments]      | <code>number</code>    | <code>128</code>                   |                         |
+| [innerSegments] | <code>number</code>    | <code>16</code>                    |                         |
+| [theta]         | <code>number</code>    | <code>TAU</code>                   |                         |
+| [thetaOffset]   | <code>number</code>    | <code>0</code>                     |                         |
+| [mergeCentroid] | <code>boolean</code>   | <code>true</code>                  |                         |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.fgSquircular</code> |                         |
+| [squareness]    | <code>number</code>    | <code>0.95</code>                  | Squareness (0 < s <= 1) |
+
+<a name="module_primitiveGeometry..SquirclePathOptions"></a>
+
+### primitiveGeometry~SquirclePathOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name          | Type                 | Default            |
+| ------------- | -------------------- | ------------------ |
+| [sx]          | <code>number</code>  | <code>1</code>     |
+| [sy]          | <code>number</code>  | <code>1</code>     |
+| [radius]      | <code>number</code>  | <code>0.5</code>   |
+| [segments]    | <code>number</code>  | <code>128</code>   |
+| [theta]       | <code>number</code>  | <code>TAU</code>   |
+| [thetaOffset] | <code>number</code>  | <code>0</code>     |
+| [squareness]  | <code>number</code>  | <code>0.95</code>  |
+| [closed]      | <code>boolean</code> | <code>false</code> |
+
+<a name="module_primitiveGeometry..SuperellipseOptions"></a>
+
+### primitiveGeometry~SuperellipseOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                   | Default                    |
+| --------------- | ---------------------- | -------------------------- |
+| [sx]            | <code>number</code>    | <code>1</code>             |
+| [sy]            | <code>number</code>    | <code>0.5</code>           |
+| [radius]        | <code>number</code>    | <code>0.5</code>           |
+| [segments]      | <code>number</code>    | <code>32</code>            |
+| [innerSegments] | <code>number</code>    | <code>16</code>            |
+| [theta]         | <code>number</code>    | <code>TAU</code>           |
+| [thetaOffset]   | <code>number</code>    | <code>0</code>             |
+| [mergeCentroid] | <code>boolean</code>   | <code>true</code>          |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.lamé</code> |
+| [m]             | <code>number</code>    | <code>2</code>             |
+| [n]             | <code>number</code>    | <code>m</code>             |
+
+<a name="module_primitiveGeometry..SuperellipsePathOptions"></a>
+
+### primitiveGeometry~SuperellipsePathOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name          | Type                 | Default            |
+| ------------- | -------------------- | ------------------ |
+| [sx]          | <code>number</code>  | <code>1</code>     |
+| [sy]          | <code>number</code>  | <code>0.5</code>   |
+| [radius]      | <code>number</code>  | <code>0.5</code>   |
+| [segments]    | <code>number</code>  | <code>32</code>    |
+| [theta]       | <code>number</code>  | <code>TAU</code>   |
+| [thetaOffset] | <code>number</code>  | <code>0</code>     |
+| [m]           | <code>number</code>  | <code>2</code>     |
+| [n]           | <code>number</code>  | <code>m</code>     |
+| [closed]      | <code>boolean</code> | <code>false</code> |
+
+<a name="module_primitiveGeometry..HexagonalGridOptions"></a>
+
+### primitiveGeometry~HexagonalGridOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name        | Type                 | Default           |
+| ----------- | -------------------- | ----------------- |
+| [sx]        | <code>number</code>  | <code>1</code>    |
+| [nx]        | <code>number</code>  | <code>10</code>   |
+| [ny]        | <code>number</code>  | <code>10</code>   |
+| [inscribed] | <code>boolean</code> | <code>true</code> |
+
+<a name="module_primitiveGeometry..QuadGridOptions"></a>
+
+### primitiveGeometry~QuadGridOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name | Type                | Default         |
+| ---- | ------------------- | --------------- |
+| [sx] | <code>number</code> | <code>1</code>  |
+| [sy] | <code>number</code> | <code>sx</code> |
+| [nx] | <code>number</code> | <code>10</code> |
+| [ny] | <code>number</code> | <code>nx</code> |
+
+<a name="module_primitiveGeometry..TriangularGridOptions"></a>
+
+### primitiveGeometry~TriangularGridOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name        | Type                 | Default           |
+| ----------- | -------------------- | ----------------- |
+| [sx]        | <code>number</code>  | <code>1</code>    |
+| [nx]        | <code>number</code>  | <code>10</code>   |
+| [ny]        | <code>number</code>  | <code>10</code>   |
+| [inscribed] | <code>boolean</code> | <code>true</code> |
+
+<a name="module_primitiveGeometry..KiteOptions"></a>
+
+### primitiveGeometry~KiteOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                   | Default                          | Description                                                                                                                                       |
+| --------------- | ---------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [sx]            | <code>number</code>    | <code>1</code>                   |                                                                                                                                                   |
+| [sy]            | <code>number</code>    | <code>1</code>                   |                                                                                                                                                   |
+| [ratio]         | <code>number</code>    | <code>0.5</code>                 | Bottom vertex distance from center, as a fraction of the top vertex's (sy). `ratio=1` is a rhombus, `ratio=0` collapses the bottom to the center. |
+| [radius]        | <code>number</code>    | <code>0.5</code>                 |                                                                                                                                                   |
+| [edgeSegments]  | <code>number</code>    | <code>1</code>                   |                                                                                                                                                   |
+| [innerSegments] | <code>number</code>    | <code>16</code>                  |                                                                                                                                                   |
+| [innerRadius]   | <code>number</code>    | <code>0</code>                   |                                                                                                                                                   |
+| [theta]         | <code>number</code>    | <code>TAU</code>                 |                                                                                                                                                   |
+| [thetaOffset]   | <code>number</code>    | <code>HALF_PI</code>             |                                                                                                                                                   |
+| [mergeCentroid] | <code>boolean</code>   | <code>true</code>                |                                                                                                                                                   |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.concentric</code> |                                                                                                                                                   |
+
+<a name="module_primitiveGeometry..KitePathOptions"></a>
+
+### primitiveGeometry~KitePathOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name           | Type                 | Default              |
+| -------------- | -------------------- | -------------------- |
+| [sx]           | <code>number</code>  | <code>1</code>       |
+| [sy]           | <code>number</code>  | <code>1</code>       |
+| [ratio]        | <code>number</code>  | <code>0.5</code>     |
+| [radius]       | <code>number</code>  | <code>0.5</code>     |
+| [edgeSegments] | <code>number</code>  | <code>1</code>       |
+| [theta]        | <code>number</code>  | <code>TAU</code>     |
+| [thetaOffset]  | <code>number</code>  | <code>HALF_PI</code> |
+| [closed]       | <code>boolean</code> | <code>false</code>   |
+
+<a name="module_primitiveGeometry..LozengeOptions"></a>
+
+### primitiveGeometry~LozengeOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                   | Default                          |
+| --------------- | ---------------------- | -------------------------------- |
+| [sx]            | <code>number</code>    | <code>0.5</code>                 |
+| [sy]            | <code>number</code>    | <code>sx*2</code>                |
+| [radius]        | <code>number</code>    | <code>0.5</code>                 |
+| [edgeSegments]  | <code>number</code>    | <code>1</code>                   |
+| [innerSegments] | <code>number</code>    | <code>16</code>                  |
+| [innerRadius]   | <code>number</code>    | <code>0</code>                   |
+| [theta]         | <code>number</code>    | <code>TAU</code>                 |
+| [thetaOffset]   | <code>number</code>    | <code>HALF_PI</code>             |
+| [mergeCentroid] | <code>boolean</code>   | <code>true</code>                |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.concentric</code> |
+
+<a name="module_primitiveGeometry..LozengePathOptions"></a>
+
+### primitiveGeometry~LozengePathOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name           | Type                 | Default              |
+| -------------- | -------------------- | -------------------- |
+| [sx]           | <code>number</code>  | <code>0.5</code>     |
+| [sy]           | <code>number</code>  | <code>sx*2</code>    |
+| [radius]       | <code>number</code>  | <code>0.5</code>     |
+| [edgeSegments] | <code>number</code>  | <code>1</code>       |
+| [theta]        | <code>number</code>  | <code>TAU</code>     |
+| [thetaOffset]  | <code>number</code>  | <code>HALF_PI</code> |
+| [closed]       | <code>boolean</code> | <code>false</code>   |
+
+<a name="module_primitiveGeometry..ParallelogramOptions"></a>
+
+### primitiveGeometry~ParallelogramOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                   | Default                           | Description                                                                          |
+| --------------- | ---------------------- | --------------------------------- | ------------------------------------------------------------------------------------ |
+| [sx]            | <code>number</code>    | <code>0.5</code>                  | Narrower than `trapezoid`'s default so the sheared top edge still fits the unit box. |
+| [sy]            | <code>number</code>    | <code>1</code>                    |                                                                                      |
+| [shear]         | <code>number</code>    | <code>0.3</code>                  | Horizontal shift of the top edge's center, as a fraction of `sx`.                    |
+| [radius]        | <code>number</code>    | <code>0.5</code>                  |                                                                                      |
+| [edgeSegments]  | <code>number</code>    | <code>1</code>                    |                                                                                      |
+| [innerSegments] | <code>number</code>    | <code>16</code>                   |                                                                                      |
+| [innerRadius]   | <code>number</code>    | <code>0</code>                    |                                                                                      |
+| [theta]         | <code>number</code>    | <code>TAU</code>                  |                                                                                      |
+| [thetaOffset]   | <code>number</code>    | <code>0</code>                    |                                                                                      |
+| [mergeCentroid] | <code>boolean</code>   | <code>true</code>                 |                                                                                      |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.rectangular</code> |                                                                                      |
+
+<a name="module_primitiveGeometry..ParallelogramPathOptions"></a>
+
+### primitiveGeometry~ParallelogramPathOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name           | Type                 | Default            |
+| -------------- | -------------------- | ------------------ |
+| [sx]           | <code>number</code>  | <code>0.5</code>   |
+| [sy]           | <code>number</code>  | <code>1</code>     |
+| [shear]        | <code>number</code>  | <code>0.3</code>   |
+| [radius]       | <code>number</code>  | <code>0.5</code>   |
+| [edgeSegments] | <code>number</code>  | <code>1</code>     |
+| [theta]        | <code>number</code>  | <code>TAU</code>   |
+| [thetaOffset]  | <code>number</code>  | <code>0</code>     |
+| [closed]       | <code>boolean</code> | <code>false</code> |
+
+<a name="module_primitiveGeometry..PlaneOptions"></a>
+
+### primitiveGeometry~PlaneOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name        | Type                                                                     | Default                    |
+| ----------- | ------------------------------------------------------------------------ | -------------------------- |
+| [sx]        | <code>number</code>                                                      | <code>1</code>             |
+| [sy]        | <code>number</code>                                                      | <code>sx</code>            |
+| [nx]        | <code>number</code>                                                      | <code>1</code>             |
+| [ny]        | <code>number</code>                                                      | <code>nx</code>            |
+| [direction] | [<code>PlaneDirection</code>](#module_primitiveGeometry..PlaneDirection) | <code>&quot;z&quot;</code> |
+
+<a name="module_primitiveGeometry..PlaneDirection"></a>
+
+### primitiveGeometry~PlaneDirection : <code>&quot;x&quot;</code> \| <code>&quot;-x&quot;</code> \| <code>&quot;y&quot;</code> \| <code>&quot;-y&quot;</code> \| <code>&quot;z&quot;</code> \| <code>&quot;-z&quot;</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+<a name="module_primitiveGeometry..RectanglePathOptions"></a>
+
+### primitiveGeometry~RectanglePathOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name | Type                | Default          | Description                         |
+| ---- | ------------------- | ---------------- | ----------------------------------- |
+| [sx] | <code>number</code> | <code>1</code>   |                                     |
+| [sy] | <code>number</code> | <code>0.5</code> |                                     |
+| [nx] | <code>number</code> | <code>1</code>   | Segments along the bottom/top edges |
+| [ny] | <code>number</code> | <code>nx</code>  | Segments along the left/right edges |
+
+<a name="module_primitiveGeometry..QuadOptions"></a>
+
+### primitiveGeometry~QuadOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name    | Type                | Default          |
+| ------- | ------------------- | ---------------- |
+| [scale] | <code>number</code> | <code>0.5</code> |
+
+<a name="module_primitiveGeometry..SquarePathOptions"></a>
+
+### primitiveGeometry~SquarePathOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name    | Type                | Default          | Description                         |
+| ------- | ------------------- | ---------------- | ----------------------------------- |
+| [scale] | <code>number</code> | <code>0.5</code> |                                     |
+| [nx]    | <code>number</code> | <code>1</code>   | Segments along the bottom/top edges |
+| [ny]    | <code>number</code> | <code>nx</code>  | Segments along the left/right edges |
+
+<a name="module_primitiveGeometry..RhombusOptions"></a>
+
+### primitiveGeometry~RhombusOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                   | Default                          |
+| --------------- | ---------------------- | -------------------------------- |
+| [sx]            | <code>number</code>    | <code>1</code>                   |
+| [sy]            | <code>number</code>    | <code>1</code>                   |
+| [radius]        | <code>number</code>    | <code>0.5</code>                 |
+| [edgeSegments]  | <code>number</code>    | <code>1</code>                   |
+| [innerSegments] | <code>number</code>    | <code>16</code>                  |
+| [innerRadius]   | <code>number</code>    | <code>0</code>                   |
+| [theta]         | <code>number</code>    | <code>TAU</code>                 |
+| [thetaOffset]   | <code>number</code>    | <code>HALF_PI</code>             |
+| [mergeCentroid] | <code>boolean</code>   | <code>true</code>                |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.concentric</code> |
+
+<a name="module_primitiveGeometry..RhombusPathOptions"></a>
+
+### primitiveGeometry~RhombusPathOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name           | Type                 | Default              |
+| -------------- | -------------------- | -------------------- |
+| [sx]           | <code>number</code>  | <code>1</code>       |
+| [sy]           | <code>number</code>  | <code>1</code>       |
+| [radius]       | <code>number</code>  | <code>0.5</code>     |
+| [edgeSegments] | <code>number</code>  | <code>1</code>       |
+| [theta]        | <code>number</code>  | <code>TAU</code>     |
+| [thetaOffset]  | <code>number</code>  | <code>HALF_PI</code> |
+| [closed]       | <code>boolean</code> | <code>false</code>   |
+
+<a name="module_primitiveGeometry..RoundedRectangleCorner"></a>
+
+### primitiveGeometry~RoundedRectangleCorner : <code>&quot;top-left&quot;</code> \| <code>&quot;top-right&quot;</code> \| <code>&quot;bottom-right&quot;</code> \| <code>&quot;bottom-left&quot;</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+<a name="module_primitiveGeometry..RoundedRectangleOptions"></a>
+
+### primitiveGeometry~RoundedRectangleOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name             | Type                                                                                                   | Default                                                                                                       | Description                                      |
+| ---------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| [sx]             | <code>number</code>                                                                                    | <code>1</code>                                                                                                |                                                  |
+| [sy]             | <code>number</code>                                                                                    | <code>sx</code>                                                                                               |                                                  |
+| [radius]         | <code>number</code>                                                                                    | <code>sx * 0.25</code>                                                                                        |                                                  |
+| [roundSegments]  | <code>number</code>                                                                                    | <code>8</code>                                                                                                |                                                  |
+| [edgeSegments]   | <code>number</code>                                                                                    | <code>1</code>                                                                                                |                                                  |
+| [nx]             | <code>number</code>                                                                                    | <code>edgeSegments</code>                                                                                     | Segments along the straight top/bottom sections. |
+| [ny]             | <code>number</code>                                                                                    | <code>nx</code>                                                                                               | Segments along the straight left/right sections. |
+| [roundedCorners] | [<code>Array.&lt;RoundedRectangleCorner&gt;</code>](#module_primitiveGeometry..RoundedRectangleCorner) | <code>[&quot;top-left&quot;, &quot;top-right&quot;, &quot;bottom-right&quot;, &quot;bottom-left&quot;]</code> |                                                  |
+
+<a name="module_primitiveGeometry..RoundedRectanglePathOptions"></a>
+
+### primitiveGeometry~RoundedRectanglePathOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name             | Type                                                                                                   | Default                                                                                                       |
+| ---------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| [sx]             | <code>number</code>                                                                                    | <code>1</code>                                                                                                |
+| [sy]             | <code>number</code>                                                                                    | <code>sx</code>                                                                                               |
+| [radius]         | <code>number</code>                                                                                    | <code>sx * 0.25</code>                                                                                        |
+| [roundSegments]  | <code>number</code>                                                                                    | <code>8</code>                                                                                                |
+| [edgeSegments]   | <code>number</code>                                                                                    | <code>1</code>                                                                                                |
+| [nx]             | <code>number</code>                                                                                    | <code>edgeSegments</code>                                                                                     |
+| [ny]             | <code>number</code>                                                                                    | <code>nx</code>                                                                                               |
+| [roundedCorners] | [<code>Array.&lt;RoundedRectangleCorner&gt;</code>](#module_primitiveGeometry..RoundedRectangleCorner) | <code>[&quot;top-left&quot;, &quot;top-right&quot;, &quot;bottom-right&quot;, &quot;bottom-left&quot;]</code> |
+| [closed]         | <code>boolean</code>                                                                                   | <code>false</code>                                                                                            |
+
+<a name="module_primitiveGeometry..StadiumOptions"></a>
+
+### primitiveGeometry~StadiumOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                | Default          |
+| --------------- | ------------------- | ---------------- |
+| [sx]            | <code>number</code> | <code>1</code>   |
+| [sy]            | <code>number</code> | <code>0.5</code> |
+| [nx]            | <code>number</code> | <code>1</code>   |
+| [ny]            | <code>number</code> | <code>nx</code>  |
+| [roundSegments] | <code>number</code> | <code>8</code>   |
+| [edgeSegments]  | <code>number</code> | <code>1</code>   |
+
+<a name="module_primitiveGeometry..StadiumPathOptions"></a>
+
+### primitiveGeometry~StadiumPathOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                 | Default            |
+| --------------- | -------------------- | ------------------ |
+| [sx]            | <code>number</code>  | <code>1</code>     |
+| [sy]            | <code>number</code>  | <code>0.5</code>   |
+| [nx]            | <code>number</code>  | <code>1</code>     |
+| [ny]            | <code>number</code>  | <code>nx</code>    |
+| [roundSegments] | <code>number</code>  | <code>8</code>     |
+| [edgeSegments]  | <code>number</code>  | <code>1</code>     |
+| [closed]        | <code>boolean</code> | <code>false</code> |
+
+<a name="module_primitiveGeometry..TrapezoidOptions"></a>
+
+### primitiveGeometry~TrapezoidOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                   | Default                           | Description                                                                                                                                                                                   |
+| --------------- | ---------------------- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [sx]            | <code>number</code>    | <code>1</code>                    | Bottom edge half-width.                                                                                                                                                                       |
+| [sy]            | <code>number</code>    | <code>1</code>                    | Half-height: the bottom/top edges sit at `y =   -sy`/`y = sy`.                                                                                                                                |
+| [topRatio]      | <code>number</code>    | <code>0.5</code>                  | Top edge half-width, as a fraction of `sx`. `1` matches the bottom edge's width (a parallelogram once `topOffset` shifts it off-center); `0` collapses the top edge to a point (a triangle).  |
+| [topOffset]     | <code>number</code>    | <code>0</code>                    | Horizontal shift of the top edge's center, as a fraction of `sx`. `0` (default) keeps both legs symmetric (an isosceles trapezoid); a non-zero shift skews it into a right/scalene trapezoid. |
+| [radius]        | <code>number</code>    | <code>0.5</code>                  |                                                                                                                                                                                               |
+| [edgeSegments]  | <code>number</code>    | <code>1</code>                    |                                                                                                                                                                                               |
+| [innerSegments] | <code>number</code>    | <code>16</code>                   |                                                                                                                                                                                               |
+| [innerRadius]   | <code>number</code>    | <code>0</code>                    |                                                                                                                                                                                               |
+| [theta]         | <code>number</code>    | <code>TAU</code>                  | Negative values aren't supported: the corner lookup assumes `t - thetaOffset` stays non-negative.                                                                                             |
+| [thetaOffset]   | <code>number</code>    | <code>0</code>                    |                                                                                                                                                                                               |
+| [mergeCentroid] | <code>boolean</code>   | <code>true</code>                 |                                                                                                                                                                                               |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.rectangular</code> | Uv mapping function. Defaults to a flat, bounding-box-relative unwrap.                                                                                                                        |
+
+<a name="module_primitiveGeometry..TrapezoidPathOptions"></a>
+
+### primitiveGeometry~TrapezoidPathOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name           | Type                 | Default            |
+| -------------- | -------------------- | ------------------ |
+| [sx]           | <code>number</code>  | <code>1</code>     |
+| [sy]           | <code>number</code>  | <code>1</code>     |
+| [topRatio]     | <code>number</code>  | <code>0.5</code>   |
+| [topOffset]    | <code>number</code>  | <code>0</code>     |
+| [radius]       | <code>number</code>  | <code>0.5</code>   |
+| [edgeSegments] | <code>number</code>  | <code>1</code>     |
+| [theta]        | <code>number</code>  | <code>TAU</code>   |
+| [thetaOffset]  | <code>number</code>  | <code>0</code>     |
+| [closed]       | <code>boolean</code> | <code>false</code> |
+
+<a name="module_primitiveGeometry..RightTriangleOptions"></a>
+
+### primitiveGeometry~RightTriangleOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                   | Default                           | Description                                                                                                                 |
+| --------------- | ---------------------- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| [sx]            | <code>number</code>    | <code>1</code>                    | Horizontal leg half-length: the leg itself runs the full `2 * sx`, from the right-angle corner to the opposite base corner. |
+| [sy]            | <code>number</code>    | <code>1</code>                    | Vertical leg half-length, likewise doubled.                                                                                 |
+| [radius]        | <code>number</code>    | <code>0.5</code>                  |                                                                                                                             |
+| [edgeSegments]  | <code>number</code>    | <code>1</code>                    |                                                                                                                             |
+| [innerSegments] | <code>number</code>    | <code>16</code>                   |                                                                                                                             |
+| [innerRadius]   | <code>number</code>    | <code>0</code>                    |                                                                                                                             |
+| [theta]         | <code>number</code>    | <code>TAU</code>                  |                                                                                                                             |
+| [thetaOffset]   | <code>number</code>    | <code>0</code>                    |                                                                                                                             |
+| [mergeCentroid] | <code>boolean</code>   | <code>true</code>                 |                                                                                                                             |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.rectangular</code> |                                                                                                                             |
+
+<a name="module_primitiveGeometry..RightTrianglePathOptions"></a>
+
+### primitiveGeometry~RightTrianglePathOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name           | Type                 | Default            |
+| -------------- | -------------------- | ------------------ |
+| [sx]           | <code>number</code>  | <code>1</code>     |
+| [sy]           | <code>number</code>  | <code>1</code>     |
+| [radius]       | <code>number</code>  | <code>0.5</code>   |
+| [edgeSegments] | <code>number</code>  | <code>1</code>     |
+| [theta]        | <code>number</code>  | <code>TAU</code>   |
+| [thetaOffset]  | <code>number</code>  | <code>0</code>     |
+| [closed]       | <code>boolean</code> | <code>false</code> |
+
+<a name="module_primitiveGeometry..TriangleOptions"></a>
+
+### primitiveGeometry~TriangleOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                   | Default                           | Description                                                                                                                                                                                                               |
+| --------------- | ---------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [sx]            | <code>number</code>    | <code>1</code>                    | Base half-width: the base corners sit at `x =   -sx`/`x = sx`.                                                                                                                                                            |
+| [sy]            | <code>number</code>    | <code>1</code>                    | Half-height: the base sits at `y = -sy`, the apex at `y = sy`.                                                                                                                                                            |
+| [apexOffset]    | <code>number</code>    | <code>0</code>                    | Horizontal shift of the apex, in the same units as `sx`. `0` (default) keeps it centered (an isosceles triangle); `±sx` lands it directly above a base corner (a right triangle); anything else gives a scalene triangle. |
+| [radius]        | <code>number</code>    | <code>0.5</code>                  |                                                                                                                                                                                                                           |
+| [edgeSegments]  | <code>number</code>    | <code>1</code>                    |                                                                                                                                                                                                                           |
+| [innerSegments] | <code>number</code>    | <code>16</code>                   |                                                                                                                                                                                                                           |
+| [innerRadius]   | <code>number</code>    | <code>0</code>                    |                                                                                                                                                                                                                           |
+| [theta]         | <code>number</code>    | <code>TAU</code>                  | Negative values aren't supported: the corner lookup assumes `t - thetaOffset` stays non-negative.                                                                                                                         |
+| [thetaOffset]   | <code>number</code>    | <code>0</code>                    |                                                                                                                                                                                                                           |
+| [mergeCentroid] | <code>boolean</code>   | <code>true</code>                 |                                                                                                                                                                                                                           |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.rectangular</code> | Uv mapping function. Defaults to a flat, bounding-box-relative unwrap.                                                                                                                                                    |
+
+<a name="module_primitiveGeometry..TrianglePathOptions"></a>
+
+### primitiveGeometry~TrianglePathOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name           | Type                 | Default            |
+| -------------- | -------------------- | ------------------ |
+| [sx]           | <code>number</code>  | <code>1</code>     |
+| [sy]           | <code>number</code>  | <code>1</code>     |
+| [apexOffset]   | <code>number</code>  | <code>0</code>     |
+| [radius]       | <code>number</code>  | <code>0.5</code>   |
+| [edgeSegments] | <code>number</code>  | <code>1</code>     |
+| [theta]        | <code>number</code>  | <code>TAU</code>   |
+| [thetaOffset]  | <code>number</code>  | <code>0</code>     |
+| [closed]       | <code>boolean</code> | <code>false</code> |
+
+<a name="module_primitiveGeometry..CubeFacesOptions"></a>
+
+### primitiveGeometry~CubeFacesOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name | Type                | Default         |
+| ---- | ------------------- | --------------- |
+| [sx] | <code>number</code> | <code>1</code>  |
+| [sy] | <code>number</code> | <code>sx</code> |
+| [sz] | <code>number</code> | <code>sx</code> |
+
+<a name="module_primitiveGeometry..BoxOptions"></a>
+
+### primitiveGeometry~BoxOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name | Type                | Default         |
+| ---- | ------------------- | --------------- |
+| [sx] | <code>number</code> | <code>1</code>  |
+| [sy] | <code>number</code> | <code>sx</code> |
+| [sz] | <code>number</code> | <code>sx</code> |
+
+<a name="module_primitiveGeometry..CubeOptions"></a>
+
+### primitiveGeometry~CubeOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
 | Name | Type                | Default         |
@@ -1036,140 +3395,408 @@ Re-export all geometries, UV mappings functions and utils.
 | [ny] | <code>number</code> | <code>nx</code> |
 | [nz] | <code>number</code> | <code>nx</code> |
 
-<a name="module_cylinder"></a>
+<a name="module_primitiveGeometry..HollowCubeOptions"></a>
 
-## cylinder
+### primitiveGeometry~HollowCubeOptions : <code>object</code>
 
-- [cylinder](#module_cylinder)
-  - [cylinder([options])](#exp_module_cylinder--cylinder) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~CylinderOptions](#module_cylinder--cylinder..CylinderOptions) : <code>object</code>
-
-<a name="exp_module_cylinder--cylinder"></a>
-
-### cylinder([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-
-**Kind**: Exported function
-
-| Param     | Type                                                                        | Default         |
-| --------- | --------------------------------------------------------------------------- | --------------- |
-| [options] | [<code>CylinderOptions</code>](#module_cylinder--cylinder..CylinderOptions) | <code>{}</code> |
-
-<a name="module_cylinder--cylinder..CylinderOptions"></a>
-
-#### cylinder~CylinderOptions : <code>object</code>
-
-**Kind**: inner typedef of [<code>cylinder</code>](#exp_module_cylinder--cylinder)
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name          | Type                 | Default             |
-| ------------- | -------------------- | ------------------- |
-| [height]      | <code>number</code>  | <code>1</code>      |
-| [radius]      | <code>number</code>  | <code>0.25</code>   |
-| [nx]          | <code>number</code>  | <code>16</code>     |
-| [ny]          | <code>number</code>  | <code>1</code>      |
-| [radiusApex]  | <code>number</code>  | <code>radius</code> |
-| [capSegments] | <code>number</code>  | <code>1</code>      |
-| [capApex]     | <code>boolean</code> | <code>true</code>   |
-| [capBase]     | <code>boolean</code> | <code>true</code>   |
-| [phi]         | <code>number</code>  | <code>TAU</code>    |
+| Name        | Type                | Default             | Description                                                                                     |
+| ----------- | ------------------- | ------------------- | ----------------------------------------------------------------------------------------------- |
+| [sx]        | <code>number</code> | <code>1</code>      |                                                                                                 |
+| [sy]        | <code>number</code> | <code>sx</code>     |                                                                                                 |
+| [sz]        | <code>number</code> | <code>sx</code>     |                                                                                                 |
+| [thickness] | <code>number</code> | <code>sx*0.2</code> | Uniform beam/wall size (must stay < half of the smallest of sx/sy/sz for positive-length beams) |
 
-<a name="module_disc"></a>
+<a name="module_primitiveGeometry..RoundedCubeDirection"></a>
 
-## disc
+### primitiveGeometry~RoundedCubeDirection : <code>&quot;all&quot;</code> \| <code>&quot;x&quot;</code> \| <code>&quot;y&quot;</code> \| <code>&quot;z&quot;</code>
 
-- [disc](#module_disc)
-  - [disc([options])](#exp_module_disc--disc) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~DiscOptions](#module_disc--disc..DiscOptions) : <code>object</code>
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+<a name="module_primitiveGeometry..RoundedCubeOptions"></a>
 
-<a name="exp_module_disc--disc"></a>
+### primitiveGeometry~RoundedCubeOptions : <code>object</code>
 
-### disc([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-
-**Kind**: Exported function
-
-| Param     | Type                                                        | Default         |
-| --------- | ----------------------------------------------------------- | --------------- |
-| [options] | [<code>DiscOptions</code>](#module_disc--disc..DiscOptions) | <code>{}</code> |
-
-<a name="module_disc--disc..DiscOptions"></a>
-
-#### disc~DiscOptions : <code>object</code>
-
-**Kind**: inner typedef of [<code>disc</code>](#exp_module_disc--disc)
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name            | Type                  | Default                          |
-| --------------- | --------------------- | -------------------------------- |
-| [radius]        | <code>number</code>   | <code>0.5</code>                 |
-| [segments]      | <code>number</code>   | <code>32</code>                  |
-| [innerSegments] | <code>number</code>   | <code>16</code>                  |
-| [theta]         | <code>number</code>   | <code>TAU</code>                 |
-| [thetaOffset]   | <code>number</code>   | <code>0</code>                   |
-| [mergeCentroid] | <code>boolean</code>  | <code>true</code>                |
-| [mapping]       | <code>function</code> | <code>mappings.concentric</code> |
+| Name             | Type                                                                                 | Default                      | Description                             |
+| ---------------- | ------------------------------------------------------------------------------------ | ---------------------------- | --------------------------------------- |
+| [sx]             | <code>number</code>                                                                  | <code>1</code>               |                                         |
+| [sy]             | <code>number</code>                                                                  | <code>sx</code>              |                                         |
+| [sz]             | <code>number</code>                                                                  | <code>sx</code>              |                                         |
+| [radius]         | <code>number</code>                                                                  | <code>sx * 0.25</code>       |                                         |
+| [roundSegments]  | <code>number</code>                                                                  | <code>8</code>               |                                         |
+| [edgeSegments]   | <code>number</code>                                                                  | <code>1</code>               |                                         |
+| [nx]             | <code>number</code>                                                                  | <code>edgeSegments</code>    | Segments along the straight x sections. |
+| [ny]             | <code>number</code>                                                                  | <code>nx</code>              | Segments along the straight y sections. |
+| [nz]             | <code>number</code>                                                                  | <code>nx</code>              | Segments along the straight z sections. |
+| [roundDirection] | [<code>RoundedCubeDirection</code>](#module_primitiveGeometry..RoundedCubeDirection) | <code>&quot;all&quot;</code> |                                         |
 
-<a name="module_ellipse"></a>
+<a name="module_primitiveGeometry..AntiprismOptions"></a>
 
-## ellipse
+### primitiveGeometry~AntiprismOptions : <code>object</code>
 
-- [ellipse](#module_ellipse)
-  - [ellipse([options])](#exp_module_ellipse--ellipse) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~EllipseOptions](#module_ellipse--ellipse..EllipseOptions) : <code>object</code>
-
-<a name="exp_module_ellipse--ellipse"></a>
-
-### ellipse([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-
-**Kind**: Exported function
-
-| Param     | Type                                                                    | Default         |
-| --------- | ----------------------------------------------------------------------- | --------------- |
-| [options] | [<code>EllipseOptions</code>](#module_ellipse--ellipse..EllipseOptions) | <code>{}</code> |
-
-<a name="module_ellipse--ellipse..EllipseOptions"></a>
-
-#### ellipse~EllipseOptions : <code>object</code>
-
-**Kind**: inner typedef of [<code>ellipse</code>](#exp_module_ellipse--ellipse)
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name            | Type                  | Default                          |
-| --------------- | --------------------- | -------------------------------- |
-| [sx]            | <code>number</code>   | <code>1</code>                   |
-| [sy]            | <code>number</code>   | <code>0.5</code>                 |
-| [radius]        | <code>number</code>   | <code>0.5</code>                 |
-| [segments]      | <code>number</code>   | <code>32</code>                  |
-| [innerSegments] | <code>number</code>   | <code>16</code>                  |
-| [theta]         | <code>number</code>   | <code>TAU</code>                 |
-| [thetaOffset]   | <code>number</code>   | <code>0</code>                   |
-| [mergeCentroid] | <code>boolean</code>  | <code>true</code>                |
-| [mapping]       | <code>function</code> | <code>mappings.elliptical</code> |
+| Name         | Type                   | Default                           |
+| ------------ | ---------------------- | --------------------------------- |
+| [radius]     | <code>number</code>    | <code>0.25</code>                 |
+| [height]     | <code>number</code>    | <code>1</code>                    |
+| [sides]      | <code>number</code>    | <code>6</code>                    |
+| [phiOffset]  | <code>number</code>    | <code>0</code>                    |
+| [capMapping] | <code>MappingFn</code> | <code>mappings.rectangular</code> |
 
-<a name="module_ellipsoid"></a>
+<a name="module_primitiveGeometry..PrismOptions"></a>
 
-## ellipsoid
+### primitiveGeometry~PrismOptions : <code>object</code>
 
-- [ellipsoid](#module_ellipsoid)
-  - [ellipsoid([options])](#exp_module_ellipsoid--ellipsoid) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~EllipsoidOptions](#module_ellipsoid--ellipsoid..EllipsoidOptions) : <code>object</code>
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
 
-<a name="exp_module_ellipsoid--ellipsoid"></a>
+| Name         | Type                   | Default                           |
+| ------------ | ---------------------- | --------------------------------- |
+| [radius]     | <code>number</code>    | <code>0.25</code>                 |
+| [height]     | <code>number</code>    | <code>1</code>                    |
+| [sides]      | <code>number</code>    | <code>6</code>                    |
+| [phiOffset]  | <code>number</code>    | <code>0</code>                    |
+| [capMapping] | <code>MappingFn</code> | <code>mappings.rectangular</code> |
 
-### ellipsoid([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
+<a name="module_primitiveGeometry..AppleOptions"></a>
 
-Default to an oblate spheroid.
+### primitiveGeometry~AppleOptions : <code>object</code>
 
-**Kind**: Exported function
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
 
-| Param     | Type                                                                            | Default         |
-| --------- | ------------------------------------------------------------------------------- | --------------- |
-| [options] | [<code>EllipsoidOptions</code>](#module_ellipsoid--ellipsoid..EllipsoidOptions) | <code>{}</code> |
+| Name            | Type                        | Default                   | Description                                                                                                                                                                                     |
+| --------------- | --------------------------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [radius]        | <code>number</code>         | <code>0.5</code>          | Equatorial (belly) radius                                                                                                                                                                       |
+| [height]        | <code>number</code>         | <code>radius</code>       | Full height between the two dimple points, silently clamped to (0, radius*2] - the generating circle's own radius must exceed its offset from the axis (see below), which fails past that bound |
+| [nx]            | <code>number</code>         | <code>32</code>           |                                                                                                                                                                                                 |
+| [ny]            | <code>number</code>         | <code>16</code>           |                                                                                                                                                                                                 |
+| [phi]           | <code>number</code>         | <code>TAU</code>          |                                                                                                                                                                                                 |
+| [phiOffset]     | <code>number</code>         | <code>0</code>            |                                                                                                                                                                                                 |
+| [vDistribution] | <code>DistributionFn</code> | <code>utils.linear</code> |                                                                                                                                                                                                 |
 
-<a name="module_ellipsoid--ellipsoid..EllipsoidOptions"></a>
+<a name="module_primitiveGeometry..AstroidalEllipsoidOptions"></a>
 
-#### ellipsoid~EllipsoidOptions : <code>object</code>
+### primitiveGeometry~AstroidalEllipsoidOptions : <code>object</code>
 
-**Kind**: inner typedef of [<code>ellipsoid</code>](#exp_module_ellipsoid--ellipsoid)
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name          | Type                | Default              | Description                                                                                                                |
+| ------------- | ------------------- | -------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| [radius]      | <code>number</code> | <code>1</code>       |                                                                                                                            |
+| [nx]          | <code>number</code> | <code>32</code>      |                                                                                                                            |
+| [ny]          | <code>number</code> | <code>16</code>      |                                                                                                                            |
+| [rx]          | <code>number</code> | <code>0.5</code>     |                                                                                                                            |
+| [ry]          | <code>number</code> | <code>0.25</code>    |                                                                                                                            |
+| [rz]          | <code>number</code> | <code>ry</code>      |                                                                                                                            |
+| [theta]       | <code>number</code> | <code>Math.PI</code> | Meridian sweep length, silently clamped to [-thetaOffset, PI - thetaOffset] - see ellipsoid.js's EllipsoidOptions for why. |
+| [thetaOffset] | <code>number</code> | <code>0</code>       | Meridian sweep start, silently clamped to [0, PI] - see theta.                                                             |
+| [phi]         | <code>number</code> | <code>TAU</code>     |                                                                                                                            |
+| [phiOffset]   | <code>number</code> | <code>0</code>       |                                                                                                                            |
+
+<a name="module_primitiveGeometry..BarrelOptions"></a>
+
+### primitiveGeometry~BarrelOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                        | Default                           | Description                                                                                                                                                                                                                                                                    |
+| --------------- | --------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [height]        | <code>number</code>         | <code>1</code>                    |                                                                                                                                                                                                                                                                                |
+| [radius]        | <code>number</code>         | <code>0.5</code>                  | Belly radius, at the equator (y = 0)                                                                                                                                                                                                                                           |
+| [endRadius]     | <code>number</code>         | <code>radius*0.7</code>           | Rim radius, at y = ±height/2 (both ends, symmetric) - must be < radius for an actual outward bulge; endRadius = radius degenerates to a plain cylinder, endRadius > radius pinches inward instead (a barrel held together the wrong way round, still a valid NaN-free surface) |
+| [nx]            | <code>number</code>         | <code>32</code>                   |                                                                                                                                                                                                                                                                                |
+| [ny]            | <code>number</code>         | <code>16</code>                   |                                                                                                                                                                                                                                                                                |
+| [capSegments]   | <code>number</code>         | <code>1</code>                    |                                                                                                                                                                                                                                                                                |
+| [capApex]       | <code>boolean</code>        | <code>true</code>                 |                                                                                                                                                                                                                                                                                |
+| [capBase]       | <code>boolean</code>        | <code>true</code>                 |                                                                                                                                                                                                                                                                                |
+| [phi]           | <code>number</code>         | <code>TAU</code>                  |                                                                                                                                                                                                                                                                                |
+| [phiOffset]     | <code>number</code>         | <code>0</code>                    |                                                                                                                                                                                                                                                                                |
+| [capMapping]    | <code>MappingFn</code>      | <code>mappings.rectangular</code> |                                                                                                                                                                                                                                                                                |
+| [vDistribution] | <code>DistributionFn</code> | <code>utils.linear</code>         |                                                                                                                                                                                                                                                                                |
+
+<a name="module_primitiveGeometry..BiconeOptions"></a>
+
+### primitiveGeometry~BiconeOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name        | Type                | Default          | Description                                  |
+| ----------- | ------------------- | ---------------- | -------------------------------------------- |
+| [height]    | <code>number</code> | <code>1</code>   |                                              |
+| [radius]    | <code>number</code> | <code>0.5</code> |                                              |
+| [nx]        | <code>number</code> | <code>16</code>  |                                              |
+| [ny]        | <code>number</code> | <code>1</code>   | Meridian segments per half (top/bottom cone) |
+| [phi]       | <code>number</code> | <code>TAU</code> |                                              |
+| [phiOffset] | <code>number</code> | <code>0</code>   |                                              |
+| [sx]        | <code>number</code> | <code>1</code>   | Equator x scale, elliptical when != sz       |
+| [sz]        | <code>number</code> | <code>1</code>   | Equator z scale, elliptical when != sx       |
+
+<a name="module_primitiveGeometry..CapsuleOptions"></a>
+
+### primitiveGeometry~CapsuleOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                        | Default                   | Description                                                |
+| --------------- | --------------------------- | ------------------------- | ---------------------------------------------------------- |
+| [height]        | <code>number</code>         | <code>0.5</code>          |                                                            |
+| [radius]        | <code>number</code>         | <code>0.25</code>         |                                                            |
+| [nx]            | <code>number</code>         | <code>16</code>           |                                                            |
+| [ny]            | <code>number</code>         | <code>1</code>            |                                                            |
+| [roundSegments] | <code>number</code>         | <code>16</code>           | `0` collapses both hemispheres away, leaving an open tube. |
+| [phi]           | <code>number</code>         | <code>TAU</code>          |                                                            |
+| [phiOffset]     | <code>number</code>         | <code>0</code>            |                                                            |
+| [vDistribution] | <code>DistributionFn</code> | <code>utils.linear</code> |                                                            |
+
+<a name="module_primitiveGeometry..ConeOptions"></a>
+
+### primitiveGeometry~ConeOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                        | Default                           | Description                              |
+| --------------- | --------------------------- | --------------------------------- | ---------------------------------------- |
+| [height]        | <code>number</code>         | <code>1</code>                    |                                          |
+| [radius]        | <code>number</code>         | <code>0.25</code>                 |                                          |
+| [nx]            | <code>number</code>         | <code>16</code>                   |                                          |
+| [ny]            | <code>number</code>         | <code>1</code>                    |                                          |
+| [capSegments]   | <code>number</code>         | <code>1</code>                    |                                          |
+| [capBase]       | <code>boolean</code>        | <code>true</code>                 |                                          |
+| [phi]           | <code>number</code>         | <code>TAU</code>                  |                                          |
+| [phiOffset]     | <code>number</code>         | <code>0</code>                    |                                          |
+| [capMapping]    | <code>MappingFn</code>      | <code>mappings.rectangular</code> |                                          |
+| [sx]            | <code>number</code>         | <code>1</code>                    | Base ring x scale, elliptical when != sz |
+| [sz]            | <code>number</code>         | <code>1</code>                    | Base ring z scale, elliptical when != sx |
+| [vDistribution] | <code>DistributionFn</code> | <code>utils.linear</code>         |                                          |
+
+<a name="module_primitiveGeometry..CylinderOptions"></a>
+
+### primitiveGeometry~CylinderOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name              | Type                        | Default                           | Description                                |
+| ----------------- | --------------------------- | --------------------------------- | ------------------------------------------ |
+| [height]          | <code>number</code>         | <code>1</code>                    |                                            |
+| [radius]          | <code>number</code>         | <code>0.25</code>                 |                                            |
+| [nx]              | <code>number</code>         | <code>16</code>                   |                                            |
+| [ny]              | <code>number</code>         | <code>1</code>                    |                                            |
+| [radiusApex]      | <code>number</code>         | <code>radius</code>               |                                            |
+| [capSegments]     | <code>number</code>         | <code>1</code>                    |                                            |
+| [capApex]         | <code>boolean</code>        | <code>true</code>                 |                                            |
+| [capBase]         | <code>boolean</code>        | <code>true</code>                 |                                            |
+| [capBaseSegments] | <code>number</code>         | <code>capSegments</code>          |                                            |
+| [phi]             | <code>number</code>         | <code>TAU</code>                  |                                            |
+| [phiOffset]       | <code>number</code>         | <code>0</code>                    |                                            |
+| [capMapping]      | <code>MappingFn</code>      | <code>mappings.rectangular</code> |                                            |
+| [sx]              | <code>number</code>         | <code>1</code>                    | Base ring x scale, elliptical when != sz   |
+| [sz]              | <code>number</code>         | <code>1</code>                    | Base ring z scale, elliptical when != sx   |
+| [sxApex]          | <code>number</code>         | <code>sx</code>                   | Apex ring x scale, independent of the base |
+| [szApex]          | <code>number</code>         | <code>sz</code>                   | Apex ring z scale, independent of the base |
+| [vDistribution]   | <code>DistributionFn</code> | <code>utils.linear</code>         |                                            |
+
+<a name="module_primitiveGeometry..DoubleConeOptions"></a>
+
+### primitiveGeometry~DoubleConeOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name              | Type                   | Default                           | Description                                  |
+| ----------------- | ---------------------- | --------------------------------- | -------------------------------------------- |
+| [height]          | <code>number</code>    | <code>1</code>                    |                                              |
+| [radius]          | <code>number</code>    | <code>0.5</code>                  |                                              |
+| [nx]              | <code>number</code>    | <code>16</code>                   |                                              |
+| [ny]              | <code>number</code>    | <code>1</code>                    | Meridian segments per half (top/bottom cone) |
+| [capSegments]     | <code>number</code>    | <code>1</code>                    |                                              |
+| [capApex]         | <code>boolean</code>   | <code>true</code>                 |                                              |
+| [capBase]         | <code>boolean</code>   | <code>true</code>                 |                                              |
+| [capBaseSegments] | <code>number</code>    | <code>capSegments</code>          |                                              |
+| [phi]             | <code>number</code>    | <code>TAU</code>                  |                                              |
+| [phiOffset]       | <code>number</code>    | <code>0</code>                    |                                              |
+| [capMapping]      | <code>MappingFn</code> | <code>mappings.rectangular</code> |                                              |
+| [sx]              | <code>number</code>    | <code>1</code>                    | End ring x scale, elliptical when != sz      |
+| [sz]              | <code>number</code>    | <code>1</code>                    | End ring z scale, elliptical when != sx      |
+
+<a name="module_primitiveGeometry..EllipsoidOptions"></a>
+
+### primitiveGeometry~EllipsoidOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                        | Default                   | Description                                                                                                                                              |
+| --------------- | --------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [radius]        | <code>number</code>         | <code>1</code>            |                                                                                                                                                          |
+| [nx]            | <code>number</code>         | <code>32</code>           |                                                                                                                                                          |
+| [ny]            | <code>number</code>         | <code>16</code>           |                                                                                                                                                          |
+| [rx]            | <code>number</code>         | <code>0.5</code>          |                                                                                                                                                          |
+| [ry]            | <code>number</code>         | <code>0.25</code>         |                                                                                                                                                          |
+| [rz]            | <code>number</code>         | <code>ry</code>           |                                                                                                                                                          |
+| [theta]         | <code>number</code>         | <code>Math.PI</code>      | Meridian sweep length, silently clamped to [-thetaOffset, PI - thetaOffset]: a pole can only sit at the sweep's own start or end, never partway through. |
+| [thetaOffset]   | <code>number</code>         | <code>0</code>            | Meridian sweep start (0 = north pole), silently clamped to [0, PI] - see theta.                                                                          |
+| [phi]           | <code>number</code>         | <code>TAU</code>          |                                                                                                                                                          |
+| [phiOffset]     | <code>number</code>         | <code>0</code>            |                                                                                                                                                          |
+| [vDistribution] | <code>DistributionFn</code> | <code>utils.linear</code> |                                                                                                                                                          |
+
+<a name="module_primitiveGeometry..FunnelOptions"></a>
+
+### primitiveGeometry~FunnelOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                        | Default                           | Description                                                                                                                                                                                                                                          |
+| --------------- | --------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [height]        | <code>number</code>         | <code>1</code>                    |                                                                                                                                                                                                                                                      |
+| [radius]        | <code>number</code>         | <code>0.1</code>                  | Spout radius, at y = -height/2                                                                                                                                                                                                                       |
+| [radiusTop]     | <code>number</code>         | <code>radius*5</code>             | Mouth radius, at y = height/2 - must be > radius for the usual flared-outward shape; radiusTop = radius degenerates to a plain cylinder, radiusTop < radius flips the taper (still a valid, NaN-free surface, just narrowing toward the top instead) |
+| [nx]            | <code>number</code>         | <code>32</code>                   |                                                                                                                                                                                                                                                      |
+| [ny]            | <code>number</code>         | <code>16</code>                   |                                                                                                                                                                                                                                                      |
+| [capSegments]   | <code>number</code>         | <code>1</code>                    |                                                                                                                                                                                                                                                      |
+| [capApex]       | <code>boolean</code>        | <code>true</code>                 |                                                                                                                                                                                                                                                      |
+| [capBase]       | <code>boolean</code>        | <code>true</code>                 |                                                                                                                                                                                                                                                      |
+| [phi]           | <code>number</code>         | <code>TAU</code>                  |                                                                                                                                                                                                                                                      |
+| [phiOffset]     | <code>number</code>         | <code>0</code>                    |                                                                                                                                                                                                                                                      |
+| [capMapping]    | <code>MappingFn</code>      | <code>mappings.rectangular</code> |                                                                                                                                                                                                                                                      |
+| [vDistribution] | <code>DistributionFn</code> | <code>utils.linear</code>         |                                                                                                                                                                                                                                                      |
+
+<a name="module_primitiveGeometry..HollowCylinderOptions"></a>
+
+### primitiveGeometry~HollowCylinderOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name          | Type                 | Default                 | Description                         |
+| ------------- | -------------------- | ----------------------- | ----------------------------------- |
+| [height]      | <code>number</code>  | <code>1</code>          |                                     |
+| [radius]      | <code>number</code>  | <code>0.5</code>        |                                     |
+| [innerRadius] | <code>number</code>  | <code>radius*0.5</code> | Bore radius                         |
+| [nx]          | <code>number</code>  | <code>32</code>         |                                     |
+| [ny]          | <code>number</code>  | <code>1</code>          |                                     |
+| [capSegments] | <code>number</code>  | <code>1</code>          | Radial segments of each annular cap |
+| [capApex]     | <code>boolean</code> | <code>true</code>       |                                     |
+| [capBase]     | <code>boolean</code> | <code>true</code>       |                                     |
+| [phi]         | <code>number</code>  | <code>TAU</code>        |                                     |
+| [phiOffset]   | <code>number</code>  | <code>0</code>          |                                     |
+
+<a name="module_primitiveGeometry..HollowSphereOptions"></a>
+
+### primitiveGeometry~HollowSphereOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name          | Type                | Default                  | Description                                                |
+| ------------- | ------------------- | ------------------------ | ---------------------------------------------------------- |
+| [radius]      | <code>number</code> | <code>0.5</code>         |                                                            |
+| [innerRadius] | <code>number</code> | <code>radius*0.5</code>  |                                                            |
+| [nx]          | <code>number</code> | <code>32</code>          |                                                            |
+| [ny]          | <code>number</code> | <code>16</code>          |                                                            |
+| [capSegments] | <code>number</code> | <code>1</code>           | Radial segments of each cut cap                            |
+| [theta]       | <code>number</code> | <code>Math.PI / 2</code> | Meridian sweep length, silently clamped like `ellipsoid`'s |
+| [thetaOffset] | <code>number</code> | <code>Math.PI / 4</code> | Meridian sweep start, silently clamped like `ellipsoid`'s  |
+| [phi]         | <code>number</code> | <code>TAU</code>         |                                                            |
+| [phiOffset]   | <code>number</code> | <code>0</code>           |                                                            |
+
+<a name="module_primitiveGeometry..HyperboloidOptions"></a>
+
+### primitiveGeometry~HyperboloidOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                        | Default                           | Description                                                                                                                                                                                                                                                                                                                        |
+| --------------- | --------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [height]        | <code>number</code>         | <code>1</code>                    |                                                                                                                                                                                                                                                                                                                                    |
+| [radius]        | <code>number</code>         | <code>0.25</code>                 | Waist radius, at y = 0                                                                                                                                                                                                                                                                                                             |
+| [radiusTop]     | <code>number</code>         | <code>radius*2</code>             | Rim radius, at y = ±height/2 (both ends, symmetric) - the classic one-sheet shape needs radiusTop > radius (pinched waist flaring to both rims); radiusTop = radius degenerates to a plain cylinder, and radiusTop < radius traces an oblate-spheroid-like profile instead (still a valid, NaN-free surface, just not a hyperbola) |
+| [nx]            | <code>number</code>         | <code>32</code>                   |                                                                                                                                                                                                                                                                                                                                    |
+| [ny]            | <code>number</code>         | <code>16</code>                   |                                                                                                                                                                                                                                                                                                                                    |
+| [capSegments]   | <code>number</code>         | <code>1</code>                    |                                                                                                                                                                                                                                                                                                                                    |
+| [capApex]       | <code>boolean</code>        | <code>true</code>                 |                                                                                                                                                                                                                                                                                                                                    |
+| [capBase]       | <code>boolean</code>        | <code>true</code>                 |                                                                                                                                                                                                                                                                                                                                    |
+| [phi]           | <code>number</code>         | <code>TAU</code>                  |                                                                                                                                                                                                                                                                                                                                    |
+| [phiOffset]     | <code>number</code>         | <code>0</code>                    |                                                                                                                                                                                                                                                                                                                                    |
+| [capMapping]    | <code>MappingFn</code>      | <code>mappings.rectangular</code> |                                                                                                                                                                                                                                                                                                                                    |
+| [vDistribution] | <code>DistributionFn</code> | <code>utils.linear</code>         |                                                                                                                                                                                                                                                                                                                                    |
+
+<a name="module_primitiveGeometry..LemonOptions"></a>
+
+### primitiveGeometry~LemonOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                        | Default                   | Description                                                                                                                                                                                                                                                                                            |
+| --------------- | --------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [radius]        | <code>number</code>         | <code>0.3</code>          | Equatorial (widest) radius                                                                                                                                                                                                                                                                             |
+| [height]        | <code>number</code>         | <code>1</code>            | Full height between the two pointed ends, silently raised to at least radius_2 - below that the generating circle's center offset would go negative, no longer tracing the lemon's own (minor, less-than-half-circle) arc; height = radius_2 exactly degenerates to a plain sphere (the offset hits 0) |
+| [nx]            | <code>number</code>         | <code>32</code>           |                                                                                                                                                                                                                                                                                                        |
+| [ny]            | <code>number</code>         | <code>16</code>           |                                                                                                                                                                                                                                                                                                        |
+| [phi]           | <code>number</code>         | <code>TAU</code>          |                                                                                                                                                                                                                                                                                                        |
+| [phiOffset]     | <code>number</code>         | <code>0</code>            |                                                                                                                                                                                                                                                                                                        |
+| [vDistribution] | <code>DistributionFn</code> | <code>utils.linear</code> |                                                                                                                                                                                                                                                                                                        |
+
+<a name="module_primitiveGeometry..ParaboloidOptions"></a>
+
+### primitiveGeometry~ParaboloidOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                        | Default                           | Description                        |
+| --------------- | --------------------------- | --------------------------------- | ---------------------------------- |
+| [height]        | <code>number</code>         | <code>1</code>                    |                                    |
+| [radius]        | <code>number</code>         | <code>0.5</code>                  | Rim radius, at the open (base) end |
+| [nx]            | <code>number</code>         | <code>32</code>                   |                                    |
+| [ny]            | <code>number</code>         | <code>16</code>                   |                                    |
+| [capSegments]   | <code>number</code>         | <code>1</code>                    |                                    |
+| [capBase]       | <code>boolean</code>        | <code>true</code>                 |                                    |
+| [phi]           | <code>number</code>         | <code>TAU</code>                  |                                    |
+| [phiOffset]     | <code>number</code>         | <code>0</code>                    |                                    |
+| [capMapping]    | <code>MappingFn</code>      | <code>mappings.rectangular</code> |                                    |
+| [vDistribution] | <code>DistributionFn</code> | <code>utils.linear</code>         |                                    |
+
+<a name="module_primitiveGeometry..RoundedCylinderOptions"></a>
+
+### primitiveGeometry~RoundedCylinderOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                        | Default                   | Description                                                                                                                                                                 |
+| --------------- | --------------------------- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [height]        | <code>number</code>         | <code>1</code>            |                                                                                                                                                                             |
+| [radius]        | <code>number</code>         | <code>0.25</code>         |                                                                                                                                                                             |
+| [roundRadius]   | <code>number</code>         | <code>radius*0.3</code>   | Fillet radius at the top/bottom rim, silently clamped to [0, min(radius, height/2)] - the fillet can neither exceed the body's own radius nor meet itself across the height |
+| [nx]            | <code>number</code>         | <code>16</code>           |                                                                                                                                                                             |
+| [ny]            | <code>number</code>         | <code>1</code>            | Straight side segments                                                                                                                                                      |
+| [roundSegments] | <code>number</code>         | <code>8</code>            | Fillet segments (each end)                                                                                                                                                  |
+| [capSegments]   | <code>number</code>         | <code>1</code>            | Flat cap segments (each end)                                                                                                                                                |
+| [phi]           | <code>number</code>         | <code>TAU</code>          |                                                                                                                                                                             |
+| [phiOffset]     | <code>number</code>         | <code>0</code>            |                                                                                                                                                                             |
+| [vDistribution] | <code>DistributionFn</code> | <code>utils.linear</code> |                                                                                                                                                                             |
+
+<a name="module_primitiveGeometry..SphereOptions"></a>
+
+### primitiveGeometry~SphereOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
 | Name          | Type                | Default              |
@@ -1177,488 +3804,558 @@ Default to an oblate spheroid.
 | [radius]      | <code>number</code> | <code>0.5</code>     |
 | [nx]          | <code>number</code> | <code>32</code>      |
 | [ny]          | <code>number</code> | <code>16</code>      |
-| [rx]          | <code>number</code> | <code>1</code>       |
-| [ry]          | <code>number</code> | <code>0.5</code>     |
-| [rz]          | <code>number</code> | <code>ry</code>      |
 | [theta]       | <code>number</code> | <code>Math.PI</code> |
 | [thetaOffset] | <code>number</code> | <code>0</code>       |
 | [phi]         | <code>number</code> | <code>TAU</code>     |
 | [phiOffset]   | <code>number</code> | <code>0</code>       |
 
-<a name="module_icosahedron"></a>
+<a name="module_primitiveGeometry..SphericalRingOptions"></a>
 
-## icosahedron
+### primitiveGeometry~SphericalRingOptions : <code>object</code>
 
-- [icosahedron](#module_icosahedron)
-  - [icosahedron([options])](#exp_module_icosahedron--icosahedron) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~IcosahedronOptions](#module_icosahedron--icosahedron..IcosahedronOptions) : <code>object</code>
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
 
-<a name="exp_module_icosahedron--icosahedron"></a>
+| Name            | Type                        | Default                   | Description                                                                                                         |
+| --------------- | --------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| [radius]        | <code>number</code>         | <code>0.5</code>          | Sphere radius                                                                                                       |
+| [innerRadius]   | <code>number</code>         | <code>radius*0.5</code>   | Cylindrical bore radius, silently clamped to [0, radius] - a bore wider than the sphere has no sensible rim to meet |
+| [nx]            | <code>number</code>         | <code>32</code>           |                                                                                                                     |
+| [ny]            | <code>number</code>         | <code>16</code>           | Outer spherical band meridian segments                                                                              |
+| [holeSegments]  | <code>number</code>         | <code>1</code>            | Inner bore wall segments                                                                                            |
+| [phi]           | <code>number</code>         | <code>TAU</code>          |                                                                                                                     |
+| [phiOffset]     | <code>number</code>         | <code>0</code>            |                                                                                                                     |
+| [vDistribution] | <code>DistributionFn</code> | <code>utils.linear</code> | Applies to the outer spherical band only - the inner bore wall is a plain cylinder.                                 |
 
-### icosahedron([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
+<a name="module_primitiveGeometry..SphericonOptions"></a>
 
-**Kind**: Exported function
+### primitiveGeometry~SphericonOptions : <code>object</code>
 
-| Param     | Type                                                                                    | Default         |
-| --------- | --------------------------------------------------------------------------------------- | --------------- |
-| [options] | [<code>IcosahedronOptions</code>](#module_icosahedron--icosahedron..IcosahedronOptions) | <code>{}</code> |
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
 
-<a name="module_icosahedron--icosahedron..IcosahedronOptions"></a>
+| Name     | Type                | Default          | Description                                                                                                                                   |
+| -------- | ------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| [radius] | <code>number</code> | <code>0.5</code> |                                                                                                                                               |
+| [nx]     | <code>number</code> | <code>16</code>  | Segments per quarter-cone's half-turn sweep                                                                                                   |
+| [ny]     | <code>number</code> | <code>1</code>   | Meridian segments per quarter-cone (its meridian is a straight cone slant, so ny > 1 buys nothing by default, same as cone/bicone/doubleCone) |
 
-#### icosahedron~IcosahedronOptions : <code>object</code>
+<a name="module_primitiveGeometry..SupereggOptions"></a>
 
-**Kind**: inner typedef of [<code>icosahedron</code>](#exp_module_icosahedron--icosahedron)
+### primitiveGeometry~SupereggOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                        | Default                   | Description                                                                                                                                           |
+| --------------- | --------------------------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [radius]        | <code>number</code>         | <code>0.5</code>          | Equatorial radius                                                                                                                                     |
+| [ry]            | <code>number</code>         | <code>radius*5/6</code>   | Vertical (polar) semi-axis                                                                                                                            |
+| [nx]            | <code>number</code>         | <code>32</code>           |                                                                                                                                                       |
+| [ny]            | <code>number</code>         | <code>16</code>           |                                                                                                                                                       |
+| [n]             | <code>number</code>         | <code>2.5</code>          | Roundness exponent - Piet Hein's original; n > 2 gives a "true" superegg, n = 2 is a spheroid, n < 2 rounds toward a cylinder-capped-with-cones shape |
+| [theta]         | <code>number</code>         | <code>Math.PI</code>      | Meridian sweep length, silently clamped to [-thetaOffset, PI - thetaOffset] - see ellipsoid.js's EllipsoidOptions for why.                            |
+| [thetaOffset]   | <code>number</code>         | <code>0</code>            | Meridian sweep start, silently clamped to [0, PI] - see theta.                                                                                        |
+| [phi]           | <code>number</code>         | <code>TAU</code>          |                                                                                                                                                       |
+| [phiOffset]     | <code>number</code>         | <code>0</code>            |                                                                                                                                                       |
+| [vDistribution] | <code>DistributionFn</code> | <code>utils.linear</code> |                                                                                                                                                       |
+
+<a name="module_primitiveGeometry..SuperellipsoidOptions"></a>
+
+### primitiveGeometry~SuperellipsoidOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name            | Type                        | Default                   | Description                                                                                                                |
+| --------------- | --------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| [radius]        | <code>number</code>         | <code>1</code>            |                                                                                                                            |
+| [nx]            | <code>number</code>         | <code>32</code>           |                                                                                                                            |
+| [ny]            | <code>number</code>         | <code>16</code>           |                                                                                                                            |
+| [rx]            | <code>number</code>         | <code>0.5</code>          |                                                                                                                            |
+| [ry]            | <code>number</code>         | <code>0.25</code>         |                                                                                                                            |
+| [rz]            | <code>number</code>         | <code>ry</code>           |                                                                                                                            |
+| [n1]            | <code>number</code>         | <code>3</code>            | North-south (meridian) roundness exponent                                                                                  |
+| [n2]            | <code>number</code>         | <code>n1</code>           | East-west (cross-section) roundness exponent                                                                               |
+| [theta]         | <code>number</code>         | <code>Math.PI</code>      | Meridian sweep length, silently clamped to [-thetaOffset, PI - thetaOffset] - see ellipsoid.js's EllipsoidOptions for why. |
+| [thetaOffset]   | <code>number</code>         | <code>0</code>            | Meridian sweep start, silently clamped to [0, PI] - see theta.                                                             |
+| [phi]           | <code>number</code>         | <code>TAU</code>          |                                                                                                                            |
+| [phiOffset]     | <code>number</code>         | <code>0</code>            |                                                                                                                            |
+| [vDistribution] | <code>DistributionFn</code> | <code>utils.linear</code> |                                                                                                                            |
+
+<a name="module_primitiveGeometry..TorusOptions"></a>
+
+### primitiveGeometry~TorusOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name               | Type                   | Default                           | Description                                                            |
+| ------------------ | ---------------------- | --------------------------------- | ---------------------------------------------------------------------- |
+| [radius]           | <code>number</code>    | <code>0.4</code>                  |                                                                        |
+| [segments]         | <code>number</code>    | <code>64</code>                   |                                                                        |
+| [minorRadius]      | <code>number</code>    | <code>0.1</code>                  |                                                                        |
+| [minorSegments]    | <code>number</code>    | <code>32</code>                   |                                                                        |
+| [theta]            | <code>number</code>    | <code>TAU</code>                  |                                                                        |
+| [thetaOffset]      | <code>number</code>    | <code>0</code>                    |                                                                        |
+| [phi]              | <code>number</code>    | <code>TAU</code>                  |                                                                        |
+| [phiOffset]        | <code>number</code>    | <code>0</code>                    |                                                                        |
+| [capSegments]      | <code>number</code>    | <code>1</code>                    |                                                                        |
+| [capStart]         | <code>boolean</code>   | <code>true</code>                 |                                                                        |
+| [capEnd]           | <code>boolean</code>   | <code>true</code>                 |                                                                        |
+| [capStartSegments] | <code>number</code>    | <code>capSegments</code>          |                                                                        |
+| [capEndSegments]   | <code>number</code>    | <code>capSegments</code>          |                                                                        |
+| [capMapping]       | <code>MappingFn</code> | <code>mappings.rectangular</code> |                                                                        |
+| [sx]               | <code>number</code>    | <code>1</code>                    | Major sweep x scale (footprint), elliptical when != sy                 |
+| [sy]               | <code>number</code>    | <code>1</code>                    | Major sweep y scale (footprint), elliptical when != sx                 |
+| [minorSx]          | <code>number</code>    | <code>1</code>                    | Tube radial scale (meridian cross-section), elliptical when != minorSy |
+| [minorSy]          | <code>number</code>    | <code>1</code>                    | Tube z scale (meridian cross-section), elliptical when != minorSx      |
+
+<a name="module_primitiveGeometry..DodecasphereOptions"></a>
+
+### primitiveGeometry~DodecasphereOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name           | Type                                                                    | Default                           |
+| -------------- | ----------------------------------------------------------------------- | --------------------------------- |
+| [radius]       | <code>number</code>                                                     | <code>0.5</code>                  |
+| [subdivisions] | <code>number</code>                                                     | <code>2</code>                    |
+| [projection]   | <code>&quot;gnomonic&quot;</code> \| <code>&quot;spherical&quot;</code> | <code>&quot;gnomonic&quot;</code> |
+| [mapping]      | <code>MappingFn</code>                                                  | <code>mappings.spherical</code>   |
+
+<a name="module_primitiveGeometry..HexasphereOptions"></a>
+
+### primitiveGeometry~HexasphereOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name           | Type                                                                    | Default                           |
+| -------------- | ----------------------------------------------------------------------- | --------------------------------- |
+| [radius]       | <code>number</code>                                                     | <code>0.5</code>                  |
+| [subdivisions] | <code>number</code>                                                     | <code>2</code>                    |
+| [projection]   | <code>&quot;gnomonic&quot;</code> \| <code>&quot;spherical&quot;</code> | <code>&quot;gnomonic&quot;</code> |
+| [mapping]      | <code>MappingFn</code>                                                  | <code>mappings.spherical</code>   |
+
+<a name="module_primitiveGeometry..IcosphereOptions"></a>
+
+### primitiveGeometry~IcosphereOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name           | Type                                                                    | Default                           |
+| -------------- | ----------------------------------------------------------------------- | --------------------------------- |
+| [radius]       | <code>number</code>                                                     | <code>0.5</code>                  |
+| [subdivisions] | <code>number</code>                                                     | <code>2</code>                    |
+| [projection]   | <code>&quot;gnomonic&quot;</code> \| <code>&quot;spherical&quot;</code> | <code>&quot;gnomonic&quot;</code> |
+| [mapping]      | <code>MappingFn</code>                                                  | <code>mappings.spherical</code>   |
+
+<a name="module_primitiveGeometry..OctasphereOptions"></a>
+
+### primitiveGeometry~OctasphereOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name           | Type                                                                    | Default                           |
+| -------------- | ----------------------------------------------------------------------- | --------------------------------- |
+| [radius]       | <code>number</code>                                                     | <code>0.5</code>                  |
+| [subdivisions] | <code>number</code>                                                     | <code>2</code>                    |
+| [projection]   | <code>&quot;gnomonic&quot;</code> \| <code>&quot;spherical&quot;</code> | <code>&quot;gnomonic&quot;</code> |
+| [mapping]      | <code>MappingFn</code>                                                  | <code>mappings.spherical</code>   |
+
+<a name="module_primitiveGeometry..TetrasphereOptions"></a>
+
+### primitiveGeometry~TetrasphereOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name           | Type                                                                    | Default                           |
+| -------------- | ----------------------------------------------------------------------- | --------------------------------- |
+| [radius]       | <code>number</code>                                                     | <code>0.5</code>                  |
+| [subdivisions] | <code>number</code>                                                     | <code>2</code>                    |
+| [projection]   | <code>&quot;gnomonic&quot;</code> \| <code>&quot;spherical&quot;</code> | <code>&quot;gnomonic&quot;</code> |
+| [mapping]      | <code>MappingFn</code>                                                  | <code>mappings.spherical</code>   |
+
+<a name="module_primitiveGeometry..DodecahedronFacesOptions"></a>
+
+### primitiveGeometry~DodecahedronFacesOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
 | Name     | Type                | Default          |
 | -------- | ------------------- | ---------------- |
 | [radius] | <code>number</code> | <code>0.5</code> |
 
-<a name="module_icosphere"></a>
+<a name="module_primitiveGeometry..DodecahedronOptions"></a>
 
-## icosphere
+### primitiveGeometry~DodecahedronOptions : <code>object</code>
 
-- [icosphere](#module_icosphere)
-  - [icosphere([options])](#exp_module_icosphere--icosphere) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~IcosphereOptions](#module_icosphere--icosphere..IcosphereOptions) : <code>object</code>
-
-<a name="exp_module_icosphere--icosphere"></a>
-
-### icosphere([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-
-**Kind**: Exported function
-
-| Param     | Type                                                                            | Default         |
-| --------- | ------------------------------------------------------------------------------- | --------------- |
-| [options] | [<code>IcosphereOptions</code>](#module_icosphere--icosphere..IcosphereOptions) | <code>{}</code> |
-
-<a name="module_icosphere--icosphere..IcosphereOptions"></a>
-
-#### icosphere~IcosphereOptions : <code>object</code>
-
-**Kind**: inner typedef of [<code>icosphere</code>](#exp_module_icosphere--icosphere)
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name           | Type                | Default          |
-| -------------- | ------------------- | ---------------- |
-| [radius]       | <code>number</code> | <code>0.5</code> |
-| [subdivisions] | <code>number</code> | <code>2</code>   |
+| Name           | Type                   | Default                           |
+| -------------- | ---------------------- | --------------------------------- |
+| [radius]       | <code>number</code>    | <code>0.5</code>                  |
+| [subdivisions] | <code>number</code>    | <code>0</code>                    |
+| [mapping]      | <code>MappingFn</code> | <code>mappings.rectangular</code> |
+
+<a name="module_primitiveGeometry..GreatDodecahedronFacesOptions"></a>
+
+### primitiveGeometry~GreatDodecahedronFacesOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name     | Type                | Default          |
+| -------- | ------------------- | ---------------- |
+| [radius] | <code>number</code> | <code>0.5</code> |
+
+<a name="module_primitiveGeometry..GreatDodecahedronOptions"></a>
+
+### primitiveGeometry~GreatDodecahedronOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name           | Type                   | Default                           |
+| -------------- | ---------------------- | --------------------------------- |
+| [radius]       | <code>number</code>    | <code>0.5</code>                  |
+| [subdivisions] | <code>number</code>    | <code>0</code>                    |
+| [mapping]      | <code>MappingFn</code> | <code>mappings.rectangular</code> |
+
+<a name="module_primitiveGeometry..GreatIcosahedronFacesOptions"></a>
+
+### primitiveGeometry~GreatIcosahedronFacesOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name     | Type                | Default          | Description                               |
+| -------- | ------------------- | ---------------- | ----------------------------------------- |
+| [radius] | <code>number</code> | <code>0.5</code> | Radius of the shared icosahedron vertices |
+
+<a name="module_primitiveGeometry..GreatIcosahedronOptions"></a>
+
+### primitiveGeometry~GreatIcosahedronOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name           | Type                   | Default                           |
+| -------------- | ---------------------- | --------------------------------- |
+| [radius]       | <code>number</code>    | <code>0.5</code>                  |
+| [subdivisions] | <code>number</code>    | <code>0</code>                    |
+| [mapping]      | <code>MappingFn</code> | <code>mappings.rectangular</code> |
+
+<a name="module_primitiveGeometry..GreatStellatedDodecahedronFacesOptions"></a>
+
+### primitiveGeometry~GreatStellatedDodecahedronFacesOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name     | Type                | Default          | Description                                    |
+| -------- | ------------------- | ---------------- | ---------------------------------------------- |
+| [radius] | <code>number</code> | <code>0.5</code> | Radius the star's tips touch (box half-extent) |
+
+<a name="module_primitiveGeometry..GreatStellatedDodecahedronOptions"></a>
+
+### primitiveGeometry~GreatStellatedDodecahedronOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name           | Type                   | Default                           | Description                                |
+| -------------- | ---------------------- | --------------------------------- | ------------------------------------------ |
+| [radius]       | <code>number</code>    | <code>0.5</code>                  |                                            |
+| [subdivisions] | <code>number</code>    | <code>0</code>                    | Barycentric grid subdivisions per triangle |
+| [mapping]      | <code>MappingFn</code> | <code>mappings.rectangular</code> |                                            |
+
+<a name="module_primitiveGeometry..HexahedronFacesOptions"></a>
+
+### primitiveGeometry~HexahedronFacesOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name     | Type                | Default          |
+| -------- | ------------------- | ---------------- |
+| [radius] | <code>number</code> | <code>0.5</code> |
+
+<a name="module_primitiveGeometry..HexahedronOptions"></a>
+
+### primitiveGeometry~HexahedronOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name           | Type                   | Default                           |
+| -------------- | ---------------------- | --------------------------------- |
+| [radius]       | <code>number</code>    | <code>0.5</code>                  |
+| [subdivisions] | <code>number</code>    | <code>0</code>                    |
+| [mapping]      | <code>MappingFn</code> | <code>mappings.rectangular</code> |
+
+<a name="module_primitiveGeometry..IcosahedronFacesOptions"></a>
+
+### primitiveGeometry~IcosahedronFacesOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name     | Type                | Default          |
+| -------- | ------------------- | ---------------- |
+| [radius] | <code>number</code> | <code>0.5</code> |
+
+<a name="module_primitiveGeometry..IcosahedronOptions"></a>
+
+### primitiveGeometry~IcosahedronOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name           | Type                   | Default                           |
+| -------------- | ---------------------- | --------------------------------- |
+| [radius]       | <code>number</code>    | <code>0.5</code>                  |
+| [subdivisions] | <code>number</code>    | <code>0</code>                    |
+| [mapping]      | <code>MappingFn</code> | <code>mappings.rectangular</code> |
+
+<a name="module_primitiveGeometry..OctahedronFacesOptions"></a>
+
+### primitiveGeometry~OctahedronFacesOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name     | Type                | Default          |
+| -------- | ------------------- | ---------------- |
+| [radius] | <code>number</code> | <code>0.5</code> |
+
+<a name="module_primitiveGeometry..OctahedronOptions"></a>
+
+### primitiveGeometry~OctahedronOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name           | Type                   | Default                           |
+| -------------- | ---------------------- | --------------------------------- |
+| [radius]       | <code>number</code>    | <code>0.5</code>                  |
+| [subdivisions] | <code>number</code>    | <code>0</code>                    |
+| [mapping]      | <code>MappingFn</code> | <code>mappings.rectangular</code> |
+
+<a name="module_primitiveGeometry..SmallStellatedDodecahedronFacesOptions"></a>
+
+### primitiveGeometry~SmallStellatedDodecahedronFacesOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name     | Type                | Default          | Description                               |
+| -------- | ------------------- | ---------------- | ----------------------------------------- |
+| [radius] | <code>number</code> | <code>0.5</code> | Radius of the shared icosahedron vertices |
+
+<a name="module_primitiveGeometry..SmallStellatedDodecahedronOptions"></a>
+
+### primitiveGeometry~SmallStellatedDodecahedronOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name           | Type                   | Default                           |
+| -------------- | ---------------------- | --------------------------------- |
+| [radius]       | <code>number</code>    | <code>0.5</code>                  |
+| [subdivisions] | <code>number</code>    | <code>0</code>                    |
+| [mapping]      | <code>MappingFn</code> | <code>mappings.rectangular</code> |
+
+<a name="module_primitiveGeometry..TetrahedronFacesOptions"></a>
+
+### primitiveGeometry~TetrahedronFacesOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name     | Type                 | Default           | Description                                                                                                                                                             |
+| -------- | -------------------- | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [radius] | <code>number</code>  | <code>0.5</code>  |                                                                                                                                                                         |
+| [center] | <code>boolean</code> | <code>true</code> | Center the bounding box at the origin. Set to false to keep every vertex at exactly the circumradius from the origin - needed as-is wherever radial projection applies. |
+
+<a name="module_primitiveGeometry..TetrahedronOptions"></a>
+
+### primitiveGeometry~TetrahedronOptions : <code>object</code>
+
+**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
+**Properties**
+
+| Name           | Type                   | Default                           |
+| -------------- | ---------------------- | --------------------------------- |
+| [radius]       | <code>number</code>    | <code>0.5</code>                  |
+| [subdivisions] | <code>number</code>    | <code>0</code>                    |
+| [mapping]      | <code>MappingFn</code> | <code>mappings.rectangular</code> |
 
 <a name="module_mappings"></a>
 
 ## mappings
 
-<a name="module_plane"></a>
+- [mappings](#module_mappings)
+  - _static_
+    - [.rectangular()](#module_mappings.rectangular) : <code>MappingsFn</code>
+    - [.polar()](#module_mappings.polar) : <code>MappingsFn</code>
+    - [.spherical()](#module_mappings.spherical) : <code>MappingsFn</code>
+    - [.radial()](#module_mappings.radial) : <code>MappingsFn</code>
+    - [.concentric()](#module_mappings.concentric) : <code>MappingsFn</code>
+    - [.lamé()](#module_mappings.lamé) : <code>MappingsFn</code>
+    - [.elliptical()](#module_mappings.elliptical) : <code>MappingsFn</code>
+    - [.fgSquircular()](#module_mappings.fgSquircular) : <code>MappingsFn</code>
+    - [.twoSquircular()](#module_mappings.twoSquircular) : <code>MappingsFn</code>
+    - [.threeSquircular()](#module_mappings.threeSquircular) : <code>MappingsFn</code>
+    - [.cornerificTapered2()](#module_mappings.cornerificTapered2) : <code>MappingsFn</code>
+    - [.tapered4()](#module_mappings.tapered4) : <code>MappingsFn</code>
+    - [.nonAxial2Pinch()](#module_mappings.nonAxial2Pinch) : <code>MappingsFn</code>
+    - [.nonAxialHalfPinch()](#module_mappings.nonAxialHalfPinch) : <code>MappingsFn</code>
+    - [.squelched()](#module_mappings.squelched) : <code>MappingsFn</code>
+    - [.squelchedVertical()](#module_mappings.squelchedVertical) : <code>MappingsFn</code>
+    - [.squelchedHorizontal()](#module_mappings.squelchedHorizontal) : <code>MappingsFn</code>
+  - _inner_
+    - [~MappingFn](#module_mappings..MappingFn) : <code>function</code>
 
-## plane
+<a name="module_mappings.rectangular"></a>
 
-- [plane](#module_plane)
-  - [plane([options])](#exp_module_plane--plane) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~PlaneOptions](#module_plane--plane..PlaneOptions) : <code>object</code>
-    - [~PlaneDirection](#module_plane--plane..PlaneDirection) : <code>&quot;x&quot;</code> \| <code>&quot;-x&quot;</code> \| <code>&quot;y&quot;</code> \| <code>&quot;-y&quot;</code> \| <code>&quot;z&quot;</code> \| <code>&quot;-z&quot;</code>
+### mappings.rectangular() : <code>MappingsFn</code>
 
-<a name="exp_module_plane--plane"></a>
+**Kind**: static method of [<code>mappings</code>](#module_mappings)
+<a name="module_mappings.polar"></a>
 
-### plane([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
+### mappings.polar() : <code>MappingsFn</code>
 
-**Kind**: Exported function
+**Kind**: static method of [<code>mappings</code>](#module_mappings)
+<a name="module_mappings.spherical"></a>
 
-| Param     | Type                                                            | Default         |
-| --------- | --------------------------------------------------------------- | --------------- |
-| [options] | [<code>PlaneOptions</code>](#module_plane--plane..PlaneOptions) | <code>{}</code> |
+### mappings.spherical() : <code>MappingsFn</code>
 
-<a name="module_plane--plane..PlaneOptions"></a>
+**Kind**: static method of [<code>mappings</code>](#module_mappings)
+<a name="module_mappings.radial"></a>
 
-#### plane~PlaneOptions : <code>object</code>
+### mappings.radial() : <code>MappingsFn</code>
 
-**Kind**: inner typedef of [<code>plane</code>](#exp_module_plane--plane)
-**Properties**
+**Kind**: static method of [<code>mappings</code>](#module_mappings)
+<a name="module_mappings.concentric"></a>
 
-| Name        | Type                                                                | Default                    |
-| ----------- | ------------------------------------------------------------------- | -------------------------- |
-| [sx]        | <code>number</code>                                                 | <code>1</code>             |
-| [sy]        | <code>number</code>                                                 | <code>sx</code>            |
-| [nx]        | <code>number</code>                                                 | <code>1</code>             |
-| [ny]        | <code>number</code>                                                 | <code>nx</code>            |
-| [direction] | [<code>PlaneDirection</code>](#module_plane--plane..PlaneDirection) | <code>&quot;z&quot;</code> |
-| [quads]     | <code>boolean</code>                                                | <code>false</code>         |
+### mappings.concentric() : <code>MappingsFn</code>
 
-<a name="module_plane--plane..PlaneDirection"></a>
+**Kind**: static method of [<code>mappings</code>](#module_mappings)
+<a name="module_mappings.lamé"></a>
 
-#### plane~PlaneDirection : <code>&quot;x&quot;</code> \| <code>&quot;-x&quot;</code> \| <code>&quot;y&quot;</code> \| <code>&quot;-y&quot;</code> \| <code>&quot;z&quot;</code> \| <code>&quot;-z&quot;</code>
+### mappings.lamé() : <code>MappingsFn</code>
 
-**Kind**: inner typedef of [<code>plane</code>](#exp_module_plane--plane)
-<a name="module_quad"></a>
+**Kind**: static method of [<code>mappings</code>](#module_mappings)
+<a name="module_mappings.elliptical"></a>
 
-## quad
+### mappings.elliptical() : <code>MappingsFn</code>
 
-- [quad](#module_quad)
-  - [quad([options])](#exp_module_quad--quad) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~QuadOptions](#module_quad--quad..QuadOptions) : <code>object</code>
+**Kind**: static method of [<code>mappings</code>](#module_mappings)
+<a name="module_mappings.fgSquircular"></a>
 
-<a name="exp_module_quad--quad"></a>
+### mappings.fgSquircular() : <code>MappingsFn</code>
 
-### quad([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
+**Kind**: static method of [<code>mappings</code>](#module_mappings)
+<a name="module_mappings.twoSquircular"></a>
 
-**Kind**: Exported function
+### mappings.twoSquircular() : <code>MappingsFn</code>
 
-| Param     | Type                                                        | Default         |
-| --------- | ----------------------------------------------------------- | --------------- |
-| [options] | [<code>QuadOptions</code>](#module_quad--quad..QuadOptions) | <code>{}</code> |
+**Kind**: static method of [<code>mappings</code>](#module_mappings)
+<a name="module_mappings.threeSquircular"></a>
 
-<a name="module_quad--quad..QuadOptions"></a>
+### mappings.threeSquircular() : <code>MappingsFn</code>
 
-#### quad~QuadOptions : <code>object</code>
+**Kind**: static method of [<code>mappings</code>](#module_mappings)
+<a name="module_mappings.cornerificTapered2"></a>
 
-**Kind**: inner typedef of [<code>quad</code>](#exp_module_quad--quad)
-**Properties**
+### mappings.cornerificTapered2() : <code>MappingsFn</code>
 
-| Name    | Type                | Default          |
-| ------- | ------------------- | ---------------- |
-| [scale] | <code>number</code> | <code>0.5</code> |
+**Kind**: static method of [<code>mappings</code>](#module_mappings)
+<a name="module_mappings.tapered4"></a>
 
-<a name="module_reuleux"></a>
+### mappings.tapered4() : <code>MappingsFn</code>
 
-## reuleux
+**Kind**: static method of [<code>mappings</code>](#module_mappings)
+<a name="module_mappings.nonAxial2Pinch"></a>
 
-- [reuleux](#module_reuleux)
-  - [reuleux([options])](#exp_module_reuleux--reuleux) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~ReuleuxOptions](#module_reuleux--reuleux..ReuleuxOptions) : <code>object</code>
+### mappings.nonAxial2Pinch() : <code>MappingsFn</code>
 
-<a name="exp_module_reuleux--reuleux"></a>
+**Kind**: static method of [<code>mappings</code>](#module_mappings)
+<a name="module_mappings.nonAxialHalfPinch"></a>
 
-### reuleux([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
+### mappings.nonAxialHalfPinch() : <code>MappingsFn</code>
 
-**Kind**: Exported function
-**See**: [Parametric equations for regular and Reuleaux polygons](https://tpfto.wordpress.com/2011/09/15/parametric-equations-for-regular-and-reuleaux-polygons/)
+**Kind**: static method of [<code>mappings</code>](#module_mappings)
+<a name="module_mappings.squelched"></a>
 
-| Param     | Type                                                                    | Default         |
-| --------- | ----------------------------------------------------------------------- | --------------- |
-| [options] | [<code>ReuleuxOptions</code>](#module_reuleux--reuleux..ReuleuxOptions) | <code>{}</code> |
+### mappings.squelched() : <code>MappingsFn</code>
 
-<a name="module_reuleux--reuleux..ReuleuxOptions"></a>
+**Kind**: static method of [<code>mappings</code>](#module_mappings)
+<a name="module_mappings.squelchedVertical"></a>
 
-#### reuleux~ReuleuxOptions : <code>object</code>
+### mappings.squelchedVertical() : <code>MappingsFn</code>
 
-**Kind**: inner typedef of [<code>reuleux</code>](#exp_module_reuleux--reuleux)
-**Properties**
-
-| Name            | Type                  | Default                          |
-| --------------- | --------------------- | -------------------------------- |
-| [radius]        | <code>number</code>   | <code>0.5</code>                 |
-| [segments]      | <code>number</code>   | <code>32</code>                  |
-| [innerSegments] | <code>number</code>   | <code>16</code>                  |
-| [theta]         | <code>number</code>   | <code>TAU</code>                 |
-| [thetaOffset]   | <code>number</code>   | <code>0</code>                   |
-| [mergeCentroid] | <code>boolean</code>  | <code>true</code>                |
-| [mapping]       | <code>function</code> | <code>mappings.concentric</code> |
-| [n]             | <code>number</code>   | <code>3</code>                   |
-
-<a name="module_roundedCube"></a>
-
-## roundedCube
-
-- [roundedCube](#module_roundedCube)
-  - [roundedCube([options])](#exp_module_roundedCube--roundedCube) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~RoundedCubeOptions](#module_roundedCube--roundedCube..RoundedCubeOptions) : <code>object</code>
-
-<a name="exp_module_roundedCube--roundedCube"></a>
-
-### roundedCube([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-
-**Kind**: Exported function
-
-| Param     | Type                                                                                    | Default         |
-| --------- | --------------------------------------------------------------------------------------- | --------------- |
-| [options] | [<code>RoundedCubeOptions</code>](#module_roundedCube--roundedCube..RoundedCubeOptions) | <code>{}</code> |
-
-<a name="module_roundedCube--roundedCube..RoundedCubeOptions"></a>
-
-#### roundedCube~RoundedCubeOptions : <code>object</code>
-
-**Kind**: inner typedef of [<code>roundedCube</code>](#exp_module_roundedCube--roundedCube)
-**Properties**
-
-| Name            | Type                | Default                 |
-| --------------- | ------------------- | ----------------------- |
-| [sx]            | <code>number</code> | <code>1</code>          |
-| [sy]            | <code>number</code> | <code>sx</code>         |
-| [sz]            | <code>number</code> | <code>sx</code>         |
-| [nx]            | <code>number</code> | <code>1</code>          |
-| [ny]            | <code>number</code> | <code>nx</code>         |
-| [nz]            | <code>number</code> | <code>nx</code>         |
-| [radius]        | <code>number</code> | <code>sx \* 0.25</code> |
-| [roundSegments] | <code>number</code> | <code>8</code>          |
-| [edgeSegments]  | <code>number</code> | <code>1</code>          |
-
-<a name="module_roundedRectangle"></a>
-
-## roundedRectangle
-
-- [roundedRectangle](#module_roundedRectangle)
-  - [roundedRectangle([options])](#exp_module_roundedRectangle--roundedRectangle) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~RoundedCubeOptions](#module_roundedRectangle--roundedRectangle..RoundedCubeOptions) : <code>object</code>
-
-<a name="exp_module_roundedRectangle--roundedRectangle"></a>
-
-### roundedRectangle([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-
-**Kind**: Exported function
-
-| Param     | Type                                                                                              | Default         |
-| --------- | ------------------------------------------------------------------------------------------------- | --------------- |
-| [options] | [<code>RoundedCubeOptions</code>](#module_roundedRectangle--roundedRectangle..RoundedCubeOptions) | <code>{}</code> |
-
-<a name="module_roundedRectangle--roundedRectangle..RoundedCubeOptions"></a>
-
-#### roundedRectangle~RoundedCubeOptions : <code>object</code>
-
-**Kind**: inner typedef of [<code>roundedRectangle</code>](#exp_module_roundedRectangle--roundedRectangle)
-**Properties**
-
-| Name            | Type                | Default                 |
-| --------------- | ------------------- | ----------------------- |
-| [sx]            | <code>number</code> | <code>1</code>          |
-| [sy]            | <code>number</code> | <code>sx</code>         |
-| [nx]            | <code>number</code> | <code>1</code>          |
-| [ny]            | <code>number</code> | <code>nx</code>         |
-| [radius]        | <code>number</code> | <code>sx \* 0.25</code> |
-| [roundSegments] | <code>number</code> | <code>8</code>          |
-| [edgeSegments]  | <code>number</code> | <code>1</code>          |
-
-<a name="module_sphere"></a>
-
-## sphere
-
-- [sphere](#module_sphere)
-  - [sphere([options])](#exp_module_sphere--sphere) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~SphereOptions](#module_sphere--sphere..SphereOptions) : <code>object</code>
-
-<a name="exp_module_sphere--sphere"></a>
-
-### sphere([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-
-**Kind**: Exported function
-
-| Param     | Type                                                                | Default         |
-| --------- | ------------------------------------------------------------------- | --------------- |
-| [options] | [<code>SphereOptions</code>](#module_sphere--sphere..SphereOptions) | <code>{}</code> |
-
-<a name="module_sphere--sphere..SphereOptions"></a>
-
-#### sphere~SphereOptions : <code>object</code>
-
-**Kind**: inner typedef of [<code>sphere</code>](#exp_module_sphere--sphere)
-**Properties**
-
-| Name          | Type                | Default              |
-| ------------- | ------------------- | -------------------- |
-| [radius]      | <code>number</code> | <code>0.5</code>     |
-| [nx]          | <code>number</code> | <code>32</code>      |
-| [ny]          | <code>number</code> | <code>16</code>      |
-| [theta]       | <code>number</code> | <code>Math.PI</code> |
-| [thetaOffset] | <code>number</code> | <code>0</code>       |
-| [phi]         | <code>number</code> | <code>TAU</code>     |
-| [phiOffset]   | <code>number</code> | <code>0</code>       |
-
-<a name="module_squircle"></a>
-
-## squircle
-
-- [squircle](#module_squircle)
-  - [squircle([options])](#exp_module_squircle--squircle) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~SquircleOptions](#module_squircle--squircle..SquircleOptions) : <code>object</code>
-
-<a name="exp_module_squircle--squircle"></a>
-
-### squircle([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-
-Fernández-Guasti squircle
-
-**Kind**: Exported function
-**See**: [Squircular Calculations – Chamberlain Fong](https://arxiv.org/vc/arxiv/papers/1604/1604.02174v1.pdf)
-
-| Param     | Type                                                                        | Default         |
-| --------- | --------------------------------------------------------------------------- | --------------- |
-| [options] | [<code>SquircleOptions</code>](#module_squircle--squircle..SquircleOptions) | <code>{}</code> |
-
-<a name="module_squircle--squircle..SquircleOptions"></a>
-
-#### squircle~SquircleOptions : <code>object</code>
-
-**Kind**: inner typedef of [<code>squircle</code>](#exp_module_squircle--squircle)
-**Properties**
-
-| Name            | Type                  | Default                            | Description             |
-| --------------- | --------------------- | ---------------------------------- | ----------------------- |
-| [sx]            | <code>number</code>   | <code>1</code>                     |                         |
-| [sy]            | <code>number</code>   | <code>1</code>                     |                         |
-| [radius]        | <code>number</code>   | <code>0.5</code>                   |                         |
-| [segments]      | <code>number</code>   | <code>128</code>                   |                         |
-| [innerSegments] | <code>number</code>   | <code>16</code>                    |                         |
-| [theta]         | <code>number</code>   | <code>TAU</code>                   |                         |
-| [thetaOffset]   | <code>number</code>   | <code>0</code>                     |                         |
-| [mergeCentroid] | <code>boolean</code>  | <code>true</code>                  |                         |
-| [mapping]       | <code>function</code> | <code>mappings.fgSquircular</code> |                         |
-| [squareness]    | <code>number</code>   | <code>0.95</code>                  | Squareness (0 < s <= 1) |
-
-<a name="module_stadium"></a>
-
-## stadium
-
-- [stadium](#module_stadium)
-  - [stadium([options])](#exp_module_stadium--stadium) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~StadiumOptions](#module_stadium--stadium..StadiumOptions) : <code>object</code>
-
-<a name="exp_module_stadium--stadium"></a>
-
-### stadium([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-
-**Kind**: Exported function
-
-| Param     | Type                                                                    | Default         |
-| --------- | ----------------------------------------------------------------------- | --------------- |
-| [options] | [<code>StadiumOptions</code>](#module_stadium--stadium..StadiumOptions) | <code>{}</code> |
-
-<a name="module_stadium--stadium..StadiumOptions"></a>
-
-#### stadium~StadiumOptions : <code>object</code>
-
-**Kind**: inner typedef of [<code>stadium</code>](#exp_module_stadium--stadium)
-**Properties**
-
-| Name            | Type                | Default         |
-| --------------- | ------------------- | --------------- |
-| [sx]            | <code>number</code> | <code>1</code>  |
-| [sy]            | <code>number</code> | <code>sx</code> |
-| [nx]            | <code>number</code> | <code>1</code>  |
-| [ny]            | <code>number</code> | <code>nx</code> |
-| [roundSegments] | <code>number</code> | <code>8</code>  |
-| [edgeSegments]  | <code>number</code> | <code>1</code>  |
-
-<a name="module_superellipse"></a>
-
-## superellipse
-
-- [superellipse](#module_superellipse)
-  - [superellipse([options])](#exp_module_superellipse--superellipse) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~SuperellipseOptions](#module_superellipse--superellipse..SuperellipseOptions) : <code>object</code>
-
-<a name="exp_module_superellipse--superellipse"></a>
-
-### superellipse([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-
-Lamé curve
-See elliptical-mapping example for a few special cases
-
-**Kind**: Exported function
-**See**
-
-- [Wolfram MathWorld – Superellipse](https://mathworld.wolfram.com/Superellipse.html)
-- [Wikipedia – Superellipse](https://en.wikipedia.org/wiki/Superellipse)
-
-| Param     | Type                                                                                        | Default         |
-| --------- | ------------------------------------------------------------------------------------------- | --------------- |
-| [options] | [<code>SuperellipseOptions</code>](#module_superellipse--superellipse..SuperellipseOptions) | <code>{}</code> |
-
-<a name="module_superellipse--superellipse..SuperellipseOptions"></a>
-
-#### superellipse~SuperellipseOptions : <code>object</code>
-
-**Kind**: inner typedef of [<code>superellipse</code>](#exp_module_superellipse--superellipse)
-**Properties**
-
-| Name            | Type                  | Default                    |
-| --------------- | --------------------- | -------------------------- |
-| [sx]            | <code>number</code>   | <code>1</code>             |
-| [sy]            | <code>number</code>   | <code>0.5</code>           |
-| [radius]        | <code>number</code>   | <code>0.5</code>           |
-| [segments]      | <code>number</code>   | <code>32</code>            |
-| [innerSegments] | <code>number</code>   | <code>16</code>            |
-| [theta]         | <code>number</code>   | <code>TAU</code>           |
-| [thetaOffset]   | <code>number</code>   | <code>0</code>             |
-| [mergeCentroid] | <code>boolean</code>  | <code>true</code>          |
-| [mapping]       | <code>function</code> | <code>mappings.lamé</code> |
-| [m]             | <code>number</code>   | <code>2</code>             |
-| [n]             | <code>number</code>   | <code>m</code>             |
-
-<a name="module_tetrahedron"></a>
-
-## tetrahedron
-
-- [tetrahedron](#module_tetrahedron)
-  - [tetrahedron([options])](#exp_module_tetrahedron--tetrahedron) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~TetrahedronOptions](#module_tetrahedron--tetrahedron..TetrahedronOptions) : <code>object</code>
-
-<a name="exp_module_tetrahedron--tetrahedron"></a>
-
-### tetrahedron([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-
-**Kind**: Exported function
-
-| Param     | Type                                                                                    | Default         |
-| --------- | --------------------------------------------------------------------------------------- | --------------- |
-| [options] | [<code>TetrahedronOptions</code>](#module_tetrahedron--tetrahedron..TetrahedronOptions) | <code>{}</code> |
-
-<a name="module_tetrahedron--tetrahedron..TetrahedronOptions"></a>
-
-#### tetrahedron~TetrahedronOptions : <code>object</code>
-
-**Kind**: inner typedef of [<code>tetrahedron</code>](#exp_module_tetrahedron--tetrahedron)
-**Properties**
-
-| Name     | Type                | Default          |
-| -------- | ------------------- | ---------------- |
-| [radius] | <code>number</code> | <code>0.5</code> |
-
-<a name="module_torus"></a>
-
-## torus
-
-- [torus](#module_torus)
-  - [torus([options])](#exp_module_torus--torus) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-    - [~TorusOptions](#module_torus--torus..TorusOptions) : <code>object</code>
-
-<a name="exp_module_torus--torus"></a>
-
-### torus([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex) ⏏
-
-**Kind**: Exported function
-
-| Param     | Type                                                            | Default         |
-| --------- | --------------------------------------------------------------- | --------------- |
-| [options] | [<code>TorusOptions</code>](#module_torus--torus..TorusOptions) | <code>{}</code> |
-
-<a name="module_torus--torus..TorusOptions"></a>
-
-#### torus~TorusOptions : <code>object</code>
-
-**Kind**: inner typedef of [<code>torus</code>](#exp_module_torus--torus)
-**Properties**
-
-| Name            | Type                | Default          |
-| --------------- | ------------------- | ---------------- |
-| [radius]        | <code>number</code> | <code>0.4</code> |
-| [segments]      | <code>number</code> | <code>64</code>  |
-| [minorRadius]   | <code>number</code> | <code>0.1</code> |
-| [minorSegments] | <code>number</code> | <code>32</code>  |
-| [theta]         | <code>number</code> | <code>TAU</code> |
-| [thetaOffset]   | <code>number</code> | <code>0</code>   |
-| [phi]           | <code>number</code> | <code>TAU</code> |
-| [phiOffset]     | <code>number</code> | <code>0</code>   |
+**Kind**: static method of [<code>mappings</code>](#module_mappings)
+<a name="module_mappings.squelchedHorizontal"></a>
+
+### mappings.squelchedHorizontal() : <code>MappingsFn</code>
+
+**Kind**: static method of [<code>mappings</code>](#module_mappings)
+<a name="module_mappings..MappingFn"></a>
+
+### mappings~MappingFn : <code>function</code>
+
+**Kind**: inner typedef of [<code>mappings</code>](#module_mappings)
+
+| Param                        | Type                      |
+| ---------------------------- | ------------------------- |
+| mappingOptions               | <code>object</code>       |
+| [mappingOptions.uvs]         | <code>Float32Array</code> |
+| [mappingOptions.index]       | <code>number</code>       |
+| [mappingOptions.x]           | <code>number</code>       |
+| [mappingOptions.y]           | <code>number</code>       |
+| [mappingOptions.radius]      | <code>number</code>       |
+| [mappingOptions.nx]          | <code>number</code>       |
+| [mappingOptions.ny]          | <code>number</code>       |
+| [mappingOptions.nz]          | <code>number</code>       |
+| [mappingOptions.sx]          | <code>number</code>       |
+| [mappingOptions.sy]          | <code>number</code>       |
+| [mappingOptions.t]           | <code>number</code>       |
+| [mappingOptions.radiusRatio] | <code>number</code>       |
+| [mappingOptions.thetaRatio]  | <code>number</code>       |
 
 <a name="module_utils"></a>
 
 ## utils
 
 - [utils](#module_utils)
-  - [.TAU](#module_utils.TAU) : <code>number</code>
-  - [.HALF_PI](#module_utils.HALF_PI) : <code>number</code>
-  - [.SQRT2](#module_utils.SQRT2) : <code>number</code>
-  - [.getCellsTypedArray](#module_utils.getCellsTypedArray) ⇒ <code>Uint8Array</code> \| <code>Uint16Array</code> \| <code>Uint32Array</code>
-  - [.normalize(v)](#module_utils.normalize) ⇒ <code>Array.&lt;number&gt;</code>
-  - [.checkArguments(...args)](#module_utils.checkArguments)
-  - [.setTypedArrayType(type)](#module_utils.setTypedArrayType)
+  - _static_
+    - [.TAU](#module_utils.TAU) : <code>number</code>
+    - [.HALF_PI](#module_utils.HALF_PI) : <code>number</code>
+    - [.SQRT2](#module_utils.SQRT2) : <code>number</code>
+    - [.SQRT3](#module_utils.SQRT3) : <code>number</code>
+    - [.SQRT6](#module_utils.SQRT6) : <code>number</code>
+    - [.PHI](#module_utils.PHI) : <code>number</code>
+    - [.getCellsTypedArray](#module_utils.getCellsTypedArray) ⇒ <code>Uint8Array</code> \| <code>Uint16Array</code> \| <code>Uint32Array</code>
+    - [.fullscreenTriangle()](#module_utils.fullscreenTriangle) ⇒ <code>Object</code>
+    - [.setTypedArrayType(type)](#module_utils.setTypedArrayType)
+    - [.triangulateFaces(cells, numVertices)](#module_utils.triangulateFaces) ⇒ <code>Uint8Array</code> \| <code>Uint16Array</code> \| <code>Uint32Array</code>
+    - [.concatGeometries(geometries)](#module_utils.concatGeometries) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.invert(geometry)](#module_utils.invert) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+    - [.linear()](#module_utils.linear) : <code>DistributionFn</code>
+    - [.chebyshev()](#module_utils.chebyshev) : <code>DistributionFn</code>
+    - [.smoothstep()](#module_utils.smoothstep) : <code>DistributionFn</code>
+    - [.power([exponent])](#module_utils.power) ⇒ <code>function</code>
+  - _inner_
+    - [~DistributionFn](#module_utils..DistributionFn) ⇒ <code>number</code>
 
 <a name="module_utils.TAU"></a>
 
@@ -1669,9 +4366,9 @@ Two times PI.
 **Kind**: static constant of [<code>utils</code>](#module_utils)
 <a name="module_utils.HALF_PI"></a>
 
-### utils.HALF_PI : <code>number</code>
+### utils.HALF\_PI : <code>number</code>
 
-Two times PI.
+Half of PI.
 
 **Kind**: static constant of [<code>utils</code>](#module_utils)
 <a name="module_utils.SQRT2"></a>
@@ -1679,6 +4376,27 @@ Two times PI.
 ### utils.SQRT2 : <code>number</code>
 
 Square root of 2.
+
+**Kind**: static constant of [<code>utils</code>](#module_utils)
+<a name="module_utils.SQRT3"></a>
+
+### utils.SQRT3 : <code>number</code>
+
+Square root of 3.
+
+**Kind**: static constant of [<code>utils</code>](#module_utils)
+<a name="module_utils.SQRT6"></a>
+
+### utils.SQRT6 : <code>number</code>
+
+Square root of 6.
+
+**Kind**: static constant of [<code>utils</code>](#module_utils)
+<a name="module_utils.PHI"></a>
+
+### utils.PHI : <code>number</code>
+
+Golden ratio: (1 + √5) / 2.
 
 **Kind**: static constant of [<code>utils</code>](#module_utils)
 <a name="module_utils.getCellsTypedArray"></a>
@@ -1694,31 +4412,22 @@ Select cells typed array from a size determined by amount of vertices.
 | ----- | ------------------- | ---------------------- |
 | size  | <code>number</code> | The max value expected |
 
-<a name="module_utils.normalize"></a>
+<a name="module_utils.fullscreenTriangle"></a>
 
-### utils.normalize(v) ⇒ <code>Array.&lt;number&gt;</code>
+### utils.fullscreenTriangle() ⇒ <code>Object</code>
 
-Normalize a vector 3.
+A single triangle, 3x oversized so its 3 vertices land past every edge of the
+[-1, 1] clip-space square: the standard vertex-shader trick for a fullscreen
+pass (rasterizes to exactly the viewport once clipped, with no diagonal seam
+and no overdraw compared to a quad split into 2 triangles). xy positions
+only
 
-**Kind**: static method of [<code>utils</code>](#module_utils)
-**Returns**: <code>Array.&lt;number&gt;</code> - Normalized vector
-
-| Param | Type                              | Description    |
-| ----- | --------------------------------- | -------------- |
-| v     | <code>Array.&lt;number&gt;</code> | Vector 3 array |
-
-<a name="module_utils.checkArguments"></a>
-
-### utils.checkArguments(...args)
-
-Ensure first argument passed to the primitive functions is an object
+- No z, no normals/uvs, no cells - since a fullscreen pass reads screen-space
+  data directly (`gl_FragCoord`, or a uv derived from the clip position
+  in-shader) rather than interpolated vertex attributes, and needs no index
+  buffer for a single triangle.
 
 **Kind**: static method of [<code>utils</code>](#module_utils)
-
-| Param   | Type            |
-| ------- | --------------- |
-| ...args | <code>\*</code> |
-
 <a name="module_utils.setTypedArrayType"></a>
 
 ### utils.setTypedArrayType(type)
@@ -1731,20 +4440,114 @@ Enforce a typed array constructor for cells
 | ----- | ------------------------------------------------------------------------------------------------------------------------- |
 | type  | <code>Class.&lt;Uint8Array&gt;</code> \| <code>Class.&lt;Uint16Array&gt;</code> \| <code>Class.&lt;Uint32Array&gt;</code> |
 
-<a name="BasicSimplicialComplex"></a>
+<a name="module_utils.triangulateFaces"></a>
 
-## BasicSimplicialComplex : <code>object</code>
+### utils.triangulateFaces(cells, numVertices) ⇒ <code>Uint8Array</code> \| <code>Uint16Array</code> \| <code>Uint32Array</code>
 
-Geometry definition without normals and UVs.
+Fan-triangulate a list of closed n-gon faces (a `SimplicialComplexPolygon`'s
+`cells`, e.g. `[0, 1, 2, 3]`) from each face's last corner into a flat,
+stride-3 `SimplicialComplex`-style typed array (e.g. `[3, 0, 1, 3, 1, 2]`).
+Anchoring on the last corner rather than the first is deliberate for quads:
+for the BL/BR/TR/TL winding used by eg. `rectanglePath`, it splits the quad
+along the same diagonal a row-major `TRIANGLE_STRIP` produces (and that
+`computePlane`/`computePolarGeometry`/ `computeRevolutionGeometry` already
+use), so displacement in a vertex shader creases consistently across every
+primitive in this library. Only valid for convex, planar faces.
+
+**Kind**: static method of [<code>utils</code>](#module_utils)
+
+| Param       | Type                                                         | Description                                          |
+| ----------- | ------------------------------------------------------------ | ---------------------------------------------------- |
+| cells       | [<code>Array.&lt;TypedArrayLike&gt;</code>](#TypedArrayLike) |                                                      |
+| numVertices | <code>number</code>                                          | Used to pick the returned typed array's element size |
+
+<a name="module_utils.concatGeometries"></a>
+
+### utils.concatGeometries(geometries) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Concatenate SimplicialComplex geometries into one, offsetting each one's cell
+indices by the running vertex count. Positions coincident across inputs (eg.
+two bands sharing a seam) stay as separate, unwelded vertices.
+
+**Kind**: static method of [<code>utils</code>](#module_utils)
+
+| Param      | Type                                                               |
+| ---------- | ------------------------------------------------------------------ |
+| geometries | [<code>Array.&lt;SimplicialComplex&gt;</code>](#SimplicialComplex) |
+
+<a name="module_utils.invert"></a>
+
+### utils.invert(geometry) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
+
+Flip a geometry inside-out: negate every normal and swap 2 of each triangle's
+3 indices so winding stays consistent with the flipped normal. Used to turn
+an outward-facing surface (eg. a standalone sphere or cylinder) into the
+inward-facing wall of a shell around it.
+
+**Kind**: static method of [<code>utils</code>](#module_utils)
+
+| Param    | Type                                                 |
+| -------- | ---------------------------------------------------- |
+| geometry | [<code>SimplicialComplex</code>](#SimplicialComplex) |
+
+<a name="module_utils.linear"></a>
+
+### utils.linear() : <code>DistributionFn</code>
+
+Uniform spacing: v maps to itself. The default `vDistribution` for every
+`computeRevolutionGeometry`-based solid.
+
+**Kind**: static method of [<code>utils</code>](#module_utils)
+<a name="module_utils.chebyshev"></a>
+
+### utils.chebyshev() : <code>DistributionFn</code>
+
+Chebyshev-node-like spacing: clusters rows toward both ends of the meridian
+sweep (t = 0 and t = 1), sparser through the middle - the classic fix for a
+pole/cusp at each end whose radius shrinks faster than the sweep parameter
+grows (eg. `ellipsoid`'s poles, `apple`/`lemon`'s cusps).
+
+**Kind**: static method of [<code>utils</code>](#module_utils)
+<a name="module_utils.smoothstep"></a>
+
+### utils.smoothstep() : <code>DistributionFn</code>
+
+Smoothstep (Hermite ease-in-out) spacing: same both-ends clustering as
+`chebyshev`, as a cheap polynomial instead of a cosine - the standard
+"smoothstep" curve used throughout computer graphics.
+
+**Kind**: static method of [<code>utils</code>](#module_utils)
+<a name="module_utils.power"></a>
+
+### utils.power([exponent]) ⇒ <code>function</code>
+
+Power/ease-out spacing: clusters rows toward t = 1 only, leaving t = 0 as
+sparse as `linear` - unlike `chebyshev`/`smoothstep`'s symmetric, both-ends
+clustering. `exponent = 2` exactly cancels a sqrt radius law (eg.
+`paraboloid`'s apex, where r = radius·sqrt(1 - v)); `exponent = 1` is
+`linear`.
+
+**Kind**: static method of [<code>utils</code>](#module_utils)
+
+| Param      | Type                | Default        |
+| ---------- | ------------------- | -------------- |
+| [exponent] | <code>number</code> | <code>2</code> |
+
+<a name="module_utils..DistributionFn"></a>
+
+### utils~DistributionFn ⇒ <code>number</code>
+
+**Kind**: inner typedef of [<code>utils</code>](#module_utils)
+
+| Param | Type                |
+| ----- | ------------------- |
+| t     | <code>number</code> |
+
+<a name="TypedArrayLike"></a>
+
+## TypedArrayLike : <code>Array.&lt;number&gt;</code> \| <code>Uint8Array</code> \| <code>Uint16Array</code> \| <code>Uint32Array</code>
 
 **Kind**: global typedef
-**Properties**
-
-| Name      | Type                                                                            |
-| --------- | ------------------------------------------------------------------------------- |
-| positions | <code>Float32Array</code>                                                       |
-| cells     | <code>Uint8Array</code> \| <code>Uint16Array</code> \| <code>Uint32Array</code> |
-
 <a name="SimplicialComplex"></a>
 
 ## SimplicialComplex : <code>object</code>
@@ -1760,6 +4563,41 @@ Geometry definition.
 | normals   | <code>Float32Array</code>                                                       |
 | uvs       | <code>Float32Array</code>                                                       |
 | cells     | <code>Uint8Array</code> \| <code>Uint16Array</code> \| <code>Uint32Array</code> |
+
+<a name="SimplicialComplexPolygon"></a>
+
+## SimplicialComplexPolygon : <code>object</code>
+
+Geometry polygon definition: each
+cell is a closed n-gon face (implicitly wraps its last index back to its
+first - never repeat the first index at the end).
+
+**Kind**: global typedef
+**Properties**
+
+| Name      | Type                                                         |
+| --------- | ------------------------------------------------------------ |
+| positions | <code>Float32Array</code>                                    |
+| [normals] | <code>Float32Array</code>                                    |
+| [uvs]     | <code>Float32Array</code>                                    |
+| cells     | [<code>Array.&lt;TypedArrayLike&gt;</code>](#TypedArrayLike) |
+
+<a name="SimplicialComplexPath"></a>
+
+## SimplicialComplexPath : <code>object</code>
+
+Geometry path definition: each cell
+is an open polyline (no implicit closing edge between its last and first
+index); repeat the first index at the end of a cell to close that loop
+explicitly.
+
+**Kind**: global typedef
+**Properties**
+
+| Name      | Type                                                         |
+| --------- | ------------------------------------------------------------ |
+| positions | <code>Float32Array</code>                                    |
+| cells     | [<code>Array.&lt;TypedArrayLike&gt;</code>](#TypedArrayLike) |
 
 <!-- api-end -->
 
