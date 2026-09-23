@@ -28,9 +28,7 @@ const camera = new PerspectiveCamera({
 });
 const controls = new Controls({
   ...(hasGeometry
-    ? {
-        position: [0, 0, 2],
-      }
+    ? { position: params.has("screenshot") ? [1.5, 1.5, 1.5] : [0, 0, 2] }
     : {
         phi: Math.PI / 2.5,
         theta: Math.PI / 4,

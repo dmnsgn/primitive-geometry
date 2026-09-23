@@ -224,11 +224,14 @@ const geometries = params.has("geometry")
 setGeometries(geometries);
 
 if (params.has("screenshot")) {
-  document.querySelector("h1").style.display = "none";
-  globalThis.screenshotItems = params.has("geometry")
-    ? Object.keys(Primitives).filter(
-        (entry) => !["utils", "mappings"].includes(entry),
-      )
-    : [...modeOptions, "bbox"];
+  if (params.has("geometry")) {
+    document.querySelector("h1").textContent = params.get("geometry");
+    globalThis.screenshotItems = Object.keys(Primitives).filter(
+      (entry) => !["utils", "mappings"].includes(entry),
+    );
+  } else {
+    document.querySelector("h1").style.display = "none";
+    globalThis.screenshotItems = [...modeOptions, "bbox"];
+  }
   globalThis.dispatchEvent(new CustomEvent("screenshot"));
 }
