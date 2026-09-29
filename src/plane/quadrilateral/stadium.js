@@ -11,7 +11,6 @@ import { roundedRectangle, roundedRectanglePath } from "./rounded-rectangle.js";
  * @property {number} [nx=1]
  * @property {number} [ny=nx]
  * @property {number} [roundSegments=8]
- * @property {number} [edgeSegments=1]
  */
 
 /**
@@ -21,14 +20,7 @@ import { roundedRectangle, roundedRectanglePath } from "./rounded-rectangle.js";
  * @param {StadiumOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
  */
-export function stadium({
-  sx = 1,
-  sy = 0.5,
-  nx,
-  ny,
-  roundSegments,
-  edgeSegments,
-} = {}) {
+export function stadium({ sx = 1, sy = 0.5, nx, ny, roundSegments } = {}) {
   return roundedRectangle({
     sx,
     sy,
@@ -36,7 +28,6 @@ export function stadium({
     ny,
     radius: Math.min(sx, sy) * 0.5,
     roundSegments,
-    edgeSegments,
   });
 }
 
@@ -47,7 +38,6 @@ export function stadium({
  * @property {number} [nx=1]
  * @property {number} [ny=nx]
  * @property {number} [roundSegments=8]
- * @property {number} [edgeSegments=1]
  * @property {boolean} [closed=false]
  */
 
@@ -65,7 +55,6 @@ export function stadiumPath({
   nx,
   ny,
   roundSegments,
-  edgeSegments,
   closed,
 } = {}) {
   return roundedRectanglePath({
@@ -75,7 +64,6 @@ export function stadiumPath({
     ny,
     radius: Math.min(sx, sy) * 0.5,
     roundSegments,
-    edgeSegments,
     closed,
   });
 }

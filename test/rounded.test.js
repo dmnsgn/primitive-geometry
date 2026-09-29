@@ -73,13 +73,6 @@ describe("roundedRectangle", () => {
     assert.equal(uvMismatches(g), 0);
   });
 
-  it("defaults nx/ny to edgeSegments for backwards compatibility", () => {
-    const a = Primitives.roundedRectangle({ edgeSegments: 4 });
-    const b = Primitives.roundedRectangle({ nx: 4, ny: 4 });
-    assert.deepEqual(a.positions, b.positions);
-    assert.deepEqual(a.cells, b.cells);
-  });
-
   describe("roundedCorners", () => {
     // The sharp flat-square outer corner sits at exactly (±sx/2, ±sy/2);
     // a rounded corner's outermost vertex moves off that exact point.
@@ -192,7 +185,7 @@ describe("roundedCube", () => {
 
   it("is watertight with mismatched subdivisions and non-uniform sizes", () => {
     for (const options of [
-      { roundSegments: 3, edgeSegments: 2, nx: 3 },
+      { roundSegments: 3, nx: 3 },
       { sy: 0.6, sz: 0.4, radius: 0.1 },
       { nx: 2, ny: 3, nz: 4 },
     ]) {

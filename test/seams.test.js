@@ -118,7 +118,7 @@ const cases = [
   ["roundedCube", () => Primitives.roundedCube()],
   [
     "roundedCube mismatched subdivisions",
-    () => Primitives.roundedCube({ roundSegments: 3, edgeSegments: 2, nx: 3 }),
+    () => Primitives.roundedCube({ roundSegments: 3, nx: 3 }),
   ],
   [
     "roundedCube non-uniform",

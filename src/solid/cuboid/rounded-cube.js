@@ -19,8 +19,7 @@ import {
  * @property {number} [sz=sx]
  * @property {number} [radius=sx * 0.25]
  * @property {number} [roundSegments=8]
- * @property {number} [edgeSegments=1]
- * @property {number} [nx=edgeSegments] Segments along the straight x sections.
+ * @property {number} [nx=1] Segments along the straight x sections.
  * @property {number} [ny=nx] Segments along the straight y sections.
  * @property {number} [nz=nx] Segments along the straight z sections.
  * @property {RoundedCubeDirection} [roundDirection="all"]
@@ -38,8 +37,7 @@ export function roundedCube({
   sz = sx,
   radius = sx * 0.25,
   roundSegments = 8,
-  edgeSegments = 1,
-  nx = edgeSegments,
+  nx = 1,
   ny = nx,
   nz = nx,
   roundDirection = "all",

@@ -13,8 +13,7 @@ import { computePlane } from "../../utils/plane-grid.js";
  * @property {number} [sy=sx]
  * @property {number} [radius=sx * 0.25]
  * @property {number} [roundSegments=8]
- * @property {number} [edgeSegments=1]
- * @property {number} [nx=edgeSegments] Segments along the straight top/bottom
+ * @property {number} [nx=1] Segments along the straight top/bottom
  *   sections.
  * @property {number} [ny=nx] Segments along the straight left/right sections.
  * @property {RoundedRectangleCorner[]} [roundedCorners=["top-left", "top-right", "bottom-right", "bottom-left"]]
@@ -33,8 +32,7 @@ export function roundedRectangle({
   sy = sx,
   radius = sx * 0.25,
   roundSegments = 8,
-  edgeSegments = 1,
-  nx = edgeSegments,
+  nx = 1,
   ny = nx,
   roundedCorners = CORNER_ORDER,
 } = {}) {
@@ -100,8 +98,7 @@ const PATH_CORNERS = [
  * @property {number} [sy=sx]
  * @property {number} [radius=sx * 0.25]
  * @property {number} [roundSegments=8]
- * @property {number} [edgeSegments=1]
- * @property {number} [nx=edgeSegments]
+ * @property {number} [nx=1]
  * @property {number} [ny=nx]
  * @property {RoundedRectangleCorner[]} [roundedCorners=["top-left", "top-right", "bottom-right", "bottom-left"]]
  * @property {boolean} [closed=false]
@@ -122,8 +119,7 @@ export function roundedRectanglePath({
   sy = sx,
   radius = sx * 0.25,
   roundSegments = 8,
-  edgeSegments = 1,
-  nx = edgeSegments,
+  nx = 1,
   ny = nx,
   roundedCorners = CORNER_ORDER,
   closed = false,
