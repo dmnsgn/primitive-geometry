@@ -326,6 +326,7 @@ const polygon = Primitives.polygon({
   mapping: mappings.concentric,
 });
 const reuleaux = Primitives.reuleaux({
+  sides: 3,
   radius: 0.5,
   segments: 32,
   innerSegments: 16,
@@ -334,7 +335,6 @@ const reuleaux = Primitives.reuleaux({
   thetaOffset: 0,
   mergeCentroid: true,
   mapping: mappings.concentric,
-  n: 3,
 });
 const star = Primitives.star({
   points: 5,

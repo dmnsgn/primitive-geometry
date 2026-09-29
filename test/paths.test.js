@@ -437,9 +437,9 @@ describe("stadiumPath", () => {
 describe("reuleauxPath", () => {
   it("matches reuleaux's outer ring", () => {
     const segments = 24;
-    const n = 5;
-    const path = Primitives.reuleauxPath({ segments, n });
-    const filled = Primitives.reuleaux({ segments, n, innerSegments: 1 });
+    const sides = 5;
+    const path = Primitives.reuleauxPath({ segments, sides });
+    const filled = Primitives.reuleaux({ segments, sides, innerSegments: 1 });
     const ring = outerRing(filled, segments).flat();
 
     assertClose(Array.from(path.positions.filter((_, i) => i % 3 !== 2)), ring);

@@ -333,11 +333,11 @@ describe("reuleaux", () => {
     assert.equal(flippedTriangles2D(Primitives.reuleaux()), 0);
   });
 
-  it("is watertight with no seams or cracks across n/theta/thetaOffset variations", () => {
+  it("is watertight with no seams or cracks across sides/theta/thetaOffset variations", () => {
     for (const options of [
       {},
-      { n: 4 },
-      { n: 5 },
+      { sides: 4 },
+      { sides: 5 },
       { theta: Math.PI },
       { thetaOffset: 0.5 },
       { innerSegments: 1 },
