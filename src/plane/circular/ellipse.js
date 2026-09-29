@@ -21,7 +21,7 @@ import {
  * @property {number} [innerRadius=0] Like `annulus`'s: a hole radius the fill
  *   stops at instead of reaching the center. `0` (default): no hole, fill
  *   reaches the center (subject to `mergeCentroid`).
- * @property {boolean} [mergeCentroid=true]
+ * @property {boolean} [mergeCentroid=innerRadius===0]
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.elliptical]
  * @property {EllipseEquationFn} [equation] Maps each (rx, ry, cosTheta,
  *   sinTheta) sample to its [x, y] position, defaulting to an ellipse's arc.

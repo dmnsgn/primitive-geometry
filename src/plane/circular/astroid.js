@@ -14,7 +14,7 @@ import { TAU } from "../../utils/common.js";
  * @property {number} [innerRadius=0]
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
- * @property {boolean} [mergeCentroid=true]
+ * @property {boolean} [mergeCentroid=innerRadius===0]
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.lamé]
  */
 
@@ -32,7 +32,7 @@ export function astroid({
   innerRadius = 0,
   theta = TAU,
   thetaOffset = 0,
-  mergeCentroid = true,
+  mergeCentroid = innerRadius === 0,
   mapping = lamé,
 } = {}) {
   return superellipse({

@@ -43,7 +43,7 @@ function computeCrossOutline(r, w) {
  * @property {number} [innerRadius=0] Like `star`'s: a hole radius the fill
  *   stops at instead of reaching the center, traced as a smaller, self- similar
  *   copy of the outer cross. `0` (default): no hole, fill reaches the center.
- * @property {boolean} [mergeCentroid=true]
+ * @property {boolean} [mergeCentroid=innerRadius===0]
  * @property {import("../mappings.js").MappingFn} [mapping=mappings.rectangular]
  *   Uv mapping function. Defaults to a flat, bounding-box-relative unwrap.
  */

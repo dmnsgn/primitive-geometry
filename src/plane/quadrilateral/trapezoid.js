@@ -49,7 +49,7 @@ function computeTrapezoidCorners(sx, sy, topRatio, topOffset) {
  * @property {number} [theta=TAU] Negative values aren't supported: the corner
  *   lookup assumes `t - thetaOffset` stays non-negative.
  * @property {number} [thetaOffset=0]
- * @property {boolean} [mergeCentroid=true]
+ * @property {boolean} [mergeCentroid=innerRadius===0]
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  *   Uv mapping function. Defaults to a flat, bounding-box-relative unwrap.
  */

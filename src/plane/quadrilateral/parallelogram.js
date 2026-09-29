@@ -17,7 +17,7 @@ import { trapezoid, trapezoidPath } from "./trapezoid.js";
  * @property {number} [innerRadius=0]
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
- * @property {boolean} [mergeCentroid=true]
+ * @property {boolean} [mergeCentroid=innerRadius===0]
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  */
 

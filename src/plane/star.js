@@ -48,8 +48,7 @@ function computeStarEdge(points, radius, notchRadius, theta, thetaOffset, t) {
  * @property {number} [innerSegments=16]
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
- * @property {boolean} [mergeCentroid] Defaults to `true` (fill to center) when
- *   `innerRadius` is `0`, `false` (leave the hole open) otherwise.
+ * @property {boolean} [mergeCentroid=innerRadius===0]
  * @property {import("../mappings.js").MappingFn} [mapping=mappings.concentric]
  */
 

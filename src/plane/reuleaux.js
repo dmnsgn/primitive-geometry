@@ -17,7 +17,7 @@ import {
  * @property {number} [innerRadius=0]
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
- * @property {boolean} [mergeCentroid=true]
+ * @property {boolean} [mergeCentroid=innerRadius===0]
  * @property {import("../mappings.js").MappingFn} [mapping=mappings.concentric]
  * @property {number} [n=3]
  */
@@ -57,7 +57,7 @@ export function reuleaux({
   innerRadius = 0,
   theta = TAU,
   thetaOffset = 0,
-  mergeCentroid = true,
+  mergeCentroid = innerRadius === 0,
   mapping = concentric,
   n = 3,
 } = {}) {
