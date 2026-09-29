@@ -11,10 +11,10 @@ import { computeFlatRevolutionGeometry } from "../../utils/revolution.js";
  * @typedef {object} HyperboloidOptions
  * @property {number} [height=1]
  * @property {number} [radius=0.25] Waist radius, at y = 0
- * @property {number} [radiusTop=radius*2] Rim radius, at y = ±height/2 (both
- *   ends, symmetric) - the classic one-sheet shape needs radiusTop > radius
- *   (pinched waist flaring to both rims); radiusTop = radius degenerates to a
- *   plain cylinder, and radiusTop < radius traces an oblate-spheroid-like
+ * @property {number} [endRadius=radius*2] Rim radius, at y = ±height/2 (both
+ *   ends, symmetric) - the classic one-sheet shape needs endRadius > radius
+ *   (pinched waist flaring to both rims); endRadius = radius degenerates to a
+ *   plain cylinder, and endRadius < radius traces an oblate-spheroid-like
  *   profile instead (still a valid, NaN-free surface, just not a hyperbola)
  * @property {number} [nx=32]
  * @property {number} [ny=16]
@@ -40,7 +40,7 @@ import { computeFlatRevolutionGeometry } from "../../utils/revolution.js";
 export function hyperboloid({
   height = 1,
   radius = 0.25,
-  radiusTop = radius * 2,
+  endRadius = radius * 2,
   nx = 32,
   ny = 16,
   capSegments = 1,
@@ -52,9 +52,9 @@ export function hyperboloid({
   vDistribution = linear,
 } = {}) {
   const halfHeight = height / 2;
-  // r² = radius² + k·y², fixed by r = radiusTop at both y = ±halfHeight
+  // r² = radius² + k·y², fixed by r = endRadius at both y = ±halfHeight
   const k =
-    (radiusTop * radiusTop - radius * radius) / (halfHeight * halfHeight);
+    (endRadius * endRadius - radius * radius) / (halfHeight * halfHeight);
 
   const { positions, normals, uvs, cells } = computeFlatRevolutionGeometry({
     height,

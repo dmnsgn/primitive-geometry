@@ -160,12 +160,12 @@ describe("hyperboloid", () => {
     }
   });
 
-  it("pinches to the waist radius at y = 0, flares to radiusTop at both rims", () => {
+  it("pinches to the waist radius at y = 0, flares to endRadius at both rims", () => {
     const radius = 0.25;
-    const radiusTop = 0.5;
+    const endRadius = 0.5;
     const g = Primitives.hyperboloid({
       radius,
-      radiusTop,
+      endRadius,
       capApex: false,
       capBase: false,
     });
@@ -179,11 +179,11 @@ describe("hyperboloid", () => {
       maxR = Math.max(maxR, r);
     }
     assert.ok(Math.abs(minR - radius) < 1e-6);
-    assert.ok(Math.abs(maxR - radiusTop) < 1e-6);
+    assert.ok(Math.abs(maxR - endRadius) < 1e-6);
   });
 
-  it("radiusTop = radius degenerates to a plain cylinder", () => {
-    const g = Primitives.hyperboloid({ radiusTop: 0.25, radius: 0.25 });
+  it("endRadius = radius degenerates to a plain cylinder", () => {
+    const g = Primitives.hyperboloid({ endRadius: 0.25, radius: 0.25 });
     const { positions } = g;
     for (let i = 0; i < positions.length / 3; i++) {
       const r = Math.hypot(positions[i * 3], positions[i * 3 + 2]);
@@ -195,7 +195,7 @@ describe("hyperboloid", () => {
     for (const g of [
       Primitives.hyperboloid(),
       Primitives.hyperboloid({ capApex: false, capBase: false }),
-      Primitives.hyperboloid({ radiusTop: 0.1, radius: 0.25, capSegments: 3 }),
+      Primitives.hyperboloid({ endRadius: 0.1, radius: 0.25, capSegments: 3 }),
     ]) {
       assert.equal(flippedNormalTriangles(g), 0);
     }

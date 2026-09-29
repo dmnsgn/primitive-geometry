@@ -638,7 +638,7 @@ const paraboloid = Primitives.paraboloid({
 const hyperboloid = Primitives.hyperboloid({
   height: 1,
   radius: 0.25,
-  radiusTop: 0.5,
+  endRadius: 0.5,
   nx: 32,
   ny: 16,
   capSegments: 1,
