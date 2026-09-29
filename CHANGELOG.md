@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+# [3.1.0](https://github.com/dmnsgn/primitive-geometry/compare/v3.0.0...v3.1.0) (2026-09-29)
+
+### Features
+
+* add innerRadius to disc, superellipse, squircle, astroid and reuleaux ([0391cd3](https://github.com/dmnsgn/primitive-geometry/commit/0391cd3957c40ffec2d40a61ad9eb156b46ae307))
+* **ellipsoid, superellipsoid, astroidal-ellipsoid, superegg:** rename rx/ry/rz options to sx/sy/sz ([dc15784](https://github.com/dmnsgn/primitive-geometry/commit/dc1578422c4c28c1b2bbff4e2130a01f617cba37))
+* **funnel:** rename radiusTop option to radiusApex ([9fd1676](https://github.com/dmnsgn/primitive-geometry/commit/9fd1676afdca425cfbea67be7e89ba3e2057555b))
+* **hyperboloid:** rename radiusTop option to endRadius ([7c1a6bd](https://github.com/dmnsgn/primitive-geometry/commit/7c1a6bd721fdd4274890b4c34253e913022fd0a7))
+* **quad:** make scale the side length, defaulting to 1 ([391a4c0](https://github.com/dmnsgn/primitive-geometry/commit/391a4c0535f87c99dc832042dbe79d16f2a15733))
+* remove redundant edgeSegments from roundedRectangle, stadium and roundedCube ([c46c461](https://github.com/dmnsgn/primitive-geometry/commit/c46c46136389c8072aa221ef4970ea72a9b47b86))
+* rename cross segments to edgeSegments + add edgeSegments to star + fix partial theta for polar path ([170e5fd](https://github.com/dmnsgn/primitive-geometry/commit/170e5fd69daf75c84eec78178218afa99815e34c))
+* **reuleaux:** rename n option to sides ([dd93f3e](https://github.com/dmnsgn/primitive-geometry/commit/dd93f3ef1086fab8e3866ed80284c662deb90838))
+
 # [3.0.0](https://github.com/dmnsgn/primitive-geometry/compare/v2.11.0...v3.0.0) (2026-09-23)
 
 ### Bug Fixes

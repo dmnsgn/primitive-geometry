@@ -13,8 +13,7 @@ import { computePlane } from "../../utils/plane-grid.js";
  * @property {number} [sy=sx]
  * @property {number} [radius=sx * 0.25]
  * @property {number} [roundSegments=8]
- * @property {number} [nx=1] Segments along the straight top/bottom
- *   sections.
+ * @property {number} [nx=1] Segments along the straight top/bottom sections.
  * @property {number} [ny=nx] Segments along the straight left/right sections.
  * @property {RoundedRectangleCorner[]} [roundedCorners=["top-left", "top-right", "bottom-right", "bottom-left"]]
  */

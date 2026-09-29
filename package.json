@@ -1,6 +1,6 @@
 {
   "name": "primitive-geometry",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Geometries for 3D rendering: planes, grids, solids, polyhedra and outline paths, with normals, UVs and cell indices (faces). Perfect if you want to supercharge your dependency folder... with 20KB of geometries.",
   "keywords": [
     "geometry",

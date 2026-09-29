@@ -1065,8 +1065,8 @@ connected by straight edges (rhombus is this shape's sides=4 case).
 
 **Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Returns**: [<code>SimplicialComplexPath</code>](#SimplicialComplexPath) - `edgeSegments *
-  sides` positions and a single path cell of that many indices (`+ 1`,
-repeating index `0`, when `closed`)
+  sides` positions (`+ 1` for a partial `theta`) and a single path cell of
+that many indices (`+ 1`, repeating index `0`, when `closed`)
 
 | Param     | Type                                                                             | Default         |
 | --------- | -------------------------------------------------------------------------------- | --------------- |
@@ -1076,8 +1076,8 @@ repeating index `0`, when `closed`)
 
 ### primitiveGeometry.reuleaux([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
 
-A Reuleaux polygon: a constant-width curve built from n circular arcs, each
-centered on the opposite vertex.
+A Reuleaux polygon: a constant-width curve built from `sides` circular arcs,
+each centered on the opposite vertex.
 
 **Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **See**: [Parametric equations for regular and Reuleaux polygons](https://tpfto.wordpress.com/2011/09/15/parametric-equations-for-regular-and-reuleaux-polygons/)
@@ -1123,9 +1123,9 @@ Outline dual of `star`: `points` outer tips alternating with `points` inner
 notches, connected by straight edges.
 
 **Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
-**Returns**: [<code>SimplicialComplexPath</code>](#SimplicialComplexPath) - `points * 2`
-positions and a single path cell of that many indices (`+ 1`, repeating
-index `0`, when `closed`)
+**Returns**: [<code>SimplicialComplexPath</code>](#SimplicialComplexPath) - `edgeSegments *
+  points * 2` positions (`+ 1` for a partial `theta`) and a single path cell
+of that many indices (`+ 1`, repeating index `0`, when `closed`)
 
 | Param     | Type                                                                       | Default         |
 | --------- | -------------------------------------------------------------------------- | --------------- |
@@ -1292,8 +1292,8 @@ Outline dual of `disc`: `ellipsePath` with sx = sy = 1.
 
 **Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Returns**: [<code>SimplicialComplexPath</code>](#SimplicialComplexPath) - `segments`
-positions and a single path cell of `segments` indices (`segments + 1`,
-repeating index `0`, when `closed`)
+positions (`+ 1` for a partial `theta`) and a single path cell of that many
+indices (`+ 1`, repeating index `0`, when `closed`)
 
 | Param     | Type                                                                           | Default         |
 | --------- | ------------------------------------------------------------------------------ | --------------- |
@@ -1320,8 +1320,8 @@ Outline dual of `ellipse`: sx/sy independently scale the two axes, same as
 
 **Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Returns**: [<code>SimplicialComplexPath</code>](#SimplicialComplexPath) - `segments`
-positions and a single path cell of `segments` indices (`segments + 1`,
-repeating index `0`, when `closed`)
+positions (`+ 1` for a partial `theta`) and a single path cell of that many
+indices (`+ 1`, repeating index `0`, when `closed`)
 
 | Param     | Type                                                                             | Default         |
 | --------- | -------------------------------------------------------------------------------- | --------------- |
@@ -1538,8 +1538,8 @@ A square, filled with 2 triangles.
 
 ### primitiveGeometry.squarePath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
 
-Outline dual of `quad`: `rectanglePath` with equal sx/sy, same as `quad`
-itself is built from it.
+Outline dual of `quad`: `rectanglePath` with `sx = sy = scale`, same as
+`quad` itself is built from it.
 
 **Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 
@@ -1828,7 +1828,7 @@ sphere's - each pole's normal varies per column, same as `cone`'s apex.
 
 A superellipsoid special case (n1 = n2 = 2/3): the surface
 
-|x/rx|^(2/3) + |y/ry|^(2/3) + |z/rz|^(2/3) = 1, pinched to 6 cusps along
+|x/a|^(2/3) + |y/b|^(2/3) + |z/c|^(2/3) = 1, pinched to 6 cusps along
 
 The axes.
 
@@ -2053,7 +2053,7 @@ becoming `capsule`'s hemisphere.
 
 ### primitiveGeometry.sphere([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
 
-A sphere: `ellipsoid` with rx = ry = 1.
+A sphere: `ellipsoid` with sx = sy = 1.
 
 **Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 
@@ -2099,7 +2099,7 @@ surface that rolls by wobbling in a straight line.
 
 ### primitiveGeometry.superegg([options]) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
 
-Piet Hein's superegg: a superellipsoid special case (n2 = 2, rx = rz) with a
+Piet Hein's superegg: a superellipsoid special case (n2 = 2, sx = sz) with a
 circular cross-section at every height, ie. an actual surface of revolution -
 unlike the general superellipsoid, whose cross-sections are themselves
 superelliptical.
@@ -2452,15 +2452,15 @@ Regular tetrahedron.
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name            | Type                   | Default                           | Description                                                                                                                                                                                 |
-| --------------- | ---------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [radius]        | <code>number</code>    | <code>0.5</code>                  | Distance from the center to each arm's tip.                                                                                                                                                 |
-| [armWidth]      | <code>number</code>    | <code>radius/3</code>             | Half-width of each arm. Defaults to a third of `radius`, the classic Greek cross made of 5 equal squares.                                                                                   |
-| [segments]      | <code>number</code>    | <code>1</code>                    | Column count per outline edge (the cross is a 12-sided, non-regular dodecagon), swept around the outline.                                                                                   |
-| [innerSegments] | <code>number</code>    | <code>16</code>                   | Row count between the center and the outline at each column.                                                                                                                                |
-| [innerRadius]   | <code>number</code>    | <code>0</code>                    | Like `star`'s: a hole radius the fill stops at instead of reaching the center, traced as a smaller, self- similar copy of the outer cross. `0` (default): no hole, fill reaches the center. |
-| [mergeCentroid] | <code>boolean</code>   | <code>true</code>                 |                                                                                                                                                                                             |
-| [mapping]       | <code>MappingFn</code> | <code>mappings.rectangular</code> | Uv mapping function. Defaults to a flat, bounding-box-relative unwrap.                                                                                                                      |
+| Name            | Type                   | Default                                                   | Description                                                                                                                                                                                 |
+| --------------- | ---------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [radius]        | <code>number</code>    | <code>0.5</code>                                          | Distance from the center to each arm's tip.                                                                                                                                                 |
+| [armWidth]      | <code>number</code>    | <code>radius/3</code>                                     | Half-width of each arm. Defaults to a third of `radius`, the classic Greek cross made of 5 equal squares.                                                                                   |
+| [edgeSegments]  | <code>number</code>    | <code>1</code>                                            |                                                                                                                                                                                             |
+| [innerSegments] | <code>number</code>    | <code>16</code>                                           | Row count between the center and the outline at each column.                                                                                                                                |
+| [innerRadius]   | <code>number</code>    | <code>0</code>                                            | Like `star`'s: a hole radius the fill stops at instead of reaching the center, traced as a smaller, self- similar copy of the outer cross. `0` (default): no hole, fill reaches the center. |
+| [mergeCentroid] | <code>boolean</code>   | <code>&quot;innerRadius &#x3D;&#x3D;&#x3D; 0&quot;</code> |                                                                                                                                                                                             |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.rectangular</code>                         | Uv mapping function. Defaults to a flat, bounding-box-relative unwrap.                                                                                                                      |
 
 <a name="module_primitiveGeometry..CrossPathOptions"></a>
 
@@ -2469,12 +2469,12 @@ Regular tetrahedron.
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name       | Type                 | Default               |
-| ---------- | -------------------- | --------------------- |
-| [radius]   | <code>number</code>  | <code>0.5</code>      |
-| [armWidth] | <code>number</code>  | <code>radius/3</code> |
-| [segments] | <code>number</code>  | <code>1</code>        |
-| [closed]   | <code>boolean</code> | <code>false</code>    |
+| Name           | Type                 | Default               |
+| -------------- | -------------------- | --------------------- |
+| [radius]       | <code>number</code>  | <code>0.5</code>      |
+| [armWidth]     | <code>number</code>  | <code>radius/3</code> |
+| [edgeSegments] | <code>number</code>  | <code>1</code>        |
+| [closed]       | <code>boolean</code> | <code>false</code>    |
 
 <a name="module_primitiveGeometry..PolygonOptions"></a>
 
@@ -2483,19 +2483,19 @@ Regular tetrahedron.
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name            | Type                   | Default                          |
-| --------------- | ---------------------- | -------------------------------- |
-| [sides]         | <code>number</code>    | <code>6</code>                   |
-| [sx]            | <code>number</code>    | <code>1</code>                   |
-| [sy]            | <code>number</code>    | <code>1</code>                   |
-| [radius]        | <code>number</code>    | <code>0.5</code>                 |
-| [edgeSegments]  | <code>number</code>    | <code>1</code>                   |
-| [innerSegments] | <code>number</code>    | <code>16</code>                  |
-| [innerRadius]   | <code>number</code>    | <code>0</code>                   |
-| [theta]         | <code>number</code>    | <code>TAU</code>                 |
-| [thetaOffset]   | <code>number</code>    | <code>0</code>                   |
-| [mergeCentroid] | <code>boolean</code>   | <code>true</code>                |
-| [mapping]       | <code>MappingFn</code> | <code>mappings.concentric</code> |
+| Name            | Type                   | Default                                                   |
+| --------------- | ---------------------- | --------------------------------------------------------- |
+| [sides]         | <code>number</code>    | <code>6</code>                                            |
+| [sx]            | <code>number</code>    | <code>1</code>                                            |
+| [sy]            | <code>number</code>    | <code>1</code>                                            |
+| [radius]        | <code>number</code>    | <code>0.5</code>                                          |
+| [edgeSegments]  | <code>number</code>    | <code>1</code>                                            |
+| [innerSegments] | <code>number</code>    | <code>16</code>                                           |
+| [innerRadius]   | <code>number</code>    | <code>0</code>                                            |
+| [theta]         | <code>number</code>    | <code>TAU</code>                                          |
+| [thetaOffset]   | <code>number</code>    | <code>0</code>                                            |
+| [mergeCentroid] | <code>boolean</code>   | <code>&quot;innerRadius &#x3D;&#x3D;&#x3D; 0&quot;</code> |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.concentric</code>                          |
 
 <a name="module_primitiveGeometry..PolygonPathOptions"></a>
 
@@ -2522,16 +2522,17 @@ Regular tetrahedron.
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name            | Type                   | Default                          |
-| --------------- | ---------------------- | -------------------------------- |
-| [radius]        | <code>number</code>    | <code>0.5</code>                 |
-| [segments]      | <code>number</code>    | <code>32</code>                  |
-| [innerSegments] | <code>number</code>    | <code>16</code>                  |
-| [theta]         | <code>number</code>    | <code>TAU</code>                 |
-| [thetaOffset]   | <code>number</code>    | <code>0</code>                   |
-| [mergeCentroid] | <code>boolean</code>   | <code>true</code>                |
-| [mapping]       | <code>MappingFn</code> | <code>mappings.concentric</code> |
-| [n]             | <code>number</code>    | <code>3</code>                   |
+| Name            | Type                   | Default                                                   |
+| --------------- | ---------------------- | --------------------------------------------------------- |
+| [sides]         | <code>number</code>    | <code>3</code>                                            |
+| [radius]        | <code>number</code>    | <code>0.5</code>                                          |
+| [segments]      | <code>number</code>    | <code>32</code>                                           |
+| [innerSegments] | <code>number</code>    | <code>16</code>                                           |
+| [innerRadius]   | <code>number</code>    | <code>0</code>                                            |
+| [theta]         | <code>number</code>    | <code>TAU</code>                                          |
+| [thetaOffset]   | <code>number</code>    | <code>0</code>                                            |
+| [mergeCentroid] | <code>boolean</code>   | <code>&quot;innerRadius &#x3D;&#x3D;&#x3D; 0&quot;</code> |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.concentric</code>                          |
 
 <a name="module_primitiveGeometry..ReuleauxPathOptions"></a>
 
@@ -2542,11 +2543,11 @@ Regular tetrahedron.
 
 | Name          | Type                 | Default            |
 | ------------- | -------------------- | ------------------ |
+| [sides]       | <code>number</code>  | <code>3</code>     |
 | [radius]      | <code>number</code>  | <code>0.5</code>   |
 | [segments]    | <code>number</code>  | <code>32</code>    |
 | [theta]       | <code>number</code>  | <code>TAU</code>   |
 | [thetaOffset] | <code>number</code>  | <code>0</code>     |
-| [n]           | <code>number</code>  | <code>3</code>     |
 | [closed]      | <code>boolean</code> | <code>false</code> |
 
 <a name="module_primitiveGeometry..StarOptions"></a>
@@ -2556,19 +2557,20 @@ Regular tetrahedron.
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name            | Type                   | Default                                              | Description                                                                                                                                                            |
-| --------------- | ---------------------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [points]        | <code>number</code>    | <code>5</code>                                       |                                                                                                                                                                        |
-| [density]       | <code>number</code>    | <code>2</code>                                       | Schläfli "skip" factor: must be `< points / 2` (and coprime with `points` for a genuine, non-compound star polygon) or the auto-computed `notchRadius` degenerates.    |
-| [radius]        | <code>number</code>    | <code>0.5</code>                                     |                                                                                                                                                                        |
-| [notchRadius]   | <code>number</code>    | <code>radius*computeStarRatio(points,density)</code> | Radius of the points/tips' flanking concave vertices, ie. how deep the star's notches cut in.                                                                          |
-| [innerRadius]   | <code>number</code>    | <code>0</code>                                       | Like `annulus`'s: a hole radius the fill stops at instead of reaching the center. `0` (default): no hole, fill reaches the center (subject to `mergeCentroid`).        |
-| [circularHole]  | <code>boolean</code>   | <code>false</code>                                   | Only relevant when `innerRadius` is non-zero: `false` (default) traces the hole as a smaller, self-similar copy of the outer star; `true` traces it as a plain circle. |
-| [innerSegments] | <code>number</code>    | <code>16</code>                                      |                                                                                                                                                                        |
-| [theta]         | <code>number</code>    | <code>TAU</code>                                     |                                                                                                                                                                        |
-| [thetaOffset]   | <code>number</code>    | <code>0</code>                                       |                                                                                                                                                                        |
-| [mergeCentroid] | <code>boolean</code>   |                                                      | Defaults to `true` (fill to center) when `innerRadius` is `0`, `false` (leave the hole open) otherwise.                                                                |
-| [mapping]       | <code>MappingFn</code> | <code>mappings.concentric</code>                     |                                                                                                                                                                        |
+| Name            | Type                   | Default                                                   | Description                                                                                                                                                            |
+| --------------- | ---------------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [points]        | <code>number</code>    | <code>5</code>                                            |                                                                                                                                                                        |
+| [density]       | <code>number</code>    | <code>2</code>                                            | Schläfli "skip" factor: must be `< points / 2` (and coprime with `points` for a genuine, non-compound star polygon) or the auto-computed `notchRadius` degenerates.    |
+| [radius]        | <code>number</code>    | <code>0.5</code>                                          |                                                                                                                                                                        |
+| [notchRadius]   | <code>number</code>    | <code>radius*computeStarRatio(points,density)</code>      | Radius of the points/tips' flanking concave vertices, ie. how deep the star's notches cut in.                                                                          |
+| [innerRadius]   | <code>number</code>    | <code>0</code>                                            | Like `annulus`'s: a hole radius the fill stops at instead of reaching the center. `0` (default): no hole, fill reaches the center (subject to `mergeCentroid`).        |
+| [circularHole]  | <code>boolean</code>   | <code>false</code>                                        | Only relevant when `innerRadius` is non-zero: `false` (default) traces the hole as a smaller, self-similar copy of the outer star; `true` traces it as a plain circle. |
+| [edgeSegments]  | <code>number</code>    | <code>1</code>                                            |                                                                                                                                                                        |
+| [innerSegments] | <code>number</code>    | <code>16</code>                                           |                                                                                                                                                                        |
+| [theta]         | <code>number</code>    | <code>TAU</code>                                          |                                                                                                                                                                        |
+| [thetaOffset]   | <code>number</code>    | <code>0</code>                                            |                                                                                                                                                                        |
+| [mergeCentroid] | <code>boolean</code>   | <code>&quot;innerRadius &#x3D;&#x3D;&#x3D; 0&quot;</code> |                                                                                                                                                                        |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.concentric</code>                          |                                                                                                                                                                        |
 
 <a name="module_primitiveGeometry..StarPathOptions"></a>
 
@@ -2577,15 +2579,16 @@ Regular tetrahedron.
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name          | Type                 | Default                                              |
-| ------------- | -------------------- | ---------------------------------------------------- |
-| [points]      | <code>number</code>  | <code>5</code>                                       |
-| [density]     | <code>number</code>  | <code>2</code>                                       |
-| [radius]      | <code>number</code>  | <code>0.5</code>                                     |
-| [notchRadius] | <code>number</code>  | <code>radius*computeStarRatio(points,density)</code> |
-| [theta]       | <code>number</code>  | <code>TAU</code>                                     |
-| [thetaOffset] | <code>number</code>  | <code>0</code>                                       |
-| [closed]      | <code>boolean</code> | <code>false</code>                                   |
+| Name           | Type                 | Default                                              |
+| -------------- | -------------------- | ---------------------------------------------------- |
+| [points]       | <code>number</code>  | <code>5</code>                                       |
+| [density]      | <code>number</code>  | <code>2</code>                                       |
+| [radius]       | <code>number</code>  | <code>0.5</code>                                     |
+| [notchRadius]  | <code>number</code>  | <code>radius*computeStarRatio(points,density)</code> |
+| [edgeSegments] | <code>number</code>  | <code>1</code>                                       |
+| [theta]        | <code>number</code>  | <code>TAU</code>                                     |
+| [thetaOffset]  | <code>number</code>  | <code>0</code>                                       |
+| [closed]       | <code>boolean</code> | <code>false</code>                                   |
 
 <a name="module_primitiveGeometry..ArbelosOptions"></a>
 
@@ -2724,15 +2727,16 @@ Regular tetrahedron.
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name            | Type                   | Default                    |
-| --------------- | ---------------------- | -------------------------- |
-| [radius]        | <code>number</code>    | <code>0.5</code>           |
-| [segments]      | <code>number</code>    | <code>32</code>            |
-| [innerSegments] | <code>number</code>    | <code>16</code>            |
-| [theta]         | <code>number</code>    | <code>TAU</code>           |
-| [thetaOffset]   | <code>number</code>    | <code>0</code>             |
-| [mergeCentroid] | <code>boolean</code>   | <code>true</code>          |
-| [mapping]       | <code>MappingFn</code> | <code>mappings.lamé</code> |
+| Name            | Type                   | Default                                                   |
+| --------------- | ---------------------- | --------------------------------------------------------- |
+| [radius]        | <code>number</code>    | <code>0.5</code>                                          |
+| [segments]      | <code>number</code>    | <code>32</code>                                           |
+| [innerSegments] | <code>number</code>    | <code>16</code>                                           |
+| [innerRadius]   | <code>number</code>    | <code>0</code>                                            |
+| [theta]         | <code>number</code>    | <code>TAU</code>                                          |
+| [thetaOffset]   | <code>number</code>    | <code>0</code>                                            |
+| [mergeCentroid] | <code>boolean</code>   | <code>&quot;innerRadius &#x3D;&#x3D;&#x3D; 0&quot;</code> |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.lamé</code>                                |
 
 <a name="module_primitiveGeometry..AstroidPathOptions"></a>
 
@@ -2756,15 +2760,16 @@ Regular tetrahedron.
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name            | Type                   | Default                          |
-| --------------- | ---------------------- | -------------------------------- |
-| [radius]        | <code>number</code>    | <code>0.5</code>                 |
-| [segments]      | <code>number</code>    | <code>32</code>                  |
-| [innerSegments] | <code>number</code>    | <code>16</code>                  |
-| [theta]         | <code>number</code>    | <code>TAU</code>                 |
-| [thetaOffset]   | <code>number</code>    | <code>0</code>                   |
-| [mergeCentroid] | <code>boolean</code>   | <code>true</code>                |
-| [mapping]       | <code>MappingFn</code> | <code>mappings.concentric</code> |
+| Name            | Type                   | Default                                                   |
+| --------------- | ---------------------- | --------------------------------------------------------- |
+| [radius]        | <code>number</code>    | <code>0.5</code>                                          |
+| [segments]      | <code>number</code>    | <code>32</code>                                           |
+| [innerSegments] | <code>number</code>    | <code>16</code>                                           |
+| [innerRadius]   | <code>number</code>    | <code>0</code>                                            |
+| [theta]         | <code>number</code>    | <code>TAU</code>                                          |
+| [thetaOffset]   | <code>number</code>    | <code>0</code>                                            |
+| [mergeCentroid] | <code>boolean</code>   | <code>&quot;innerRadius &#x3D;&#x3D;&#x3D; 0&quot;</code> |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.concentric</code>                          |
 
 <a name="module_primitiveGeometry..CirclePathOptions"></a>
 
@@ -2788,19 +2793,19 @@ Regular tetrahedron.
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name            | Type                           | Default                          | Description                                                                                                                                                     |
-| --------------- | ------------------------------ | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [sx]            | <code>number</code>            | <code>1</code>                   |                                                                                                                                                                 |
-| [sy]            | <code>number</code>            | <code>0.5</code>                 |                                                                                                                                                                 |
-| [radius]        | <code>number</code>            | <code>0.5</code>                 |                                                                                                                                                                 |
-| [segments]      | <code>number</code>            | <code>32</code>                  |                                                                                                                                                                 |
-| [innerSegments] | <code>number</code>            | <code>16</code>                  |                                                                                                                                                                 |
-| [theta]         | <code>number</code>            | <code>TAU</code>                 |                                                                                                                                                                 |
-| [thetaOffset]   | <code>number</code>            | <code>0</code>                   |                                                                                                                                                                 |
-| [innerRadius]   | <code>number</code>            | <code>0</code>                   | Like `annulus`'s: a hole radius the fill stops at instead of reaching the center. `0` (default): no hole, fill reaches the center (subject to `mergeCentroid`). |
-| [mergeCentroid] | <code>boolean</code>           | <code>true</code>                |                                                                                                                                                                 |
-| [mapping]       | <code>MappingFn</code>         | <code>mappings.elliptical</code> |                                                                                                                                                                 |
-| [equation]      | <code>EllipseEquationFn</code> |                                  | Maps each (rx, ry, cosTheta, sinTheta) sample to its [x, y] position, defaulting to an ellipse's arc.                                                           |
+| Name            | Type                           | Default                                                   | Description                                                                                                                                                     |
+| --------------- | ------------------------------ | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [sx]            | <code>number</code>            | <code>1</code>                                            |                                                                                                                                                                 |
+| [sy]            | <code>number</code>            | <code>0.5</code>                                          |                                                                                                                                                                 |
+| [radius]        | <code>number</code>            | <code>0.5</code>                                          |                                                                                                                                                                 |
+| [segments]      | <code>number</code>            | <code>32</code>                                           |                                                                                                                                                                 |
+| [innerSegments] | <code>number</code>            | <code>16</code>                                           |                                                                                                                                                                 |
+| [theta]         | <code>number</code>            | <code>TAU</code>                                          |                                                                                                                                                                 |
+| [thetaOffset]   | <code>number</code>            | <code>0</code>                                            |                                                                                                                                                                 |
+| [innerRadius]   | <code>number</code>            | <code>0</code>                                            | Like `annulus`'s: a hole radius the fill stops at instead of reaching the center. `0` (default): no hole, fill reaches the center (subject to `mergeCentroid`). |
+| [mergeCentroid] | <code>boolean</code>           | <code>&quot;innerRadius &#x3D;&#x3D;&#x3D; 0&quot;</code> |                                                                                                                                                                 |
+| [mapping]       | <code>MappingFn</code>         | <code>mappings.elliptical</code>                          |                                                                                                                                                                 |
+| [equation]      | <code>EllipseEquationFn</code> |                                                           | Maps each (rx, ry, cosTheta, sinTheta) sample to its [x, y] position, defaulting to an ellipse's arc.                                                           |
 
 <a name="module_primitiveGeometry..EllipseEquationFn"></a>
 
@@ -2842,18 +2847,19 @@ Regular tetrahedron.
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name            | Type                   | Default                            | Description             |
-| --------------- | ---------------------- | ---------------------------------- | ----------------------- |
-| [sx]            | <code>number</code>    | <code>1</code>                     |                         |
-| [sy]            | <code>number</code>    | <code>1</code>                     |                         |
-| [radius]        | <code>number</code>    | <code>0.5</code>                   |                         |
-| [segments]      | <code>number</code>    | <code>128</code>                   |                         |
-| [innerSegments] | <code>number</code>    | <code>16</code>                    |                         |
-| [theta]         | <code>number</code>    | <code>TAU</code>                   |                         |
-| [thetaOffset]   | <code>number</code>    | <code>0</code>                     |                         |
-| [mergeCentroid] | <code>boolean</code>   | <code>true</code>                  |                         |
-| [mapping]       | <code>MappingFn</code> | <code>mappings.fgSquircular</code> |                         |
-| [squareness]    | <code>number</code>    | <code>0.95</code>                  | Squareness (0 < s <= 1) |
+| Name            | Type                   | Default                                                   | Description             |
+| --------------- | ---------------------- | --------------------------------------------------------- | ----------------------- |
+| [sx]            | <code>number</code>    | <code>1</code>                                            |                         |
+| [sy]            | <code>number</code>    | <code>1</code>                                            |                         |
+| [radius]        | <code>number</code>    | <code>0.5</code>                                          |                         |
+| [segments]      | <code>number</code>    | <code>128</code>                                          |                         |
+| [innerSegments] | <code>number</code>    | <code>16</code>                                           |                         |
+| [innerRadius]   | <code>number</code>    | <code>0</code>                                            |                         |
+| [theta]         | <code>number</code>    | <code>TAU</code>                                          |                         |
+| [thetaOffset]   | <code>number</code>    | <code>0</code>                                            |                         |
+| [mergeCentroid] | <code>boolean</code>   | <code>&quot;innerRadius &#x3D;&#x3D;&#x3D; 0&quot;</code> |                         |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.fgSquircular</code>                        |                         |
+| [squareness]    | <code>number</code>    | <code>0.95</code>                                         | Squareness (0 < s <= 1) |
 
 <a name="module_primitiveGeometry..SquirclePathOptions"></a>
 
@@ -2880,19 +2886,20 @@ Regular tetrahedron.
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name            | Type                   | Default                    |
-| --------------- | ---------------------- | -------------------------- |
-| [sx]            | <code>number</code>    | <code>1</code>             |
-| [sy]            | <code>number</code>    | <code>0.5</code>           |
-| [radius]        | <code>number</code>    | <code>0.5</code>           |
-| [segments]      | <code>number</code>    | <code>32</code>            |
-| [innerSegments] | <code>number</code>    | <code>16</code>            |
-| [theta]         | <code>number</code>    | <code>TAU</code>           |
-| [thetaOffset]   | <code>number</code>    | <code>0</code>             |
-| [mergeCentroid] | <code>boolean</code>   | <code>true</code>          |
-| [mapping]       | <code>MappingFn</code> | <code>mappings.lamé</code> |
-| [m]             | <code>number</code>    | <code>2</code>             |
-| [n]             | <code>number</code>    | <code>m</code>             |
+| Name            | Type                   | Default                                                   |
+| --------------- | ---------------------- | --------------------------------------------------------- |
+| [sx]            | <code>number</code>    | <code>1</code>                                            |
+| [sy]            | <code>number</code>    | <code>0.5</code>                                          |
+| [radius]        | <code>number</code>    | <code>0.5</code>                                          |
+| [segments]      | <code>number</code>    | <code>32</code>                                           |
+| [innerSegments] | <code>number</code>    | <code>16</code>                                           |
+| [innerRadius]   | <code>number</code>    | <code>0</code>                                            |
+| [theta]         | <code>number</code>    | <code>TAU</code>                                          |
+| [thetaOffset]   | <code>number</code>    | <code>0</code>                                            |
+| [mergeCentroid] | <code>boolean</code>   | <code>&quot;innerRadius &#x3D;&#x3D;&#x3D; 0&quot;</code> |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.lamé</code>                                |
+| [m]             | <code>number</code>    | <code>2</code>                                            |
+| [n]             | <code>number</code>    | <code>m</code>                                            |
 
 <a name="module_primitiveGeometry..SuperellipsePathOptions"></a>
 
@@ -2962,19 +2969,19 @@ Regular tetrahedron.
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name            | Type                   | Default                          | Description                                                                                                                                       |
-| --------------- | ---------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [sx]            | <code>number</code>    | <code>1</code>                   |                                                                                                                                                   |
-| [sy]            | <code>number</code>    | <code>1</code>                   |                                                                                                                                                   |
-| [ratio]         | <code>number</code>    | <code>0.5</code>                 | Bottom vertex distance from center, as a fraction of the top vertex's (sy). `ratio=1` is a rhombus, `ratio=0` collapses the bottom to the center. |
-| [radius]        | <code>number</code>    | <code>0.5</code>                 |                                                                                                                                                   |
-| [edgeSegments]  | <code>number</code>    | <code>1</code>                   |                                                                                                                                                   |
-| [innerSegments] | <code>number</code>    | <code>16</code>                  |                                                                                                                                                   |
-| [innerRadius]   | <code>number</code>    | <code>0</code>                   |                                                                                                                                                   |
-| [theta]         | <code>number</code>    | <code>TAU</code>                 |                                                                                                                                                   |
-| [thetaOffset]   | <code>number</code>    | <code>HALF_PI</code>             |                                                                                                                                                   |
-| [mergeCentroid] | <code>boolean</code>   | <code>true</code>                |                                                                                                                                                   |
-| [mapping]       | <code>MappingFn</code> | <code>mappings.concentric</code> |                                                                                                                                                   |
+| Name            | Type                   | Default                                                   | Description                                                                                                                                       |
+| --------------- | ---------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [sx]            | <code>number</code>    | <code>1</code>                                            |                                                                                                                                                   |
+| [sy]            | <code>number</code>    | <code>1</code>                                            |                                                                                                                                                   |
+| [ratio]         | <code>number</code>    | <code>0.5</code>                                          | Bottom vertex distance from center, as a fraction of the top vertex's (sy). `ratio=1` is a rhombus, `ratio=0` collapses the bottom to the center. |
+| [radius]        | <code>number</code>    | <code>0.5</code>                                          |                                                                                                                                                   |
+| [edgeSegments]  | <code>number</code>    | <code>1</code>                                            |                                                                                                                                                   |
+| [innerSegments] | <code>number</code>    | <code>16</code>                                           |                                                                                                                                                   |
+| [innerRadius]   | <code>number</code>    | <code>0</code>                                            |                                                                                                                                                   |
+| [theta]         | <code>number</code>    | <code>TAU</code>                                          |                                                                                                                                                   |
+| [thetaOffset]   | <code>number</code>    | <code>HALF_PI</code>                                      |                                                                                                                                                   |
+| [mergeCentroid] | <code>boolean</code>   | <code>&quot;innerRadius &#x3D;&#x3D;&#x3D; 0&quot;</code> |                                                                                                                                                   |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.concentric</code>                          |                                                                                                                                                   |
 
 <a name="module_primitiveGeometry..KitePathOptions"></a>
 
@@ -3001,18 +3008,18 @@ Regular tetrahedron.
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name            | Type                   | Default                          |
-| --------------- | ---------------------- | -------------------------------- |
-| [sx]            | <code>number</code>    | <code>0.5</code>                 |
-| [sy]            | <code>number</code>    | <code>sx*2</code>                |
-| [radius]        | <code>number</code>    | <code>0.5</code>                 |
-| [edgeSegments]  | <code>number</code>    | <code>1</code>                   |
-| [innerSegments] | <code>number</code>    | <code>16</code>                  |
-| [innerRadius]   | <code>number</code>    | <code>0</code>                   |
-| [theta]         | <code>number</code>    | <code>TAU</code>                 |
-| [thetaOffset]   | <code>number</code>    | <code>HALF_PI</code>             |
-| [mergeCentroid] | <code>boolean</code>   | <code>true</code>                |
-| [mapping]       | <code>MappingFn</code> | <code>mappings.concentric</code> |
+| Name            | Type                   | Default                                                   |
+| --------------- | ---------------------- | --------------------------------------------------------- |
+| [sx]            | <code>number</code>    | <code>0.5</code>                                          |
+| [sy]            | <code>number</code>    | <code>sx*2</code>                                         |
+| [radius]        | <code>number</code>    | <code>0.5</code>                                          |
+| [edgeSegments]  | <code>number</code>    | <code>1</code>                                            |
+| [innerSegments] | <code>number</code>    | <code>16</code>                                           |
+| [innerRadius]   | <code>number</code>    | <code>0</code>                                            |
+| [theta]         | <code>number</code>    | <code>TAU</code>                                          |
+| [thetaOffset]   | <code>number</code>    | <code>HALF_PI</code>                                      |
+| [mergeCentroid] | <code>boolean</code>   | <code>&quot;innerRadius &#x3D;&#x3D;&#x3D; 0&quot;</code> |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.concentric</code>                          |
 
 <a name="module_primitiveGeometry..LozengePathOptions"></a>
 
@@ -3038,19 +3045,19 @@ Regular tetrahedron.
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name            | Type                   | Default                           | Description                                                                          |
-| --------------- | ---------------------- | --------------------------------- | ------------------------------------------------------------------------------------ |
-| [sx]            | <code>number</code>    | <code>0.5</code>                  | Narrower than `trapezoid`'s default so the sheared top edge still fits the unit box. |
-| [sy]            | <code>number</code>    | <code>1</code>                    |                                                                                      |
-| [shear]         | <code>number</code>    | <code>0.3</code>                  | Horizontal shift of the top edge's center, as a fraction of `sx`.                    |
-| [radius]        | <code>number</code>    | <code>0.5</code>                  |                                                                                      |
-| [edgeSegments]  | <code>number</code>    | <code>1</code>                    |                                                                                      |
-| [innerSegments] | <code>number</code>    | <code>16</code>                   |                                                                                      |
-| [innerRadius]   | <code>number</code>    | <code>0</code>                    |                                                                                      |
-| [theta]         | <code>number</code>    | <code>TAU</code>                  |                                                                                      |
-| [thetaOffset]   | <code>number</code>    | <code>0</code>                    |                                                                                      |
-| [mergeCentroid] | <code>boolean</code>   | <code>true</code>                 |                                                                                      |
-| [mapping]       | <code>MappingFn</code> | <code>mappings.rectangular</code> |                                                                                      |
+| Name            | Type                   | Default                                                   | Description                                                                          |
+| --------------- | ---------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| [sx]            | <code>number</code>    | <code>0.5</code>                                          | Narrower than `trapezoid`'s default so the sheared top edge still fits the unit box. |
+| [sy]            | <code>number</code>    | <code>1</code>                                            |                                                                                      |
+| [shear]         | <code>number</code>    | <code>0.3</code>                                          | Horizontal shift of the top edge's center, in the same units as `sx`.                |
+| [radius]        | <code>number</code>    | <code>0.5</code>                                          |                                                                                      |
+| [edgeSegments]  | <code>number</code>    | <code>1</code>                                            |                                                                                      |
+| [innerSegments] | <code>number</code>    | <code>16</code>                                           |                                                                                      |
+| [innerRadius]   | <code>number</code>    | <code>0</code>                                            |                                                                                      |
+| [theta]         | <code>number</code>    | <code>TAU</code>                                          |                                                                                      |
+| [thetaOffset]   | <code>number</code>    | <code>0</code>                                            |                                                                                      |
+| [mergeCentroid] | <code>boolean</code>   | <code>&quot;innerRadius &#x3D;&#x3D;&#x3D; 0&quot;</code> |                                                                                      |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.rectangular</code>                         |                                                                                      |
 
 <a name="module_primitiveGeometry..ParallelogramPathOptions"></a>
 
@@ -3111,9 +3118,9 @@ Regular tetrahedron.
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name    | Type                | Default          |
-| ------- | ------------------- | ---------------- |
-| [scale] | <code>number</code> | <code>0.5</code> |
+| Name    | Type                | Default        | Description  |
+| ------- | ------------------- | -------------- | ------------ |
+| [scale] | <code>number</code> | <code>1</code> | Side length. |
 
 <a name="module_primitiveGeometry..SquarePathOptions"></a>
 
@@ -3122,11 +3129,11 @@ Regular tetrahedron.
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name    | Type                | Default          | Description                         |
-| ------- | ------------------- | ---------------- | ----------------------------------- |
-| [scale] | <code>number</code> | <code>0.5</code> |                                     |
-| [nx]    | <code>number</code> | <code>1</code>   | Segments along the bottom/top edges |
-| [ny]    | <code>number</code> | <code>nx</code>  | Segments along the left/right edges |
+| Name    | Type                | Default         | Description                         |
+| ------- | ------------------- | --------------- | ----------------------------------- |
+| [scale] | <code>number</code> | <code>1</code>  | Side length.                        |
+| [nx]    | <code>number</code> | <code>1</code>  | Segments along the bottom/top edges |
+| [ny]    | <code>number</code> | <code>nx</code> | Segments along the left/right edges |
 
 <a name="module_primitiveGeometry..RhombusOptions"></a>
 
@@ -3135,18 +3142,18 @@ Regular tetrahedron.
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name            | Type                   | Default                          |
-| --------------- | ---------------------- | -------------------------------- |
-| [sx]            | <code>number</code>    | <code>1</code>                   |
-| [sy]            | <code>number</code>    | <code>1</code>                   |
-| [radius]        | <code>number</code>    | <code>0.5</code>                 |
-| [edgeSegments]  | <code>number</code>    | <code>1</code>                   |
-| [innerSegments] | <code>number</code>    | <code>16</code>                  |
-| [innerRadius]   | <code>number</code>    | <code>0</code>                   |
-| [theta]         | <code>number</code>    | <code>TAU</code>                 |
-| [thetaOffset]   | <code>number</code>    | <code>HALF_PI</code>             |
-| [mergeCentroid] | <code>boolean</code>   | <code>true</code>                |
-| [mapping]       | <code>MappingFn</code> | <code>mappings.concentric</code> |
+| Name            | Type                   | Default                                                   |
+| --------------- | ---------------------- | --------------------------------------------------------- |
+| [sx]            | <code>number</code>    | <code>1</code>                                            |
+| [sy]            | <code>number</code>    | <code>1</code>                                            |
+| [radius]        | <code>number</code>    | <code>0.5</code>                                          |
+| [edgeSegments]  | <code>number</code>    | <code>1</code>                                            |
+| [innerSegments] | <code>number</code>    | <code>16</code>                                           |
+| [innerRadius]   | <code>number</code>    | <code>0</code>                                            |
+| [theta]         | <code>number</code>    | <code>TAU</code>                                          |
+| [thetaOffset]   | <code>number</code>    | <code>HALF_PI</code>                                      |
+| [mergeCentroid] | <code>boolean</code>   | <code>&quot;innerRadius &#x3D;&#x3D;&#x3D; 0&quot;</code> |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.concentric</code>                          |
 
 <a name="module_primitiveGeometry..RhombusPathOptions"></a>
 
@@ -3183,8 +3190,7 @@ Regular tetrahedron.
 | [sy]             | <code>number</code>                                                                                    | <code>sx</code>                                                                                               |                                                  |
 | [radius]         | <code>number</code>                                                                                    | <code>sx * 0.25</code>                                                                                        |                                                  |
 | [roundSegments]  | <code>number</code>                                                                                    | <code>8</code>                                                                                                |                                                  |
-| [edgeSegments]   | <code>number</code>                                                                                    | <code>1</code>                                                                                                |                                                  |
-| [nx]             | <code>number</code>                                                                                    | <code>edgeSegments</code>                                                                                     | Segments along the straight top/bottom sections. |
+| [nx]             | <code>number</code>                                                                                    | <code>1</code>                                                                                                | Segments along the straight top/bottom sections. |
 | [ny]             | <code>number</code>                                                                                    | <code>nx</code>                                                                                               | Segments along the straight left/right sections. |
 | [roundedCorners] | [<code>Array.&lt;RoundedRectangleCorner&gt;</code>](#module_primitiveGeometry..RoundedRectangleCorner) | <code>[&quot;top-left&quot;, &quot;top-right&quot;, &quot;bottom-right&quot;, &quot;bottom-left&quot;]</code> |                                                  |
 
@@ -3201,8 +3207,7 @@ Regular tetrahedron.
 | [sy]             | <code>number</code>                                                                                    | <code>sx</code>                                                                                               |
 | [radius]         | <code>number</code>                                                                                    | <code>sx * 0.25</code>                                                                                        |
 | [roundSegments]  | <code>number</code>                                                                                    | <code>8</code>                                                                                                |
-| [edgeSegments]   | <code>number</code>                                                                                    | <code>1</code>                                                                                                |
-| [nx]             | <code>number</code>                                                                                    | <code>edgeSegments</code>                                                                                     |
+| [nx]             | <code>number</code>                                                                                    | <code>1</code>                                                                                                |
 | [ny]             | <code>number</code>                                                                                    | <code>nx</code>                                                                                               |
 | [roundedCorners] | [<code>Array.&lt;RoundedRectangleCorner&gt;</code>](#module_primitiveGeometry..RoundedRectangleCorner) | <code>[&quot;top-left&quot;, &quot;top-right&quot;, &quot;bottom-right&quot;, &quot;bottom-left&quot;]</code> |
 | [closed]         | <code>boolean</code>                                                                                   | <code>false</code>                                                                                            |
@@ -3221,7 +3226,6 @@ Regular tetrahedron.
 | [nx]            | <code>number</code> | <code>1</code>   |
 | [ny]            | <code>number</code> | <code>nx</code>  |
 | [roundSegments] | <code>number</code> | <code>8</code>   |
-| [edgeSegments]  | <code>number</code> | <code>1</code>   |
 
 <a name="module_primitiveGeometry..StadiumPathOptions"></a>
 
@@ -3237,7 +3241,6 @@ Regular tetrahedron.
 | [nx]            | <code>number</code>  | <code>1</code>     |
 | [ny]            | <code>number</code>  | <code>nx</code>    |
 | [roundSegments] | <code>number</code>  | <code>8</code>     |
-| [edgeSegments]  | <code>number</code>  | <code>1</code>     |
 | [closed]        | <code>boolean</code> | <code>false</code> |
 
 <a name="module_primitiveGeometry..TrapezoidOptions"></a>
@@ -3247,20 +3250,20 @@ Regular tetrahedron.
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name            | Type                   | Default                           | Description                                                                                                                                                                                   |
-| --------------- | ---------------------- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [sx]            | <code>number</code>    | <code>1</code>                    | Bottom edge half-width.                                                                                                                                                                       |
-| [sy]            | <code>number</code>    | <code>1</code>                    | Half-height: the bottom/top edges sit at `y =   -sy`/`y = sy`.                                                                                                                                |
-| [topRatio]      | <code>number</code>    | <code>0.5</code>                  | Top edge half-width, as a fraction of `sx`. `1` matches the bottom edge's width (a parallelogram once `topOffset` shifts it off-center); `0` collapses the top edge to a point (a triangle).  |
-| [topOffset]     | <code>number</code>    | <code>0</code>                    | Horizontal shift of the top edge's center, as a fraction of `sx`. `0` (default) keeps both legs symmetric (an isosceles trapezoid); a non-zero shift skews it into a right/scalene trapezoid. |
-| [radius]        | <code>number</code>    | <code>0.5</code>                  |                                                                                                                                                                                               |
-| [edgeSegments]  | <code>number</code>    | <code>1</code>                    |                                                                                                                                                                                               |
-| [innerSegments] | <code>number</code>    | <code>16</code>                   |                                                                                                                                                                                               |
-| [innerRadius]   | <code>number</code>    | <code>0</code>                    |                                                                                                                                                                                               |
-| [theta]         | <code>number</code>    | <code>TAU</code>                  | Negative values aren't supported: the corner lookup assumes `t - thetaOffset` stays non-negative.                                                                                             |
-| [thetaOffset]   | <code>number</code>    | <code>0</code>                    |                                                                                                                                                                                               |
-| [mergeCentroid] | <code>boolean</code>   | <code>true</code>                 |                                                                                                                                                                                               |
-| [mapping]       | <code>MappingFn</code> | <code>mappings.rectangular</code> | Uv mapping function. Defaults to a flat, bounding-box-relative unwrap.                                                                                                                        |
+| Name            | Type                   | Default                                                   | Description                                                                                                                                                                                       |
+| --------------- | ---------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [sx]            | <code>number</code>    | <code>1</code>                                            | Bottom edge half-width.                                                                                                                                                                           |
+| [sy]            | <code>number</code>    | <code>1</code>                                            | Half-height: the bottom/top edges sit at `y =   -sy`/`y = sy`.                                                                                                                                    |
+| [topRatio]      | <code>number</code>    | <code>0.5</code>                                          | Top edge half-width, as a fraction of `sx`. `1` matches the bottom edge's width (a parallelogram once `topOffset` shifts it off-center); `0` collapses the top edge to a point (a triangle).      |
+| [topOffset]     | <code>number</code>    | <code>0</code>                                            | Horizontal shift of the top edge's center, in the same units as `sx`. `0` (default) keeps both legs symmetric (an isosceles trapezoid); a non-zero shift skews it into a right/scalene trapezoid. |
+| [radius]        | <code>number</code>    | <code>0.5</code>                                          |                                                                                                                                                                                                   |
+| [edgeSegments]  | <code>number</code>    | <code>1</code>                                            |                                                                                                                                                                                                   |
+| [innerSegments] | <code>number</code>    | <code>16</code>                                           |                                                                                                                                                                                                   |
+| [innerRadius]   | <code>number</code>    | <code>0</code>                                            |                                                                                                                                                                                                   |
+| [theta]         | <code>number</code>    | <code>TAU</code>                                          | Negative values aren't supported: the corner lookup assumes `t - thetaOffset` stays non-negative.                                                                                                 |
+| [thetaOffset]   | <code>number</code>    | <code>0</code>                                            |                                                                                                                                                                                                   |
+| [mergeCentroid] | <code>boolean</code>   | <code>&quot;innerRadius &#x3D;&#x3D;&#x3D; 0&quot;</code> |                                                                                                                                                                                                   |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.rectangular</code>                         | Uv mapping function. Defaults to a flat, bounding-box-relative unwrap.                                                                                                                            |
 
 <a name="module_primitiveGeometry..TrapezoidPathOptions"></a>
 
@@ -3288,18 +3291,18 @@ Regular tetrahedron.
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name            | Type                   | Default                           | Description                                                                                                                 |
-| --------------- | ---------------------- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| [sx]            | <code>number</code>    | <code>1</code>                    | Horizontal leg half-length: the leg itself runs the full `2 * sx`, from the right-angle corner to the opposite base corner. |
-| [sy]            | <code>number</code>    | <code>1</code>                    | Vertical leg half-length, likewise doubled.                                                                                 |
-| [radius]        | <code>number</code>    | <code>0.5</code>                  |                                                                                                                             |
-| [edgeSegments]  | <code>number</code>    | <code>1</code>                    |                                                                                                                             |
-| [innerSegments] | <code>number</code>    | <code>16</code>                   |                                                                                                                             |
-| [innerRadius]   | <code>number</code>    | <code>0</code>                    |                                                                                                                             |
-| [theta]         | <code>number</code>    | <code>TAU</code>                  |                                                                                                                             |
-| [thetaOffset]   | <code>number</code>    | <code>0</code>                    |                                                                                                                             |
-| [mergeCentroid] | <code>boolean</code>   | <code>true</code>                 |                                                                                                                             |
-| [mapping]       | <code>MappingFn</code> | <code>mappings.rectangular</code> |                                                                                                                             |
+| Name            | Type                   | Default                                                   | Description                                                                                                                 |
+| --------------- | ---------------------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| [sx]            | <code>number</code>    | <code>1</code>                                            | Horizontal leg half-length: the leg itself runs the full `2 * sx`, from the right-angle corner to the opposite base corner. |
+| [sy]            | <code>number</code>    | <code>1</code>                                            | Vertical leg half-length, likewise doubled.                                                                                 |
+| [radius]        | <code>number</code>    | <code>0.5</code>                                          |                                                                                                                             |
+| [edgeSegments]  | <code>number</code>    | <code>1</code>                                            |                                                                                                                             |
+| [innerSegments] | <code>number</code>    | <code>16</code>                                           |                                                                                                                             |
+| [innerRadius]   | <code>number</code>    | <code>0</code>                                            |                                                                                                                             |
+| [theta]         | <code>number</code>    | <code>TAU</code>                                          |                                                                                                                             |
+| [thetaOffset]   | <code>number</code>    | <code>0</code>                                            |                                                                                                                             |
+| [mergeCentroid] | <code>boolean</code>   | <code>&quot;innerRadius &#x3D;&#x3D;&#x3D; 0&quot;</code> |                                                                                                                             |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.rectangular</code>                         |                                                                                                                             |
 
 <a name="module_primitiveGeometry..RightTrianglePathOptions"></a>
 
@@ -3325,19 +3328,19 @@ Regular tetrahedron.
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name            | Type                   | Default                           | Description                                                                                                                                                                                                               |
-| --------------- | ---------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [sx]            | <code>number</code>    | <code>1</code>                    | Base half-width: the base corners sit at `x =   -sx`/`x = sx`.                                                                                                                                                            |
-| [sy]            | <code>number</code>    | <code>1</code>                    | Half-height: the base sits at `y = -sy`, the apex at `y = sy`.                                                                                                                                                            |
-| [apexOffset]    | <code>number</code>    | <code>0</code>                    | Horizontal shift of the apex, in the same units as `sx`. `0` (default) keeps it centered (an isosceles triangle); `±sx` lands it directly above a base corner (a right triangle); anything else gives a scalene triangle. |
-| [radius]        | <code>number</code>    | <code>0.5</code>                  |                                                                                                                                                                                                                           |
-| [edgeSegments]  | <code>number</code>    | <code>1</code>                    |                                                                                                                                                                                                                           |
-| [innerSegments] | <code>number</code>    | <code>16</code>                   |                                                                                                                                                                                                                           |
-| [innerRadius]   | <code>number</code>    | <code>0</code>                    |                                                                                                                                                                                                                           |
-| [theta]         | <code>number</code>    | <code>TAU</code>                  | Negative values aren't supported: the corner lookup assumes `t - thetaOffset` stays non-negative.                                                                                                                         |
-| [thetaOffset]   | <code>number</code>    | <code>0</code>                    |                                                                                                                                                                                                                           |
-| [mergeCentroid] | <code>boolean</code>   | <code>true</code>                 |                                                                                                                                                                                                                           |
-| [mapping]       | <code>MappingFn</code> | <code>mappings.rectangular</code> | Uv mapping function. Defaults to a flat, bounding-box-relative unwrap.                                                                                                                                                    |
+| Name            | Type                   | Default                                                   | Description                                                                                                                                                                                                               |
+| --------------- | ---------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [sx]            | <code>number</code>    | <code>1</code>                                            | Base half-width: the base corners sit at `x =   -sx`/`x = sx`.                                                                                                                                                            |
+| [sy]            | <code>number</code>    | <code>1</code>                                            | Half-height: the base sits at `y = -sy`, the apex at `y = sy`.                                                                                                                                                            |
+| [apexOffset]    | <code>number</code>    | <code>0</code>                                            | Horizontal shift of the apex, in the same units as `sx`. `0` (default) keeps it centered (an isosceles triangle); `±sx` lands it directly above a base corner (a right triangle); anything else gives a scalene triangle. |
+| [radius]        | <code>number</code>    | <code>0.5</code>                                          |                                                                                                                                                                                                                           |
+| [edgeSegments]  | <code>number</code>    | <code>1</code>                                            |                                                                                                                                                                                                                           |
+| [innerSegments] | <code>number</code>    | <code>16</code>                                           |                                                                                                                                                                                                                           |
+| [innerRadius]   | <code>number</code>    | <code>0</code>                                            |                                                                                                                                                                                                                           |
+| [theta]         | <code>number</code>    | <code>TAU</code>                                          | Negative values aren't supported: the corner lookup assumes `t - thetaOffset` stays non-negative.                                                                                                                         |
+| [thetaOffset]   | <code>number</code>    | <code>0</code>                                            |                                                                                                                                                                                                                           |
+| [mergeCentroid] | <code>boolean</code>   | <code>&quot;innerRadius &#x3D;&#x3D;&#x3D; 0&quot;</code> |                                                                                                                                                                                                                           |
+| [mapping]       | <code>MappingFn</code> | <code>mappings.rectangular</code>                         | Uv mapping function. Defaults to a flat, bounding-box-relative unwrap.                                                                                                                                                    |
 
 <a name="module_primitiveGeometry..TrianglePathOptions"></a>
 
@@ -3432,8 +3435,7 @@ Regular tetrahedron.
 | [sz]             | <code>number</code>                                                                  | <code>sx</code>              |                                         |
 | [radius]         | <code>number</code>                                                                  | <code>sx * 0.25</code>       |                                         |
 | [roundSegments]  | <code>number</code>                                                                  | <code>8</code>               |                                         |
-| [edgeSegments]   | <code>number</code>                                                                  | <code>1</code>               |                                         |
-| [nx]             | <code>number</code>                                                                  | <code>edgeSegments</code>    | Segments along the straight x sections. |
+| [nx]             | <code>number</code>                                                                  | <code>1</code>               | Segments along the straight x sections. |
 | [ny]             | <code>number</code>                                                                  | <code>nx</code>              | Segments along the straight y sections. |
 | [nz]             | <code>number</code>                                                                  | <code>nx</code>              | Segments along the straight z sections. |
 | [roundDirection] | [<code>RoundedCubeDirection</code>](#module_primitiveGeometry..RoundedCubeDirection) | <code>&quot;all&quot;</code> |                                         |
@@ -3494,12 +3496,12 @@ Regular tetrahedron.
 
 | Name          | Type                | Default              | Description                                                                                                                |
 | ------------- | ------------------- | -------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| [radius]      | <code>number</code> | <code>1</code>       |                                                                                                                            |
+| [radius]      | <code>number</code> | <code>0.5</code>     |                                                                                                                            |
 | [nx]          | <code>number</code> | <code>32</code>      |                                                                                                                            |
 | [ny]          | <code>number</code> | <code>16</code>      |                                                                                                                            |
-| [rx]          | <code>number</code> | <code>0.5</code>     |                                                                                                                            |
-| [ry]          | <code>number</code> | <code>0.25</code>    |                                                                                                                            |
-| [rz]          | <code>number</code> | <code>ry</code>      |                                                                                                                            |
+| [sx]          | <code>number</code> | <code>1</code>       |                                                                                                                            |
+| [sy]          | <code>number</code> | <code>0.5</code>     |                                                                                                                            |
+| [sz]          | <code>number</code> | <code>sy</code>      |                                                                                                                            |
 | [theta]       | <code>number</code> | <code>Math.PI</code> | Meridian sweep length, silently clamped to [-thetaOffset, PI - thetaOffset] - see ellipsoid.js's EllipsoidOptions for why. |
 | [thetaOffset] | <code>number</code> | <code>0</code>       | Meridian sweep start, silently clamped to [0, PI] - see theta.                                                             |
 | [phi]         | <code>number</code> | <code>TAU</code>     |                                                                                                                            |
@@ -3644,12 +3646,12 @@ Regular tetrahedron.
 
 | Name            | Type                        | Default                   | Description                                                                                                                                              |
 | --------------- | --------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [radius]        | <code>number</code>         | <code>1</code>            |                                                                                                                                                          |
+| [radius]        | <code>number</code>         | <code>0.5</code>          |                                                                                                                                                          |
 | [nx]            | <code>number</code>         | <code>32</code>           |                                                                                                                                                          |
 | [ny]            | <code>number</code>         | <code>16</code>           |                                                                                                                                                          |
-| [rx]            | <code>number</code>         | <code>0.5</code>          |                                                                                                                                                          |
-| [ry]            | <code>number</code>         | <code>0.25</code>         |                                                                                                                                                          |
-| [rz]            | <code>number</code>         | <code>ry</code>           |                                                                                                                                                          |
+| [sx]            | <code>number</code>         | <code>1</code>            |                                                                                                                                                          |
+| [sy]            | <code>number</code>         | <code>0.5</code>          |                                                                                                                                                          |
+| [sz]            | <code>number</code>         | <code>sy</code>           |                                                                                                                                                          |
 | [theta]         | <code>number</code>         | <code>Math.PI</code>      | Meridian sweep length, silently clamped to [-thetaOffset, PI - thetaOffset]: a pole can only sit at the sweep's own start or end, never partway through. |
 | [thetaOffset]   | <code>number</code>         | <code>0</code>            | Meridian sweep start (0 = north pole), silently clamped to [0, PI] - see theta.                                                                          |
 | [phi]           | <code>number</code>         | <code>TAU</code>          |                                                                                                                                                          |
@@ -3663,20 +3665,20 @@ Regular tetrahedron.
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name            | Type                        | Default                           | Description                                                                                                                                                                                                                                          |
-| --------------- | --------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [height]        | <code>number</code>         | <code>1</code>                    |                                                                                                                                                                                                                                                      |
-| [radius]        | <code>number</code>         | <code>0.1</code>                  | Spout radius, at y = -height/2                                                                                                                                                                                                                       |
-| [radiusTop]     | <code>number</code>         | <code>radius*5</code>             | Mouth radius, at y = height/2 - must be > radius for the usual flared-outward shape; radiusTop = radius degenerates to a plain cylinder, radiusTop < radius flips the taper (still a valid, NaN-free surface, just narrowing toward the top instead) |
-| [nx]            | <code>number</code>         | <code>32</code>                   |                                                                                                                                                                                                                                                      |
-| [ny]            | <code>number</code>         | <code>16</code>                   |                                                                                                                                                                                                                                                      |
-| [capSegments]   | <code>number</code>         | <code>1</code>                    |                                                                                                                                                                                                                                                      |
-| [capApex]       | <code>boolean</code>        | <code>true</code>                 |                                                                                                                                                                                                                                                      |
-| [capBase]       | <code>boolean</code>        | <code>true</code>                 |                                                                                                                                                                                                                                                      |
-| [phi]           | <code>number</code>         | <code>TAU</code>                  |                                                                                                                                                                                                                                                      |
-| [phiOffset]     | <code>number</code>         | <code>0</code>                    |                                                                                                                                                                                                                                                      |
-| [capMapping]    | <code>MappingFn</code>      | <code>mappings.rectangular</code> |                                                                                                                                                                                                                                                      |
-| [vDistribution] | <code>DistributionFn</code> | <code>utils.linear</code>         |                                                                                                                                                                                                                                                      |
+| Name            | Type                        | Default                           | Description                                                                                                                                                                                                                                            |
+| --------------- | --------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [height]        | <code>number</code>         | <code>1</code>                    |                                                                                                                                                                                                                                                        |
+| [radius]        | <code>number</code>         | <code>0.1</code>                  | Spout radius, at y = -height/2                                                                                                                                                                                                                         |
+| [radiusApex]    | <code>number</code>         | <code>radius*5</code>             | Mouth radius, at y = height/2 - must be > radius for the usual flared-outward shape; radiusApex = radius degenerates to a plain cylinder, radiusApex < radius flips the taper (still a valid, NaN-free surface, just narrowing toward the top instead) |
+| [nx]            | <code>number</code>         | <code>32</code>                   |                                                                                                                                                                                                                                                        |
+| [ny]            | <code>number</code>         | <code>16</code>                   |                                                                                                                                                                                                                                                        |
+| [capSegments]   | <code>number</code>         | <code>1</code>                    |                                                                                                                                                                                                                                                        |
+| [capApex]       | <code>boolean</code>        | <code>true</code>                 |                                                                                                                                                                                                                                                        |
+| [capBase]       | <code>boolean</code>        | <code>true</code>                 |                                                                                                                                                                                                                                                        |
+| [phi]           | <code>number</code>         | <code>TAU</code>                  |                                                                                                                                                                                                                                                        |
+| [phiOffset]     | <code>number</code>         | <code>0</code>                    |                                                                                                                                                                                                                                                        |
+| [capMapping]    | <code>MappingFn</code>      | <code>mappings.rectangular</code> |                                                                                                                                                                                                                                                        |
+| [vDistribution] | <code>DistributionFn</code> | <code>utils.linear</code>         |                                                                                                                                                                                                                                                        |
 
 <a name="module_primitiveGeometry..HollowCylinderOptions"></a>
 
@@ -3728,7 +3730,7 @@ Regular tetrahedron.
 | --------------- | --------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [height]        | <code>number</code>         | <code>1</code>                    |                                                                                                                                                                                                                                                                                                                                    |
 | [radius]        | <code>number</code>         | <code>0.25</code>                 | Waist radius, at y = 0                                                                                                                                                                                                                                                                                                             |
-| [radiusTop]     | <code>number</code>         | <code>radius*2</code>             | Rim radius, at y = ±height/2 (both ends, symmetric) - the classic one-sheet shape needs radiusTop > radius (pinched waist flaring to both rims); radiusTop = radius degenerates to a plain cylinder, and radiusTop < radius traces an oblate-spheroid-like profile instead (still a valid, NaN-free surface, just not a hyperbola) |
+| [endRadius]     | <code>number</code>         | <code>radius*2</code>             | Rim radius, at y = ±height/2 (both ends, symmetric) - the classic one-sheet shape needs endRadius > radius (pinched waist flaring to both rims); endRadius = radius degenerates to a plain cylinder, and endRadius < radius traces an oblate-spheroid-like profile instead (still a valid, NaN-free surface, just not a hyperbola) |
 | [nx]            | <code>number</code>         | <code>32</code>                   |                                                                                                                                                                                                                                                                                                                                    |
 | [ny]            | <code>number</code>         | <code>16</code>                   |                                                                                                                                                                                                                                                                                                                                    |
 | [capSegments]   | <code>number</code>         | <code>1</code>                    |                                                                                                                                                                                                                                                                                                                                    |
@@ -3854,7 +3856,7 @@ Regular tetrahedron.
 | Name            | Type                        | Default                   | Description                                                                                                                                           |
 | --------------- | --------------------------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [radius]        | <code>number</code>         | <code>0.5</code>          | Equatorial radius                                                                                                                                     |
-| [ry]            | <code>number</code>         | <code>radius*5/6</code>   | Vertical (polar) semi-axis                                                                                                                            |
+| [sy]            | <code>number</code>         | <code>5/6</code>          | Vertical (polar) scale                                                                                                                                |
 | [nx]            | <code>number</code>         | <code>32</code>           |                                                                                                                                                       |
 | [ny]            | <code>number</code>         | <code>16</code>           |                                                                                                                                                       |
 | [n]             | <code>number</code>         | <code>2.5</code>          | Roundness exponent - Piet Hein's original; n > 2 gives a "true" superegg, n = 2 is a spheroid, n < 2 rounds toward a cylinder-capped-with-cones shape |
@@ -3873,12 +3875,12 @@ Regular tetrahedron.
 
 | Name            | Type                        | Default                   | Description                                                                                                                |
 | --------------- | --------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| [radius]        | <code>number</code>         | <code>1</code>            |                                                                                                                            |
+| [radius]        | <code>number</code>         | <code>0.5</code>          |                                                                                                                            |
 | [nx]            | <code>number</code>         | <code>32</code>           |                                                                                                                            |
 | [ny]            | <code>number</code>         | <code>16</code>           |                                                                                                                            |
-| [rx]            | <code>number</code>         | <code>0.5</code>          |                                                                                                                            |
-| [ry]            | <code>number</code>         | <code>0.25</code>         |                                                                                                                            |
-| [rz]            | <code>number</code>         | <code>ry</code>           |                                                                                                                            |
+| [sx]            | <code>number</code>         | <code>1</code>            |                                                                                                                            |
+| [sy]            | <code>number</code>         | <code>0.5</code>          |                                                                                                                            |
+| [sz]            | <code>number</code>         | <code>sy</code>           |                                                                                                                            |
 | [n1]            | <code>number</code>         | <code>3</code>            | North-south (meridian) roundness exponent                                                                                  |
 | [n2]            | <code>number</code>         | <code>n1</code>           | East-west (cross-section) roundness exponent                                                                               |
 | [theta]         | <code>number</code>         | <code>Math.PI</code>      | Meridian sweep length, silently clamped to [-thetaOffset, PI - thetaOffset] - see ellipsoid.js's EllipsoidOptions for why. |
