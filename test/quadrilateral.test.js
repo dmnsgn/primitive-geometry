@@ -28,6 +28,28 @@ const assertClose = (actual, expected, epsilon = 1e-6) => {
   }
 };
 
+describe("quad", () => {
+  it("scale is the side length, centered on the origin", () => {
+    const scale = 0.8;
+    const g = Primitives.quad({ scale });
+    const xs = g.positions.filter((_, i) => i % 3 === 0);
+    const ys = g.positions.filter((_, i) => i % 3 === 1);
+
+    assert.deepEqual(
+      [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)],
+      [-scale / 2, scale / 2, -scale / 2, scale / 2].map(Math.fround),
+    );
+  });
+
+  it("matches squarePath's positions", () => {
+    const scale = 0.8;
+    assert.deepEqual(
+      Primitives.quad({ scale }).positions,
+      Primitives.squarePath({ scale }).positions,
+    );
+  });
+});
+
 describe("rhombus", () => {
   it("places vertices at top/left/bottom/right, sx/sy scaling each diagonal", () => {
     const sx = 0.7;

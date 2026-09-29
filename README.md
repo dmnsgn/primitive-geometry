@@ -43,7 +43,7 @@ import * as Primitives from "primitive-geometry";
 
 const { mappings, utils } = Primitives;
 
-const geometry = Primitives.quad({ scale: 0.5 });
+const geometry = Primitives.quad({ scale: 1 });
 console.log(geometry);
 // {
 //   positions: Float32Array [x, y, z, x, y, z,  ...],
@@ -104,7 +104,7 @@ const rightTriangle = Primitives.rightTriangle({
 });
 
 const quad = Primitives.quad({
-  scale: 0.5,
+  scale: 1,
 });
 const plane = Primitives.plane({
   sx: 1,

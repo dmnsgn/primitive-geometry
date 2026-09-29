@@ -8,7 +8,7 @@ import { triangulateFaces } from "../../utils/common.js";
 
 /**
  * @typedef {object} QuadOptions
- * @property {number} [scale=0.5]
+ * @property {number} [scale=1] Side length.
  */
 
 /**
@@ -17,7 +17,7 @@ import { triangulateFaces } from "../../utils/common.js";
  * @param {QuadOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
  */
-export function quad({ scale = 0.5 } = {}) {
+export function quad({ scale = 1 } = {}) {
   const { positions, cells } = squarePath({ scale });
 
   return {
@@ -42,18 +42,18 @@ export function quad({ scale = 0.5 } = {}) {
 
 /**
  * @typedef {object} SquarePathOptions
- * @property {number} [scale=0.5]
+ * @property {number} [scale=1] Side length.
  * @property {number} [nx=1] Segments along the bottom/top edges
  * @property {number} [ny=nx] Segments along the left/right edges
  */
 
 /**
- * Outline dual of `quad`: `rectanglePath` with equal sx/sy, same as `quad`
- * itself is built from it.
+ * Outline dual of `quad`: `rectanglePath` with `sx = sy = scale`, same as
+ * `quad` itself is built from it.
  *
  * @param {SquarePathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath}
  */
-export function squarePath({ scale = 0.5, nx = 1, ny = nx } = {}) {
-  return rectanglePath({ sx: scale * 2, sy: scale * 2, nx, ny });
+export function squarePath({ scale = 1, nx = 1, ny = nx } = {}) {
+  return rectanglePath({ sx: scale, sy: scale, nx, ny });
 }
