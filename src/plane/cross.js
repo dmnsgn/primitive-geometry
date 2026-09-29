@@ -37,8 +37,7 @@ function computeCrossOutline(r, w) {
  * @property {number} [radius=0.5] Distance from the center to each arm's tip.
  * @property {number} [armWidth=radius/3] Half-width of each arm. Defaults to a
  *   third of `radius`, the classic Greek cross made of 5 equal squares.
- * @property {number} [segments=1] Column count per outline edge (the cross is a
- *   12-sided, non-regular dodecagon), swept around the outline.
+ * @property {number} [edgeSegments=1]
  * @property {number} [innerSegments=16] Row count between the center and the
  *   outline at each column.
  * @property {number} [innerRadius=0] Like `star`'s: a hole radius the fill
@@ -60,7 +59,7 @@ function computeCrossOutline(r, w) {
 export function cross({
   radius = 0.5,
   armWidth = radius / 3,
-  segments = 1,
+  edgeSegments = 1,
   innerSegments = 16,
   innerRadius = 0,
   mergeCentroid = innerRadius === 0,
@@ -74,7 +73,7 @@ export function cross({
     sx: 1,
     sy: 1,
     radius: r,
-    segments: CORNER_COUNT * segments,
+    segments: CORNER_COUNT * edgeSegments,
     innerSegments,
     innerRadius,
     mergeCentroid,
@@ -94,7 +93,7 @@ export function cross({
  * @typedef {object} CrossPathOptions
  * @property {number} [radius=0.5]
  * @property {number} [armWidth=radius/3]
- * @property {number} [segments=1]
+ * @property {number} [edgeSegments=1]
  * @property {boolean} [closed=false]
  */
 
@@ -108,13 +107,13 @@ export function cross({
 export function crossPath({
   radius = 0.5,
   armWidth = radius / 3,
-  segments = 1,
+  edgeSegments = 1,
   closed = false,
 } = {}) {
   const outline = computeCrossOutline(radius, armWidth);
 
   return computePolarPathGeometry({
-    segments: CORNER_COUNT * segments,
+    segments: CORNER_COUNT * edgeSegments,
     theta: TAU,
     thetaOffset: 0,
     closed,

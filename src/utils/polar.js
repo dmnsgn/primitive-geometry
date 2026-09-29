@@ -84,6 +84,12 @@ export function computeOutlineEdge(corners, thetaOffset, t) {
   return [x0 + (x1 - x0) * frac, y0 + (y1 - y0) * frac];
 }
 
+// A full turn welds the last column onto the first; a partial sweep needs an
+// extra column to reach thetaOffset + theta.
+function computeColumnCount(segments, theta) {
+  return segments + (theta !== 0 && theta % TAU === 0 ? 0 : 1);
+}
+
 /**
  * A grid of concentric rings (innerSegments, radiusRatio 0..1 from innerRadius
  * to radius) sampled at evenly-spaced angular columns (segments, closed for a
@@ -108,8 +114,7 @@ export function computePolarGeometry({
   mapping,
   equation = ({ rx, ry, cosTheta, sinTheta }) => [rx * cosTheta, ry * sinTheta],
 } = {}) {
-  const closed = theta !== 0 && theta % TAU === 0;
-  const cols = segments + (closed ? 0 : 1);
+  const cols = computeColumnCount(segments, theta);
 
   const size = mergeCentroid
     ? 1 + innerSegments * cols
@@ -216,9 +221,8 @@ export function computePolarGeometry({
  * A single ring of `segments` points swept across `theta` (`thetaOffset` start)
  *
  * - The path-only counterpart of `computePolarGeometry`'s angular dimension, with
- *   no radial rings or fan-triangulation: just the boundary loop `equation(t,
- *   i)` maps each angle (and its integer sample index, eg. for `starPath`'s
- *   tip/notch parity) to. `closed` repeats index `0` to explicitly close the
+ *   no radial rings or fan-triangulation: just the boundary loop `equation(t)`
+ *   maps each angle to. `closed` repeats index `0` to explicitly close the
  *   loop; open (the default) leaves the last vertex unconnected to the first,
  *   matching every other path primitive's convention.
  *
@@ -231,18 +235,19 @@ export function computePolarPathGeometry({
   closed,
   equation,
 }) {
-  const positions = new Float32Array(segments * 3);
-  const path = Array.from({ length: segments + (closed ? 1 : 0) });
+  const cols = computeColumnCount(segments, theta);
+  const positions = new Float32Array(cols * 3);
+  const path = Array.from({ length: cols + (closed ? 1 : 0) });
 
-  for (let i = 0; i < segments; i++) {
+  for (let i = 0; i < cols; i++) {
     const t = (i / segments) * theta + thetaOffset;
-    const [x, y] = equation(t, i);
+    const [x, y] = equation(t);
     positions[i * 3] = x;
     positions[i * 3 + 1] = y;
     path[i] = i;
   }
 
-  if (closed) path[segments] = 0;
+  if (closed) path[cols] = 0;
 
   return { positions, cells: [path] };
 }

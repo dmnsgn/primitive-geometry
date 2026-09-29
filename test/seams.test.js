@@ -107,10 +107,10 @@ const cases = [
   ["lozenge edgeSegments=3", () => Primitives.lozenge({ edgeSegments: 3 })],
   ["cross", () => Primitives.cross()],
   ["cross armWidth=radius/2", () => Primitives.cross({ armWidth: 0.25 })],
-  ["cross segments=3", () => Primitives.cross({ segments: 3 })],
+  ["cross edgeSegments=3", () => Primitives.cross({ edgeSegments: 3 })],
   [
-    "cross segments=3 innerSegments=4",
-    () => Primitives.cross({ segments: 3, innerSegments: 4 }),
+    "cross edgeSegments=3 innerSegments=4",
+    () => Primitives.cross({ edgeSegments: 3, innerSegments: 4 }),
   ],
   ["cross innerRadius=0.1", () => Primitives.cross({ innerRadius: 0.1 })],
 

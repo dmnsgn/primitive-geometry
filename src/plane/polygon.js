@@ -81,8 +81,8 @@ export function polygon({
  *
  * @param {PolygonPathOptions} [options={}]
  * @returns {import("../../types.js").SimplicialComplexPath} `edgeSegments *
- *   sides` positions and a single path cell of that many indices (`+ 1`,
- *   repeating index `0`, when `closed`)
+ *   sides` positions (`+ 1` for a partial `theta`) and a single path cell of
+ *   that many indices (`+ 1`, repeating index `0`, when `closed`)
  */
 export function polygonPath({
   sides = 6,

@@ -150,17 +150,17 @@ describe("polygon", () => {
 });
 
 describe("cross", () => {
-  it("is watertight with no seams or cracks across armWidth/segments/innerSegments variations", () => {
+  it("is watertight with no seams or cracks across armWidth/edgeSegments/innerSegments variations", () => {
     for (const options of [
       {},
       { armWidth: 0.1 },
       { armWidth: 0.4 },
-      { segments: 3 },
+      { edgeSegments: 3 },
       { innerSegments: 1 },
       { innerSegments: 4 },
-      { segments: 4, innerSegments: 8 },
+      { edgeSegments: 4, innerSegments: 8 },
       { innerRadius: 0.1 },
-      { innerRadius: 0.2, segments: 3 },
+      { innerRadius: 0.2, edgeSegments: 3 },
     ]) {
       const result = analyze(Primitives.cross(options));
       assert.equal(result.seams, 0, JSON.stringify(options));
@@ -176,7 +176,7 @@ describe("cross", () => {
     const g = Primitives.cross({
       radius,
       innerRadius: radius * ratio,
-      segments: 1,
+      edgeSegments: 1,
       innerSegments: 1,
     });
 
@@ -266,7 +266,7 @@ describe("cross", () => {
       { segments: 1, innerSegments: 1 },
       { segments: 3, innerSegments: 1 },
       { segments: 1, innerSegments: 5 },
-      { segments: 4, innerSegments: 8 },
+      { edgeSegments: 4, innerSegments: 8 },
     ]) {
       const g = Primitives.cross({ radius, ...options });
       assert.ok(

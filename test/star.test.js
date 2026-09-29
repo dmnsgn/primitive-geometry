@@ -43,6 +43,9 @@ describe("star", () => {
       { points: 6, innerSegments: 1 },
       { theta: Math.PI },
       { thetaOffset: 0.5 },
+      { edgeSegments: 3 },
+      { edgeSegments: 3, innerRadius: 0.1 },
+      { edgeSegments: 3, innerRadius: 0.1, circularHole: true },
     ]) {
       const result = analyze(Primitives.star(options));
       assert.equal(result.seams, 0, JSON.stringify(options));
@@ -65,6 +68,32 @@ describe("star", () => {
       g.cells.length,
       segments * 3 + (innerSegments - 1) * segments * 6,
     );
+  });
+
+  it("edgeSegments subdivides each tip/notch edge along a straight line", () => {
+    const points = 5;
+    const edgeSegments = 4;
+    const g = Primitives.star({ points, edgeSegments, innerSegments: 1 });
+    const segments = points * 2 * edgeSegments;
+    const n = g.positions.length / 3;
+    const ring = Array.from({ length: segments }, (_, i) => [
+      g.positions[(n - segments + i) * 3],
+      g.positions[(n - segments + i) * 3 + 1],
+    ]);
+
+    for (let i = 0; i < segments; i++) {
+      const c0 = ring[i - (i % edgeSegments)];
+      const c1 = ring[(i - (i % edgeSegments) + edgeSegments) % segments];
+      const frac = (i % edgeSegments) / edgeSegments;
+      const expected = [
+        c0[0] + (c1[0] - c0[0]) * frac,
+        c0[1] + (c1[1] - c0[1]) * frac,
+      ];
+      assert.ok(
+        Math.hypot(ring[i][0] - expected[0], ring[i][1] - expected[1]) < 1e-6,
+        `vertex ${i} off its tip/notch edge`,
+      );
+    }
   });
 
   describe("innerRadius (hole)", () => {

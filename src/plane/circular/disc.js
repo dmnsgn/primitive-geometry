@@ -59,8 +59,8 @@ export function disc({
  *
  * @param {CirclePathOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplexPath} `segments`
- *   positions and a single path cell of `segments` indices (`segments + 1`,
- *   repeating index `0`, when `closed`)
+ *   positions (`+ 1` for a partial `theta`) and a single path cell of that many
+ *   indices (`+ 1`, repeating index `0`, when `closed`)
  */
 export function circlePath({
   radius = 0.5,

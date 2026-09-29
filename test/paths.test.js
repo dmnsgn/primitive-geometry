@@ -97,6 +97,29 @@ describe("polygonPath", () => {
   });
 });
 
+describe("partial theta", () => {
+  it("paths reach the sweep's end, matching their filled dual's outer ring", () => {
+    const options = { theta: Math.PI, thetaOffset: Math.PI / 2 };
+    for (const [pathFn, fillFn, count] of [
+      ["starPath", "star", 5 * 2 + 1],
+      ["polygonPath", "polygon", 6 + 1],
+      ["ellipsePath", "ellipse", 32 + 1],
+      ["circlePath", "disc", 32 + 1],
+      ["reuleauxPath", "reuleaux", 32 + 1],
+    ]) {
+      const path = Primitives[pathFn](options);
+      const filled = Primitives[fillFn]({ ...options, innerSegments: 1 });
+      const ring = outerRing(filled, count).flat();
+
+      assert.equal(path.positions.length / 3, count, pathFn);
+      assertClose(
+        Array.from(path.positions.filter((_, i) => i % 3 !== 2)),
+        ring,
+      );
+    }
+  });
+});
+
 describe("starPath", () => {
   it("matches star's outer boundary", () => {
     const points = 6;
@@ -104,6 +127,16 @@ describe("starPath", () => {
     const path = Primitives.starPath({ points, radius });
     const filled = Primitives.star({ points, radius, innerSegments: 1 });
     const ring = outerRing(filled, points * 2).flat();
+
+    assertClose(Array.from(path.positions.filter((_, i) => i % 3 !== 2)), ring);
+  });
+
+  it("matches star's outer boundary with edgeSegments", () => {
+    const points = 5;
+    const edgeSegments = 3;
+    const path = Primitives.starPath({ points, edgeSegments });
+    const filled = Primitives.star({ points, edgeSegments, innerSegments: 1 });
+    const ring = outerRing(filled, points * 2 * edgeSegments).flat();
 
     assertClose(Array.from(path.positions.filter((_, i) => i % 3 !== 2)), ring);
   });
@@ -451,15 +484,15 @@ describe("crossPath", () => {
   it("matches cross's outer boundary", () => {
     const radius = 0.5;
     const armWidth = 0.1;
-    const segments = 2;
-    const path = Primitives.crossPath({ radius, armWidth, segments });
+    const edgeSegments = 2;
+    const path = Primitives.crossPath({ radius, armWidth, edgeSegments });
     const filled = Primitives.cross({
       radius,
       armWidth,
-      segments,
+      edgeSegments,
       innerSegments: 1,
     });
-    const ring = outerRing(filled, 12 * segments).flat();
+    const ring = outerRing(filled, 12 * edgeSegments).flat();
 
     assertClose(Array.from(path.positions.filter((_, i) => i % 3 !== 2)), ring);
   });
