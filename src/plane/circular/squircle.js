@@ -54,6 +54,7 @@ function computeSquircleEdge(rx, ry, cosTheta, sinTheta, t, squareness) {
  * @property {number} [radius=0.5]
  * @property {number} [segments=128]
  * @property {number} [innerSegments=16]
+ * @property {number} [innerRadius=0]
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
  * @property {boolean} [mergeCentroid=true]
@@ -74,6 +75,7 @@ export function squircle({
   radius = 0.5,
   segments = 128,
   innerSegments = 16,
+  innerRadius = 0,
   theta = TAU,
   thetaOffset = 0,
   mergeCentroid = true,
@@ -86,6 +88,7 @@ export function squircle({
     radius,
     segments,
     innerSegments,
+    innerRadius,
     theta,
     thetaOffset,
     mergeCentroid,

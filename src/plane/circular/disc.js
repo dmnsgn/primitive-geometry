@@ -11,6 +11,7 @@ import { TAU } from "../../utils/common.js";
  * @property {number} [radius=0.5]
  * @property {number} [segments=32]
  * @property {number} [innerSegments=16]
+ * @property {number} [innerRadius=0]
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
  * @property {boolean} [mergeCentroid=true]
@@ -27,6 +28,7 @@ export function disc({
   radius = 0.5,
   segments = 32,
   innerSegments = 16,
+  innerRadius = 0,
   theta = TAU,
   thetaOffset = 0,
   mergeCentroid = true,
@@ -38,6 +40,7 @@ export function disc({
     radius,
     segments,
     innerSegments,
+    innerRadius,
     theta,
     thetaOffset,
     mergeCentroid,

@@ -97,3 +97,39 @@ describe("ellipse", () => {
     }
   });
 });
+
+describe("innerRadius on ellipse-derived and polar curves", () => {
+  const radius = 0.5;
+  const ratio = 0.4;
+  const segments = 12;
+
+  for (const name of ["disc", "superellipse", "squircle", "astroid", "reuleaux"]) {
+    it(`${name}: drills a self-similar hole with an open rim`, () => {
+      const g = Primitives[name]({
+        radius,
+        segments,
+        innerRadius: radius * ratio,
+        innerSegments: 1,
+      });
+
+      // mergeCentroid defaults to false once innerRadius is set: a single ring
+      // is exactly the inner loop followed by the outer loop.
+      assert.equal(g.positions.length / 3, segments * 2);
+      for (let i = 0; i < segments; i++) {
+        for (const axis of [0, 1]) {
+          const inner = g.positions[i * 3 + axis];
+          const outer = g.positions[(i + segments) * 3 + axis];
+          assert.ok(
+            Math.abs(inner - outer * ratio) < 1e-6,
+            `vertex ${i}: inner ${inner}, expected ${outer * ratio}`,
+          );
+        }
+      }
+
+      const result = analyze(g);
+      assert.equal(result.boundaries, segments * 2);
+      assert.equal(result.degenerate, 0);
+      assert.equal(result.unused, 0);
+    });
+  }
+});
