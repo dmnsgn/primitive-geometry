@@ -666,7 +666,7 @@ const barrel = Primitives.barrel({
 const funnel = Primitives.funnel({
   height: 1,
   radius: 0.1,
-  radiusTop: 0.5,
+  radiusApex: 0.5,
   nx: 32,
   ny: 16,
   capSegments: 1,
