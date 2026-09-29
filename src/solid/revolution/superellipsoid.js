@@ -13,12 +13,12 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
 /**
  * @typedef {object} SuperellipsoidOptions
- * @property {number} [radius=1]
+ * @property {number} [radius=0.5]
  * @property {number} [nx=32]
  * @property {number} [ny=16]
- * @property {number} [rx=0.5]
- * @property {number} [ry=0.25]
- * @property {number} [rz=ry]
+ * @property {number} [sx=1]
+ * @property {number} [sy=0.5]
+ * @property {number} [sz=sy]
  * @property {number} [n1=3] North-south (meridian) roundness exponent
  * @property {number} [n2=n1] East-west (cross-section) roundness exponent
  * @property {number} [theta=Math.PI] Meridian sweep length, silently clamped to
@@ -44,12 +44,12 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @see [Wikipedia – Superellipsoid]{@link https://en.wikipedia.org/wiki/Superellipsoid}
  */
 export function superellipsoid({
-  radius = 1,
+  radius = 0.5,
   nx = 32,
   ny = 16,
-  rx = 0.5,
-  ry = 0.25,
-  rz = ry,
+  sx = 1,
+  sy = 0.5,
+  sz = sy,
   n1 = 3,
   n2 = n1,
   theta = Math.PI,
@@ -79,15 +79,15 @@ export function superellipsoid({
     const dz = signedPow(sinPhi, e2) * signedPow(sinTheta, e1);
 
     return {
-      position: [radius * rx * dx, radius * ry * dy, radius * rz * dz],
+      position: [radius * sx * dx, radius * sy * dy, radius * sz * dz],
       // Barr's complementary-exponent (2 - e) form of the implicit
       // surface's gradient, verified numerically against the tangent cross
-      // product - reduces exactly to ellipsoid.js's dx/rx, dy/ry, dz/rz at
+      // product - reduces exactly to ellipsoid.js's dx/sx, dy/sy, dz/sz at
       // n1 = n2 = 2 (e1 = e2 = 1, self-complementary).
       normal: [
-        (-signedPow(cosPhi, 2 - e2) * signedPow(sinTheta, 2 - e1)) / rx,
-        -signedPow(cosTheta, 2 - e1) / ry,
-        (signedPow(sinPhi, 2 - e2) * signedPow(sinTheta, 2 - e1)) / rz,
+        (-signedPow(cosPhi, 2 - e2) * signedPow(sinTheta, 2 - e1)) / sx,
+        -signedPow(cosTheta, 2 - e1) / sy,
+        (signedPow(sinPhi, 2 - e2) * signedPow(sinTheta, 2 - e1)) / sz,
       ],
       collapsed: sinTheta === 0,
     };

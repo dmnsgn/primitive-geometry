@@ -408,12 +408,12 @@ const hollowSphere = Primitives.hollowSphere({
   phiOffset: 0,
 });
 const ellipsoid = Primitives.ellipsoid({
-  radius: 1,
+  radius: 0.5,
   nx: 32,
   ny: 16,
-  rx: 0.5,
-  ry: 0.25,
-  rz: 0.25,
+  sx: 1,
+  sy: 0.5,
+  sz: 0.5,
   theta: Math.PI,
   thetaOffset: 0,
   phi: Math.PI * 2,
@@ -421,12 +421,12 @@ const ellipsoid = Primitives.ellipsoid({
   vDistribution: utils.linear,
 });
 const superellipsoid = Primitives.superellipsoid({
-  radius: 1,
+  radius: 0.5,
   nx: 32,
   ny: 16,
-  rx: 0.5,
-  ry: 0.25,
-  rz: 0.25,
+  sx: 1,
+  sy: 0.5,
+  sz: 0.5,
   n1: 3,
   n2: 3,
   theta: Math.PI,
@@ -436,12 +436,12 @@ const superellipsoid = Primitives.superellipsoid({
   vDistribution: utils.linear,
 });
 const astroidalEllipsoid = Primitives.astroidalEllipsoid({
-  radius: 1,
+  radius: 0.5,
   nx: 32,
   ny: 16,
-  rx: 0.5,
-  ry: 0.25,
-  rz: 0.25,
+  sx: 1,
+  sy: 0.5,
+  sz: 0.5,
   theta: Math.PI,
   thetaOffset: 0,
   phi: Math.PI * 2,
@@ -449,7 +449,7 @@ const astroidalEllipsoid = Primitives.astroidalEllipsoid({
 });
 const superegg = Primitives.superegg({
   radius: 0.5,
-  ry: (0.5 * 5) / 6,
+  sy: 5 / 6,
   nx: 32,
   ny: 16,
   n: 2.5,

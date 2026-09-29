@@ -501,7 +501,7 @@ describe("superellipsoid", () => {
   });
 
   it("n1 = n2 = 2 matches ellipsoid (the general Barr formula's plain-ellipsoid case)", () => {
-    const options = { nx: 24, ny: 12, rx: 1.3, ry: 0.6, rz: 0.9, radius: 0.7 };
+    const options = { nx: 24, ny: 12, sx: 1.3, sy: 0.6, sz: 0.9, radius: 0.7 };
     const a = Primitives.ellipsoid(options);
     const b = Primitives.superellipsoid({ ...options, n1: 2, n2: 2 });
     // Not bit-exact: superellipsoid snaps near-zero cos/sin residuals to

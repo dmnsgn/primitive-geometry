@@ -14,7 +14,7 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
 /**
  * @typedef {object} SupereggOptions
  * @property {number} [radius=0.5] Equatorial radius
- * @property {number} [ry=radius*5/6] Vertical (polar) semi-axis
+ * @property {number} [sy=5/6] Vertical (polar) scale
  * @property {number} [nx=32]
  * @property {number} [ny=16]
  * @property {number} [n=2.5] Roundness exponent - Piet Hein's original; n > 2
@@ -31,7 +31,7 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  */
 
 /**
- * Piet Hein's superegg: a superellipsoid special case (n2 = 2, rx = rz) with a
+ * Piet Hein's superegg: a superellipsoid special case (n2 = 2, sx = sz) with a
  * circular cross-section at every height, ie. an actual surface of revolution -
  * unlike the general superellipsoid, whose cross-sections are themselves
  * superelliptical.
@@ -43,7 +43,7 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  */
 export function superegg({
   radius = 0.5,
-  ry = (radius * 5) / 6,
+  sy = 5 / 6,
   nx = 32,
   ny = 16,
   n = 2.5,
@@ -73,7 +73,7 @@ export function superegg({
     return {
       position: [
         radius * -cosPhi * s,
-        ry * -signedPow(cosTheta, e),
+        radius * sy * -signedPow(cosTheta, e),
         radius * sinPhi * s,
       ],
       // Same complementary-exponent gradient as superellipsoid, with the
@@ -81,7 +81,7 @@ export function superegg({
       // the whole point of the superegg is a circular cross-section
       normal: [
         (-cosPhi * signedPow(sinTheta, 2 - e)) / radius,
-        -signedPow(cosTheta, 2 - e) / ry,
+        -signedPow(cosTheta, 2 - e) / (radius * sy),
         (sinPhi * signedPow(sinTheta, 2 - e)) / radius,
       ],
       collapsed: sinTheta === 0,

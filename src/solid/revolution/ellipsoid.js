@@ -8,12 +8,12 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
 /**
  * @typedef {object} EllipsoidOptions
- * @property {number} [radius=1]
+ * @property {number} [radius=0.5]
  * @property {number} [nx=32]
  * @property {number} [ny=16]
- * @property {number} [rx=0.5]
- * @property {number} [ry=0.25]
- * @property {number} [rz=ry]
+ * @property {number} [sx=1]
+ * @property {number} [sy=0.5]
+ * @property {number} [sz=sy]
  * @property {number} [theta=Math.PI] Meridian sweep length, silently clamped to
  *   [-thetaOffset, PI - thetaOffset]: a pole can only sit at the sweep's own
  *   start or end, never partway through.
@@ -27,8 +27,8 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
 /**
  * Unit-sphere direction cosines for a given meridian angle t (0 = north pole)
  * and (already computed) equatorial cosPhi/sinPhi: the [dx, dy, dz] this
- * module's own `equation` scales by radius/rx/ry/rz for position, and by
- * 1/rx/1/ry/1/rz for its gradient-based normal. Exported so other spherical
+ * module's own `equation` scales by radius/sx/sy/sz for position, and by
+ * 1/sx/1/sy/1/sz for its gradient-based normal. Exported so other spherical
  * shapes (eg. `hollowSphere`'s theta/phi cut caps) can place a point on - or a
  * direction from - the exact same sphere without re-deriving the formula. This
  * guarantees bit-identical positions where they must weld to an
@@ -57,12 +57,12 @@ export function sphereDirection(t, cosPhi, sinPhi) {
  * @returns {import("../../../types.js").SimplicialComplex}
  */
 export function ellipsoid({
-  radius = 1,
+  radius = 0.5,
   nx = 32,
   ny = 16,
-  rx = 0.5,
-  ry = 0.25,
-  rz = ry,
+  sx = 1,
+  sy = 0.5,
+  sz = sy,
   theta = Math.PI,
   thetaOffset = 0,
   phi = TAU,
@@ -79,10 +79,10 @@ export function ellipsoid({
     const [dx, dy, dz] = sphereDirection(t, cosPhi, sinPhi);
 
     return {
-      position: [radius * rx * dx, radius * ry * dy, radius * rz * dz],
-      // Ellipsoid normal is the gradient of x²/rx² + y²/ry² + z²/rz² = 1,
+      position: [radius * sx * dx, radius * sy * dy, radius * sz * dz],
+      // Ellipsoid normal is the gradient of x²/sx² + y²/sy² + z²/sz² = 1,
       // i.e. inverse-square scaled, not the same scaling used for position.
-      normal: [dx / rx, dy / ry, dz / rz],
+      normal: [dx / sx, dy / sy, dz / sz],
       // Ensure poles weld exactly at multiples of PI
       collapsed: t % Math.PI === 0,
     };

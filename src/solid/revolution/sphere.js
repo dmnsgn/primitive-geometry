@@ -16,7 +16,7 @@ import { ellipsoid } from "./ellipsoid.js";
  */
 
 /**
- * A sphere: `ellipsoid` with rx = ry = 1.
+ * A sphere: `ellipsoid` with sx = sy = 1.
  *
  * @param {SphereOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -38,7 +38,7 @@ export function sphere({
     thetaOffset,
     phi,
     phiOffset,
-    rx: 1,
-    ry: 1,
+    sx: 1,
+    sy: 1,
   });
 }
