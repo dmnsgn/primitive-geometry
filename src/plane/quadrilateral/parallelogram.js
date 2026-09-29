@@ -9,8 +9,8 @@ import { trapezoid, trapezoidPath } from "./trapezoid.js";
  * @property {number} [sx=0.5] Narrower than `trapezoid`'s default so the
  *   sheared top edge still fits the unit box.
  * @property {number} [sy=1]
- * @property {number} [shear=0.3] Horizontal shift of the top edge's center, as
- *   a fraction of `sx`.
+ * @property {number} [shear=0.3] Horizontal shift of the top edge's center, in
+ *   the same units as `sx`.
  * @property {number} [radius=0.5]
  * @property {number} [edgeSegments=1]
  * @property {number} [innerSegments=16]

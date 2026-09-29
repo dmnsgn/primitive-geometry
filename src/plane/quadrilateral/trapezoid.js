@@ -39,7 +39,7 @@ function computeTrapezoidCorners(sx, sy, topRatio, topOffset) {
  *   `1` matches the bottom edge's width (a parallelogram once `topOffset`
  *   shifts it off-center); `0` collapses the top edge to a point (a triangle).
  * @property {number} [topOffset=0] Horizontal shift of the top edge's center,
- *   as a fraction of `sx`. `0` (default) keeps both legs symmetric (an
+ *   in the same units as `sx`. `0` (default) keeps both legs symmetric (an
  *   isosceles trapezoid); a non-zero shift skews it into a right/scalene
  *   trapezoid.
  * @property {number} [radius=0.5]
