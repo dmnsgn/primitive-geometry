@@ -103,7 +103,13 @@ describe("innerRadius on ellipse-derived and polar curves", () => {
   const ratio = 0.4;
   const segments = 12;
 
-  for (const name of ["disc", "superellipse", "squircle", "astroid", "reuleaux"]) {
+  for (const name of [
+    "disc",
+    "superellipse",
+    "squircle",
+    "astroid",
+    "reuleaux",
+  ]) {
     it(`${name}: drills a self-similar hole with an open rim`, () => {
       const g = Primitives[name]({
         radius,

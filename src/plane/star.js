@@ -48,7 +48,7 @@ function computeStarEdge(points, radius, notchRadius, theta, thetaOffset, t) {
  * @property {number} [innerSegments=16]
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
- * @property {boolean} [mergeCentroid=innerRadius===0]
+ * @property {boolean} [mergeCentroid="innerRadius === 0"]
  * @property {import("../mappings.js").MappingFn} [mapping=mappings.concentric]
  */
 

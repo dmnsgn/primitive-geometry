@@ -57,7 +57,7 @@ function computeSquircleEdge(rx, ry, cosTheta, sinTheta, t, squareness) {
  * @property {number} [innerRadius=0]
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
- * @property {boolean} [mergeCentroid=innerRadius===0]
+ * @property {boolean} [mergeCentroid="innerRadius === 0"]
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.fgSquircular]
  * @property {number} [squareness=0.95] Squareness (0 < s <= 1)
  */

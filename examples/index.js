@@ -16,7 +16,7 @@ const geometries = params.has("geometry")
         .split(",")
         .map(
           (geometry) =>
-            Primitives[geometry] && named(geometry, Primitives[geometry]({theta: Math.PI,thetaOffset: Math.PI/2})),
+            Primitives[geometry] && named(geometry, Primitives[geometry]()),
         )
         .filter(Boolean),
     ]

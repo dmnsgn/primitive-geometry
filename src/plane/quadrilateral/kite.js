@@ -23,7 +23,7 @@ import {
  * @property {number} [innerRadius=0]
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=HALF_PI]
- * @property {boolean} [mergeCentroid=innerRadius===0]
+ * @property {boolean} [mergeCentroid="innerRadius === 0"]
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.concentric]
  */
 

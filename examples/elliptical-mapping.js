@@ -15,7 +15,7 @@ const update = (options) => {
           null,
           Primitives.annulus(options),
           // Elliptical annulus
-          Primitives.annulus({ sy: 0.5, options }),
+          Primitives.annulus({ sy: 0.5, ...options }),
           null,
           Primitives.squircle(options),
           Primitives.reuleaux(options),
