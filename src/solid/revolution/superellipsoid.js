@@ -29,6 +29,8 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
  * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
+ * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
+ *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */
 
 /**
@@ -57,6 +59,7 @@ export function superellipsoid({
   phi = TAU,
   phiOffset = 0,
   vDistribution = linear,
+  mergeSeam = false,
 } = {}) {
   const e1 = 2 / n1;
   const e2 = 2 / n2;
@@ -97,6 +100,7 @@ export function superellipsoid({
     nx,
     ny,
     phi,
+    mergeSeam,
     phiOffset,
     vDistribution,
     equation,

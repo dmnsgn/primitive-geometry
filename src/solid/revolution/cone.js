@@ -32,6 +32,7 @@ export function computeConeSegment({
   sx = 1,
   sz = 1,
   vDistribution,
+  mergeSeam,
   capOptions,
 }) {
   const rPrime = rTo - rFrom;
@@ -54,6 +55,7 @@ export function computeConeSegment({
     nx,
     ny,
     phi,
+    mergeSeam,
     phiOffset,
     vDistribution,
     equation,
@@ -75,6 +77,8 @@ export function computeConeSegment({
  * @property {number} [sx=1] Base ring x scale, elliptical when != sz
  * @property {number} [sz=1] Base ring z scale, elliptical when != sx
  * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
+ * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
+ *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */
 
 /**
@@ -99,6 +103,7 @@ export function cone({
   sx = 1,
   sz = 1,
   vDistribution = linear,
+  mergeSeam = false,
 } = {}) {
   const halfHeight = height / 2;
 
@@ -110,6 +115,7 @@ export function cone({
     nx,
     ny,
     phi,
+    mergeSeam,
     phiOffset,
     sx,
     sz,

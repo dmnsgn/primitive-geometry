@@ -11,9 +11,11 @@ export const TMP = [0, 0, 0];
 
 /**
  * Fan-triangulated flat disk cap shared by revolution solids (cylinder/cone,
- * torus): capSegments concentric rings sampled at ringSegments + 1 angular
- * positions. The innermost ring collapses to a point and fans with a single
- * triangle per quad instead of two, skipping the degenerate one.
+ * torus): capSegments + 1 concentric rings of `cols` angular samples
+ * (ringSegments + 1, or ringSegments when the caller merges a full turn's wrap
+ * column). The innermost ring collapses to a point - a single vertex with
+ * mergeSeam - and fans with a single triangle per quad instead of two,
+ * skipping the degenerate one.
  *
  * The disk is defined in the caller's own local 2D coordinates: x along the
  * angular sample's cosine, y along its sine, both scaled by capRadius *
@@ -45,10 +47,18 @@ export function computeCap(
     point,
     normal,
     mapping,
+    cols = ringSegments + 1,
+    mergeSeam = false,
   },
 ) {
   const { positions, normals, uvs, cells } = geometry;
-  const ringVertexOffset = indices.vertex;
+  const start = indices.vertex;
+  const centerCount = mergeSeam ? 1 : cols;
+
+  const at = (r, j) =>
+    r === 0
+      ? start + (mergeSeam ? 0 : j % cols)
+      : start + centerCount + (r - 1) * cols + (j % cols);
 
   const writeVertex = (radiusRatio, cos, sin, t, thetaRatio) => {
     const x = capRadius * sx * radiusRatio * cos;
@@ -83,13 +93,10 @@ export function computeCap(
     indices.vertex++;
   };
 
-  for (let r = 0; r < capSegments; r++) {
-    for (let j = 0; j <= ringSegments; j++) {
+  for (let r = 0; r <= capSegments; r++) {
+    for (let j = 0; j < (r === 0 ? centerCount : cols); j++) {
       const { cos, sin, t } = angleAt(j);
-      const thetaRatio = j / ringSegments;
-
-      writeVertex(r / capSegments, cos, sin, t, thetaRatio);
-      writeVertex((r + 1) / capSegments, cos, sin, t, thetaRatio);
+      writeVertex(r / capSegments, cos, sin, t, j / ringSegments);
     }
   }
 
@@ -102,14 +109,12 @@ export function computeCap(
     indices.cell += 3;
   };
 
-  const m = ringSegments + 1;
   for (let r = 0; r < capSegments; r++) {
     for (let j = 0; j < ringSegments; j++) {
-      const n = ringVertexOffset + r * m * 2 + j * 2;
-      const a = n;
-      const b = n + 1;
-      const c = n + 2;
-      const d = n + 3;
+      const a = at(r, j);
+      const b = at(r + 1, j);
+      const c = at(r, j + 1);
+      const d = at(r + 1, j + 1);
 
       // The innermost ring is collapsed at the center: fan with a single
       // triangle, skipping the degenerate one
@@ -121,11 +126,18 @@ export function computeCap(
 }
 
 /**
- * Triangulate one quad of a (rows+1) x (cols+1) vertex grid already written in
- * row-major order (cols vertices per row), for the vertex just written at
- * `indices.vertex` - the quad's own corner d. a/b/c are the 3 already-written
- * corners, at vertexIndex - cols - 1/- cols/- 1. Called whenever a full quad is
- * available (row > 0 && col > 0).
+ * Vertex count of a `computeCap` with the same `cols`, `capSegments` and
+ * `mergeSeam`.
+ *
+ * @private
+ */
+export function computeCapVertexCount(cols, capSegments, mergeSeam = false) {
+  return (mergeSeam ? 1 : cols) + capSegments * cols;
+}
+
+/**
+ * Triangulate one quad of a row-major vertex grid: a/b on the previous row, c/d
+ * on the current one, b/d one column after a/c.
  *
  * Splits along the b-c diagonal, matching `computePlane`/
  * `computePolarGeometry`/`computeRevolutionGeometry`, so displacement in a
@@ -136,13 +148,7 @@ export function computeCap(
  *
  * @private
  */
-export function computeGridQuad(cells, indices, cols, flip) {
-  const vertexIndex = indices.vertex;
-  const a = vertexIndex - cols - 1;
-  const b = vertexIndex - cols;
-  const c = vertexIndex - 1;
-  const d = vertexIndex;
-
+export function computeGridQuad(cells, indices, [a, b, c, d], flip) {
   if (flip === 1) {
     cells[indices.cell] = a;
     cells[indices.cell + 1] = c;
@@ -166,9 +172,11 @@ export function computeGridQuad(cells, indices, cols, flip) {
 
 /**
  * A grid of meridian rings (v = 0..1, row-major/outer) by nx + 1 angular
- * columns (phi, inner), revolved around the y-axis. The last column wraps and
- * welds to the first when phi is a multiple of TAU, same rule as every other
- * revolution solid.
+ * columns (phi, inner), revolved around the y-axis. The last column reuses the
+ * first's angle when phi is a multiple of TAU, so their positions match
+ * bit-identically, same rule as every other revolution solid. mergeSeam shares
+ * them instead (nx columns), along with collapsed rings whose normal doesn't
+ * depend on phi (a smooth pole, not a cone's apex).
  *
  * `equation({ v, cosPhi, sinPhi })` computes one vertex's analytic
  * position/normal, already embedding whatever axis-scale or ellipse the caller
@@ -228,9 +236,11 @@ export function computeRevolutionGeometry({
   capApexSegments = capSegments,
   capMapping,
   vDistribution = linear,
+  mergeSeam = false,
   equation,
 } = {}) {
   const wrap = phi % TAU === 0;
+  const cols = mergeSeam && wrap ? nx : nx + 1;
 
   // Rings collapsed to a point (poles, apexes) fan with a single triangle per
   // quad instead of two, skipping the degenerate one
@@ -251,8 +261,28 @@ export function computeRevolutionGeometry({
   const capApexCount = hasCapApex ? capApexSegments : 0;
   const capFans = (capBaseCount > 0 ? 1 : 0) + (capApexCount > 0 ? 1 : 0);
 
-  const size =
-    (ny + 1) * (nx + 1) + (nx + 1) * 2 * (capBaseCount + capApexCount);
+  const normalAt = (v, cosPhi, sinPhi) =>
+    normalize([...equation({ v, cosPhi, sinPhi }).normal]).map(Math.fround);
+
+  const mergedAt = collapsedAt.map((collapsed, y) => {
+    if (!mergeSeam || !collapsed) return false;
+    const v = vDistribution(y / ny);
+    const n0 = normalAt(v, 1, 0);
+    const n1 = normalAt(v, 0, 1);
+    return n0.every((n, k) => n === n1[k]);
+  });
+
+  const rowOffsets = Array.from({ length: ny + 1 });
+  let bodySize = 0;
+  for (let y = 0; y <= ny; y++) {
+    rowOffsets[y] = bodySize;
+    bodySize += mergedAt[y] ? 1 : cols;
+  }
+  const at = (x, y) => rowOffsets[y] + (mergedAt[y] ? 0 : x % cols);
+
+  const capSize = (count) =>
+    count > 0 ? computeCapVertexCount(cols, count, mergeSeam) : 0;
+  const size = bodySize + capSize(capBaseCount) + capSize(capApexCount);
 
   const positions = new Float32Array(size * 3);
   const normals = new Float32Array(size * 3);
@@ -300,13 +330,11 @@ export function computeRevolutionGeometry({
   // Quads between the row just written and the one before it, each half
   // skipped when the ring it fans from is collapsed
   const writeRowQuads = (y) => {
-    const rowOffset = vertexIndex - 2 * (nx + 1);
-
     for (let x = 0; x < nx; x++) {
-      const a = rowOffset + x;
-      const b = a + 1;
-      const c = a + nx + 1;
-      const d = a + nx + 2;
+      const a = at(x, y - 1);
+      const b = at(x + 1, y - 1);
+      const c = at(x, y);
+      const d = at(x + 1, y);
 
       if (!collapsedAt[y - 1]) {
         cells[cellIndex] = a;
@@ -330,7 +358,8 @@ export function computeRevolutionGeometry({
     const t = y / ny;
     const v = vDistribution(t);
 
-    for (let x = 0; x <= nx; x++, vertexIndex++) writeVertex(x, v, t);
+    const count = mergedAt[y] ? 1 : cols;
+    for (let x = 0; x < count; x++, vertexIndex++) writeVertex(x, v, t);
 
     if (y > 0) writeRowQuads(y);
   }
@@ -362,6 +391,8 @@ export function computeRevolutionGeometry({
       point: (x, y) => [x, atCos.position[1], y],
       normal: [0, normalY, 0],
       mapping: capMapping,
+      cols,
+      mergeSeam,
     });
   };
 
@@ -398,7 +429,7 @@ export function computePolygonCorner(angle, radius, y) {
 export function computePolygonCap(
   geometry,
   indices,
-  { sides, radius, y, flip, normalY, angleAt, mapping },
+  { sides, radius, y, flip, normalY, angleAt, mapping, mergeSeam = false },
 ) {
   computeCap(geometry, indices, {
     ringSegments: sides,
@@ -412,6 +443,8 @@ export function computePolygonCap(
     point: (x, z) => [x, y, z],
     normal: [0, normalY, 0],
     mapping,
+    cols: mergeSeam ? sides : sides + 1,
+    mergeSeam,
   });
 }
 
@@ -447,6 +480,7 @@ export function computeSpindleArcRevolution({
   phi,
   phiOffset,
   vDistribution,
+  mergeSeam,
 }) {
   function equation({ v, cosPhi: rawCosPhi, sinPhi: rawSinPhi }) {
     const cosPhi = snapToZero(rawCosPhi);
@@ -484,6 +518,7 @@ export function computeSpindleArcRevolution({
     phi,
     phiOffset,
     vDistribution,
+    mergeSeam,
     equation,
   });
 }
@@ -514,6 +549,7 @@ export function computeFlatRevolutionGeometry({
   capSegments,
   capMapping,
   vDistribution,
+  mergeSeam,
   profile,
 }) {
   const halfHeight = height / 2;
@@ -543,6 +579,7 @@ export function computeFlatRevolutionGeometry({
     capBaseSegments: capSegments,
     capMapping,
     vDistribution,
+    mergeSeam,
     equation,
   });
 }

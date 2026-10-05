@@ -26,6 +26,8 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @property {number} [sxApex=sx] Apex ring x scale, independent of the base
  * @property {number} [szApex=sz] Apex ring z scale, independent of the base
  * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
+ * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
+ *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */
 
 /**
@@ -57,6 +59,7 @@ export function cylinder({
   sxApex = sx,
   szApex = sz,
   vDistribution = linear,
+  mergeSeam = false,
 } = {}) {
   const halfHeight = height / 2;
 
@@ -99,6 +102,7 @@ export function cylinder({
     nx,
     ny,
     phi,
+    mergeSeam,
     phiOffset,
     capBase,
     capApex,

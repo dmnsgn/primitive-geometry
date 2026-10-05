@@ -20,6 +20,8 @@ import { TAU } from "../../utils/common.js";
  *   [0, PI] - see theta.
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
+ * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
+ *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */
 
 /**
@@ -44,6 +46,7 @@ export function astroidalEllipsoid({
   thetaOffset = 0,
   phi = TAU,
   phiOffset = 0,
+  mergeSeam = false,
 } = {}) {
   return superellipsoid({
     radius,
@@ -57,6 +60,7 @@ export function astroidalEllipsoid({
     theta,
     thetaOffset,
     phi,
+    mergeSeam,
     phiOffset,
   });
 }

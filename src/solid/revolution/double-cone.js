@@ -21,6 +21,8 @@ import { computeConeSegment } from "./cone.js";
  * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
  * @property {number} [sx=1] End ring x scale, elliptical when != sz
  * @property {number} [sz=1] End ring z scale, elliptical when != sx
+ * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
+ *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */
 
 /**
@@ -45,6 +47,7 @@ export function doubleCone({
   capMapping = rectangular,
   sx = 1,
   sz = 1,
+  mergeSeam = false,
 } = {}) {
   const halfHeight = height / 2;
 
@@ -57,6 +60,7 @@ export function doubleCone({
       nx,
       ny,
       phi,
+      mergeSeam,
       phiOffset,
       sx,
       sz,

@@ -19,6 +19,8 @@ import { computeSpindleArcRevolution } from "../../utils/revolution.js";
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
  * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
+ * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
+ *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */
 
 /**
@@ -40,6 +42,7 @@ export function lemon({
   phi = TAU,
   phiOffset = 0,
   vDistribution = linear,
+  mergeSeam = false,
 } = {}) {
   const halfHeight = Math.max(height, radius * 2) / 2;
 
@@ -64,6 +67,7 @@ export function lemon({
     nx,
     ny,
     phi,
+    mergeSeam,
     phiOffset,
     vDistribution,
   });

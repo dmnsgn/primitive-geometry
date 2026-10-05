@@ -18,6 +18,8 @@ import { computeConeSegment } from "./cone.js";
  * @property {boolean} [capBase=true]
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
+ * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
+ *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */
 
 /**
@@ -40,6 +42,7 @@ export function hollowCylinder({
   capBase = true,
   phi = TAU,
   phiOffset = 0,
+  mergeSeam = false,
 } = {}) {
   const halfHeight = height / 2;
 
@@ -54,6 +57,7 @@ export function hollowCylinder({
       nx,
       ny: capSegments,
       phi,
+      mergeSeam,
       phiOffset,
     });
 
@@ -67,6 +71,7 @@ export function hollowCylinder({
       nx,
       ny,
       phi,
+      mergeSeam,
       phiOffset,
       capBase: false,
       capApex: false,
@@ -78,6 +83,7 @@ export function hollowCylinder({
         nx,
         ny,
         phi,
+        mergeSeam,
         phiOffset,
         capBase: false,
         capApex: false,

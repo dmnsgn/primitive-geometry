@@ -13,6 +13,8 @@ import { ellipsoid } from "./ellipsoid.js";
  * @property {number} [thetaOffset=0]
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
+ * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
+ *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */
 
 /**
@@ -29,6 +31,7 @@ export function sphere({
   thetaOffset,
   phi,
   phiOffset,
+  mergeSeam,
 } = {}) {
   return ellipsoid({
     radius,
@@ -37,6 +40,7 @@ export function sphere({
     theta,
     thetaOffset,
     phi,
+    mergeSeam,
     phiOffset,
     sx: 1,
     sy: 1,

@@ -19,6 +19,8 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @property {number} [phiOffset=0]
  * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
  * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
+ * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
+ *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */
 
 /**
@@ -43,6 +45,7 @@ export function paraboloid({
   phiOffset = 0,
   capMapping = rectangular,
   vDistribution = linear,
+  mergeSeam = false,
 } = {}) {
   const halfHeight = height / 2;
   // r² = k·(halfHeight - y), fixed by r = radius at the rim (y = -halfHeight)
@@ -66,6 +69,7 @@ export function paraboloid({
     nx,
     ny,
     phi,
+    mergeSeam,
     phiOffset,
     capBase,
     capBaseSegments: capSegments,

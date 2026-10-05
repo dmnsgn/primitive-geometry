@@ -1369,3 +1369,81 @@ describe("elliptical revolution solids", () => {
     });
   });
 });
+
+describe("mergeSeam", () => {
+  const solids = [
+    "apple",
+    "barrel",
+    "bicone",
+    "capsule",
+    "cone",
+    "cylinder",
+    "doubleCone",
+    "ellipsoid",
+    "funnel",
+    "hollowCylinder",
+    "hollowSphere",
+    "hyperboloid",
+    "lemon",
+    "paraboloid",
+    "roundedCylinder",
+    "sphere",
+    "sphericalRing",
+    "superegg",
+    "superellipsoid",
+    "torus",
+    "prism",
+    "antiprism",
+  ];
+
+  for (const name of solids) {
+    it(`${name}: merges without changing the surface`, () => {
+      for (const options of [{}, { capSegments: 3 }]) {
+        const split = Primitives[name](options);
+        const merged = Primitives[name]({ ...options, mergeSeam: true });
+
+        assert.ok(merged.positions.length < split.positions.length);
+        assert.equal(merged.cells.length, split.cells.length);
+
+        const result = analyze(merged);
+        assert.equal(result.cracks, 0);
+        assert.equal(result.nonManifold, 0);
+        assert.equal(result.degenerate, 0);
+        assert.equal(result.unused, 0);
+        assert.equal(result.boundaries, analyze(split).boundaries);
+      }
+    });
+  }
+
+  it("shares the wrap column and both poles of a sphere", () => {
+    const nx = 32;
+    const ny = 16;
+    const g = Primitives.sphere({ nx, ny, mergeSeam: true });
+    assert.equal(g.positions.length / 3, nx * (ny - 1) + 2);
+    assert.equal(analyze(g).seams, 0);
+  });
+
+  it("shares both wraps of a torus", () => {
+    const g = Primitives.torus({
+      segments: 16,
+      minorSegments: 8,
+      mergeSeam: true,
+    });
+    assert.equal(g.positions.length / 3, 16 * 8);
+    assert.equal(analyze(g).seams, 0);
+  });
+
+  it("keeps a cone's apex split per column", () => {
+    const nx = 16;
+    const g = Primitives.cone({ nx, ny: 1, mergeSeam: true });
+    // Base ring, apex ring, cap center and cap rim
+    assert.equal(g.positions.length / 3, nx + nx + 1 + nx);
+  });
+
+  it("keeps the default layout split", () => {
+    const nx = 32;
+    const ny = 16;
+    const g = Primitives.sphere({ nx, ny });
+    assert.equal(g.positions.length / 3, (nx + 1) * (ny + 1));
+  });
+});

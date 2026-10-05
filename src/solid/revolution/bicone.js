@@ -15,6 +15,8 @@ import { computeConeSegment } from "./cone.js";
  * @property {number} [phiOffset=0]
  * @property {number} [sx=1] Equator x scale, elliptical when != sz
  * @property {number} [sz=1] Equator z scale, elliptical when != sx
+ * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
+ *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */
 
 /**
@@ -34,6 +36,7 @@ export function bicone({
   phiOffset = 0,
   sx = 1,
   sz = 1,
+  mergeSeam = false,
 } = {}) {
   const halfHeight = height / 2;
 
@@ -46,6 +49,7 @@ export function bicone({
       nx,
       ny,
       phi,
+      mergeSeam,
       phiOffset,
       sx,
       sz,

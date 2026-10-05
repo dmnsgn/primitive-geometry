@@ -202,10 +202,23 @@ describe("mergeSeam", () => {
     assert.equal(analyze(g).cracks, 0);
   });
 
-  it("is a no-op for mappings continuous across the wrap", () => {
+  it("duplicates the wrap column with matching uvs for continuous mappings", () => {
     const welded = Primitives.disc({ segments, innerSegments });
     const g = Primitives.disc({ segments, innerSegments, mergeSeam: false });
-    assert.equal(g.positions.length, welded.positions.length);
-    assert.deepEqual(Array.from(g.uvs), Array.from(welded.uvs));
+    assert.equal(
+      g.positions.length / 3,
+      welded.positions.length / 3 + innerSegments,
+    );
+
+    const cols = segments + 1;
+    for (let j = 0; j < innerSegments; j++) {
+      const first = 1 + j * cols;
+      const last = first + segments;
+      for (const k of [0, 1]) {
+        assert.equal(g.positions[last * 3 + k], g.positions[first * 3 + k]);
+        assert.ok(Math.abs(g.uvs[last * 2 + k] - g.uvs[first * 2 + k]) < 1e-6);
+      }
+    }
+    assert.equal(analyze(g).cracks, 0);
   });
 });

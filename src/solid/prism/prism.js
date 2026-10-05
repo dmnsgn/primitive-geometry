@@ -5,6 +5,7 @@
 import { rectangular } from "../../mappings.js";
 import { TAU, getCellsTypedArray } from "../../utils/common.js";
 import {
+  computeCapVertexCount,
   computePolygonCap,
   computePolygonCorner,
 } from "../../utils/revolution.js";
@@ -16,6 +17,8 @@ import {
  * @property {number} [sides=6]
  * @property {number} [phiOffset=0]
  * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
+ * @property {boolean} [mergeSeam=false] `true` shares the caps' wrap column and
+ *   center vertices, wrapping uvs back to 0 there.
  */
 
 /**
@@ -33,6 +36,7 @@ export function prism({
   sides = 6,
   phiOffset = 0,
   capMapping = rectangular,
+  mergeSeam = false,
 } = {}) {
   const halfHeight = height / 2;
 
@@ -43,7 +47,11 @@ export function prism({
   const angleAt = (i) => (i === sides ? 0 : i / sides) * TAU + phiOffset;
 
   const wallVertexCount = sides * 4;
-  const capVertexCount = (sides + 1) * 2;
+  const capVertexCount = computeCapVertexCount(
+    mergeSeam ? sides : sides + 1,
+    1,
+    mergeSeam,
+  );
   const size = wallVertexCount + capVertexCount * 2;
 
   const positions = new Float32Array(size * 3);
@@ -123,6 +131,7 @@ export function prism({
     normalY: -1,
     angleAt,
     mapping: capMapping,
+    mergeSeam,
   });
   computePolygonCap(geometry, indices, {
     sides,
@@ -132,6 +141,7 @@ export function prism({
     normalY: 1,
     angleAt,
     mapping: capMapping,
+    mergeSeam,
   });
 
   return geometry;

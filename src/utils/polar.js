@@ -4,7 +4,6 @@
  */
 
 import { TAU, getCellsTypedArray } from "./common.js";
-import { splitSeam } from "./seam.js";
 
 /**
  * @private
@@ -98,8 +97,9 @@ function computeColumnCount(segments, theta) {
  * its vertices with the first so the wrap edge is welded), fan-triangulated
  * between rings. equation maps each (radiusRatio, angle) sample to its [x, y]
  * position, defaulting to an ellipse's arc; mapping computes its uv and has no
- * default, so it must always be supplied. mergeSeam false splits the welded
- * wrap edge for mappings wrapping in v at thetaRatio 1 (eg. polar).
+ * default, so it must always be supplied. mergeSeam false keeps a separate wrap
+ * column, and a centroid per wedge when its uv depends on the angle, for
+ * mappings wrapping in v at thetaRatio 1 (eg. polar).
  *
  * @private
  */
@@ -117,20 +117,8 @@ export function computePolarGeometry({
   mapping,
   equation = ({ rx, ry, cosTheta, sinTheta }) => [rx * cosTheta, ry * sinTheta],
 } = {}) {
-  const cols = computeColumnCount(segments, theta);
-
-  const size = mergeCentroid
-    ? 1 + innerSegments * cols
-    : (innerSegments + 1) * cols;
-
-  const positions = new Float32Array(size * 3);
-  const normals = new Float32Array(size * 3);
-  const uvs = new Float32Array(size * 2);
-  const cells = new (getCellsTypedArray(size))(
-    mergeCentroid
-      ? segments * 3 + (innerSegments - 1) * segments * 6
-      : innerSegments * segments * 6,
-  );
+  const closed = computeColumnCount(segments, theta) === segments;
+  const cols = closed && mergeSeam ? segments : segments + 1;
 
   // Mapped like any other vertex rather than hardcoded so a mapping with no
   // centered origin (eg. polar's radiusRatio 0) gets its own uv
@@ -150,21 +138,43 @@ export function computePolarGeometry({
       sy,
     });
 
-  if (mergeCentroid) {
-    normals[2] = 1;
-    mapCentroid(uvs, 0, 0);
+  // A merged centroid whose uv depends on the angle (eg. polar) has no uv of
+  // its own, so it's split per wedge, at the wedge's mid angle
+  let centroidCount = mergeCentroid ? 1 : 0;
+  if (mergeCentroid && !mergeSeam) {
+    const probe = new Float32Array(4);
+    mapCentroid(probe, 0, 0);
+    mapCentroid(probe, 2, 0.5);
+    if (probe[0] !== probe[2] || probe[1] !== probe[3]) centroidCount = segments;
   }
 
-  let vertexIndex = mergeCentroid ? 1 : 0;
+  const size =
+    centroidCount + (mergeCentroid ? innerSegments : innerSegments + 1) * cols;
+
+  const positions = new Float32Array(size * 3);
+  const normals = new Float32Array(size * 3);
+  const uvs = new Float32Array(size * 2);
+  const cells = new (getCellsTypedArray(size))(
+    mergeCentroid
+      ? segments * 3 + (innerSegments - 1) * segments * 6
+      : innerSegments * segments * 6,
+  );
+
+  for (let i = 0; i < centroidCount; i++) {
+    normals[i * 3 + 2] = 1;
+    mapCentroid(uvs, i * 2, centroidCount === 1 ? 0 : (i + 0.5) / segments);
+  }
+
+  let vertexIndex = centroidCount;
   let cellIndex = 0;
 
-  // The innermost ring fans to the merged centroid, whose index is 0 - left
-  // as the triangle's untouched third slot. Every later ring bridges to the
-  // one before it with a quad.
+  // The innermost ring fans to the merged centroid(s), at the start of the
+  // arrays. Every later ring bridges to the one before it with a quad.
   const writeCells = (j, ringOffset, i, i1) => {
     if (mergeCentroid && j === 1) {
       cells[cellIndex] = ringOffset + i;
       cells[cellIndex + 1] = ringOffset + i1;
+      cells[cellIndex + 2] = centroidCount === 1 ? 0 : i;
 
       cellIndex += 3;
     } else if (j > (mergeCentroid ? 1 : 0)) {
@@ -194,7 +204,10 @@ export function computePolarGeometry({
 
     for (let i = 0; i < cols; i++, vertexIndex++) {
       const thetaRatio = i / segments;
-      const t = thetaOffset + thetaRatio * theta;
+      // A separate wrap column reuses the first angle exactly, so its
+      // positions match bit-identically
+      const t =
+        thetaOffset + (closed && i === segments ? 0 : thetaRatio) * theta;
 
       const cosTheta = Math.cos(t);
       const sinTheta = Math.sin(t);
@@ -234,23 +247,7 @@ export function computePolarGeometry({
     }
   }
 
-  const geometry = { positions, normals, uvs, cells };
-
-  if (mergeSeam) return geometry;
-
-  // A merged centroid whose uv depends on the angle (eg. polar) has no uv of
-  // its own, so it's split per wedge too
-  let centroidIsPole = false;
-  if (mergeCentroid) {
-    const probe = new Float32Array(2);
-    mapCentroid(probe, 0, 0.5);
-    centroidIsPole = probe[0] !== uvs[0] || probe[1] !== uvs[1];
-  }
-
-  return splitSeam(geometry, {
-    component: 1,
-    isPole: (index) => centroidIsPole && index === 0,
-  });
+  return { positions, normals, uvs, cells };
 }
 
 /**

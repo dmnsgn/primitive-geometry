@@ -26,6 +26,8 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
  *   Applies to the outer spherical band only - the inner bore wall is a plain
  *   cylinder.
+ * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
+ *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */
 
 /**
@@ -49,6 +51,7 @@ export function sphericalRing({
   phi = TAU,
   phiOffset = 0,
   vDistribution = linear,
+  mergeSeam = false,
 } = {}) {
   const clampedInnerRadius = clamp(innerRadius, 0, radius);
 
@@ -83,6 +86,7 @@ export function sphericalRing({
     nx,
     ny,
     phi,
+    mergeSeam,
     phiOffset,
     vDistribution,
     equation: outerEquation,
@@ -115,6 +119,7 @@ export function sphericalRing({
       nx,
       ny: holeSegments,
       phi,
+      mergeSeam,
       phiOffset,
       equation: innerEquation,
     }),

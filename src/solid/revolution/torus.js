@@ -4,7 +4,12 @@
  */
 import { rectangular } from "../../mappings.js";
 import { TAU, getCellsTypedArray, normalize } from "../../utils/common.js";
-import { TMP, computeCap, computeGridQuad } from "../../utils/revolution.js";
+import {
+  TMP,
+  computeCap,
+  computeCapVertexCount,
+  computeGridQuad,
+} from "../../utils/revolution.js";
 
 /**
  * @typedef {object} TorusOptions
@@ -30,6 +35,8 @@ import { TMP, computeCap, computeGridQuad } from "../../utils/revolution.js";
  *   elliptical when != minorSy
  * @property {number} [minorSy=1] Tube z scale (meridian cross-section),
  *   elliptical when != minorSx
+ * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
+ *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */
 
 /**
@@ -64,6 +71,7 @@ export function torus({
   sy = 1,
   minorSx = 1,
   minorSy = 1,
+  mergeSeam = false,
 } = {}) {
   // Wrap the last column/ring to the exact first angle for full revolutions
   const wrapPhi = phi % TAU === 0;
@@ -73,11 +81,19 @@ export function torus({
   const hasCapStart = capStart && !wrapPhi && capStartSegments > 0;
   const hasCapEnd = capEnd && !wrapPhi && capEndSegments > 0;
 
-  const m = minorSegments + 1;
+  const cols = mergeSeam && wrapPhi ? segments : segments + 1;
+  const rows = mergeSeam && wrapTheta ? minorSegments : minorSegments + 1;
+  const at = (i, j) => (j % rows) * cols + (i % cols);
+
   const capCount =
     (hasCapStart ? capStartSegments : 0) + (hasCapEnd ? capEndSegments : 0);
+  const capSize = (has, count) =>
+    has ? computeCapVertexCount(rows, count, mergeSeam) : 0;
 
-  const size = m * (segments + 1) + m * 2 * capCount;
+  const size =
+    rows * cols +
+    capSize(hasCapStart, capStartSegments) +
+    capSize(hasCapEnd, capEndSegments);
 
   const positions = new Float32Array(size * 3);
   const normals = new Float32Array(size * 3);
@@ -105,11 +121,11 @@ export function torus({
   const phiAngleAt = (i) =>
     (wrapPhi && i === segments ? 0 : i / segments) * phi + phiOffset;
 
-  for (let j = 0; j <= minorSegments; j++) {
+  for (let j = 0; j < rows; j++) {
     const v = j / minorSegments;
     const { cos: cosTheta, sin: sinTheta } = angleAt(j);
 
-    for (let i = 0; i <= segments; i++, indices.vertex++) {
+    for (let i = 0; i < cols; i++, indices.vertex++) {
       const u = i / segments;
 
       const p = phiAngleAt(i);
@@ -143,11 +159,20 @@ export function torus({
 
       uvs[indices.vertex * 2] = u;
       uvs[indices.vertex * 2 + 1] = v;
+    }
+  }
 
-      // flip=-1: with i (phi) as the row-stride axis, this is the winding
-      // that keeps the b-c split facing the same way as the original a-d
-      // split it replaces
-      if (j > 0 && i > 0) computeGridQuad(cells, indices, segments + 1, -1);
+  // flip=-1: with i (phi) as the row-stride axis, this is the winding that
+  // keeps the b-c split facing the same way as the original a-d split it
+  // replaces
+  for (let j = 1; j <= minorSegments; j++) {
+    for (let i = 1; i <= segments; i++) {
+      computeGridQuad(
+        cells,
+        indices,
+        [at(i - 1, j - 1), at(i, j - 1), at(i - 1, j), at(i, j)],
+        -1,
+      );
     }
   }
 
@@ -187,6 +212,8 @@ export function torus({
       point,
       normal: normalFor(-1),
       mapping: capMapping,
+      cols: rows,
+      mergeSeam,
     });
   }
 
@@ -203,6 +230,8 @@ export function torus({
       point,
       normal: normalFor(1),
       mapping: capMapping,
+      cols: rows,
+      mergeSeam,
     });
   }
 

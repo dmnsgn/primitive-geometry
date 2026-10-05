@@ -28,6 +28,8 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
  * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
+ * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
+ *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */
 
 /**
@@ -52,6 +54,7 @@ export function superegg({
   phi = TAU,
   phiOffset = 0,
   vDistribution = linear,
+  mergeSeam = false,
 } = {}) {
   const e = 2 / n;
 
@@ -92,6 +95,7 @@ export function superegg({
     nx,
     ny,
     phi,
+    mergeSeam,
     phiOffset,
     vDistribution,
     equation,

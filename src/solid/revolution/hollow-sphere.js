@@ -34,9 +34,10 @@ function thetaCap({
   radius,
   innerRadius,
   flip,
+  mergeSeam,
 }) {
   const wrap = phi % TAU === 0;
-  const cols = nx + 1;
+  const cols = mergeSeam && wrap ? nx : nx + 1;
   const size = (capSegments + 1) * cols;
 
   const positions = new Float32Array(size * 3);
@@ -52,7 +53,7 @@ function thetaCap({
   for (let j = 0; j <= capSegments; j++) {
     const r = innerRadius + (radius - innerRadius) * (j / capSegments);
 
-    for (let i = 0; i <= nx; i++, indices.vertex++) {
+    for (let i = 0; i < cols; i++, indices.vertex++) {
       const u = i / nx;
       const p = (wrap && i === nx ? 0 : u) * phi + phiOffset;
       const cosPhi = Math.cos(p);
@@ -75,8 +76,18 @@ function thetaCap({
 
       uvs[indices.vertex * 2] = u;
       uvs[indices.vertex * 2 + 1] = j / capSegments;
+    }
+  }
 
-      if (j > 0 && i > 0) computeGridQuad(cells, indices, cols, flip);
+  const at = (i, j) => j * cols + (i % cols);
+  for (let j = 1; j <= capSegments; j++) {
+    for (let i = 1; i <= nx; i++) {
+      computeGridQuad(
+        cells,
+        indices,
+        [at(i - 1, j - 1), at(i, j - 1), at(i - 1, j), at(i, j)],
+        flip,
+      );
     }
   }
 
@@ -142,11 +153,21 @@ function phiCap({
 
       uvs[indices.vertex * 2] = v;
       uvs[indices.vertex * 2 + 1] = j / capSegments;
+    }
+  }
 
-      // flip is inverted relative to thetaCap: with i (theta) as the
-      // row-stride axis here instead of phi, the same flip value maps to
-      // the opposite winding for an outward normal
-      if (j > 0 && i > 0) computeGridQuad(cells, indices, rows, -flip);
+  // flip is inverted relative to thetaCap: with i (theta) as the row-stride
+  // axis here instead of phi, the same flip value maps to the opposite
+  // winding for an outward normal
+  const at = (i, j) => j * rows + i;
+  for (let j = 1; j <= capSegments; j++) {
+    for (let i = 1; i <= ny; i++) {
+      computeGridQuad(
+        cells,
+        indices,
+        [at(i - 1, j - 1), at(i, j - 1), at(i - 1, j), at(i, j)],
+        -flip,
+      );
     }
   }
 
@@ -166,6 +187,8 @@ function phiCap({
  *   clamped like `ellipsoid`'s
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
+ * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
+ *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */
 
 /**
@@ -188,6 +211,7 @@ export function hollowSphere({
   thetaOffset = Math.PI / 4,
   phi = TAU,
   phiOffset = 0,
+  mergeSeam = false,
 } = {}) {
   const [clampedTheta, clampedThetaOffset] = clampMeridianSweep(
     theta,
@@ -197,7 +221,7 @@ export function hollowSphere({
   const thetaEnd = clampedThetaOffset + clampedTheta;
 
   const pieces = [
-    sphere({ radius, nx, ny, theta, thetaOffset, phi, phiOffset }),
+    sphere({ radius, nx, ny, theta, thetaOffset, phi, phiOffset, mergeSeam }),
     invert(
       sphere({
         radius: innerRadius,
@@ -206,6 +230,7 @@ export function hollowSphere({
         theta,
         thetaOffset,
         phi,
+        mergeSeam,
         phiOffset,
       }),
     ),
@@ -216,6 +241,7 @@ export function hollowSphere({
       thetaCap({
         t: thetaStart,
         phi,
+        mergeSeam,
         phiOffset,
         nx,
         capSegments,
@@ -231,6 +257,7 @@ export function hollowSphere({
       thetaCap({
         t: thetaEnd,
         phi,
+        mergeSeam,
         phiOffset,
         nx,
         capSegments,

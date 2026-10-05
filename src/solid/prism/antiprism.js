@@ -5,6 +5,7 @@
 import { rectangular } from "../../mappings.js";
 import { TAU, getCellsTypedArray } from "../../utils/common.js";
 import {
+  computeCapVertexCount,
   computePolygonCap,
   computePolygonCorner,
 } from "../../utils/revolution.js";
@@ -16,6 +17,8 @@ import {
  * @property {number} [sides=6]
  * @property {number} [phiOffset=0]
  * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
+ * @property {boolean} [mergeSeam=false] `true` shares the caps' wrap column and
+ *   center vertices, wrapping uvs back to 0 there.
  */
 
 /**
@@ -34,6 +37,7 @@ export function antiprism({
   sides = 6,
   phiOffset = 0,
   capMapping = rectangular,
+  mergeSeam = false,
 } = {}) {
   const halfHeight = height / 2;
   const topOffset = phiOffset + TAU / sides / 2;
@@ -46,7 +50,11 @@ export function antiprism({
   const topAngleAt = (i) => (i === sides ? 0 : i / sides) * TAU + topOffset;
 
   const bandVertexCount = sides * 2 * 3;
-  const capVertexCount = (sides + 1) * 2;
+  const capVertexCount = computeCapVertexCount(
+    mergeSeam ? sides : sides + 1,
+    1,
+    mergeSeam,
+  );
   const size = bandVertexCount + capVertexCount * 2;
 
   const positions = new Float32Array(size * 3);
@@ -132,6 +140,7 @@ export function antiprism({
     normalY: -1,
     angleAt: bottomAngleAt,
     mapping: capMapping,
+    mergeSeam,
   });
   computePolygonCap(geometry, indices, {
     sides,
@@ -141,6 +150,7 @@ export function antiprism({
     normalY: 1,
     angleAt: topAngleAt,
     mapping: capMapping,
+    mergeSeam,
   });
 
   return geometry;

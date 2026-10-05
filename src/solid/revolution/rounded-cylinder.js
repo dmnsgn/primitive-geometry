@@ -20,6 +20,8 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
  * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
+ * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
+ *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */
 
 /**
@@ -43,6 +45,7 @@ export function roundedCylinder({
   phi = TAU,
   phiOffset = 0,
   vDistribution = linear,
+  mergeSeam = false,
 } = {}) {
   const halfHeight = height / 2;
   const clampedRoundRadius = clamp(
@@ -143,6 +146,7 @@ export function roundedCylinder({
     nx,
     ny: nyTotal,
     phi,
+    mergeSeam,
     phiOffset,
     vDistribution,
     equation,
