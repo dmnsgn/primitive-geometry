@@ -16,7 +16,7 @@ const geometries = params.has("geometry")
         .split(",")
         .map(
           (geometry) =>
-            Primitives[geometry] && named(geometry, Primitives[geometry]()),
+            Primitives[geometry] && named(geometry, Primitives[geometry]({capMapping: Primitives.mappings.circumferential})),
         )
         .filter(Boolean),
     ]

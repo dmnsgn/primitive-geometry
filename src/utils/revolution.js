@@ -60,6 +60,18 @@ export function computeCap(
       ? start + (mergeSeam ? 0 : j % cols)
       : start + centerCount + (r - 1) * cols + (j % cols);
 
+  // Summed from the same samples as the outer ring, so it's the length of the
+  // body's own boundary ring the cap welds onto
+  let perimeter = 0;
+  for (let j = 0; j < ringSegments; j++) {
+    const a = angleAt(j);
+    const b = angleAt(j + 1);
+    perimeter += Math.hypot(
+      capRadius * sx * (b.cos - a.cos),
+      capRadius * sy * (b.sin - a.sin),
+    );
+  }
+
   const writeVertex = (radiusRatio, cos, sin, t, thetaRatio) => {
     const x = capRadius * sx * radiusRatio * cos;
     const y = capRadius * sy * radiusRatio * sin;
@@ -88,6 +100,7 @@ export function computeCap(
       t,
       x,
       y,
+      perimeter,
     });
 
     indices.vertex++;

@@ -2,7 +2,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
 import * as Primitives from "../index.js";
-import { polar, rectangular } from "../src/mappings.js";
+import { circumferential, polar, rectangular } from "../src/mappings.js";
 import {
   analyze,
   flippedNormalTriangles,
@@ -1025,6 +1025,75 @@ describe("capMapping", () => {
       Array.from(withDefault.uvs),
       Array.from(withExplicitDefault.uvs),
     );
+  });
+
+  describe("circumferential", () => {
+    // Base then apex cap follow the body's (ny + 1) * (nx + 1) vertices, each
+    // a center ring then capSegments rings, the last one being the rim
+    const capRims = ({ nx, ny, capSegments }) => {
+      const cols = nx + 1;
+      const capSize = (capSegments + 1) * cols;
+      const body = (ny + 1) * cols;
+      return [body, body + capSize].map((start) =>
+        Array.from(
+          { length: cols },
+          (_, j) => start + capSegments * cols + j,
+        ),
+      );
+    };
+
+    const uvAt = (g, i) => [g.uvs[i * 2], g.uvs[i * 2 + 1]];
+
+    it("matches the body's u step along each rim, frustum included", () => {
+      const options = { nx: 12, ny: 2, capSegments: 3 };
+      const g = Primitives.cylinder({
+        ...options,
+        radius: 0.4,
+        radiusApex: 0.1,
+        height: 2,
+        capMapping: circumferential,
+      });
+
+      for (const rim of capRims(options)) {
+        for (let j = 0; j < options.nx; j++) {
+          const [u0, v0] = uvAt(g, rim[j]);
+          const [u1, v1] = uvAt(g, rim[j + 1]);
+          assert.ok(
+            Math.abs(Math.hypot(u1 - u0, v1 - v0) - 1 / options.nx) < 1e-6,
+          );
+        }
+      }
+    });
+
+    it("is centered and undistorted", () => {
+      const options = { nx: 16, ny: 1, capSegments: 2 };
+      const g = Primitives.cylinder({
+        ...options,
+        sx: 2,
+        sz: 0.5,
+        capMapping: circumferential,
+      });
+
+      for (const rim of capRims(options)) {
+        let perimeter = 0;
+        for (let j = 0; j < options.nx; j++) {
+          perimeter += Math.hypot(
+            g.positions[rim[j + 1] * 3] - g.positions[rim[j] * 3],
+            g.positions[rim[j + 1] * 3 + 2] - g.positions[rim[j] * 3 + 2],
+          );
+        }
+
+        // Whole cap, center rings included: uv is position / perimeter on
+        // both axes, offset by the 0.5 center
+        for (let i = rim[0] - options.capSegments * (options.nx + 1); i <= rim.at(-1); i++) {
+          const [u, v] = uvAt(g, i);
+          assert.ok(Math.abs(u - 0.5 - g.positions[i * 3] / perimeter) < 1e-6);
+          assert.ok(
+            Math.abs(v - 0.5 - g.positions[i * 3 + 2] / perimeter) < 1e-6,
+          );
+        }
+      }
+    });
   });
 });
 

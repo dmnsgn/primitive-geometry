@@ -17,6 +17,7 @@ import { HALF_PI, SQRT2, TAU } from "./utils/common.js";
  * @param {number} [mappingOptions.t]
  * @param {number} [mappingOptions.radiusRatio]
  * @param {number} [mappingOptions.thetaRatio]
+ * @param {number} [mappingOptions.perimeter] Cap rim length, solid caps only
  */
 
 const safeSqrt = (x) => Math.sqrt(Math.max(x, 0));
@@ -30,6 +31,17 @@ const remap = (x) => (x + 1) / 2; // From [-1, 1] to [0, 1]
 export function rectangular({ uvs, index, x, y, radius, sx = 1, sy = 1 }) {
   uvs[index] = remapRectangular(x, radius * sx);
   uvs[index + 1] = remapRectangular(y, radius * sy);
+}
+
+/**
+ * Solid caps only: centered, undistorted and at the same scale as the body's u
+ * around the rim.
+ *
+ * @type {MappingsFn}
+ */
+export function circumferential({ uvs, index, x, y, perimeter }) {
+  uvs[index] = 0.5 + x / perimeter;
+  uvs[index + 1] = 0.5 + y / perimeter;
 }
 
 /** @type {MappingsFn} */
