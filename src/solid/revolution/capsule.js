@@ -55,14 +55,16 @@ export function capsule({
 
   // computeRevolutionGeometry's default uv v is the row-index fraction,
   // which would stretch across whichever section (caps vs body) got more
-  // rows. Rederive it from the vertex's actual y instead, proportional to
-  // true position along the capsule's axis regardless of row allocation.
-  const axisExtent = 2 * radius + height;
+  // rows. Rederive it from arc length along the meridian instead (same as
+  // roundedCylinder): axial y would squash the texture's ends into the
+  // poles, where y barely moves between the first rings.
+  const quarterArc = radius * halfPi;
+  const meridianLength = 2 * quarterArc + height;
 
   function equation({ v, cosPhi: rawCosPhi, sinPhi }) {
     const cosPhi = -rawCosPhi;
 
-    let r, y, normalRadial, normalY;
+    let r, y, normalRadial, normalY, arcLength;
 
     if (roundSegments > 0 && v <= bodyStart) {
       const a = (v / bodyStart) * halfPi;
@@ -72,6 +74,7 @@ export function capsule({
       y = -halfHeight - radius * cosA;
       normalRadial = sinA;
       normalY = -cosA;
+      arcLength = radius * a;
     } else if (roundSegments > 0 && v >= bodyEnd) {
       const a = (1 - (v - bodyEnd) / (1 - bodyEnd)) * halfPi;
       const sinA = snapToZero(Math.sin(a));
@@ -80,19 +83,21 @@ export function capsule({
       y = halfHeight + radius * cosA;
       normalRadial = sinA;
       normalY = cosA;
+      arcLength = meridianLength - radius * a;
     } else {
       const s = (v - bodyStart) / (bodyEnd - bodyStart);
       r = radius;
       y = -halfHeight + height * s;
       normalRadial = 1;
       normalY = 0;
+      arcLength = quarterArc + height * s;
     }
 
     return {
       position: [r * cosPhi, y, r * sinPhi],
       normal: [normalRadial * cosPhi, normalY, normalRadial * sinPhi],
       collapsed: r === 0,
-      v: 0.5 + y / axisExtent,
+      v: arcLength / meridianLength,
     };
   }
 
