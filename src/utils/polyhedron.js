@@ -265,7 +265,7 @@ function zipSphericalUvSeams({ positions, normals, uvs, cells }, numVertices) {
  * onto `radius` and welds them across faces into a geodesic sphere.
  *
  * @private
- * @param {import("../../types.js").SimplicialComplexPolygon} seed Seed
+ * @param {import("../../types.js").PolygonalComplex} seed Seed
  *   polyhedron: flat xyz positions (radius already baked in by the caller) and
  *   CCW n-gon faces (indices into positions)
  * @param {object} [options={}]

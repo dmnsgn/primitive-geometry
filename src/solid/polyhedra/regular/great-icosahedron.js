@@ -2,11 +2,11 @@
  * @module primitiveGeometry
  * @ignore
  */
-import { icosahedronFaces } from "./icosahedron.js";
+import { icosahedronPolygons } from "./icosahedron.js";
 import { computePolyhedron } from "../../../utils/polyhedron.js";
 
 /**
- * @typedef {object} GreatIcosahedronFacesOptions
+ * @typedef {object} GreatIcosahedronPolygonsOptions
  * @property {number} [radius=0.5] Radius of the shared icosahedron vertices
  */
 
@@ -15,11 +15,11 @@ import { computePolyhedron } from "../../../utils/polyhedron.js";
  * triangular faces connects a vertex to two of its "second-shell" neighbors
  * (rather than its 5 immediate ones), deeply interpenetrating the rest.
  *
- * @param {GreatIcosahedronFacesOptions} [options={}]
- * @returns {import("../../../../types.js").SimplicialComplexPolygon}
+ * @param {GreatIcosahedronPolygonsOptions} [options={}]
+ * @returns {import("../../../../types.js").PolygonalComplex}
  */
-export function greatIcosahedronFaces({ radius = 0.5 } = {}) {
-  const { positions } = icosahedronFaces({ radius });
+export function greatIcosahedronPolygons({ radius = 0.5 } = {}) {
+  const { positions } = icosahedronPolygons({ radius });
 
   return {
     positions,
@@ -66,7 +66,7 @@ export function greatIcosahedron({
   subdivisions = 0,
   mapping,
 } = {}) {
-  return computePolyhedron(greatIcosahedronFaces({ radius }), {
+  return computePolyhedron(greatIcosahedronPolygons({ radius }), {
     radius,
     subdivisions,
     mapping,

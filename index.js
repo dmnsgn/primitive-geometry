@@ -58,7 +58,7 @@ export { star, starPath } from "./src/plane/star.js";
 export { cross, crossPath } from "./src/plane/cross.js";
 
 // Solid
-export { cube, cubeFaces, box } from "./src/solid/cuboid/cube.js";
+export { cube, cubePolygons } from "./src/solid/cuboid/cube.js";
 export { hollowCube } from "./src/solid/cuboid/hollow-cube.js";
 export { roundedCube } from "./src/solid/cuboid/rounded-cube.js";
 
@@ -94,40 +94,40 @@ export { funnel } from "./src/solid/revolution/funnel.js";
 
 export {
   tetrahedron,
-  tetrahedronFaces,
+  tetrahedronPolygons,
 } from "./src/solid/polyhedra/regular/tetrahedron.js";
 export {
   hexahedron,
-  hexahedronFaces,
+  hexahedronPolygons,
 } from "./src/solid/polyhedra/regular/hexahedron.js";
 export {
   octahedron,
-  octahedronFaces,
+  octahedronPolygons,
 } from "./src/solid/polyhedra/regular/octahedron.js";
 export {
   dodecahedron,
-  dodecahedronFaces,
+  dodecahedronPolygons,
 } from "./src/solid/polyhedra/regular/dodecahedron.js";
 export {
   icosahedron,
-  icosahedronFaces,
+  icosahedronPolygons,
 } from "./src/solid/polyhedra/regular/icosahedron.js";
 
 export {
   greatDodecahedron,
-  greatDodecahedronFaces,
+  greatDodecahedronPolygons,
 } from "./src/solid/polyhedra/regular/great-dodecahedron.js";
 export {
   greatIcosahedron,
-  greatIcosahedronFaces,
+  greatIcosahedronPolygons,
 } from "./src/solid/polyhedra/regular/great-icosahedron.js";
 export {
   smallStellatedDodecahedron,
-  smallStellatedDodecahedronFaces,
+  smallStellatedDodecahedronPolygons,
 } from "./src/solid/polyhedra/regular/small-stellated-dodecahedron.js";
 export {
   greatStellatedDodecahedron,
-  greatStellatedDodecahedronFaces,
+  greatStellatedDodecahedronPolygons,
 } from "./src/solid/polyhedra/regular/great-stellated-dodecahedron.js";
 
 export { tetrasphere } from "./src/solid/polyhedra/geodesic-dome/tetrasphere.js";

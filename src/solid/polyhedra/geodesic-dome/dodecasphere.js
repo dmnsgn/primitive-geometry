@@ -3,7 +3,7 @@
  * @ignore
  */
 import { computePolyhedron } from "../../../utils/polyhedron.js";
-import { dodecahedronFaces } from "../regular/dodecahedron.js";
+import { dodecahedronPolygons } from "../regular/dodecahedron.js";
 
 /**
  * @typedef {object} DodecasphereOptions
@@ -26,7 +26,7 @@ export function dodecasphere({
   projection,
   mapping,
 } = {}) {
-  return computePolyhedron(dodecahedronFaces({ radius }), {
+  return computePolyhedron(dodecahedronPolygons({ radius }), {
     radius,
     subdivisions,
     project: true,

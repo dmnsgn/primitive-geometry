@@ -74,7 +74,7 @@ export function parallelogram({
  * `1`, shifted sideways by `shear`.
  *
  * @param {ParallelogramPathOptions} [options={}]
- * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @returns {import("../../../types.js").PolylineComplex}
  */
 export function parallelogramPath({
   sx = 0.5,

@@ -68,7 +68,7 @@ export function annulus({
  * first, inner second).
  *
  * @param {AnnulusPathOptions} [options={}]
- * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @returns {import("../../../types.js").PolylineComplex}
  */
 export function annulusPath({
   sx = 1,

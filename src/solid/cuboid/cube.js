@@ -7,7 +7,7 @@ import { getCellsTypedArray } from "../../utils/common.js";
 import { computePlane } from "../../utils/plane-grid.js";
 
 /**
- * @typedef {object} CubeFacesOptions
+ * @typedef {object} CubePolygonsOptions
  * @property {number} [sx=1]
  * @property {number} [sy=sx]
  * @property {number} [sz=sx]
@@ -17,10 +17,10 @@ import { computePlane } from "../../utils/plane-grid.js";
  * Cuboid faces: 8 positions and 6 quad faces (indices into positions). Cells
  * order: +x, -x, +y, -y, +z, -z.
  *
- * @param {CubeFacesOptions} [options={}]
- * @returns {import("../../../types.js").SimplicialComplexPolygon}
+ * @param {CubePolygonsOptions} [options={}]
+ * @returns {import("../../../types.js").PolygonalComplex}
  */
-export function cubeFaces({ sx = 1, sy = sx, sz = sx } = {}) {
+export function cubePolygons({ sx = 1, sy = sx, sz = sx } = {}) {
   const x = sx / 2;
   const y = sy / 2;
   const z = sz / 2;
@@ -48,24 +48,6 @@ export function cubeFaces({ sx = 1, sy = sx, sz = sx } = {}) {
       [4, 5, 6, 7], // -z
     ],
   };
-}
-
-/**
- * @typedef {object} BoxOptions
- * @property {number} [sx=1]
- * @property {number} [sy=sx]
- * @property {number} [sz=sx]
- */
-
-/**
- * A cuboid, as raw quad faces rather than a triangulated mesh - see
- * `cubeFaces`.
- *
- * @param {BoxOptions} [options={}]
- * @returns {import("../../../types.js").SimplicialComplexPolygon}
- */
-export function box({ sx = 1, sy = sx, sz = sx } = {}) {
-  return cubeFaces({ sx, sy, sz });
 }
 
 /**

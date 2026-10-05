@@ -3,7 +3,7 @@
  * @ignore
  */
 import { computePolyhedron } from "../../../utils/polyhedron.js";
-import { octahedronFaces } from "../regular/octahedron.js";
+import { octahedronPolygons } from "../regular/octahedron.js";
 
 /**
  * @typedef {object} OctasphereOptions
@@ -26,7 +26,7 @@ export function octasphere({
   projection,
   mapping,
 } = {}) {
-  return computePolyhedron(octahedronFaces({ radius }), {
+  return computePolyhedron(octahedronPolygons({ radius }), {
     radius,
     subdivisions,
     project: true,

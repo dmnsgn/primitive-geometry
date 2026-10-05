@@ -22,7 +22,7 @@ const WELD_KEY_SCALE = 1e9;
  * Hexagonal grid tiling regular hexagons
  *
  * @param {HexagonalGridOptions} [options={}]
- * @returns {import("../../../types.js").SimplicialComplexPolygon}
+ * @returns {import("../../../types.js").PolygonalComplex}
  */
 export function hexagonalGrid({
   sx = 1,

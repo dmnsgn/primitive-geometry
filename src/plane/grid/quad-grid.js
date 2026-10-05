@@ -15,7 +15,7 @@
  * Regular grid
  *
  * @param {QuadGridOptions} [options={}]
- * @returns {import("../../../types.js").SimplicialComplexPolygon}
+ * @returns {import("../../../types.js").PolygonalComplex}
  */
 export function quadGrid({ sx = 1, sy = sx, nx = 10, ny = nx } = {}) {
   const positions = new Float32Array((nx + 1) * (ny + 1) * 3);

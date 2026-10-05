@@ -17,7 +17,7 @@ import { SQRT3 } from "../../utils/common.js";
  * Isometric grid tiling equilateral triangles
  *
  * @param {TriangularGridOptions} [options={}]
- * @returns {import("../../../types.js").SimplicialComplexPolygon}
+ * @returns {import("../../../types.js").PolygonalComplex}
  */
 export function triangularGrid({
   sx = 1,

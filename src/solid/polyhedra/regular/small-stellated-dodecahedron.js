@@ -2,12 +2,12 @@
  * @module primitiveGeometry
  * @ignore
  */
-import { greatDodecahedronFaces } from "./great-dodecahedron.js";
+import { greatDodecahedronPolygons } from "./great-dodecahedron.js";
 import { assembleFaces, computePentagram } from "./pentagram.js";
 import { computePolyhedron } from "../../../utils/polyhedron.js";
 
 /**
- * @typedef {object} SmallStellatedDodecahedronFacesOptions
+ * @typedef {object} SmallStellatedDodecahedronPolygonsOptions
  * @property {number} [radius=0.5] Radius of the shared icosahedron vertices
  */
 
@@ -16,11 +16,11 @@ import { computePolyhedron } from "../../../utils/polyhedron.js";
  * the great dodecahedron, with each face's 5 corners connected as a pentagram
  * (skip-one star) instead of a convex pentagon.
  *
- * @param {SmallStellatedDodecahedronFacesOptions} [options={}]
- * @returns {import("../../../../types.js").SimplicialComplexPolygon}
+ * @param {SmallStellatedDodecahedronPolygonsOptions} [options={}]
+ * @returns {import("../../../../types.js").PolygonalComplex}
  */
-export function smallStellatedDodecahedronFaces({ radius = 0.5 } = {}) {
-  const { positions, cells: pentagons } = greatDodecahedronFaces({ radius });
+export function smallStellatedDodecahedronPolygons({ radius = 0.5 } = {}) {
+  const { positions, cells: pentagons } = greatDodecahedronPolygons({ radius });
 
   return assembleFaces(positions, pentagons, (points) =>
     computePentagram(points),
@@ -45,7 +45,7 @@ export function smallStellatedDodecahedron({
   subdivisions = 0,
   mapping,
 } = {}) {
-  return computePolyhedron(smallStellatedDodecahedronFaces({ radius }), {
+  return computePolyhedron(smallStellatedDodecahedronPolygons({ radius }), {
     radius,
     subdivisions,
     mapping,

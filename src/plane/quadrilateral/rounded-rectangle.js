@@ -111,7 +111,7 @@ const PATH_CORNERS = [
  * identical output to `rectanglePath` when `radius` is `0`.
  *
  * @param {RoundedRectanglePathOptions} [options={}]
- * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @returns {import("../../../types.js").PolylineComplex}
  */
 export function roundedRectanglePath({
   sx = 1,

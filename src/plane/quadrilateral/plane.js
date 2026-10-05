@@ -63,7 +63,7 @@ export function plane({
  * from the full grid.
  *
  * @param {RectanglePathOptions} [options={}]
- * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @returns {import("../../../types.js").PolylineComplex}
  */
 export function rectanglePath({ sx = 1, sy = 0.5, nx = 1, ny = nx } = {}) {
   const x = sx * 0.5;

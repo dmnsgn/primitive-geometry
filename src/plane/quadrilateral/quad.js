@@ -52,7 +52,7 @@ export function quad({ scale = 1 } = {}) {
  * `quad` itself is built from it.
  *
  * @param {SquarePathOptions} [options={}]
- * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @returns {import("../../../types.js").PolylineComplex}
  */
 export function squarePath({ scale = 1, nx = 1, ny = nx } = {}) {
   return rectanglePath({ sx: scale, sy: scale, nx, ny });

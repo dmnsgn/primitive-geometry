@@ -115,7 +115,7 @@ export function squircle({
  * with no radial fill.
  *
  * @param {SquirclePathOptions} [options={}]
- * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @returns {import("../../../types.js").PolylineComplex}
  */
 export function squirclePath({
   sx = 1,

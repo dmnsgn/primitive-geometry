@@ -123,7 +123,7 @@ export function star({
  * notches, connected by straight edges.
  *
  * @param {StarPathOptions} [options={}]
- * @returns {import("../../types.js").SimplicialComplexPath} `edgeSegments *
+ * @returns {import("../../types.js").PolylineComplex} `edgeSegments *
  *   points * 2` positions (`+ 1` for a partial `theta`) and a single path cell
  *   of that many indices (`+ 1`, repeating index `0`, when `closed`)
  */

@@ -6,17 +6,17 @@ import { computePolyhedron } from "../../../utils/polyhedron.js";
 import { PHI } from "../../../utils/common.js";
 
 /**
- * @typedef {object} IcosahedronFacesOptions
+ * @typedef {object} IcosahedronPolygonsOptions
  * @property {number} [radius=0.5]
  */
 
 /**
  * Regular icosahedron.
  *
- * @param {IcosahedronFacesOptions} [options={}]
- * @returns {import("../../../../types.js").SimplicialComplexPolygon}
+ * @param {IcosahedronPolygonsOptions} [options={}]
+ * @returns {import("../../../../types.js").PolygonalComplex}
  */
-export function icosahedronFaces({ radius = 0.5 } = {}) {
+export function icosahedronPolygons({ radius = 0.5 } = {}) {
   const s = radius / PHI;
   const f = PHI * s;
 
@@ -75,7 +75,7 @@ export function icosahedronFaces({ radius = 0.5 } = {}) {
  * @returns {import("../../../../types.js").SimplicialComplex}
  */
 export function icosahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
-  return computePolyhedron(icosahedronFaces({ radius }), {
+  return computePolyhedron(icosahedronPolygons({ radius }), {
     radius,
     subdivisions,
     mapping,

@@ -47,7 +47,7 @@ export function stadium({ sx = 1, sy = 0.5, nx, ny, roundSegments } = {}) {
  * semicircular caps joined by straight edges).
  *
  * @param {StadiumPathOptions} [options={}]
- * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @returns {import("../../../types.js").PolylineComplex}
  */
 export function stadiumPath({
   sx = 1,

@@ -127,7 +127,7 @@ const geometries = params.has("geometry")
       [
         [
           named("cube", Primitives.cube()),
-          named("cubeFaces", Primitives.cubeFaces()),
+          named("cubePolygons", Primitives.cubePolygons()),
         ],
         named("hollowCube", Primitives.hollowCube()),
         named("roundedCube", Primitives.roundedCube()),
@@ -165,23 +165,23 @@ const geometries = params.has("geometry")
         null,
         [
           named("tetrahedron", Primitives.tetrahedron()),
-          named("tetrahedronFaces", Primitives.tetrahedronFaces()),
+          named("tetrahedronPolygons", Primitives.tetrahedronPolygons()),
         ],
         [
           named("hexahedron", Primitives.hexahedron()),
-          named("hexahedronFaces", Primitives.hexahedronFaces()),
+          named("hexahedronPolygons", Primitives.hexahedronPolygons()),
         ],
         [
           named("octahedron", Primitives.octahedron()),
-          named("octahedronFaces", Primitives.octahedronFaces()),
+          named("octahedronPolygons", Primitives.octahedronPolygons()),
         ],
         [
           named("dodecahedron", Primitives.dodecahedron()),
-          named("dodecahedronFaces", Primitives.dodecahedronFaces()),
+          named("dodecahedronPolygons", Primitives.dodecahedronPolygons()),
         ],
         [
           named("icosahedron", Primitives.icosahedron()),
-          named("icosahedronFaces", Primitives.icosahedronFaces()),
+          named("icosahedronPolygons", Primitives.icosahedronPolygons()),
         ],
         null,
         named("tetrasphere", Primitives.tetrasphere()),
@@ -192,11 +192,11 @@ const geometries = params.has("geometry")
         null,
         [
           named("greatDodecahedron", Primitives.greatDodecahedron()),
-          named("greatDodecahedronFaces", Primitives.greatDodecahedronFaces()),
+          named("greatDodecahedronPolygons", Primitives.greatDodecahedronPolygons()),
         ],
         [
           named("greatIcosahedron", Primitives.greatIcosahedron()),
-          named("greatIcosahedronFaces", Primitives.greatIcosahedronFaces()),
+          named("greatIcosahedronPolygons", Primitives.greatIcosahedronPolygons()),
         ],
         [
           named(
@@ -204,8 +204,8 @@ const geometries = params.has("geometry")
             Primitives.smallStellatedDodecahedron(),
           ),
           named(
-            "smallStellatedDodecahedronFaces",
-            Primitives.smallStellatedDodecahedronFaces(),
+            "smallStellatedDodecahedronPolygons",
+            Primitives.smallStellatedDodecahedronPolygons(),
           ),
         ],
         [
@@ -214,8 +214,8 @@ const geometries = params.has("geometry")
             Primitives.greatStellatedDodecahedron(),
           ),
           named(
-            "greatStellatedDodecahedronFaces",
-            Primitives.greatStellatedDodecahedronFaces(),
+            "greatStellatedDodecahedronPolygons",
+            Primitives.greatStellatedDodecahedronPolygons(),
           ),
         ],
       ],

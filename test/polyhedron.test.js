@@ -141,7 +141,7 @@ describe("polyhedron (flat platonic solids)", () => {
   });
 
   it("hexahedron's UVs agree with cube's on every face (same corner, same facing, same texture coordinate)", () => {
-    // hexahedronFaces shares cube's positions/cells (see cubeFaces), but its
+    // hexahedronPolygons shares cube's positions/cells (see cubePolygons), but its
     // UVs come from the polyhedron module's generic per-face rectangular
     // mapping, a wholly separate code path from cube's plane-grid mapping.
     // Nothing keeps them in sync structurally, so this pins the two systems

@@ -3,7 +3,7 @@
  * @ignore
  */
 import { computePolyhedron } from "../../../utils/polyhedron.js";
-import { hexahedronFaces } from "../regular/hexahedron.js";
+import { hexahedronPolygons } from "../regular/hexahedron.js";
 
 /**
  * @typedef {object} HexasphereOptions
@@ -27,7 +27,7 @@ export function hexasphere({
   projection,
   mapping,
 } = {}) {
-  return computePolyhedron(hexahedronFaces({ radius }), {
+  return computePolyhedron(hexahedronPolygons({ radius }), {
     radius,
     subdivisions,
     project: true,

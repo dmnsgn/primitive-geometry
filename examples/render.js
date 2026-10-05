@@ -216,7 +216,7 @@ const bboxCells = ctx.indexBuffer(
     0, 4, 1, 5, 2, 6, 3, 7
   ),
 );
-const unitBox = Primitives.box();
+const unitBox = Primitives.cubePolygons();
 unitBox.edges = computeEdges(unitBox.positions, unitBox.cells);
 
 const drawAxesCmd = {
@@ -511,10 +511,10 @@ function computeDiscontinuities(geometry, epsilon = 1e-4) {
 }
 
 // `cells` is either a flat typed array of fixed-size groups (`stride` per
-// face, the SimplicialComplex convention), a SimplicialComplexPolygon-style
+// face, the SimplicialComplex convention), a PolygonalComplex-style
 // array of closed n-gon faces (self-describing, `stride` ignored, each face
 // implicitly wraps its last index back to its first), or - when `path` is
-// set - a SimplicialComplexPath-style array of open polylines (no
+// set - a PolylineComplex-style array of open polylines (no
 // wraparound; a closed loop instead repeats its first index at the end).
 function computeEdges(positions, cells, { stride = 3, path = false } = {}) {
   const isFlatArray = ArrayBuffer.isView(cells);

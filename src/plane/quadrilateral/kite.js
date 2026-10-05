@@ -80,7 +80,7 @@ export function kite({
  * the center.
  *
  * @param {KitePathOptions} [options={}]
- * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @returns {import("../../../types.js").PolylineComplex}
  */
 export function kitePath({
   sx = 1,

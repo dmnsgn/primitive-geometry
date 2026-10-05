@@ -67,7 +67,7 @@ export function lozenge({
  * diagonal by default (sy = sx * 2).
  *
  * @param {LozengePathOptions} [options={}]
- * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @returns {import("../../../types.js").PolylineComplex}
  */
 export function lozengePath({
   sx = 0.5,

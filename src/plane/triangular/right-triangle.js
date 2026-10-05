@@ -69,7 +69,7 @@ export function rightTriangle({
  * `-sx`.
  *
  * @param {RightTrianglePathOptions} [options={}]
- * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @returns {import("../../../types.js").PolylineComplex}
  */
 export function rightTrianglePath({
   sx = 1,

@@ -3,7 +3,7 @@
  * @ignore
  */
 import { computePolyhedron } from "../../../utils/polyhedron.js";
-import { tetrahedronFaces } from "../regular/tetrahedron.js";
+import { tetrahedronPolygons } from "../regular/tetrahedron.js";
 
 /**
  * @typedef {object} TetrasphereOptions
@@ -26,7 +26,7 @@ export function tetrasphere({
   projection,
   mapping,
 } = {}) {
-  return computePolyhedron(tetrahedronFaces({ radius, center: false }), {
+  return computePolyhedron(tetrahedronPolygons({ radius, center: false }), {
     radius,
     subdivisions,
     project: true,

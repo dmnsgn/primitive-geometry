@@ -70,7 +70,7 @@ export function rhombus({
  * Outline dual of `rhombus`: `polygonPath` with sides fixed to `4`.
  *
  * @param {RhombusPathOptions} [options={}]
- * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @returns {import("../../../types.js").PolylineComplex}
  */
 export function rhombusPath({
   sx = 1,

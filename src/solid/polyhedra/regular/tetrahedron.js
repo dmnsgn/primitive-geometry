@@ -6,7 +6,7 @@ import { computePolyhedron } from "../../../utils/polyhedron.js";
 import { SQRT2, SQRT3, SQRT6 } from "../../../utils/common.js";
 
 /**
- * @typedef {object} TetrahedronFacesOptions
+ * @typedef {object} TetrahedronPolygonsOptions
  * @property {number} [radius=0.5]
  * @property {boolean} [center=true] Center the bounding box at the origin. Set
  *   to false to keep every vertex at exactly the circumradius from the origin -
@@ -16,10 +16,10 @@ import { SQRT2, SQRT3, SQRT6 } from "../../../utils/common.js";
 /**
  * Regular tetrahedron, apex-up, bounding box centered at the origin.
  *
- * @param {TetrahedronFacesOptions} [options={}]
- * @returns {import("../../../../types.js").SimplicialComplexPolygon}
+ * @param {TetrahedronPolygonsOptions} [options={}]
+ * @returns {import("../../../../types.js").PolygonalComplex}
  */
-export function tetrahedronFaces({ radius = 0.5, center = true } = {}) {
+export function tetrahedronPolygons({ radius = 0.5, center = true } = {}) {
   // A tetrahedron has no center of symmetry, so its bounding box can't touch
   // the unit box on every axis when centered; scale instead so its tallest
   // axis (apex to base) touches.
@@ -67,7 +67,7 @@ export function tetrahedronFaces({ radius = 0.5, center = true } = {}) {
  * @returns {import("../../../../types.js").SimplicialComplex}
  */
 export function tetrahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
-  return computePolyhedron(tetrahedronFaces({ radius }), {
+  return computePolyhedron(tetrahedronPolygons({ radius }), {
     radius,
     subdivisions,
     mapping,

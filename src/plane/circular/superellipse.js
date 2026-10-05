@@ -91,7 +91,7 @@ export function superellipse({
  * radial fill.
  *
  * @param {SuperellipsePathOptions} [options={}]
- * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @returns {import("../../../types.js").PolylineComplex}
  */
 export function superellipsePath({
   sx = 1,

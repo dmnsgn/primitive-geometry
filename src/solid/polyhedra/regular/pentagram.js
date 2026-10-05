@@ -79,7 +79,7 @@ export function computeStarLayer(points, ratio) {
  *   `phi^2` - the genuine "extend a regular pentagon's edges until they meet"
  *   stellation, which needs `points`' own radius scaled up rather than a fresh
  *   smaller pentagon scaled down.
- * @returns {import("../../../../types.js").SimplicialComplexPolygon} 10
+ * @returns {import("../../../../types.js").PolygonalComplex} 10
  *   positions (tips followed by inner points, regardless of which one was
  *   `points`) and 8 triangles, local indices
  */
@@ -153,7 +153,7 @@ export function weldNearDuplicates(positions, epsilon = 1e-5) {
  * @private
  * @callback ComputeFaceFn
  * @param {number[][]} points The face's xyz vertices
- * @returns {import("../../../../types.js").SimplicialComplexPolygon}
+ * @returns {import("../../../../types.js").PolygonalComplex}
  */
 
 /**
@@ -166,7 +166,7 @@ export function weldNearDuplicates(positions, epsilon = 1e-5) {
  * @param {Float32Array | number[]} vertexPositions Flat xyz positions
  * @param {number[][]} faces Vertex index groups
  * @param {ComputeFaceFn} computeFace
- * @returns {import("../../../../types.js").SimplicialComplexPolygon}
+ * @returns {import("../../../../types.js").PolygonalComplex}
  */
 export function assembleFaces(vertexPositions, faces, computeFace) {
   const point = (i) => [

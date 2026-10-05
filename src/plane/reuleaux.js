@@ -107,7 +107,7 @@ export function reuleaux({
  * no radial fill.
  *
  * @param {ReuleauxPathOptions} [options={}]
- * @returns {import("../../types.js").SimplicialComplexPath}
+ * @returns {import("../../types.js").PolylineComplex}
  */
 export function reuleauxPath({
   sides = 3,

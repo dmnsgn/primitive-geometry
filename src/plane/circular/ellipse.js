@@ -89,7 +89,7 @@ export function ellipse({
  * `circlePath` with sx = sy = 1.
  *
  * @param {EllipsePathOptions} [options={}]
- * @returns {import("../../../types.js").SimplicialComplexPath} `segments`
+ * @returns {import("../../../types.js").PolylineComplex} `segments`
  *   positions (`+ 1` for a partial `theta`) and a single path cell of that many
  *   indices (`+ 1`, repeating index `0`, when `closed`)
  */

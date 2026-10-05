@@ -80,7 +80,7 @@ export function polygon({
  * connected by straight edges (rhombus is this shape's sides=4 case).
  *
  * @param {PolygonPathOptions} [options={}]
- * @returns {import("../../types.js").SimplicialComplexPath} `edgeSegments *
+ * @returns {import("../../types.js").PolylineComplex} `edgeSegments *
  *   sides` positions (`+ 1` for a partial `theta`) and a single path cell of
  *   that many indices (`+ 1`, repeating index `0`, when `closed`)
  */

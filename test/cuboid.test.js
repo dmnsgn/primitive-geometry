@@ -4,8 +4,8 @@ import assert from "node:assert/strict";
 import * as Primitives from "../index.js";
 
 describe("cuboid", () => {
-  it("cubeFaces pins the shared face order, winding and diagonal direction every cuboid (cube/box/roundedCube/hollowCube) and hexahedron rely on", () => {
-    const { positions, cells } = Primitives.cubeFaces({ sx: 1, sy: 1, sz: 1 });
+  it("cubePolygons pins the shared face order, winding and diagonal direction every cuboid (cube/roundedCube/hollowCube) and hexahedron rely on", () => {
+    const { positions, cells } = Primitives.cubePolygons({ sx: 1, sy: 1, sz: 1 });
 
     assert.deepEqual(
       Array.from(positions),

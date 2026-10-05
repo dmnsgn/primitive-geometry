@@ -5,17 +5,17 @@
 import { computePolyhedron } from "../../../utils/polyhedron.js";
 
 /**
- * @typedef {object} OctahedronFacesOptions
+ * @typedef {object} OctahedronPolygonsOptions
  * @property {number} [radius=0.5]
  */
 
 /**
  * Regular octahedron.
  *
- * @param {OctahedronFacesOptions} [options={}]
- * @returns {import("../../../../types.js").SimplicialComplexPolygon}
+ * @param {OctahedronPolygonsOptions} [options={}]
+ * @returns {import("../../../../types.js").PolygonalComplex}
  */
-export function octahedronFaces({ radius = 0.5 } = {}) {
+export function octahedronPolygons({ radius = 0.5 } = {}) {
   return {
     // prettier-ignore
     positions: Float32Array.of(
@@ -53,7 +53,7 @@ export function octahedronFaces({ radius = 0.5 } = {}) {
  * @returns {import("../../../../types.js").SimplicialComplex}
  */
 export function octahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
-  return computePolyhedron(octahedronFaces({ radius }), {
+  return computePolyhedron(octahedronPolygons({ radius }), {
     radius,
     subdivisions,
     mapping,

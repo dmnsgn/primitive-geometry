@@ -61,7 +61,7 @@ export function disc({
  * Outline dual of `disc`: `ellipsePath` with sx = sy = 1.
  *
  * @param {CirclePathOptions} [options={}]
- * @returns {import("../../../types.js").SimplicialComplexPath} `segments`
+ * @returns {import("../../../types.js").PolylineComplex} `segments`
  *   positions (`+ 1` for a partial `theta`) and a single path cell of that many
  *   indices (`+ 1`, repeating index `0`, when `closed`)
  */

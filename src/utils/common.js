@@ -264,7 +264,7 @@ export const getCellsTypedArray = (size) =>
   (size <= 255 ? Uint8Array : size <= 65_535 ? Uint16Array : Uint32Array);
 
 /**
- * Fan-triangulate a list of closed n-gon faces (a `SimplicialComplexPolygon`'s
+ * Fan-triangulate a list of closed n-gon faces (a `PolygonalComplex`'s
  * `cells`, e.g. `[0, 1, 2, 3]`) from each face's last corner into a flat,
  * stride-3 `SimplicialComplex`-style typed array (e.g. `[3, 0, 1, 3, 1, 2]`).
  * Anchoring on the last corner rather than the first is deliberate for quads:

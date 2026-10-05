@@ -127,7 +127,7 @@ export function trapezoid({
  * fanned.
  *
  * @param {TrapezoidPathOptions} [options={}]
- * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @returns {import("../../../types.js").PolylineComplex}
  */
 export function trapezoidPath({
   sx = 1,

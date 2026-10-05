@@ -2,7 +2,7 @@
  * @module primitiveGeometry
  * @ignore
  */
-import { dodecahedronFaces } from "./dodecahedron.js";
+import { dodecahedronPolygons } from "./dodecahedron.js";
 import {
   assembleFaces,
   computeStarLayer,
@@ -12,7 +12,7 @@ import { computePolyhedron } from "../../../utils/polyhedron.js";
 import { PHI } from "../../../utils/common.js";
 
 /**
- * @typedef {object} GreatStellatedDodecahedronFacesOptions
+ * @typedef {object} GreatStellatedDodecahedronPolygonsOptions
  * @property {number} [radius=0.5] Radius the star's tips touch (box
  *   half-extent)
  */
@@ -25,12 +25,12 @@ import { PHI } from "../../../utils/common.js";
  * "depth 2" - the true tips here, a plain radial scale of the dodecahedron's
  * own vertices by `phi^3`.
  *
- * @param {GreatStellatedDodecahedronFacesOptions} [options={}]
- * @returns {import("../../../../types.js").SimplicialComplexPolygon}
+ * @param {GreatStellatedDodecahedronPolygonsOptions} [options={}]
+ * @returns {import("../../../../types.js").PolygonalComplex}
  */
-export function greatStellatedDodecahedronFaces({ radius = 0.5 } = {}) {
+export function greatStellatedDodecahedronPolygons({ radius = 0.5 } = {}) {
   // The tips, not the dodecahedron's own vertices, are the outermost extent
-  const { positions, cells: pentagons } = dodecahedronFaces({
+  const { positions, cells: pentagons } = dodecahedronPolygons({
     radius: radius / PHI ** 3,
   });
 
@@ -71,7 +71,7 @@ export function greatStellatedDodecahedron({
   subdivisions = 0,
   mapping,
 } = {}) {
-  return computePolyhedron(greatStellatedDodecahedronFaces({ radius }), {
+  return computePolyhedron(greatStellatedDodecahedronPolygons({ radius }), {
     radius,
     subdivisions,
     mapping,

@@ -3,7 +3,7 @@
  * @ignore
  */
 import { computePolyhedron } from "../../../utils/polyhedron.js";
-import { icosahedronFaces } from "../regular/icosahedron.js";
+import { icosahedronPolygons } from "../regular/icosahedron.js";
 
 /**
  * @typedef {object} IcosphereOptions
@@ -26,7 +26,7 @@ export function icosphere({
   projection,
   mapping,
 } = {}) {
-  return computePolyhedron(icosahedronFaces({ radius }), {
+  return computePolyhedron(icosahedronPolygons({ radius }), {
     radius,
     subdivisions,
     project: true,

@@ -6,17 +6,17 @@ import { computePolyhedron } from "../../../utils/polyhedron.js";
 import { PHI } from "../../../utils/common.js";
 
 /**
- * @typedef {object} DodecahedronFacesOptions
+ * @typedef {object} DodecahedronPolygonsOptions
  * @property {number} [radius=0.5]
  */
 
 /**
  * Regular dodecahedron.
  *
- * @param {DodecahedronFacesOptions} [options={}]
- * @returns {import("../../../../types.js").SimplicialComplexPolygon}
+ * @param {DodecahedronPolygonsOptions} [options={}]
+ * @returns {import("../../../../types.js").PolygonalComplex}
  */
-export function dodecahedronFaces({ radius = 0.5 } = {}) {
+export function dodecahedronPolygons({ radius = 0.5 } = {}) {
   const a = radius;
   const b = radius / PHI;
   const c = radius * (2 - PHI);
@@ -76,7 +76,7 @@ export function dodecahedronFaces({ radius = 0.5 } = {}) {
  * @returns {import("../../../../types.js").SimplicialComplex}
  */
 export function dodecahedron({ radius = 0.5, subdivisions = 0, mapping } = {}) {
-  return computePolyhedron(dodecahedronFaces({ radius }), {
+  return computePolyhedron(dodecahedronPolygons({ radius }), {
     radius,
     subdivisions,
     mapping,

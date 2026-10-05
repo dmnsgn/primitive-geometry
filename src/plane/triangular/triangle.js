@@ -116,7 +116,7 @@ export function triangle({
  * fanned.
  *
  * @param {TrianglePathOptions} [options={}]
- * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @returns {import("../../../types.js").PolylineComplex}
  */
 export function trianglePath({
   sx = 1,

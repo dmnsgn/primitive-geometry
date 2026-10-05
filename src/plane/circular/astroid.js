@@ -64,7 +64,7 @@ export function astroid({
  * Outline dual of `astroid`: `superellipsePath` with `m = n = 2 / 3`.
  *
  * @param {AstroidPathOptions} [options={}]
- * @returns {import("../../../types.js").SimplicialComplexPath}
+ * @returns {import("../../../types.js").PolylineComplex}
  */
 export function astroidPath({
   radius = 0.5,

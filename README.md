@@ -10,7 +10,7 @@
 [![linted with eslint](https://img.shields.io/badge/linted_with-ES_Lint-4B32C3.svg?logo=eslint)](https://github.com/eslint/eslint)
 [![license](https://img.shields.io/github/license/dmnsgn/primitive-geometry)](https://github.com/dmnsgn/primitive-geometry/blob/main/LICENSE.md)
 
-Geometries for 3D rendering: planes, grids, solids, polyhedra and outline paths, with normals, UVs and cell indices (faces). Perfect if you want to supercharge your dependency folder... with 20KB of geometries.
+Geometries for 3D rendering: planes, grids, solids, polyhedra and outline paths, as triangle meshes with normals and UVs, or as polygon and polyline complexes. Perfect if you want to supercharge your dependency folder... with 20KB of geometries.
 
 [![paypal](https://img.shields.io/badge/donate-paypal-informational?logo=paypal)](https://paypal.me/dmnsgn)
 [![coinbase](https://img.shields.io/badge/donate-coinbase-informational?logo=coinbase)](https://commerce.coinbase.com/checkout/56cbdf28-e323-48d8-9c98-7019e72c97f3)
@@ -26,8 +26,8 @@ npm install primitive-geometry
 
 ## Features
 
-- **72 geometries**: planes and grids, quadrilaterals and arcs, solids of revolution, prisms, platonic and stellated polyhedra, geodesic spheres - plus 21 outline paths.
-- **Common API**: options object in, simplicial complex out. Parameters are named the same everywhere (`sx/sy/sz`, `nx/ny/nz`, `radius`, `segments`, `theta`/`phi`).
+- **71 geometries**: planes and grids, quadrilaterals and arcs, solids of revolution, prisms, platonic and stellated polyhedra, geodesic spheres - plus 21 outline paths and 10 polyhedra polygon variants.
+- **Common API**: options object in, complex out: a `SimplicialComplex` (triangles with normals and uvs), a `PolygonalComplex` (grids and `*Polygons`) or a `PolylineComplex` (`*Path`). Parameters are named the same everywhere (`sx/sy/sz`, `nx/ny/nz`, `radius`, `segments`, `theta`/`phi`).
 - **TypedArray out**: `Float32Array` for positions, normals and uvs, cells narrowed to `Uint8Array|Uint16Array|Uint32Array` by vertex count (or pinned with `setTypedArrayType`).
 - **Welded, crack-free meshes**: vertices shared between patches are bit-identical, not merely close. Every geometry is checked for cracks, non-manifold edges, degenerate cells, winding and uv continuity across [101 configurations](test/seams.test.js).
 - **Partial shapes**: `theta`/`phi` sweeps with optional caps, hollow variants, and `vDistribution` to choose how rows spread along a revolution's meridian.
@@ -55,7 +55,7 @@ console.log(geometry);
 // Every geometry below, with its options set to their defaults. Grids
 // return an n-gon complex: positions and cells only, no normals or uvs. Most
 // plane geometries also have a `*Path` outline variant, and the polyhedra a
-// `*Faces` n-gon seed variant: see the API below.
+// `*Polygons` n-gon seed variant: see the API below.
 
 // Plane
 const quadGrid = Primitives.quadGrid({
@@ -781,12 +781,12 @@ const icosphere = Primitives.icosphere({
 <dt><a href="#SimplicialComplex">SimplicialComplex</a> : <code>object</code></dt>
 <dd><p>Geometry definition.</p>
 </dd>
-<dt><a href="#SimplicialComplexPolygon">SimplicialComplexPolygon</a> : <code>object</code></dt>
+<dt><a href="#PolygonalComplex">PolygonalComplex</a> : <code>object</code></dt>
 <dd><p>Geometry polygon definition: each
   cell is a closed n-gon face (implicitly wraps its last index back to its
   first - never repeat the first index at the end).</p>
 </dd>
-<dt><a href="#SimplicialComplexPath">SimplicialComplexPath</a> : <code>object</code></dt>
+<dt><a href="#PolylineComplex">PolylineComplex</a> : <code>object</code></dt>
 <dd><p>Geometry path definition: each cell
   is an open polyline (no implicit closing edge between its last and first
   index); repeat the first index at the end of a cell to close that loop
@@ -803,13 +803,13 @@ Re-export all geometries, UV mappings functions and utils.
 - [primitiveGeometry](#module_primitiveGeometry)
   - _static_
     - [.cross([options])](#module_primitiveGeometry.cross) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.crossPath([options])](#module_primitiveGeometry.crossPath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.crossPath([options])](#module_primitiveGeometry.crossPath) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
     - [.polygon([options])](#module_primitiveGeometry.polygon) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.polygonPath([options])](#module_primitiveGeometry.polygonPath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.polygonPath([options])](#module_primitiveGeometry.polygonPath) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
     - [.reuleaux([options])](#module_primitiveGeometry.reuleaux) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.reuleauxPath([options])](#module_primitiveGeometry.reuleauxPath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.reuleauxPath([options])](#module_primitiveGeometry.reuleauxPath) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
     - [.star([options])](#module_primitiveGeometry.star) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.starPath([options])](#module_primitiveGeometry.starPath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.starPath([options])](#module_primitiveGeometry.starPath) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
     - [.arbelos([options])](#module_primitiveGeometry.arbelos) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
     - [.lens([options])](#module_primitiveGeometry.lens) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
     - [.lune([options])](#module_primitiveGeometry.lune) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
@@ -817,44 +817,43 @@ Re-export all geometries, UV mappings functions and utils.
     - [.triquetra([options])](#module_primitiveGeometry.triquetra) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
     - [.yinYang([options])](#module_primitiveGeometry.yinYang) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
     - [.annulus([options])](#module_primitiveGeometry.annulus) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.annulusPath([options])](#module_primitiveGeometry.annulusPath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.annulusPath([options])](#module_primitiveGeometry.annulusPath) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
     - [.astroid([options])](#module_primitiveGeometry.astroid) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.astroidPath([options])](#module_primitiveGeometry.astroidPath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.astroidPath([options])](#module_primitiveGeometry.astroidPath) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
     - [.disc([options])](#module_primitiveGeometry.disc) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.circlePath([options])](#module_primitiveGeometry.circlePath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.circlePath([options])](#module_primitiveGeometry.circlePath) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
     - [.ellipse([options])](#module_primitiveGeometry.ellipse) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.ellipsePath([options])](#module_primitiveGeometry.ellipsePath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.ellipsePath([options])](#module_primitiveGeometry.ellipsePath) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
     - [.squircle([options])](#module_primitiveGeometry.squircle) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.squirclePath([options])](#module_primitiveGeometry.squirclePath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.squirclePath([options])](#module_primitiveGeometry.squirclePath) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
     - [.superellipse([options])](#module_primitiveGeometry.superellipse) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.superellipsePath([options])](#module_primitiveGeometry.superellipsePath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
-    - [.hexagonalGrid([options])](#module_primitiveGeometry.hexagonalGrid) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
-    - [.quadGrid([options])](#module_primitiveGeometry.quadGrid) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
-    - [.triangularGrid([options])](#module_primitiveGeometry.triangularGrid) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+    - [.superellipsePath([options])](#module_primitiveGeometry.superellipsePath) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
+    - [.hexagonalGrid([options])](#module_primitiveGeometry.hexagonalGrid) ⇒ [<code>PolygonalComplex</code>](#PolygonalComplex)
+    - [.quadGrid([options])](#module_primitiveGeometry.quadGrid) ⇒ [<code>PolygonalComplex</code>](#PolygonalComplex)
+    - [.triangularGrid([options])](#module_primitiveGeometry.triangularGrid) ⇒ [<code>PolygonalComplex</code>](#PolygonalComplex)
     - [.kite([options])](#module_primitiveGeometry.kite) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.kitePath([options])](#module_primitiveGeometry.kitePath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.kitePath([options])](#module_primitiveGeometry.kitePath) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
     - [.lozenge([options])](#module_primitiveGeometry.lozenge) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.lozengePath([options])](#module_primitiveGeometry.lozengePath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.lozengePath([options])](#module_primitiveGeometry.lozengePath) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
     - [.parallelogram([options])](#module_primitiveGeometry.parallelogram) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.parallelogramPath([options])](#module_primitiveGeometry.parallelogramPath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.parallelogramPath([options])](#module_primitiveGeometry.parallelogramPath) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
     - [.plane([options])](#module_primitiveGeometry.plane) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.rectanglePath([options])](#module_primitiveGeometry.rectanglePath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.rectanglePath([options])](#module_primitiveGeometry.rectanglePath) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
     - [.quad([options])](#module_primitiveGeometry.quad) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.squarePath([options])](#module_primitiveGeometry.squarePath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.squarePath([options])](#module_primitiveGeometry.squarePath) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
     - [.rhombus([options])](#module_primitiveGeometry.rhombus) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.rhombusPath([options])](#module_primitiveGeometry.rhombusPath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.rhombusPath([options])](#module_primitiveGeometry.rhombusPath) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
     - [.roundedRectangle([options])](#module_primitiveGeometry.roundedRectangle) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.roundedRectanglePath([options])](#module_primitiveGeometry.roundedRectanglePath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.roundedRectanglePath([options])](#module_primitiveGeometry.roundedRectanglePath) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
     - [.stadium([options])](#module_primitiveGeometry.stadium) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.stadiumPath([options])](#module_primitiveGeometry.stadiumPath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.stadiumPath([options])](#module_primitiveGeometry.stadiumPath) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
     - [.trapezoid([options])](#module_primitiveGeometry.trapezoid) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.trapezoidPath([options])](#module_primitiveGeometry.trapezoidPath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.trapezoidPath([options])](#module_primitiveGeometry.trapezoidPath) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
     - [.rightTriangle([options])](#module_primitiveGeometry.rightTriangle) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.rightTrianglePath([options])](#module_primitiveGeometry.rightTrianglePath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+    - [.rightTrianglePath([options])](#module_primitiveGeometry.rightTrianglePath) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
     - [.triangle([options])](#module_primitiveGeometry.triangle) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.trianglePath([options])](#module_primitiveGeometry.trianglePath) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
-    - [.cubeFaces([options])](#module_primitiveGeometry.cubeFaces) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
-    - [.box([options])](#module_primitiveGeometry.box) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+    - [.trianglePath([options])](#module_primitiveGeometry.trianglePath) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
+    - [.cubePolygons([options])](#module_primitiveGeometry.cubePolygons) ⇒ [<code>PolygonalComplex</code>](#PolygonalComplex)
     - [.cube([options])](#module_primitiveGeometry.cube) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
     - [.hollowCube([options])](#module_primitiveGeometry.hollowCube) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
     - [.roundedCube([options])](#module_primitiveGeometry.roundedCube) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
@@ -887,23 +886,23 @@ Re-export all geometries, UV mappings functions and utils.
     - [.icosphere([options])](#module_primitiveGeometry.icosphere) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
     - [.octasphere([options])](#module_primitiveGeometry.octasphere) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
     - [.tetrasphere([options])](#module_primitiveGeometry.tetrasphere) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.dodecahedronFaces([options])](#module_primitiveGeometry.dodecahedronFaces) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+    - [.dodecahedronPolygons([options])](#module_primitiveGeometry.dodecahedronPolygons) ⇒ [<code>PolygonalComplex</code>](#PolygonalComplex)
     - [.dodecahedron([options])](#module_primitiveGeometry.dodecahedron) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.greatDodecahedronFaces([options])](#module_primitiveGeometry.greatDodecahedronFaces) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+    - [.greatDodecahedronPolygons([options])](#module_primitiveGeometry.greatDodecahedronPolygons) ⇒ [<code>PolygonalComplex</code>](#PolygonalComplex)
     - [.greatDodecahedron([options])](#module_primitiveGeometry.greatDodecahedron) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.greatIcosahedronFaces([options])](#module_primitiveGeometry.greatIcosahedronFaces) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+    - [.greatIcosahedronPolygons([options])](#module_primitiveGeometry.greatIcosahedronPolygons) ⇒ [<code>PolygonalComplex</code>](#PolygonalComplex)
     - [.greatIcosahedron([options])](#module_primitiveGeometry.greatIcosahedron) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.greatStellatedDodecahedronFaces([options])](#module_primitiveGeometry.greatStellatedDodecahedronFaces) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+    - [.greatStellatedDodecahedronPolygons([options])](#module_primitiveGeometry.greatStellatedDodecahedronPolygons) ⇒ [<code>PolygonalComplex</code>](#PolygonalComplex)
     - [.greatStellatedDodecahedron([options])](#module_primitiveGeometry.greatStellatedDodecahedron) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.hexahedronFaces([options])](#module_primitiveGeometry.hexahedronFaces) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+    - [.hexahedronPolygons([options])](#module_primitiveGeometry.hexahedronPolygons) ⇒ [<code>PolygonalComplex</code>](#PolygonalComplex)
     - [.hexahedron([options])](#module_primitiveGeometry.hexahedron) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.icosahedronFaces([options])](#module_primitiveGeometry.icosahedronFaces) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+    - [.icosahedronPolygons([options])](#module_primitiveGeometry.icosahedronPolygons) ⇒ [<code>PolygonalComplex</code>](#PolygonalComplex)
     - [.icosahedron([options])](#module_primitiveGeometry.icosahedron) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.octahedronFaces([options])](#module_primitiveGeometry.octahedronFaces) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+    - [.octahedronPolygons([options])](#module_primitiveGeometry.octahedronPolygons) ⇒ [<code>PolygonalComplex</code>](#PolygonalComplex)
     - [.octahedron([options])](#module_primitiveGeometry.octahedron) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.smallStellatedDodecahedronFaces([options])](#module_primitiveGeometry.smallStellatedDodecahedronFaces) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+    - [.smallStellatedDodecahedronPolygons([options])](#module_primitiveGeometry.smallStellatedDodecahedronPolygons) ⇒ [<code>PolygonalComplex</code>](#PolygonalComplex)
     - [.smallStellatedDodecahedron([options])](#module_primitiveGeometry.smallStellatedDodecahedron) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
-    - [.tetrahedronFaces([options])](#module_primitiveGeometry.tetrahedronFaces) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+    - [.tetrahedronPolygons([options])](#module_primitiveGeometry.tetrahedronPolygons) ⇒ [<code>PolygonalComplex</code>](#PolygonalComplex)
     - [.tetrahedron([options])](#module_primitiveGeometry.tetrahedron) ⇒ [<code>SimplicialComplex</code>](#SimplicialComplex)
   - _inner_
     - [~CrossOptions](#module_primitiveGeometry..CrossOptions) : <code>object</code>
@@ -960,8 +959,7 @@ Re-export all geometries, UV mappings functions and utils.
     - [~RightTrianglePathOptions](#module_primitiveGeometry..RightTrianglePathOptions) : <code>object</code>
     - [~TriangleOptions](#module_primitiveGeometry..TriangleOptions) : <code>object</code>
     - [~TrianglePathOptions](#module_primitiveGeometry..TrianglePathOptions) : <code>object</code>
-    - [~CubeFacesOptions](#module_primitiveGeometry..CubeFacesOptions) : <code>object</code>
-    - [~BoxOptions](#module_primitiveGeometry..BoxOptions) : <code>object</code>
+    - [~CubePolygonsOptions](#module_primitiveGeometry..CubePolygonsOptions) : <code>object</code>
     - [~CubeOptions](#module_primitiveGeometry..CubeOptions) : <code>object</code>
     - [~HollowCubeOptions](#module_primitiveGeometry..HollowCubeOptions) : <code>object</code>
     - [~RoundedCubeDirection](#module_primitiveGeometry..RoundedCubeDirection) : <code>&quot;all&quot;</code> \| <code>&quot;x&quot;</code> \| <code>&quot;y&quot;</code> \| <code>&quot;z&quot;</code>
@@ -995,23 +993,23 @@ Re-export all geometries, UV mappings functions and utils.
     - [~IcosphereOptions](#module_primitiveGeometry..IcosphereOptions) : <code>object</code>
     - [~OctasphereOptions](#module_primitiveGeometry..OctasphereOptions) : <code>object</code>
     - [~TetrasphereOptions](#module_primitiveGeometry..TetrasphereOptions) : <code>object</code>
-    - [~DodecahedronFacesOptions](#module_primitiveGeometry..DodecahedronFacesOptions) : <code>object</code>
+    - [~DodecahedronPolygonsOptions](#module_primitiveGeometry..DodecahedronPolygonsOptions) : <code>object</code>
     - [~DodecahedronOptions](#module_primitiveGeometry..DodecahedronOptions) : <code>object</code>
-    - [~GreatDodecahedronFacesOptions](#module_primitiveGeometry..GreatDodecahedronFacesOptions) : <code>object</code>
+    - [~GreatDodecahedronPolygonsOptions](#module_primitiveGeometry..GreatDodecahedronPolygonsOptions) : <code>object</code>
     - [~GreatDodecahedronOptions](#module_primitiveGeometry..GreatDodecahedronOptions) : <code>object</code>
-    - [~GreatIcosahedronFacesOptions](#module_primitiveGeometry..GreatIcosahedronFacesOptions) : <code>object</code>
+    - [~GreatIcosahedronPolygonsOptions](#module_primitiveGeometry..GreatIcosahedronPolygonsOptions) : <code>object</code>
     - [~GreatIcosahedronOptions](#module_primitiveGeometry..GreatIcosahedronOptions) : <code>object</code>
-    - [~GreatStellatedDodecahedronFacesOptions](#module_primitiveGeometry..GreatStellatedDodecahedronFacesOptions) : <code>object</code>
+    - [~GreatStellatedDodecahedronPolygonsOptions](#module_primitiveGeometry..GreatStellatedDodecahedronPolygonsOptions) : <code>object</code>
     - [~GreatStellatedDodecahedronOptions](#module_primitiveGeometry..GreatStellatedDodecahedronOptions) : <code>object</code>
-    - [~HexahedronFacesOptions](#module_primitiveGeometry..HexahedronFacesOptions) : <code>object</code>
+    - [~HexahedronPolygonsOptions](#module_primitiveGeometry..HexahedronPolygonsOptions) : <code>object</code>
     - [~HexahedronOptions](#module_primitiveGeometry..HexahedronOptions) : <code>object</code>
-    - [~IcosahedronFacesOptions](#module_primitiveGeometry..IcosahedronFacesOptions) : <code>object</code>
+    - [~IcosahedronPolygonsOptions](#module_primitiveGeometry..IcosahedronPolygonsOptions) : <code>object</code>
     - [~IcosahedronOptions](#module_primitiveGeometry..IcosahedronOptions) : <code>object</code>
-    - [~OctahedronFacesOptions](#module_primitiveGeometry..OctahedronFacesOptions) : <code>object</code>
+    - [~OctahedronPolygonsOptions](#module_primitiveGeometry..OctahedronPolygonsOptions) : <code>object</code>
     - [~OctahedronOptions](#module_primitiveGeometry..OctahedronOptions) : <code>object</code>
-    - [~SmallStellatedDodecahedronFacesOptions](#module_primitiveGeometry..SmallStellatedDodecahedronFacesOptions) : <code>object</code>
+    - [~SmallStellatedDodecahedronPolygonsOptions](#module_primitiveGeometry..SmallStellatedDodecahedronPolygonsOptions) : <code>object</code>
     - [~SmallStellatedDodecahedronOptions](#module_primitiveGeometry..SmallStellatedDodecahedronOptions) : <code>object</code>
-    - [~TetrahedronFacesOptions](#module_primitiveGeometry..TetrahedronFacesOptions) : <code>object</code>
+    - [~TetrahedronPolygonsOptions](#module_primitiveGeometry..TetrahedronPolygonsOptions) : <code>object</code>
     - [~TetrahedronOptions](#module_primitiveGeometry..TetrahedronOptions) : <code>object</code>
 
 <a name="module_primitiveGeometry.cross"></a>
@@ -1030,7 +1028,7 @@ extending from a square center, filled with a fan from the center.
 
 <a name="module_primitiveGeometry.crossPath"></a>
 
-### primitiveGeometry.crossPath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+### primitiveGeometry.crossPath([options]) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
 
 Outline dual of `cross`: the same 12-corner outline, walked directly instead
 of fanned from the center.
@@ -1058,13 +1056,13 @@ regular, different values stretch it into an ellipse-inscribed polygon.
 
 <a name="module_primitiveGeometry.polygonPath"></a>
 
-### primitiveGeometry.polygonPath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+### primitiveGeometry.polygonPath([options]) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
 
 Outline dual of `polygon`: sides corners evenly spaced around a circle,
 connected by straight edges (rhombus is this shape's sides=4 case).
 
 **Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
-**Returns**: [<code>SimplicialComplexPath</code>](#SimplicialComplexPath) - `edgeSegments *
+**Returns**: [<code>PolylineComplex</code>](#PolylineComplex) - `edgeSegments *
   sides` positions (`+ 1` for a partial `theta`) and a single path cell of
 that many indices (`+ 1`, repeating index `0`, when `closed`)
 
@@ -1088,7 +1086,7 @@ each centered on the opposite vertex.
 
 <a name="module_primitiveGeometry.reuleauxPath"></a>
 
-### primitiveGeometry.reuleauxPath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+### primitiveGeometry.reuleauxPath([options]) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
 
 Outline dual of `reuleaux`: same parametric boundary, sampled directly with
 no radial fill.
@@ -1117,13 +1115,13 @@ pentagram.
 
 <a name="module_primitiveGeometry.starPath"></a>
 
-### primitiveGeometry.starPath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+### primitiveGeometry.starPath([options]) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
 
 Outline dual of `star`: `points` outer tips alternating with `points` inner
 notches, connected by straight edges.
 
 **Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
-**Returns**: [<code>SimplicialComplexPath</code>](#SimplicialComplexPath) - `edgeSegments *
+**Returns**: [<code>PolylineComplex</code>](#PolylineComplex) - `edgeSegments *
   points * 2` positions (`+ 1` for a partial `theta`) and a single path cell
 of that many indices (`+ 1`, repeating index `0`, when `closed`)
 
@@ -1235,7 +1233,7 @@ An annulus (ring): the region between two concentric circles.
 
 <a name="module_primitiveGeometry.annulusPath"></a>
 
-### primitiveGeometry.annulusPath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+### primitiveGeometry.annulusPath([options]) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
 
 Outline dual of `annulus`: unlike every other path in this module, an
 annulus's boundary is 2 disjoint loops, not one - 2 path cells (outer loop
@@ -1262,7 +1260,7 @@ Hypocycloid with 4 cusps: a superellipse special case (m = n = 2/3).
 
 <a name="module_primitiveGeometry.astroidPath"></a>
 
-### primitiveGeometry.astroidPath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+### primitiveGeometry.astroidPath([options]) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
 
 Outline dual of `astroid`: `superellipsePath` with `m = n = 2 / 3`.
 
@@ -1286,12 +1284,12 @@ A disc: `ellipse` with sx = sy = 1.
 
 <a name="module_primitiveGeometry.circlePath"></a>
 
-### primitiveGeometry.circlePath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+### primitiveGeometry.circlePath([options]) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
 
 Outline dual of `disc`: `ellipsePath` with sx = sy = 1.
 
 **Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
-**Returns**: [<code>SimplicialComplexPath</code>](#SimplicialComplexPath) - `segments`
+**Returns**: [<code>PolylineComplex</code>](#PolylineComplex) - `segments`
 positions (`+ 1` for a partial `theta`) and a single path cell of that many
 indices (`+ 1`, repeating index `0`, when `closed`)
 
@@ -1313,13 +1311,13 @@ An ellipse (or circle when `sx = sy`).
 
 <a name="module_primitiveGeometry.ellipsePath"></a>
 
-### primitiveGeometry.ellipsePath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+### primitiveGeometry.ellipsePath([options]) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
 
 Outline dual of `ellipse`: sx/sy independently scale the two axes, same as
 `circlePath` with sx = sy = 1.
 
 **Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
-**Returns**: [<code>SimplicialComplexPath</code>](#SimplicialComplexPath) - `segments`
+**Returns**: [<code>PolylineComplex</code>](#PolylineComplex) - `segments`
 positions (`+ 1` for a partial `theta`) and a single path cell of that many
 indices (`+ 1`, repeating index `0`, when `closed`)
 
@@ -1342,7 +1340,7 @@ Fernández-Guasti squircle
 
 <a name="module_primitiveGeometry.squirclePath"></a>
 
-### primitiveGeometry.squirclePath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+### primitiveGeometry.squirclePath([options]) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
 
 Outline dual of `squircle`: the same Fernández-Guasti curve, sampled directly
 with no radial fill.
@@ -1371,7 +1369,7 @@ Lamé curve See elliptical-mapping example for a few special cases
 
 <a name="module_primitiveGeometry.superellipsePath"></a>
 
-### primitiveGeometry.superellipsePath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+### primitiveGeometry.superellipsePath([options]) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
 
 Outline dual of `superellipse`: the same Lamé curve, sampled directly with no
 radial fill.
@@ -1384,7 +1382,7 @@ radial fill.
 
 <a name="module_primitiveGeometry.hexagonalGrid"></a>
 
-### primitiveGeometry.hexagonalGrid([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+### primitiveGeometry.hexagonalGrid([options]) ⇒ [<code>PolygonalComplex</code>](#PolygonalComplex)
 
 Hexagonal grid tiling regular hexagons
 
@@ -1396,7 +1394,7 @@ Hexagonal grid tiling regular hexagons
 
 <a name="module_primitiveGeometry.quadGrid"></a>
 
-### primitiveGeometry.quadGrid([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+### primitiveGeometry.quadGrid([options]) ⇒ [<code>PolygonalComplex</code>](#PolygonalComplex)
 
 Regular grid
 
@@ -1408,7 +1406,7 @@ Regular grid
 
 <a name="module_primitiveGeometry.triangularGrid"></a>
 
-### primitiveGeometry.triangularGrid([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+### primitiveGeometry.triangularGrid([options]) ⇒ [<code>PolygonalComplex</code>](#PolygonalComplex)
 
 Isometric grid tiling equilateral triangles
 
@@ -1433,7 +1431,7 @@ while the top, left and right vertices stay put.
 
 <a name="module_primitiveGeometry.kitePath"></a>
 
-### primitiveGeometry.kitePath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+### primitiveGeometry.kitePath([options]) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
 
 Outline dual of `kite`: same shape, `ratio` pulling the bottom vertex toward
 the center.
@@ -1459,7 +1457,7 @@ classic narrow diamond look.
 
 <a name="module_primitiveGeometry.lozengePath"></a>
 
-### primitiveGeometry.lozengePath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+### primitiveGeometry.lozengePath([options]) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
 
 Outline dual of `lozenge`: `rhombusPath` elongated along its vertical
 diagonal by default (sy = sx * 2).
@@ -1485,7 +1483,7 @@ edges the same width) and shifted sideways by `shear`.
 
 <a name="module_primitiveGeometry.parallelogramPath"></a>
 
-### primitiveGeometry.parallelogramPath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+### primitiveGeometry.parallelogramPath([options]) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
 
 Outline dual of `parallelogram`: `trapezoidPath` with `topRatio` fixed to
 `1`, shifted sideways by `shear`.
@@ -1510,7 +1508,7 @@ A flat rectangular grid, facing `direction`.
 
 <a name="module_primitiveGeometry.rectanglePath"></a>
 
-### primitiveGeometry.rectanglePath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+### primitiveGeometry.rectanglePath([options]) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
 
 Outline dual of `plane`: just its `z`-facing boundary loop, walked directly
 (bottom-left → bottom-right → top-right → top-left) rather than extracted
@@ -1536,7 +1534,7 @@ A square, filled with 2 triangles.
 
 <a name="module_primitiveGeometry.squarePath"></a>
 
-### primitiveGeometry.squarePath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+### primitiveGeometry.squarePath([options]) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
 
 Outline dual of `quad`: `rectanglePath` with `sx = sy = scale`, same as
 `quad` itself is built from it.
@@ -1563,7 +1561,7 @@ gives a square rotated 45°.
 
 <a name="module_primitiveGeometry.rhombusPath"></a>
 
-### primitiveGeometry.rhombusPath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+### primitiveGeometry.rhombusPath([options]) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
 
 Outline dual of `rhombus`: `polygonPath` with sides fixed to `4`.
 
@@ -1587,7 +1585,7 @@ A rectangle with rounded corners.
 
 <a name="module_primitiveGeometry.roundedRectanglePath"></a>
 
-### primitiveGeometry.roundedRectanglePath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+### primitiveGeometry.roundedRectanglePath([options]) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
 
 Outline dual of `roundedRectangle`: same radius/segment/roundedCorners
 conventions, walked directly (bottom-left → bottom-right → top-right →
@@ -1616,7 +1614,7 @@ the shorter side.
 
 <a name="module_primitiveGeometry.stadiumPath"></a>
 
-### primitiveGeometry.stadiumPath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+### primitiveGeometry.stadiumPath([options]) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
 
 Outline dual of `stadium`: `roundedRectanglePath` with `radius` fixed to half
 the shorter side, collapsing that axis's straight section to 0 (two
@@ -1646,7 +1644,7 @@ through bottom-right, top-right, top-left.
 
 <a name="module_primitiveGeometry.trapezoidPath"></a>
 
-### primitiveGeometry.trapezoidPath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+### primitiveGeometry.trapezoidPath([options]) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
 
 Outline dual of `trapezoid`: the same 4 corners, walked directly instead of
 fanned.
@@ -1672,7 +1670,7 @@ bottom-left corner (`apexOffset = -sx`), landing the right angle there.
 
 <a name="module_primitiveGeometry.rightTrianglePath"></a>
 
-### primitiveGeometry.rightTrianglePath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+### primitiveGeometry.rightTrianglePath([options]) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
 
 Outline dual of `rightTriangle`: `trianglePath` with `apexOffset` fixed to
 `-sx`.
@@ -1700,7 +1698,7 @@ through bottom-right, apex.
 
 <a name="module_primitiveGeometry.trianglePath"></a>
 
-### primitiveGeometry.trianglePath([options]) ⇒ [<code>SimplicialComplexPath</code>](#SimplicialComplexPath)
+### primitiveGeometry.trianglePath([options]) ⇒ [<code>PolylineComplex</code>](#PolylineComplex)
 
 Outline dual of `triangle`: the same 3 corners, walked directly instead of
 fanned.
@@ -1711,9 +1709,9 @@ fanned.
 | --------- | ---------------------------------------------------------------------------------- | --------------- |
 | [options] | [<code>TrianglePathOptions</code>](#module_primitiveGeometry..TrianglePathOptions) | <code>{}</code> |
 
-<a name="module_primitiveGeometry.cubeFaces"></a>
+<a name="module_primitiveGeometry.cubePolygons"></a>
 
-### primitiveGeometry.cubeFaces([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+### primitiveGeometry.cubePolygons([options]) ⇒ [<code>PolygonalComplex</code>](#PolygonalComplex)
 
 Cuboid faces: 8 positions and 6 quad faces (indices into positions). Cells
 order: +x, -x, +y, -y, +z, -z.
@@ -1722,20 +1720,7 @@ order: +x, -x, +y, -y, +z, -z.
 
 | Param     | Type                                                                         | Default         |
 | --------- | ---------------------------------------------------------------------------- | --------------- |
-| [options] | [<code>CubeFacesOptions</code>](#module_primitiveGeometry..CubeFacesOptions) | <code>{}</code> |
-
-<a name="module_primitiveGeometry.box"></a>
-
-### primitiveGeometry.box([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
-
-A cuboid, as raw quad faces rather than a triangulated mesh - see
-`cubeFaces`.
-
-**Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
-
-| Param     | Type                                                             | Default         |
-| --------- | ---------------------------------------------------------------- | --------------- |
-| [options] | [<code>BoxOptions</code>](#module_primitiveGeometry..BoxOptions) | <code>{}</code> |
+| [options] | [<code>CubePolygonsOptions</code>](#module_primitiveGeometry..CubePolygonsOptions) | <code>{}</code> |
 
 <a name="module_primitiveGeometry.cube"></a>
 
@@ -2216,9 +2201,9 @@ tetrahedron.
 | --------- | -------------------------------------------------------------------------------- | --------------- |
 | [options] | [<code>TetrasphereOptions</code>](#module_primitiveGeometry..TetrasphereOptions) | <code>{}</code> |
 
-<a name="module_primitiveGeometry.dodecahedronFaces"></a>
+<a name="module_primitiveGeometry.dodecahedronPolygons"></a>
 
-### primitiveGeometry.dodecahedronFaces([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+### primitiveGeometry.dodecahedronPolygons([options]) ⇒ [<code>PolygonalComplex</code>](#PolygonalComplex)
 
 Regular dodecahedron.
 
@@ -2226,7 +2211,7 @@ Regular dodecahedron.
 
 | Param     | Type                                                                                         | Default         |
 | --------- | -------------------------------------------------------------------------------------------- | --------------- |
-| [options] | [<code>DodecahedronFacesOptions</code>](#module_primitiveGeometry..DodecahedronFacesOptions) | <code>{}</code> |
+| [options] | [<code>DodecahedronPolygonsOptions</code>](#module_primitiveGeometry..DodecahedronPolygonsOptions) | <code>{}</code> |
 
 <a name="module_primitiveGeometry.dodecahedron"></a>
 
@@ -2240,9 +2225,9 @@ Regular dodecahedron.
 | --------- | ---------------------------------------------------------------------------------- | --------------- |
 | [options] | [<code>DodecahedronOptions</code>](#module_primitiveGeometry..DodecahedronOptions) | <code>{}</code> |
 
-<a name="module_primitiveGeometry.greatDodecahedronFaces"></a>
+<a name="module_primitiveGeometry.greatDodecahedronPolygons"></a>
 
-### primitiveGeometry.greatDodecahedronFaces([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+### primitiveGeometry.greatDodecahedronPolygons([options]) ⇒ [<code>PolygonalComplex</code>](#PolygonalComplex)
 
 Great dodecahedron, sharing the icosahedron's 12 vertices; each of its 12
 pentagonal faces is the convex pentagon formed by one vertex's 5 neighbors,
@@ -2252,7 +2237,7 @@ deeply interpenetrating the other 11 faces.
 
 | Param     | Type                                                                                                   | Default         |
 | --------- | ------------------------------------------------------------------------------------------------------ | --------------- |
-| [options] | [<code>GreatDodecahedronFacesOptions</code>](#module_primitiveGeometry..GreatDodecahedronFacesOptions) | <code>{}</code> |
+| [options] | [<code>GreatDodecahedronPolygonsOptions</code>](#module_primitiveGeometry..GreatDodecahedronPolygonsOptions) | <code>{}</code> |
 
 <a name="module_primitiveGeometry.greatDodecahedron"></a>
 
@@ -2266,9 +2251,9 @@ Great dodecahedron.
 | --------- | -------------------------------------------------------------------------------------------- | --------------- |
 | [options] | [<code>GreatDodecahedronOptions</code>](#module_primitiveGeometry..GreatDodecahedronOptions) | <code>{}</code> |
 
-<a name="module_primitiveGeometry.greatIcosahedronFaces"></a>
+<a name="module_primitiveGeometry.greatIcosahedronPolygons"></a>
 
-### primitiveGeometry.greatIcosahedronFaces([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+### primitiveGeometry.greatIcosahedronPolygons([options]) ⇒ [<code>PolygonalComplex</code>](#PolygonalComplex)
 
 Great icosahedron, sharing the icosahedron's 12 vertices; each of its 20
 triangular faces connects a vertex to two of its "second-shell" neighbors
@@ -2278,7 +2263,7 @@ triangular faces connects a vertex to two of its "second-shell" neighbors
 
 | Param     | Type                                                                                                 | Default         |
 | --------- | ---------------------------------------------------------------------------------------------------- | --------------- |
-| [options] | [<code>GreatIcosahedronFacesOptions</code>](#module_primitiveGeometry..GreatIcosahedronFacesOptions) | <code>{}</code> |
+| [options] | [<code>GreatIcosahedronPolygonsOptions</code>](#module_primitiveGeometry..GreatIcosahedronPolygonsOptions) | <code>{}</code> |
 
 <a name="module_primitiveGeometry.greatIcosahedron"></a>
 
@@ -2292,9 +2277,9 @@ Great icosahedron.
 | --------- | ------------------------------------------------------------------------------------------ | --------------- |
 | [options] | [<code>GreatIcosahedronOptions</code>](#module_primitiveGeometry..GreatIcosahedronOptions) | <code>{}</code> |
 
-<a name="module_primitiveGeometry.greatStellatedDodecahedronFaces"></a>
+<a name="module_primitiveGeometry.greatStellatedDodecahedronPolygons"></a>
 
-### primitiveGeometry.greatStellatedDodecahedronFaces([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+### primitiveGeometry.greatStellatedDodecahedronPolygons([options]) ⇒ [<code>PolygonalComplex</code>](#PolygonalComplex)
 
 Great stellated dodecahedron: the 3rd (outermost) stellation of the
 dodecahedron. Each face's 5 edges, extended within its own plane, first cross
@@ -2307,7 +2292,7 @@ own vertices by `phi^3`.
 
 | Param     | Type                                                                                                                     | Default         |
 | --------- | ------------------------------------------------------------------------------------------------------------------------ | --------------- |
-| [options] | [<code>GreatStellatedDodecahedronFacesOptions</code>](#module_primitiveGeometry..GreatStellatedDodecahedronFacesOptions) | <code>{}</code> |
+| [options] | [<code>GreatStellatedDodecahedronPolygonsOptions</code>](#module_primitiveGeometry..GreatStellatedDodecahedronPolygonsOptions) | <code>{}</code> |
 
 <a name="module_primitiveGeometry.greatStellatedDodecahedron"></a>
 
@@ -2321,19 +2306,19 @@ Great stellated dodecahedron.
 | --------- | -------------------------------------------------------------------------------------------------------------- | --------------- |
 | [options] | [<code>GreatStellatedDodecahedronOptions</code>](#module_primitiveGeometry..GreatStellatedDodecahedronOptions) | <code>{}</code> |
 
-<a name="module_primitiveGeometry.hexahedronFaces"></a>
+<a name="module_primitiveGeometry.hexahedronPolygons"></a>
 
-### primitiveGeometry.hexahedronFaces([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+### primitiveGeometry.hexahedronPolygons([options]) ⇒ [<code>PolygonalComplex</code>](#PolygonalComplex)
 
 Regular hexahedron (cube) faces: 8 corners, cells order +x, -x, +y, -y, +z,
--z - `cubeFaces`'s own layout, since a regular hexahedron is exactly a cube
+-z - `cubePolygons`'s own layout, since a regular hexahedron is exactly a cube
 whose half-extent (`radius`) is the same on all 3 axes.
 
 **Kind**: static method of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 
 | Param     | Type                                                                                     | Default         |
 | --------- | ---------------------------------------------------------------------------------------- | --------------- |
-| [options] | [<code>HexahedronFacesOptions</code>](#module_primitiveGeometry..HexahedronFacesOptions) | <code>{}</code> |
+| [options] | [<code>HexahedronPolygonsOptions</code>](#module_primitiveGeometry..HexahedronPolygonsOptions) | <code>{}</code> |
 
 <a name="module_primitiveGeometry.hexahedron"></a>
 
@@ -2347,9 +2332,9 @@ Regular hexahedron (cube).
 | --------- | ------------------------------------------------------------------------------ | --------------- |
 | [options] | [<code>HexahedronOptions</code>](#module_primitiveGeometry..HexahedronOptions) | <code>{}</code> |
 
-<a name="module_primitiveGeometry.icosahedronFaces"></a>
+<a name="module_primitiveGeometry.icosahedronPolygons"></a>
 
-### primitiveGeometry.icosahedronFaces([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+### primitiveGeometry.icosahedronPolygons([options]) ⇒ [<code>PolygonalComplex</code>](#PolygonalComplex)
 
 Regular icosahedron.
 
@@ -2357,7 +2342,7 @@ Regular icosahedron.
 
 | Param     | Type                                                                                       | Default         |
 | --------- | ------------------------------------------------------------------------------------------ | --------------- |
-| [options] | [<code>IcosahedronFacesOptions</code>](#module_primitiveGeometry..IcosahedronFacesOptions) | <code>{}</code> |
+| [options] | [<code>IcosahedronPolygonsOptions</code>](#module_primitiveGeometry..IcosahedronPolygonsOptions) | <code>{}</code> |
 
 <a name="module_primitiveGeometry.icosahedron"></a>
 
@@ -2371,9 +2356,9 @@ Regular icosahedron.
 | --------- | -------------------------------------------------------------------------------- | --------------- |
 | [options] | [<code>IcosahedronOptions</code>](#module_primitiveGeometry..IcosahedronOptions) | <code>{}</code> |
 
-<a name="module_primitiveGeometry.octahedronFaces"></a>
+<a name="module_primitiveGeometry.octahedronPolygons"></a>
 
-### primitiveGeometry.octahedronFaces([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+### primitiveGeometry.octahedronPolygons([options]) ⇒ [<code>PolygonalComplex</code>](#PolygonalComplex)
 
 Regular octahedron.
 
@@ -2381,7 +2366,7 @@ Regular octahedron.
 
 | Param     | Type                                                                                     | Default         |
 | --------- | ---------------------------------------------------------------------------------------- | --------------- |
-| [options] | [<code>OctahedronFacesOptions</code>](#module_primitiveGeometry..OctahedronFacesOptions) | <code>{}</code> |
+| [options] | [<code>OctahedronPolygonsOptions</code>](#module_primitiveGeometry..OctahedronPolygonsOptions) | <code>{}</code> |
 
 <a name="module_primitiveGeometry.octahedron"></a>
 
@@ -2395,9 +2380,9 @@ Regular octahedron.
 | --------- | ------------------------------------------------------------------------------ | --------------- |
 | [options] | [<code>OctahedronOptions</code>](#module_primitiveGeometry..OctahedronOptions) | <code>{}</code> |
 
-<a name="module_primitiveGeometry.smallStellatedDodecahedronFaces"></a>
+<a name="module_primitiveGeometry.smallStellatedDodecahedronPolygons"></a>
 
-### primitiveGeometry.smallStellatedDodecahedronFaces([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+### primitiveGeometry.smallStellatedDodecahedronPolygons([options]) ⇒ [<code>PolygonalComplex</code>](#PolygonalComplex)
 
 Small stellated dodecahedron: the same 12 vertices and pentagon groupings as
 the great dodecahedron, with each face's 5 corners connected as a pentagram
@@ -2407,7 +2392,7 @@ the great dodecahedron, with each face's 5 corners connected as a pentagram
 
 | Param     | Type                                                                                                                     | Default         |
 | --------- | ------------------------------------------------------------------------------------------------------------------------ | --------------- |
-| [options] | [<code>SmallStellatedDodecahedronFacesOptions</code>](#module_primitiveGeometry..SmallStellatedDodecahedronFacesOptions) | <code>{}</code> |
+| [options] | [<code>SmallStellatedDodecahedronPolygonsOptions</code>](#module_primitiveGeometry..SmallStellatedDodecahedronPolygonsOptions) | <code>{}</code> |
 
 <a name="module_primitiveGeometry.smallStellatedDodecahedron"></a>
 
@@ -2421,9 +2406,9 @@ Small stellated dodecahedron.
 | --------- | -------------------------------------------------------------------------------------------------------------- | --------------- |
 | [options] | [<code>SmallStellatedDodecahedronOptions</code>](#module_primitiveGeometry..SmallStellatedDodecahedronOptions) | <code>{}</code> |
 
-<a name="module_primitiveGeometry.tetrahedronFaces"></a>
+<a name="module_primitiveGeometry.tetrahedronPolygons"></a>
 
-### primitiveGeometry.tetrahedronFaces([options]) ⇒ [<code>SimplicialComplexPolygon</code>](#SimplicialComplexPolygon)
+### primitiveGeometry.tetrahedronPolygons([options]) ⇒ [<code>PolygonalComplex</code>](#PolygonalComplex)
 
 Regular tetrahedron, apex-up, bounding box centered at the origin.
 
@@ -2431,7 +2416,7 @@ Regular tetrahedron, apex-up, bounding box centered at the origin.
 
 | Param     | Type                                                                                       | Default         |
 | --------- | ------------------------------------------------------------------------------------------ | --------------- |
-| [options] | [<code>TetrahedronFacesOptions</code>](#module_primitiveGeometry..TetrahedronFacesOptions) | <code>{}</code> |
+| [options] | [<code>TetrahedronPolygonsOptions</code>](#module_primitiveGeometry..TetrahedronPolygonsOptions) | <code>{}</code> |
 
 <a name="module_primitiveGeometry.tetrahedron"></a>
 
@@ -3360,22 +3345,9 @@ Regular tetrahedron.
 | [thetaOffset]  | <code>number</code>  | <code>0</code>     |
 | [closed]       | <code>boolean</code> | <code>false</code> |
 
-<a name="module_primitiveGeometry..CubeFacesOptions"></a>
+<a name="module_primitiveGeometry..CubePolygonsOptions"></a>
 
-### primitiveGeometry~CubeFacesOptions : <code>object</code>
-
-**Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
-**Properties**
-
-| Name | Type                | Default         |
-| ---- | ------------------- | --------------- |
-| [sx] | <code>number</code> | <code>1</code>  |
-| [sy] | <code>number</code> | <code>sx</code> |
-| [sz] | <code>number</code> | <code>sx</code> |
-
-<a name="module_primitiveGeometry..BoxOptions"></a>
-
-### primitiveGeometry~BoxOptions : <code>object</code>
+### primitiveGeometry~CubePolygonsOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
@@ -3987,9 +3959,9 @@ Regular tetrahedron.
 | [projection]   | <code>&quot;gnomonic&quot;</code> \| <code>&quot;spherical&quot;</code> | <code>&quot;gnomonic&quot;</code> |
 | [mapping]      | <code>MappingFn</code>                                                  | <code>mappings.spherical</code>   |
 
-<a name="module_primitiveGeometry..DodecahedronFacesOptions"></a>
+<a name="module_primitiveGeometry..DodecahedronPolygonsOptions"></a>
 
-### primitiveGeometry~DodecahedronFacesOptions : <code>object</code>
+### primitiveGeometry~DodecahedronPolygonsOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
@@ -4011,9 +3983,9 @@ Regular tetrahedron.
 | [subdivisions] | <code>number</code>    | <code>0</code>                    |
 | [mapping]      | <code>MappingFn</code> | <code>mappings.rectangular</code> |
 
-<a name="module_primitiveGeometry..GreatDodecahedronFacesOptions"></a>
+<a name="module_primitiveGeometry..GreatDodecahedronPolygonsOptions"></a>
 
-### primitiveGeometry~GreatDodecahedronFacesOptions : <code>object</code>
+### primitiveGeometry~GreatDodecahedronPolygonsOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
@@ -4035,9 +4007,9 @@ Regular tetrahedron.
 | [subdivisions] | <code>number</code>    | <code>0</code>                    |
 | [mapping]      | <code>MappingFn</code> | <code>mappings.rectangular</code> |
 
-<a name="module_primitiveGeometry..GreatIcosahedronFacesOptions"></a>
+<a name="module_primitiveGeometry..GreatIcosahedronPolygonsOptions"></a>
 
-### primitiveGeometry~GreatIcosahedronFacesOptions : <code>object</code>
+### primitiveGeometry~GreatIcosahedronPolygonsOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
@@ -4059,9 +4031,9 @@ Regular tetrahedron.
 | [subdivisions] | <code>number</code>    | <code>0</code>                    |
 | [mapping]      | <code>MappingFn</code> | <code>mappings.rectangular</code> |
 
-<a name="module_primitiveGeometry..GreatStellatedDodecahedronFacesOptions"></a>
+<a name="module_primitiveGeometry..GreatStellatedDodecahedronPolygonsOptions"></a>
 
-### primitiveGeometry~GreatStellatedDodecahedronFacesOptions : <code>object</code>
+### primitiveGeometry~GreatStellatedDodecahedronPolygonsOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
@@ -4083,9 +4055,9 @@ Regular tetrahedron.
 | [subdivisions] | <code>number</code>    | <code>0</code>                    | Barycentric grid subdivisions per triangle |
 | [mapping]      | <code>MappingFn</code> | <code>mappings.rectangular</code> |                                            |
 
-<a name="module_primitiveGeometry..HexahedronFacesOptions"></a>
+<a name="module_primitiveGeometry..HexahedronPolygonsOptions"></a>
 
-### primitiveGeometry~HexahedronFacesOptions : <code>object</code>
+### primitiveGeometry~HexahedronPolygonsOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
@@ -4107,9 +4079,9 @@ Regular tetrahedron.
 | [subdivisions] | <code>number</code>    | <code>0</code>                    |
 | [mapping]      | <code>MappingFn</code> | <code>mappings.rectangular</code> |
 
-<a name="module_primitiveGeometry..IcosahedronFacesOptions"></a>
+<a name="module_primitiveGeometry..IcosahedronPolygonsOptions"></a>
 
-### primitiveGeometry~IcosahedronFacesOptions : <code>object</code>
+### primitiveGeometry~IcosahedronPolygonsOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
@@ -4131,9 +4103,9 @@ Regular tetrahedron.
 | [subdivisions] | <code>number</code>    | <code>0</code>                    |
 | [mapping]      | <code>MappingFn</code> | <code>mappings.rectangular</code> |
 
-<a name="module_primitiveGeometry..OctahedronFacesOptions"></a>
+<a name="module_primitiveGeometry..OctahedronPolygonsOptions"></a>
 
-### primitiveGeometry~OctahedronFacesOptions : <code>object</code>
+### primitiveGeometry~OctahedronPolygonsOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
@@ -4155,9 +4127,9 @@ Regular tetrahedron.
 | [subdivisions] | <code>number</code>    | <code>0</code>                    |
 | [mapping]      | <code>MappingFn</code> | <code>mappings.rectangular</code> |
 
-<a name="module_primitiveGeometry..SmallStellatedDodecahedronFacesOptions"></a>
+<a name="module_primitiveGeometry..SmallStellatedDodecahedronPolygonsOptions"></a>
 
-### primitiveGeometry~SmallStellatedDodecahedronFacesOptions : <code>object</code>
+### primitiveGeometry~SmallStellatedDodecahedronPolygonsOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
@@ -4179,9 +4151,9 @@ Regular tetrahedron.
 | [subdivisions] | <code>number</code>    | <code>0</code>                    |
 | [mapping]      | <code>MappingFn</code> | <code>mappings.rectangular</code> |
 
-<a name="module_primitiveGeometry..TetrahedronFacesOptions"></a>
+<a name="module_primitiveGeometry..TetrahedronPolygonsOptions"></a>
 
-### primitiveGeometry~TetrahedronFacesOptions : <code>object</code>
+### primitiveGeometry~TetrahedronPolygonsOptions : <code>object</code>
 
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
@@ -4450,7 +4422,7 @@ Enforce a typed array constructor for cells
 
 ### utils.triangulateFaces(cells, numVertices) ⇒ <code>Uint8Array</code> \| <code>Uint16Array</code> \| <code>Uint32Array</code>
 
-Fan-triangulate a list of closed n-gon faces (a `SimplicialComplexPolygon`'s
+Fan-triangulate a list of closed n-gon faces (a `PolygonalComplex`'s
 `cells`, e.g. `[0, 1, 2, 3]`) from each face's last corner into a flat,
 stride-3 `SimplicialComplex`-style typed array (e.g. `[3, 0, 1, 3, 1, 2]`).
 Anchoring on the last corner rather than the first is deliberate for quads:
@@ -4570,9 +4542,9 @@ Geometry definition.
 | uvs       | <code>Float32Array</code>                                                       |
 | cells     | <code>Uint8Array</code> \| <code>Uint16Array</code> \| <code>Uint32Array</code> |
 
-<a name="SimplicialComplexPolygon"></a>
+<a name="PolygonalComplex"></a>
 
-## SimplicialComplexPolygon : <code>object</code>
+## PolygonalComplex : <code>object</code>
 
 Geometry polygon definition: each
 cell is a closed n-gon face (implicitly wraps its last index back to its
@@ -4588,9 +4560,9 @@ first - never repeat the first index at the end).
 | [uvs]     | <code>Float32Array</code>                                    |
 | cells     | [<code>Array.&lt;TypedArrayLike&gt;</code>](#TypedArrayLike) |
 
-<a name="SimplicialComplexPath"></a>
+<a name="PolylineComplex"></a>
 
-## SimplicialComplexPath : <code>object</code>
+## PolylineComplex : <code>object</code>
 
 Geometry path definition: each cell
 is an open polyline (no implicit closing edge between its last and first

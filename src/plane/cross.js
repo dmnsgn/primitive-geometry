@@ -102,7 +102,7 @@ export function cross({
  * of fanned from the center.
  *
  * @param {CrossPathOptions} [options={}]
- * @returns {import("../../types.js").SimplicialComplexPath}
+ * @returns {import("../../types.js").PolylineComplex}
  */
 export function crossPath({
   radius = 0.5,
