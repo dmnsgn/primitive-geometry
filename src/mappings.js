@@ -131,7 +131,7 @@ export function twoSquircular({ uvs, index, u, v }) {
 /** @type {MappingsFn} */
 export function threeSquircular({ uvs, index, u, v }) {
   const ok = fixFGSingularities(uvs, index, u, v);
-  if (ok) return;
+  if (!ok) return;
   const u2 = u ** 2;
   const v2 = v ** 2;
   const sign = Math.sign(u * v);
