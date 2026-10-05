@@ -49,6 +49,8 @@ function computeStarEdge(points, radius, notchRadius, theta, thetaOffset, t) {
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
+ *   edge for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../mappings.js").MappingFn} [mapping=mappings.concentric]
  */
 
@@ -74,6 +76,7 @@ export function star({
   theta = TAU,
   thetaOffset = 0,
   mergeCentroid = innerRadius === 0,
+  mergeSeam = true,
   mapping = concentric,
 } = {}) {
   const holeScale = radius === 0 ? 0 : innerRadius / radius;
@@ -87,6 +90,7 @@ export function star({
     theta,
     thetaOffset,
     mergeCentroid,
+    mergeSeam,
     mapping,
     equation: ({ cosTheta, sinTheta, s, t }) => {
       const [x, y] = computeStarEdge(

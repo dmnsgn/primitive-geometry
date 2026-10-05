@@ -30,6 +30,8 @@ function computeSuperellipseEdge(rx, ry, cosTheta, sinTheta, m, n) {
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
+ *   edge for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.lamé]
  * @property {number} [m=2]
  * @property {number} [n=m]
@@ -53,6 +55,7 @@ export function superellipse({
   theta = TAU,
   thetaOffset = 0,
   mergeCentroid = innerRadius === 0,
+  mergeSeam = true,
   mapping = lamé,
   m = 2,
   n = m,
@@ -67,6 +70,7 @@ export function superellipse({
     theta,
     thetaOffset,
     mergeCentroid,
+    mergeSeam,
     mapping,
     equation: ({ rx, ry, cosTheta, sinTheta }) =>
       computeSuperellipseEdge(rx, ry, cosTheta, sinTheta, m, n),

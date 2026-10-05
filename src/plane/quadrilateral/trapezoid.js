@@ -50,6 +50,8 @@ function computeTrapezoidCorners(sx, sy, topRatio, topOffset) {
  *   lookup assumes `t - thetaOffset` stays non-negative.
  * @property {number} [thetaOffset=0]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
+ *   edge for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  *   Uv mapping function. Defaults to a flat, bounding-box-relative unwrap.
  */
@@ -76,6 +78,7 @@ export function trapezoid({
   theta = TAU,
   thetaOffset = 0,
   mergeCentroid = innerRadius === 0,
+  mergeSeam = true,
   mapping = rectangular,
 } = {}) {
   const { centeredCorners, cx, cy } = computeTrapezoidCorners(
@@ -95,6 +98,7 @@ export function trapezoid({
     theta,
     thetaOffset,
     mergeCentroid,
+    mergeSeam,
     mapping,
     equation: ({ rx, t }) => {
       const [x, y] = computeOutlineEdge(centeredCorners, thetaOffset, t);

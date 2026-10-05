@@ -16,6 +16,8 @@ import { triangle, trianglePath } from "./triangle.js";
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
+ *   edge for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  */
 
@@ -36,6 +38,7 @@ export function rightTriangle({
   theta,
   thetaOffset,
   mergeCentroid,
+  mergeSeam,
   mapping,
 } = {}) {
   return triangle({
@@ -49,6 +52,7 @@ export function rightTriangle({
     theta,
     thetaOffset,
     mergeCentroid,
+    mergeSeam,
     mapping,
   });
 }

@@ -139,3 +139,73 @@ describe("innerRadius on ellipse-derived and polar curves", () => {
     });
   }
 });
+
+describe("mergeSeam", () => {
+  const segments = 16;
+  const innerSegments = 4;
+  const options = {
+    segments,
+    innerSegments,
+    mapping: Primitives.mappings.polar,
+  };
+
+  const wrappingTriangles = ({ uvs, cells }) => {
+    let count = 0;
+    for (let i = 0; i < cells.length; i += 3) {
+      const v = [0, 1, 2].map((k) => uvs[cells[i + k] * 2 + 1]);
+      if (Math.max(...v) - Math.min(...v) > 0.5) count++;
+    }
+    return count;
+  };
+
+  it("keeps the wrap edge welded by default", () => {
+    const g = Primitives.disc({ ...options, mergeCentroid: false });
+    assert.ok(wrappingTriangles(g) > 0);
+  });
+
+  it("splits the wrap edge so no triangle wraps", () => {
+    const welded = Primitives.disc({ ...options, mergeCentroid: false });
+    const g = Primitives.disc({
+      ...options,
+      mergeCentroid: false,
+      mergeSeam: false,
+    });
+
+    assert.equal(wrappingTriangles(g), 0);
+    // One duplicate per ring on the wrap column
+    assert.equal(
+      g.positions.length / 3,
+      welded.positions.length / 3 + innerSegments + 1,
+    );
+    assert.equal(g.cells.length, welded.cells.length);
+
+    const result = analyze(g);
+    assert.equal(result.cracks, 0);
+    assert.equal(result.boundaries, analyze(welded).boundaries);
+  });
+
+  it("splits a merged centroid per wedge", () => {
+    const g = Primitives.disc({ ...options, mergeSeam: false });
+    assert.equal(wrappingTriangles(g), 0);
+
+    // The fan's centroid sits in each triangle's third slot
+    const { uvs, cells } = g;
+    for (let i = 0; i < segments * 3; i += 3) {
+      const [a, b, centroid] = [0, 1, 2].map((k) => cells[i + k]);
+      assert.equal(uvs[centroid * 2], 0);
+      assert.ok(
+        Math.abs(
+          uvs[centroid * 2 + 1] - (uvs[a * 2 + 1] + uvs[b * 2 + 1]) / 2,
+        ) < 1e-6,
+      );
+    }
+    assert.equal(analyze(g).cracks, 0);
+  });
+
+  it("is a no-op for mappings continuous across the wrap", () => {
+    const welded = Primitives.disc({ segments, innerSegments });
+    const g = Primitives.disc({ segments, innerSegments, mergeSeam: false });
+    assert.equal(g.positions.length, welded.positions.length);
+    assert.deepEqual(Array.from(g.uvs), Array.from(welded.uvs));
+  });
+});

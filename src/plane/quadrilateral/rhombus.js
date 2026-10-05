@@ -17,6 +17,8 @@ import { HALF_PI, TAU } from "../../utils/common.js";
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=HALF_PI]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
+ *   edge for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.concentric]
  */
 
@@ -38,6 +40,7 @@ export function rhombus({
   theta = TAU,
   thetaOffset = HALF_PI,
   mergeCentroid = innerRadius === 0,
+  mergeSeam = true,
   mapping = concentric,
 } = {}) {
   return polygon({
@@ -51,6 +54,7 @@ export function rhombus({
     theta,
     thetaOffset,
     mergeCentroid,
+    mergeSeam,
     mapping,
   });
 }

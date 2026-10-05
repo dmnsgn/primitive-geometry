@@ -22,6 +22,8 @@ import {
  *   stops at instead of reaching the center. `0` (default): no hole, fill
  *   reaches the center (subject to `mergeCentroid`).
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
+ *   edge for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.elliptical]
  * @property {EllipseEquationFn} [equation] Maps each (rx, ry, cosTheta,
  *   sinTheta) sample to its [x, y] position, defaulting to an ellipse's arc.
@@ -55,6 +57,7 @@ export function ellipse({
   thetaOffset = 0,
   innerRadius = 0,
   mergeCentroid = innerRadius === 0,
+  mergeSeam = true,
   mapping = elliptical,
   equation = ({ rx, ry, cosTheta, sinTheta }) => [rx * cosTheta, ry * sinTheta],
 } = {}) {
@@ -68,6 +71,7 @@ export function ellipse({
     thetaOffset,
     innerRadius,
     mergeCentroid,
+    mergeSeam,
     mapping,
     equation,
   });

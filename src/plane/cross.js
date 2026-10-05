@@ -44,6 +44,8 @@ function computeCrossOutline(r, w) {
  *   stops at instead of reaching the center, traced as a smaller, self- similar
  *   copy of the outer cross. `0` (default): no hole, fill reaches the center.
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
+ *   edge for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../mappings.js").MappingFn} [mapping=mappings.rectangular]
  *   Uv mapping function. Defaults to a flat, bounding-box-relative unwrap.
  */
@@ -63,6 +65,7 @@ export function cross({
   innerSegments = 16,
   innerRadius = 0,
   mergeCentroid = innerRadius === 0,
+  mergeSeam = true,
   mapping = rectangular,
 } = {}) {
   const r = radius;
@@ -77,6 +80,7 @@ export function cross({
     innerSegments,
     innerRadius,
     mergeCentroid,
+    mergeSeam,
     mapping,
     equation: ({ rx, t }) => {
       // rx is the ring's interpolated radius (innerRadius..radius); scale

@@ -4,6 +4,7 @@
  */
 
 import { TAU, getCellsTypedArray } from "./common.js";
+import { splitSeam } from "./seam.js";
 
 /**
  * @private
@@ -97,7 +98,8 @@ function computeColumnCount(segments, theta) {
  * its vertices with the first so the wrap edge is welded), fan-triangulated
  * between rings. equation maps each (radiusRatio, angle) sample to its [x, y]
  * position, defaulting to an ellipse's arc; mapping computes its uv and has no
- * default, so it must always be supplied.
+ * default, so it must always be supplied. mergeSeam false splits the welded
+ * wrap edge for mappings wrapping in v at thetaRatio 1 (eg. polar).
  *
  * @private
  */
@@ -111,6 +113,7 @@ export function computePolarGeometry({
   thetaOffset = 0,
   innerRadius = 0,
   mergeCentroid = true,
+  mergeSeam = true,
   mapping,
   equation = ({ rx, ry, cosTheta, sinTheta }) => [rx * cosTheta, ry * sinTheta],
 } = {}) {
@@ -129,10 +132,27 @@ export function computePolarGeometry({
       : innerSegments * segments * 6,
   );
 
+  // Mapped like any other vertex rather than hardcoded so a mapping with no
+  // centered origin (eg. polar's radiusRatio 0) gets its own uv
+  const mapCentroid = (target, index, thetaRatio) =>
+    mapping({
+      uvs: target,
+      index,
+      u: 0,
+      v: 0,
+      radius,
+      radiusRatio: 0,
+      thetaRatio,
+      t: thetaOffset + thetaRatio * theta,
+      x: 0,
+      y: 0,
+      sx,
+      sy,
+    });
+
   if (mergeCentroid) {
     normals[2] = 1;
-    uvs[0] = 0.5;
-    uvs[1] = 0.5;
+    mapCentroid(uvs, 0, 0);
   }
 
   let vertexIndex = mergeCentroid ? 1 : 0;
@@ -214,7 +234,23 @@ export function computePolarGeometry({
     }
   }
 
-  return { positions, normals, uvs, cells };
+  const geometry = { positions, normals, uvs, cells };
+
+  if (mergeSeam) return geometry;
+
+  // A merged centroid whose uv depends on the angle (eg. polar) has no uv of
+  // its own, so it's split per wedge too
+  let centroidIsPole = false;
+  if (mergeCentroid) {
+    const probe = new Float32Array(2);
+    mapCentroid(probe, 0, 0.5);
+    centroidIsPole = probe[0] !== uvs[0] || probe[1] !== uvs[1];
+  }
+
+  return splitSeam(geometry, {
+    component: 1,
+    isPole: (index) => centroidIsPole && index === 0,
+  });
 }
 
 /**

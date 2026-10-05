@@ -15,6 +15,8 @@ import { TAU } from "../../utils/common.js";
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
+ *   edge for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.lamé]
  */
 
@@ -33,6 +35,7 @@ export function astroid({
   theta = TAU,
   thetaOffset = 0,
   mergeCentroid = innerRadius === 0,
+  mergeSeam = true,
   mapping = lamé,
 } = {}) {
   return superellipse({
@@ -45,6 +48,7 @@ export function astroid({
     theta,
     thetaOffset,
     mergeCentroid,
+    mergeSeam,
     mapping,
     m: 2 / 3,
     n: 2 / 3,

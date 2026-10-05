@@ -16,6 +16,8 @@ import { TAU } from "../../utils/common.js";
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
  * @property {number} [innerRadius=radius * 0.5]
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
+ *   edge for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.concentric]
  */
 
@@ -34,6 +36,7 @@ export function annulus({
   theta = TAU,
   thetaOffset = 0,
   innerRadius = radius * 0.5,
+  mergeSeam = true,
   mapping = concentric,
 } = {}) {
   return ellipse({
@@ -46,6 +49,7 @@ export function annulus({
     thetaOffset,
     innerRadius,
     mergeCentroid: false,
+    mergeSeam,
     mapping,
   });
 }

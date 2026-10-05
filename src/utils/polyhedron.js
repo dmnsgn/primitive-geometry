@@ -12,29 +12,12 @@ import {
   point,
   slerpTriangle,
 } from "./common.js";
+import { splitSeam } from "./seam.js";
 
 const MAX_VERTICES = 1e7;
 
 // Distance of a uv v-coordinate from 0 or 1 below which a vertex counts as a pole
 const POLE_EPSILON = 1e-5;
-
-// A triangle's u-span above this fraction of the full [0, 1) wrap is treated
-// as crossing the seam rather than merely being wide
-const SEAM_WRAP_THRESHOLD = 0.5;
-
-// Quantization applied to u when folding it into a pole's duplicate-vertex
-// cache key (see `duplicate` below)
-const POLE_KEY_U_SCALE = 1e6;
-
-// u can be shifted by +1 during unwrapping, so quantized u values stay below
-// 2 * POLE_KEY_U_SCALE; this stride keeps each corner's key range disjoint
-// from its neighbor's
-const POLE_KEY_CORNER_STRIDE = 3 * POLE_KEY_U_SCALE;
-
-// Non-pole cache keys are plain corner (vertex) indices, always < MAX_VERTICES
-// (enforced above); offsetting pole keys by MAX_VERTICES keeps the two key
-// spaces disjoint regardless of how many vertices this call produces
-const POLE_KEY_BASE = MAX_VERTICES;
 
 /**
  * Undirected seed edge key, stable whichever way the edge is walked
@@ -107,154 +90,6 @@ function barycentricPoint(seedPositions, a, b, c, i, j, S) {
       j * seedPositions[c * 3 + 2]) /
       S,
   ];
-}
-
-/**
- * Shift one triangle's corners onto a single local u window, in place: cut the
- * circle at its widest empty gap and shift every corner before the cut up by
- * +1, which minimizes the maximum pairwise u difference. A pole corner has no
- * longitude of its own, so it lands midway between the other two.
- *
- * @private
- */
-function unwrapTriangleUs(u, pole) {
-  const order = [0, 1, 2]
-    .filter((k) => !pole[k])
-    .toSorted((a, b) => u[a] - u[b]);
-  const count = order.length;
-
-  let widestGap = -1;
-  let cutAt = -1;
-  for (let m = 0; m < count; m++) {
-    const gap =
-      m < count - 1
-        ? u[order[m + 1]] - u[order[m]]
-        : u[order[0]] + 1 - u[order[count - 1]];
-    if (gap > widestGap) {
-      widestGap = gap;
-      cutAt = m;
-    }
-  }
-  if (cutAt < count - 1) {
-    for (let m = 0; m <= cutAt; m++) u[order[m]] += 1;
-  }
-
-  for (let k = 0; k < 3; k++) {
-    if (!pole[k]) continue;
-    const [m, n] = [0, 1, 2].filter((o) => o !== k);
-    u[k] = (u[m] + u[n]) / 2;
-  }
-}
-
-/**
- * Welding (project) shares one uv per vertex, but the spherical mapping's
- * longitude wraps at u = 0/1 and is undefined at the poles, so a shared vertex
- * can't hold a uv correct for every triangle that touches it. Zipper it by
- * duplicating the affected corner(s) per triangle with a locally-consistent uv,
- * returning a new geometry, or null when nothing needed fixing.
- *
- * This can't help a triangle whose 3 corners are already ~120deg apart in
- * longitude before subdivision (eg. tetraSphere's 4 huge faces at low
- * subdivisions): no per-vertex uv choice keeps such a triangle non-wrapping,
- * only splitting it would, which this does not do.
- *
- * @private
- */
-function zipSphericalUvSeams({ positions, normals, uvs, cells }, numVertices) {
-  const extraPositions = [];
-  const extraNormals = [];
-  const extraUvs = [];
-  // Non-pole corners need at most one alternate uv (+1 in u), so their own
-  // vertex index is already a unique cache key. Poles can need any value
-  // depending on the triangle, so those are tagged into a disjoint numeric
-  // range instead.
-  const duplicateCache = new Map();
-  let nextIndex = numVertices;
-
-  const duplicate = (key, index, u, v) => {
-    let dup = duplicateCache.get(key);
-    if (dup === undefined) {
-      extraPositions.push(
-        positions[index * 3],
-        positions[index * 3 + 1],
-        positions[index * 3 + 2],
-      );
-      extraNormals.push(
-        normals[index * 3],
-        normals[index * 3 + 1],
-        normals[index * 3 + 2],
-      );
-      extraUvs.push(u, v);
-      dup = nextIndex++;
-      duplicateCache.set(key, dup);
-    }
-    return dup;
-  };
-
-  // Patches are recorded as (cell index, replacement vertex) pairs for the
-  // rare triangles that need a fix, rather than rewriting the full cells array
-  const patchAt = [];
-  const patchTo = [];
-
-  const patchTriangle = (i, corners, u, pole) => {
-    for (let k = 0; k < 3; k++) {
-      if (u[k] === uvs[corners[k] * 2]) continue;
-      const key = pole[k]
-        ? POLE_KEY_BASE +
-          corners[k] * POLE_KEY_CORNER_STRIDE +
-          Math.round(u[k] * POLE_KEY_U_SCALE)
-        : corners[k];
-      patchAt.push(i + k);
-      patchTo.push(duplicate(key, corners[k], u[k], uvs[corners[k] * 2 + 1]));
-    }
-  };
-
-  for (let i = 0; i < cells.length; i += 3) {
-    const corners = [cells[i], cells[i + 1], cells[i + 2]];
-    const pole = corners.map((c) => isPole(uvs[c * 2 + 1]));
-    if (pole[0] + pole[1] + pole[2] > 1) continue; // degenerate sliver
-
-    const u = corners.map((c) => uvs[c * 2]);
-
-    // Fast path: most triangles don't touch a pole or the seam
-    if (!pole[0] && !pole[1] && !pole[2]) {
-      const lo = Math.min(u[0], u[1], u[2]);
-      const hi = Math.max(u[0], u[1], u[2]);
-      if (hi - lo <= SEAM_WRAP_THRESHOLD) continue;
-    }
-
-    unwrapTriangleUs(u, pole);
-    patchTriangle(i, corners, u, pole);
-  }
-
-  if (!extraPositions.length) return null;
-
-  const finalCount = nextIndex;
-
-  const finalPositions = new Float32Array(finalCount * 3);
-  finalPositions.set(positions);
-  finalPositions.set(extraPositions, positions.length);
-
-  const finalNormals = new Float32Array(finalCount * 3);
-  finalNormals.set(normals);
-  finalNormals.set(extraNormals, normals.length);
-
-  const finalUvs = new Float32Array(finalCount * 2);
-  finalUvs.set(uvs);
-  finalUvs.set(extraUvs, uvs.length);
-
-  const finalCells = new (getCellsTypedArray(finalCount))(cells.length);
-  finalCells.set(cells);
-  for (let p = 0; p < patchAt.length; p++) {
-    finalCells[patchAt[p]] = patchTo[p];
-  }
-
-  return {
-    positions: finalPositions,
-    normals: finalNormals,
-    uvs: finalUvs,
-    cells: finalCells,
-  };
 }
 
 /**
@@ -509,13 +344,15 @@ export function computePolyhedron(
 
   for (const face of seedCells) buildFace(face);
 
-  if (project && mapping === spherical) {
-    const zipped = zipSphericalUvSeams(
-      { positions, normals, uvs, cells },
-      numVertices,
-    );
-    if (zipped) return zipped;
-  }
+  const geometry = { positions, normals, uvs, cells };
 
-  return { positions, normals, uvs, cells };
+  // Welding (project) shares one uv per vertex, but the spherical mapping's
+  // longitude wraps at u = 0/1 and is undefined at the poles. This can't help a
+  // triangle whose 3 corners are already ~120deg apart in longitude before
+  // subdivision (eg. tetraSphere's 4 huge faces at low subdivisions).
+  return project && mapping === spherical
+    ? splitSeam(geometry, {
+        isPole: (index) => isPole(uvs[index * 2 + 1]),
+      })
+    : geometry;
 }

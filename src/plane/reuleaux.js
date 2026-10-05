@@ -19,6 +19,8 @@ import {
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
+ *   edge for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../mappings.js").MappingFn} [mapping=mappings.concentric]
  */
 
@@ -59,6 +61,7 @@ export function reuleaux({
   theta = TAU,
   thetaOffset = 0,
   mergeCentroid = innerRadius === 0,
+  mergeSeam = true,
   mapping = concentric,
 } = {}) {
   const cosSides = 2 * Math.cos(Math.PI / (2 * sides));
@@ -76,6 +79,7 @@ export function reuleaux({
     theta,
     thetaOffset,
     mergeCentroid,
+    mergeSeam,
     mapping,
     equation: ({ rx, t }) => {
       const [x, y] = computeReuleauxEdge(

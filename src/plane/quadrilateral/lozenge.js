@@ -15,6 +15,8 @@ import { rhombus, rhombusPath } from "./rhombus.js";
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=HALF_PI]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
+ *   edge for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.concentric]
  */
 
@@ -35,6 +37,7 @@ export function lozenge({
   theta,
   thetaOffset,
   mergeCentroid,
+  mergeSeam,
   mapping,
 } = {}) {
   return rhombus({
@@ -47,6 +50,7 @@ export function lozenge({
     theta,
     thetaOffset,
     mergeCentroid,
+    mergeSeam,
     mapping,
   });
 }

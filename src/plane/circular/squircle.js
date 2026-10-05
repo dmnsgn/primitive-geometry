@@ -58,6 +58,8 @@ function computeSquircleEdge(rx, ry, cosTheta, sinTheta, t, squareness) {
  * @property {number} [theta=TAU]
  * @property {number} [thetaOffset=0]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
+ *   edge for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.fgSquircular]
  * @property {number} [squareness=0.95] Squareness (0 < s <= 1)
  */
@@ -79,6 +81,7 @@ export function squircle({
   theta = TAU,
   thetaOffset = 0,
   mergeCentroid = innerRadius === 0,
+  mergeSeam = true,
   mapping = fgSquircular,
   squareness = 0.95,
 } = {}) {
@@ -92,6 +95,7 @@ export function squircle({
     theta,
     thetaOffset,
     mergeCentroid,
+    mergeSeam,
     mapping,
     equation: ({ rx, ry, cosTheta, sinTheta, t }) =>
       computeSquircleEdge(rx, ry, cosTheta, sinTheta, t, squareness),
