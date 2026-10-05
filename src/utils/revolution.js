@@ -301,7 +301,7 @@ export function computeRevolutionGeometry({
   // the wrap welds instead of landing a hair away from it
   const phiAt = (x) => (wrap && x === nx ? 0 : x / nx) * phi + phiOffset;
 
-  const writeVertex = (x, v, t) => {
+  const writeVertex = (x, v, t, uOffset) => {
     const p = phiAt(x);
 
     const {
@@ -323,7 +323,7 @@ export function computeRevolutionGeometry({
     normals[vertexIndex * 3 + 1] = TMP[1];
     normals[vertexIndex * 3 + 2] = TMP[2];
 
-    uvs[vertexIndex * 2] = x / nx;
+    uvs[vertexIndex * 2] = (x + uOffset) / nx;
     uvs[vertexIndex * 2 + 1] = uvV;
   };
 
@@ -346,7 +346,7 @@ export function computeRevolutionGeometry({
 
       if (!collapsedAt[y]) {
         cells[cellIndex] = c;
-        cells[cellIndex + 1] = b;
+        cells[cellIndex + 1] = collapsedAt[y - 1] ? a : b;
         cells[cellIndex + 2] = d;
 
         cellIndex += 3;
@@ -358,8 +358,15 @@ export function computeRevolutionGeometry({
     const t = y / ny;
     const v = vDistribution(t);
 
+    // A collapsed ring has one vertex per wedge: centering its u between the
+    // wedge's two rim columns keeps the pole's uv tear symmetric. Fans pick
+    // pole column x for wedge x, from either side, leaving column nx unused
+    // (kept at u = 1 so it stays in range).
+    const centered = collapsedAt[y] && !mergedAt[y];
     const count = mergedAt[y] ? 1 : cols;
-    for (let x = 0; x < count; x++, vertexIndex++) writeVertex(x, v, t);
+    for (let x = 0; x < count; x++, vertexIndex++) {
+      writeVertex(x, v, t, centered && x < nx ? 0.5 : 0);
+    }
 
     if (y > 0) writeRowQuads(y);
   }
