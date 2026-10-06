@@ -12,12 +12,12 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @property {number} [roundRadius=radius*0.3] Fillet radius at the top/bottom
  *   rim, silently clamped to [0, min(radius, height/2)] - the fillet can
  *   neither exceed the body's own radius nor meet itself across the height
- * @property {number} [nx=16]
- * @property {number} [ny=1] Straight side segments
- * @property {number} [roundSegments=8] Fillet segments (each end)
- * @property {number} [capSegments=1] Flat cap segments (each end)
- * @property {number} [phi=TAU]
- * @property {number} [phiOffset=0]
+ * @property {import("../../../types.js").PositiveInteger} [nx=16]
+ * @property {import("../../../types.js").PositiveInteger} [ny=1] Straight side segments
+ * @property {import("../../../types.js").PositiveInteger} [roundSegments=8] Fillet segments (each end)
+ * @property {import("../../../types.js").PositiveInteger} [capSegments=1] Flat cap segments (each end)
+ * @property {import("../../../types.js").Angle} [phi=TAU]
+ * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
  *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */

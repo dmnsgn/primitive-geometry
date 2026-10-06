@@ -10,14 +10,14 @@ import { computeConeSegment } from "./cone.js";
  * @typedef {object} DoubleConeOptions
  * @property {number} [height=1]
  * @property {number} [radius=0.5]
- * @property {number} [nx=16]
- * @property {number} [ny=1] Meridian segments per half (top/bottom cone)
+ * @property {import("../../../types.js").PositiveInteger} [nx=16]
+ * @property {import("../../../types.js").PositiveInteger} [ny=1] Meridian segments per half (top/bottom cone)
  * @property {boolean} [capBase=true]
  * @property {boolean} [capApex=true]
- * @property {number} [capBaseSegments=1]
- * @property {number} [capApexSegments=1]
- * @property {number} [phi=TAU]
- * @property {number} [phiOffset=0]
+ * @property {import("../../../types.js").PositiveInteger} [capBaseSegments=1]
+ * @property {import("../../../types.js").PositiveInteger} [capApexSegments=1]
+ * @property {import("../../../types.js").Angle} [phi=TAU]
+ * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
  * @property {number} [sx=1] End ring x scale, elliptical when != sz
  * @property {number} [sz=1] End ring z scale, elliptical when != sx

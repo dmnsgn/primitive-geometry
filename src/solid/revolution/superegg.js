@@ -15,18 +15,18 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @typedef {object} SupereggOptions
  * @property {number} [radius=0.5] Equatorial radius
  * @property {number} [sy=5/6] Vertical (polar) scale
- * @property {number} [nx=32]
- * @property {number} [ny=16]
+ * @property {import("../../../types.js").PositiveInteger} [nx=32]
+ * @property {import("../../../types.js").PositiveInteger} [ny=16]
  * @property {number} [n=2.5] Roundness exponent - Piet Hein's original; n > 2
  *   gives a "true" superegg, n = 2 is a spheroid, n < 2 rounds toward a
  *   cylinder-capped-with-cones shape
- * @property {number} [theta=Math.PI] Meridian sweep length, silently clamped to
+ * @property {import("../../../types.js").PolarAngle} [theta=Math.PI] Meridian sweep length, silently clamped to
  *   [-thetaOffset, PI - thetaOffset] - see ellipsoid.js's EllipsoidOptions for
  *   why.
- * @property {number} [thetaOffset=0] Meridian sweep start, silently clamped to
+ * @property {import("../../../types.js").PolarAngle} [thetaOffset=0] Meridian sweep start, silently clamped to
  *   [0, PI] - see theta.
- * @property {number} [phi=TAU]
- * @property {number} [phiOffset=0]
+ * @property {import("../../../types.js").Angle} [phi=TAU]
+ * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
  * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
  *   column and smooth poles' vertices, wrapping uvs back to 0 there.

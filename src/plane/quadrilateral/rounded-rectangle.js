@@ -12,9 +12,9 @@ import { computePlane } from "../../utils/plane-grid.js";
  * @property {number} [sx=1]
  * @property {number} [sy=sx]
  * @property {number} [radius=sx * 0.25]
- * @property {number} [roundSegments=8]
- * @property {number} [nx=1] Segments along the straight top/bottom sections.
- * @property {number} [ny=nx] Segments along the straight left/right sections.
+ * @property {import("../../../types.js").PositiveInteger} [roundSegments=8]
+ * @property {import("../../../types.js").PositiveInteger} [nx=1] Segments along the straight top/bottom sections.
+ * @property {import("../../../types.js").PositiveInteger} [ny=nx] Segments along the straight left/right sections.
  * @property {RoundedRectangleCorner[]} [roundedCorners=["top-left", "top-right", "bottom-right", "bottom-left"]]
  */
 
@@ -96,9 +96,9 @@ const PATH_CORNERS = [
  * @property {number} [sx=1]
  * @property {number} [sy=sx]
  * @property {number} [radius=sx * 0.25]
- * @property {number} [roundSegments=8]
- * @property {number} [nx=1]
- * @property {number} [ny=nx]
+ * @property {import("../../../types.js").PositiveInteger} [roundSegments=8]
+ * @property {import("../../../types.js").PositiveInteger} [nx=1]
+ * @property {import("../../../types.js").PositiveInteger} [ny=nx]
  * @property {RoundedRectangleCorner[]} [roundedCorners=["top-left", "top-right", "bottom-right", "bottom-left"]]
  * @property {boolean} [closed=false]
  */

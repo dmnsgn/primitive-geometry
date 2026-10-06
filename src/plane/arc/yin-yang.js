@@ -17,11 +17,11 @@ import { clamp, concatGeometries } from "../../utils/common.js";
  *   -radius/2)` for yang, `(0, radius/2)` for yin). `"yin-yang"` merges both
  *   into one mesh; without per-face material/color the S-curve seam is then
  *   invisible (indistinguishable from a disc with two holes).
- * @property {number} [segments=32] Row count for the outer circle/S-curve
+ * @property {import("../../../types.js").PositiveInteger} [segments=32] Row count for the outer circle/S-curve
  *   boundary, swept bottom to top.
- * @property {number} [holeSegments=16] Row count for a dot hole's own boundary,
+ * @property {import("../../../types.js").PositiveInteger} [holeSegments=16] Row count for a dot hole's own boundary,
  *   independent of the outer boundary's `segments`.
- * @property {number} [innerSegments=16] Column count spanning each side of a
+ * @property {import("../../../types.js").PositiveInteger} [innerSegments=16] Column count spanning each side of a
  *   dot hole (or the whole half, where the hole doesn't reach) at each row.
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  *   Uv mapping function. Defaults to a flat, bounding-box-relative unwrap; pass a

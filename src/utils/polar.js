@@ -90,6 +90,54 @@ function computeColumnCount(segments, theta) {
   return segments + (theta !== 0 && theta % TAU === 0 ? 0 : 1);
 }
 
+// A merged centroid whose uv depends on the angle (eg. polar) has no uv of its
+// own, so it's split per wedge, at the wedge's mid angle
+function computeCentroidCount(mergeCentroid, mergeSeam, segments, mapCentroid) {
+  if (!mergeCentroid) return 0;
+  if (mergeSeam) return 1;
+
+  const probe = new Float32Array(4);
+  mapCentroid(probe, 0, 0);
+  mapCentroid(probe, 2, 0.5);
+  return probe[0] === probe[2] && probe[1] === probe[3] ? 1 : segments;
+}
+
+// The innermost ring fans to the merged centroid(s), at the start of the
+// arrays. Every later ring bridges to the one before it with a quad. The next
+// column shares the first one on the wrap for closed shapes.
+function computeRingCells(
+  cells,
+  indices,
+  { ringOffset, cols, segments, centroidCount, fan },
+) {
+  for (let i = 0; i < segments; i++) {
+    const i1 = (i + 1) % cols;
+
+    if (fan) {
+      cells[indices.cell] = ringOffset + i;
+      cells[indices.cell + 1] = ringOffset + i1;
+      cells[indices.cell + 2] = centroidCount === 1 ? 0 : i;
+
+      indices.cell += 3;
+    } else {
+      const a = ringOffset - cols + i;
+      const b = ringOffset + i;
+      const c = ringOffset + i1;
+      const d = ringOffset - cols + i1;
+
+      cells[indices.cell] = a;
+      cells[indices.cell + 1] = b;
+      cells[indices.cell + 2] = d;
+
+      cells[indices.cell + 3] = b;
+      cells[indices.cell + 4] = c;
+      cells[indices.cell + 5] = d;
+
+      indices.cell += 6;
+    }
+  }
+}
+
 /**
  * A grid of concentric rings (innerSegments, radiusRatio 0..1 from innerRadius
  * to radius) sampled at evenly-spaced angular columns (segments, closed for a
@@ -138,15 +186,12 @@ export function computePolarGeometry({
       sy,
     });
 
-  // A merged centroid whose uv depends on the angle (eg. polar) has no uv of
-  // its own, so it's split per wedge, at the wedge's mid angle
-  let centroidCount = mergeCentroid ? 1 : 0;
-  if (mergeCentroid && !mergeSeam) {
-    const probe = new Float32Array(4);
-    mapCentroid(probe, 0, 0);
-    mapCentroid(probe, 2, 0.5);
-    if (probe[0] !== probe[2] || probe[1] !== probe[3]) centroidCount = segments;
-  }
+  const centroidCount = computeCentroidCount(
+    mergeCentroid,
+    mergeSeam,
+    segments,
+    mapCentroid,
+  );
 
   const size =
     centroidCount + (mergeCentroid ? innerSegments : innerSegments + 1) * cols;
@@ -165,35 +210,13 @@ export function computePolarGeometry({
     mapCentroid(uvs, i * 2, centroidCount === 1 ? 0 : (i + 0.5) / segments);
   }
 
+  // A separate wrap column reuses the first angle exactly, so its positions
+  // match bit-identically
+  const thetaAt = (i) =>
+    thetaOffset + (closed && i === segments ? 0 : i / segments) * theta;
+
   let vertexIndex = centroidCount;
-  let cellIndex = 0;
-
-  // The innermost ring fans to the merged centroid(s), at the start of the
-  // arrays. Every later ring bridges to the one before it with a quad.
-  const writeCells = (j, ringOffset, i, i1) => {
-    if (mergeCentroid && j === 1) {
-      cells[cellIndex] = ringOffset + i;
-      cells[cellIndex + 1] = ringOffset + i1;
-      cells[cellIndex + 2] = centroidCount === 1 ? 0 : i;
-
-      cellIndex += 3;
-    } else if (j > (mergeCentroid ? 1 : 0)) {
-      const a = ringOffset - cols + i;
-      const b = ringOffset + i;
-      const c = ringOffset + i1;
-      const d = ringOffset - cols + i1;
-
-      cells[cellIndex] = a;
-      cells[cellIndex + 1] = b;
-      cells[cellIndex + 2] = d;
-
-      cells[cellIndex + 3] = b;
-      cells[cellIndex + 4] = c;
-      cells[cellIndex + 5] = d;
-
-      cellIndex += 6;
-    }
-  };
+  const indices = { cell: 0 };
 
   for (let j = mergeCentroid ? 1 : 0; j <= innerSegments; j++) {
     const radiusRatio = j / innerSegments;
@@ -204,10 +227,7 @@ export function computePolarGeometry({
 
     for (let i = 0; i < cols; i++, vertexIndex++) {
       const thetaRatio = i / segments;
-      // A separate wrap column reuses the first angle exactly, so its
-      // positions match bit-identically
-      const t =
-        thetaOffset + (closed && i === segments ? 0 : thetaRatio) * theta;
+      const t = thetaAt(i);
 
       const cosTheta = Math.cos(t);
       const sinTheta = Math.sin(t);
@@ -241,9 +261,16 @@ export function computePolarGeometry({
         sx,
         sy,
       });
+    }
 
-      // Next column, sharing the first one on the wrap for closed shapes
-      if (i < segments) writeCells(j, ringOffset, i, (i + 1) % cols);
+    if (j > 0) {
+      computeRingCells(cells, indices, {
+        ringOffset,
+        cols,
+        segments,
+        centroidCount,
+        fan: mergeCentroid && j === 1,
+      });
     }
   }
 

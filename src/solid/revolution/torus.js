@@ -14,17 +14,17 @@ import {
 /**
  * @typedef {object} TorusOptions
  * @property {number} [radius=0.4]
- * @property {number} [segments=64]
+ * @property {import("../../../types.js").PositiveInteger} [segments=64]
  * @property {number} [minorRadius=0.1]
- * @property {number} [minorSegments=32]
- * @property {number} [theta=TAU]
- * @property {number} [thetaOffset=0]
- * @property {number} [phi=TAU]
- * @property {number} [phiOffset=0]
+ * @property {import("../../../types.js").PositiveInteger} [minorSegments=32]
+ * @property {import("../../../types.js").Angle} [theta=TAU]
+ * @property {import("../../../types.js").Angle} [thetaOffset=0]
+ * @property {import("../../../types.js").Angle} [phi=TAU]
+ * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {boolean} [capStart=true]
  * @property {boolean} [capEnd=true]
- * @property {number} [capStartSegments=1]
- * @property {number} [capEndSegments=1]
+ * @property {import("../../../types.js").PositiveInteger} [capStartSegments=1]
+ * @property {import("../../../types.js").PositiveInteger} [capEndSegments=1]
  * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
  * @property {number} [sx=1] Major sweep x scale (footprint), elliptical when !=
  *   sy

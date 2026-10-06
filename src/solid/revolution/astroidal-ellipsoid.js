@@ -8,18 +8,18 @@ import { TAU } from "../../utils/common.js";
 /**
  * @typedef {object} AstroidalEllipsoidOptions
  * @property {number} [radius=0.5]
- * @property {number} [nx=32]
- * @property {number} [ny=16]
+ * @property {import("../../../types.js").PositiveInteger} [nx=32]
+ * @property {import("../../../types.js").PositiveInteger} [ny=16]
  * @property {number} [sx=1]
  * @property {number} [sy=0.5]
  * @property {number} [sz=sy]
- * @property {number} [theta=Math.PI] Meridian sweep length, silently clamped to
+ * @property {import("../../../types.js").PolarAngle} [theta=Math.PI] Meridian sweep length, silently clamped to
  *   [-thetaOffset, PI - thetaOffset] - see ellipsoid.js's EllipsoidOptions for
  *   why.
- * @property {number} [thetaOffset=0] Meridian sweep start, silently clamped to
+ * @property {import("../../../types.js").PolarAngle} [thetaOffset=0] Meridian sweep start, silently clamped to
  *   [0, PI] - see theta.
- * @property {number} [phi=TAU]
- * @property {number} [phiOffset=0]
+ * @property {import("../../../types.js").Angle} [phi=TAU]
+ * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
  *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */

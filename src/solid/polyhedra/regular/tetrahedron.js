@@ -56,7 +56,7 @@ export function tetrahedronPolygons({ radius = 0.5, center = true } = {}) {
 /**
  * @typedef {object} TetrahedronOptions
  * @property {number} [radius=0.5]
- * @property {number} [subdivisions=0]
+ * @property {import("../../../../types.js").NonNegativeInteger} [subdivisions=0]
  * @property {import("../../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  */
 

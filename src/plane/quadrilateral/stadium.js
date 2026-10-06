@@ -8,9 +8,9 @@ import { roundedRectangle, roundedRectanglePath } from "./rounded-rectangle.js";
  * @typedef {object} StadiumOptions
  * @property {number} [sx=1]
  * @property {number} [sy=0.5]
- * @property {number} [nx=1]
- * @property {number} [ny=nx]
- * @property {number} [roundSegments=8]
+ * @property {import("../../../types.js").PositiveInteger} [nx=1]
+ * @property {import("../../../types.js").PositiveInteger} [ny=nx]
+ * @property {import("../../../types.js").PositiveInteger} [roundSegments=8]
  */
 
 /**
@@ -35,9 +35,9 @@ export function stadium({ sx = 1, sy = 0.5, nx, ny, roundSegments } = {}) {
  * @typedef {object} StadiumPathOptions
  * @property {number} [sx=1]
  * @property {number} [sy=0.5]
- * @property {number} [nx=1]
- * @property {number} [ny=nx]
- * @property {number} [roundSegments=8]
+ * @property {import("../../../types.js").PositiveInteger} [nx=1]
+ * @property {import("../../../types.js").PositiveInteger} [ny=nx]
+ * @property {import("../../../types.js").PositiveInteger} [roundSegments=8]
  * @property {boolean} [closed=false]
  */
 

@@ -64,12 +64,12 @@ export function computeConeSegment({
  * @typedef {object} ConeOptions
  * @property {number} [height=1]
  * @property {number} [radius=0.25]
- * @property {number} [nx=16]
- * @property {number} [ny=1]
- * @property {number} [capSegments=1]
+ * @property {import("../../../types.js").PositiveInteger} [nx=16]
+ * @property {import("../../../types.js").PositiveInteger} [ny=1]
+ * @property {import("../../../types.js").PositiveInteger} [capSegments=1]
  * @property {boolean} [capBase=true]
- * @property {number} [phi=TAU]
- * @property {number} [phiOffset=0]
+ * @property {import("../../../types.js").Angle} [phi=TAU]
+ * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
  * @property {number} [sx=1] Base ring x scale, elliptical when != sz
  * @property {number} [sz=1] Base ring z scale, elliptical when != sx

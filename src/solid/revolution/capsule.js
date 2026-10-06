@@ -9,12 +9,12 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @typedef {object} CapsuleOptions
  * @property {number} [height=0.5]
  * @property {number} [radius=0.25]
- * @property {number} [nx=16]
- * @property {number} [ny=1]
- * @property {number} [roundSegments=16] `0` collapses both hemispheres away,
+ * @property {import("../../../types.js").PositiveInteger} [nx=16]
+ * @property {import("../../../types.js").PositiveInteger} [ny=1]
+ * @property {import("../../../types.js").NonNegativeInteger} [roundSegments=16] `0` collapses both hemispheres away,
  *   leaving an open tube.
- * @property {number} [phi=TAU]
- * @property {number} [phiOffset=0]
+ * @property {import("../../../types.js").Angle} [phi=TAU]
+ * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
  *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */

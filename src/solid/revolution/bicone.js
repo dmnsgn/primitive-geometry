@@ -9,10 +9,10 @@ import { computeConeSegment } from "./cone.js";
  * @typedef {object} BiconeOptions
  * @property {number} [height=1]
  * @property {number} [radius=0.5]
- * @property {number} [nx=16]
- * @property {number} [ny=1] Meridian segments per half (top/bottom cone)
- * @property {number} [phi=TAU]
- * @property {number} [phiOffset=0]
+ * @property {import("../../../types.js").PositiveInteger} [nx=16]
+ * @property {import("../../../types.js").PositiveInteger} [ny=1] Meridian segments per half (top/bottom cone)
+ * @property {import("../../../types.js").Angle} [phi=TAU]
+ * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {number} [sx=1] Equator x scale, elliptical when != sz
  * @property {number} [sz=1] Equator z scale, elliptical when != sx
  * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap

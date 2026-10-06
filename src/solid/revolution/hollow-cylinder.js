@@ -11,13 +11,13 @@ import { computeConeSegment } from "./cone.js";
  * @property {number} [height=1]
  * @property {number} [radius=0.5]
  * @property {number} [innerRadius=radius*0.5] Bore radius
- * @property {number} [nx=32]
- * @property {number} [ny=1]
- * @property {number} [capSegments=1] Radial segments of each annular cap
+ * @property {import("../../../types.js").PositiveInteger} [nx=32]
+ * @property {import("../../../types.js").PositiveInteger} [ny=1]
+ * @property {import("../../../types.js").PositiveInteger} [capSegments=1] Radial segments of each annular cap
  * @property {boolean} [capApex=true]
  * @property {boolean} [capBase=true]
- * @property {number} [phi=TAU]
- * @property {number} [phiOffset=0]
+ * @property {import("../../../types.js").Angle} [phi=TAU]
+ * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
  *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */

@@ -55,7 +55,7 @@ export function greatStellatedDodecahedronPolygons({ radius = 0.5 } = {}) {
 /**
  * @typedef {object} GreatStellatedDodecahedronOptions
  * @property {number} [radius=0.5]
- * @property {number} [subdivisions=0] Barycentric grid subdivisions per
+ * @property {import("../../../../types.js").NonNegativeInteger} [subdivisions=0] Barycentric grid subdivisions per
  *   triangle
  * @property {import("../../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  */

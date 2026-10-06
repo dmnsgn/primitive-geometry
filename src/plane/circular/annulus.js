@@ -11,10 +11,10 @@ import { TAU } from "../../utils/common.js";
  * @property {number} [sx=1]
  * @property {number} [sy=1]
  * @property {number} [radius=0.5]
- * @property {number} [segments=32]
- * @property {number} [innerSegments=16]
- * @property {number} [theta=TAU]
- * @property {number} [thetaOffset=0]
+ * @property {import("../../../types.js").PositiveInteger} [segments=32]
+ * @property {import("../../../types.js").PositiveInteger} [innerSegments=16]
+ * @property {import("../../../types.js").Angle} [theta=TAU]
+ * @property {import("../../../types.js").Angle} [thetaOffset=0]
  * @property {number} [innerRadius=radius * 0.5]
  * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
  *   edge for mappings wrapping there (eg. `mappings.polar`).
@@ -59,9 +59,9 @@ export function annulus({
  * @property {number} [sx=1]
  * @property {number} [sy=1]
  * @property {number} [radius=0.5]
- * @property {number} [segments=32]
- * @property {number} [theta=TAU]
- * @property {number} [thetaOffset=0]
+ * @property {import("../../../types.js").PositiveInteger} [segments=32]
+ * @property {import("../../../types.js").Angle} [theta=TAU]
+ * @property {import("../../../types.js").Angle} [thetaOffset=0]
  * @property {number} [innerRadius=radius * 0.5]
  * @property {boolean} [closed=false]
  */

@@ -17,11 +17,11 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @property {number} [innerRadius=radius*0.5] Cylindrical bore radius, silently
  *   clamped to [0, radius] - a bore wider than the sphere has no sensible rim
  *   to meet
- * @property {number} [nx=32]
- * @property {number} [ny=16] Outer spherical band meridian segments
- * @property {number} [holeSegments=1] Inner bore wall segments
- * @property {number} [phi=TAU]
- * @property {number} [phiOffset=0]
+ * @property {import("../../../types.js").PositiveInteger} [nx=32]
+ * @property {import("../../../types.js").PositiveInteger} [ny=16] Outer spherical band meridian segments
+ * @property {import("../../../types.js").PositiveInteger} [holeSegments=1] Inner bore wall segments
+ * @property {import("../../../types.js").Angle} [phi=TAU]
+ * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
  *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */

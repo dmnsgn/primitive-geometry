@@ -13,8 +13,8 @@ import { rectangular } from "../../mappings.js";
  *   `distance / 2`. Equal to `radius` (a symmetric lens) by default.
  * @property {number} [distance=radius] Distance between the two circles'
  *   centers.
- * @property {number} [segments=32] Column count, swept left to right.
- * @property {number} [innerSegments=16] Row count between the bottom and top
+ * @property {import("../../../types.js").PositiveInteger} [segments=32] Column count, swept left to right.
+ * @property {import("../../../types.js").PositiveInteger} [innerSegments=16] Row count between the bottom and top
  *   boundary at each column.
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  *   Uv mapping function. Defaults to a flat, bounding-box-relative unwrap; pass a

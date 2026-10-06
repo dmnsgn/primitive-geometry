@@ -10,11 +10,11 @@ import { triangle, trianglePath } from "./triangle.js";
  *   full `2 * sx`, from the right-angle corner to the opposite base corner.
  * @property {number} [sy=1] Vertical leg half-length, likewise doubled.
  * @property {number} [radius=0.5]
- * @property {number} [edgeSegments=1]
- * @property {number} [innerSegments=16]
+ * @property {import("../../../types.js").PositiveInteger} [edgeSegments=1]
+ * @property {import("../../../types.js").PositiveInteger} [innerSegments=16]
  * @property {number} [innerRadius=0]
- * @property {number} [theta=TAU]
- * @property {number} [thetaOffset=0]
+ * @property {import("../../../types.js").Angle} [theta=TAU]
+ * @property {import("../../../types.js").Angle} [thetaOffset=0]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
  * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
  *   edge for mappings wrapping there (eg. `mappings.polar`).
@@ -62,9 +62,9 @@ export function rightTriangle({
  * @property {number} [sx=1]
  * @property {number} [sy=1]
  * @property {number} [radius=0.5]
- * @property {number} [edgeSegments=1]
- * @property {number} [theta=TAU]
- * @property {number} [thetaOffset=0]
+ * @property {import("../../../types.js").PositiveInteger} [edgeSegments=1]
+ * @property {import("../../../types.js").Angle} [theta=TAU]
+ * @property {import("../../../types.js").Angle} [thetaOffset=0]
  * @property {boolean} [closed=false]
  */
 

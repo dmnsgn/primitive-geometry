@@ -37,8 +37,8 @@ function computeCrossOutline(r, w) {
  * @property {number} [radius=0.5] Distance from the center to each arm's tip.
  * @property {number} [armWidth=radius/3] Half-width of each arm. Defaults to a
  *   third of `radius`, the classic Greek cross made of 5 equal squares.
- * @property {number} [edgeSegments=1]
- * @property {number} [innerSegments=16] Row count between the center and the
+ * @property {import("../../types.js").PositiveInteger} [edgeSegments=1]
+ * @property {import("../../types.js").PositiveInteger} [innerSegments=16] Row count between the center and the
  *   outline at each column.
  * @property {number} [innerRadius=0] Like `star`'s: a hole radius the fill
  *   stops at instead of reaching the center, traced as a smaller, self- similar
@@ -97,7 +97,7 @@ export function cross({
  * @typedef {object} CrossPathOptions
  * @property {number} [radius=0.5]
  * @property {number} [armWidth=radius/3]
- * @property {number} [edgeSegments=1]
+ * @property {import("../../types.js").PositiveInteger} [edgeSegments=1]
  * @property {boolean} [closed=false]
  */
 

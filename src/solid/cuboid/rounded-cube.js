@@ -18,10 +18,10 @@ import {
  * @property {number} [sy=sx]
  * @property {number} [sz=sx]
  * @property {number} [radius=sx * 0.25]
- * @property {number} [roundSegments=8]
- * @property {number} [nx=1] Segments along the straight x sections.
- * @property {number} [ny=nx] Segments along the straight y sections.
- * @property {number} [nz=nx] Segments along the straight z sections.
+ * @property {import("../../../types.js").PositiveInteger} [roundSegments=8]
+ * @property {import("../../../types.js").PositiveInteger} [nx=1] Segments along the straight x sections.
+ * @property {import("../../../types.js").PositiveInteger} [ny=nx] Segments along the straight y sections.
+ * @property {import("../../../types.js").PositiveInteger} [nz=nx] Segments along the straight z sections.
  * @property {RoundedCubeDirection} [roundDirection="all"]
  */
 

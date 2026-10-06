@@ -52,11 +52,11 @@ function computeSquircleEdge(rx, ry, cosTheta, sinTheta, t, squareness) {
  * @property {number} [sx=1]
  * @property {number} [sy=1]
  * @property {number} [radius=0.5]
- * @property {number} [segments=128]
- * @property {number} [innerSegments=16]
+ * @property {import("../../../types.js").PositiveInteger} [segments=128]
+ * @property {import("../../../types.js").PositiveInteger} [innerSegments=16]
  * @property {number} [innerRadius=0]
- * @property {number} [theta=TAU]
- * @property {number} [thetaOffset=0]
+ * @property {import("../../../types.js").Angle} [theta=TAU]
+ * @property {import("../../../types.js").Angle} [thetaOffset=0]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
  * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
  *   edge for mappings wrapping there (eg. `mappings.polar`).
@@ -107,9 +107,9 @@ export function squircle({
  * @property {number} [sx=1]
  * @property {number} [sy=1]
  * @property {number} [radius=0.5]
- * @property {number} [segments=128]
- * @property {number} [theta=TAU]
- * @property {number} [thetaOffset=0]
+ * @property {import("../../../types.js").PositiveInteger} [segments=128]
+ * @property {import("../../../types.js").Angle} [theta=TAU]
+ * @property {import("../../../types.js").Angle} [thetaOffset=0]
  * @property {number} [squareness=0.95]
  * @property {boolean} [closed=false]
  */

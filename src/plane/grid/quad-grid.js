@@ -7,8 +7,8 @@
  * @typedef {object} QuadGridOptions
  * @property {number} [sx=1]
  * @property {number} [sy=sx]
- * @property {number} [nx=10]
- * @property {number} [ny=nx]
+ * @property {import("../../../types.js").PositiveInteger} [nx=10]
+ * @property {import("../../../types.js").PositiveInteger} [ny=nx]
  */
 
 /**

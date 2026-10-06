@@ -65,7 +65,7 @@ export function dodecahedronPolygons({ radius = 0.5 } = {}) {
 /**
  * @typedef {object} DodecahedronOptions
  * @property {number} [radius=0.5]
- * @property {number} [subdivisions=0]
+ * @property {import("../../../../types.js").NonNegativeInteger} [subdivisions=0]
  * @property {import("../../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  */
 

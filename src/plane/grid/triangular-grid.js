@@ -8,8 +8,8 @@ import { SQRT3 } from "../../utils/common.js";
 /**
  * @typedef {object} TriangularGridOptions
  * @property {number} [sx=1]
- * @property {number} [nx=10]
- * @property {number} [ny=10]
+ * @property {import("../../../types.js").PositiveInteger} [nx=10]
+ * @property {import("../../../types.js").PositiveInteger} [ny=10]
  * @property {boolean} [inscribed=true]
  */
 

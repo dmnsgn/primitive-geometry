@@ -50,8 +50,8 @@ function twist({ positions, normals, uvs, cells }) {
 /**
  * @typedef {object} SphericonOptions
  * @property {number} [radius=0.5]
- * @property {number} [nx=16] Segments per quarter-cone's half-turn sweep
- * @property {number} [ny=1] Meridian segments per quarter-cone (its meridian is
+ * @property {import("../../../types.js").PositiveInteger} [nx=16] Segments per quarter-cone's half-turn sweep
+ * @property {import("../../../types.js").PositiveInteger} [ny=1] Meridian segments per quarter-cone (its meridian is
  *   a straight cone slant, so ny > 1 buys nothing by default, same as
  *   cone/bicone/doubleCone)
  */

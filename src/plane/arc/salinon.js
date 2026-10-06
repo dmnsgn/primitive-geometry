@@ -15,8 +15,8 @@ import { rectangular } from "../../mappings.js";
  *   way as the enclosing one (down, a shallower dip below the baseline) over
  *   the outer two thirds, sized to meet it at the baseline: `(radius -
  *   innerRadius) / 2` each.
- * @property {number} [segments=32] Column count, swept left to right.
- * @property {number} [innerSegments=16] Row count between the bottom and top
+ * @property {import("../../../types.js").PositiveInteger} [segments=32] Column count, swept left to right.
+ * @property {import("../../../types.js").PositiveInteger} [innerSegments=16] Row count between the bottom and top
  *   boundary at each column.
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  *   Uv mapping function. Defaults to a flat, bounding-box-relative unwrap; pass a

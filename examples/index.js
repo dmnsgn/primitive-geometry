@@ -16,7 +16,7 @@ const geometries = params.has("geometry")
         .split(",")
         .map(
           (geometry) =>
-            Primitives[geometry] && named(geometry, Primitives[geometry]({capMapping: Primitives.mappings.circumferential})),
+            Primitives[geometry] && named(geometry, Primitives[geometry]()),
         )
         .filter(Boolean),
     ]
@@ -192,11 +192,17 @@ const geometries = params.has("geometry")
         null,
         [
           named("greatDodecahedron", Primitives.greatDodecahedron()),
-          named("greatDodecahedronPolygons", Primitives.greatDodecahedronPolygons()),
+          named(
+            "greatDodecahedronPolygons",
+            Primitives.greatDodecahedronPolygons(),
+          ),
         ],
         [
           named("greatIcosahedron", Primitives.greatIcosahedron()),
-          named("greatIcosahedronPolygons", Primitives.greatIcosahedronPolygons()),
+          named(
+            "greatIcosahedronPolygons",
+            Primitives.greatIcosahedronPolygons(),
+          ),
         ],
         [
           named(

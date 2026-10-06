@@ -14,20 +14,20 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
 /**
  * @typedef {object} SuperellipsoidOptions
  * @property {number} [radius=0.5]
- * @property {number} [nx=32]
- * @property {number} [ny=16]
+ * @property {import("../../../types.js").PositiveInteger} [nx=32]
+ * @property {import("../../../types.js").PositiveInteger} [ny=16]
  * @property {number} [sx=1]
  * @property {number} [sy=0.5]
  * @property {number} [sz=sy]
  * @property {number} [n1=3] North-south (meridian) roundness exponent
  * @property {number} [n2=n1] East-west (cross-section) roundness exponent
- * @property {number} [theta=Math.PI] Meridian sweep length, silently clamped to
+ * @property {import("../../../types.js").PolarAngle} [theta=Math.PI] Meridian sweep length, silently clamped to
  *   [-thetaOffset, PI - thetaOffset] - see ellipsoid.js's EllipsoidOptions for
  *   why.
- * @property {number} [thetaOffset=0] Meridian sweep start, silently clamped to
+ * @property {import("../../../types.js").PolarAngle} [thetaOffset=0] Meridian sweep start, silently clamped to
  *   [0, PI] - see theta.
- * @property {number} [phi=TAU]
- * @property {number} [phiOffset=0]
+ * @property {import("../../../types.js").Angle} [phi=TAU]
+ * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
  * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
  *   column and smooth poles' vertices, wrapping uvs back to 0 there.

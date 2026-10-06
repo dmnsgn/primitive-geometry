@@ -11,12 +11,12 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @typedef {object} ParaboloidOptions
  * @property {number} [height=1]
  * @property {number} [radius=0.5] Rim radius, at the open (base) end
- * @property {number} [nx=32]
- * @property {number} [ny=16]
- * @property {number} [capSegments=1]
+ * @property {import("../../../types.js").PositiveInteger} [nx=32]
+ * @property {import("../../../types.js").PositiveInteger} [ny=16]
+ * @property {import("../../../types.js").PositiveInteger} [capSegments=1]
  * @property {boolean} [capBase=true]
- * @property {number} [phi=TAU]
- * @property {number} [phiOffset=0]
+ * @property {import("../../../types.js").Angle} [phi=TAU]
+ * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
  * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
  * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap

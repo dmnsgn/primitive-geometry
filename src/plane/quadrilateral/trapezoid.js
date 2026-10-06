@@ -43,12 +43,12 @@ function computeTrapezoidCorners(sx, sy, topRatio, topOffset) {
  *   isosceles trapezoid); a non-zero shift skews it into a right/scalene
  *   trapezoid.
  * @property {number} [radius=0.5]
- * @property {number} [edgeSegments=1]
- * @property {number} [innerSegments=16]
+ * @property {import("../../../types.js").PositiveInteger} [edgeSegments=1]
+ * @property {import("../../../types.js").PositiveInteger} [innerSegments=16]
  * @property {number} [innerRadius=0]
- * @property {number} [theta=TAU] Negative values aren't supported: the corner
+ * @property {import("../../../types.js").Angle} [theta=TAU] Negative values aren't supported: the corner
  *   lookup assumes `t - thetaOffset` stays non-negative.
- * @property {number} [thetaOffset=0]
+ * @property {import("../../../types.js").Angle} [thetaOffset=0]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
  * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
  *   edge for mappings wrapping there (eg. `mappings.polar`).
@@ -120,9 +120,9 @@ export function trapezoid({
  * @property {number} [topRatio=0.5]
  * @property {number} [topOffset=0]
  * @property {number} [radius=0.5]
- * @property {number} [edgeSegments=1]
- * @property {number} [theta=TAU]
- * @property {number} [thetaOffset=0]
+ * @property {import("../../../types.js").PositiveInteger} [edgeSegments=1]
+ * @property {import("../../../types.js").Angle} [theta=TAU]
+ * @property {import("../../../types.js").Angle} [thetaOffset=0]
  * @property {boolean} [closed=false]
  */
 

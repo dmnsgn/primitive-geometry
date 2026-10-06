@@ -8,7 +8,7 @@ import { tetrahedronPolygons } from "../regular/tetrahedron.js";
 /**
  * @typedef {object} TetrasphereOptions
  * @property {number} [radius=0.5]
- * @property {number} [subdivisions=2]
+ * @property {import("../../../../types.js").NonNegativeInteger} [subdivisions=2]
  * @property {"gnomonic" | "spherical"} [projection="gnomonic"]
  * @property {import("../../../mappings.js").MappingFn} [mapping=mappings.spherical]
  */

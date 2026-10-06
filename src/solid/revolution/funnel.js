@@ -15,14 +15,14 @@ import { computeFlatRevolutionGeometry } from "../../utils/revolution.js";
  *   radiusBase for the usual flared-outward shape; radiusApex = radiusBase
  *   degenerates to a plain cylinder, radiusApex < radiusBase flips the taper
  *   (still a valid, NaN-free surface, just narrowing toward the top instead)
- * @property {number} [nx=32]
- * @property {number} [ny=16]
+ * @property {import("../../../types.js").PositiveInteger} [nx=32]
+ * @property {import("../../../types.js").PositiveInteger} [ny=16]
  * @property {boolean} [capBase=true]
  * @property {boolean} [capApex=true]
- * @property {number} [capBaseSegments=1]
- * @property {number} [capApexSegments=1]
- * @property {number} [phi=TAU]
- * @property {number} [phiOffset=0]
+ * @property {import("../../../types.js").PositiveInteger} [capBaseSegments=1]
+ * @property {import("../../../types.js").PositiveInteger} [capApexSegments=1]
+ * @property {import("../../../types.js").Angle} [phi=TAU]
+ * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
  * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
  * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap

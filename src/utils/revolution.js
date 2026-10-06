@@ -266,11 +266,23 @@ export function computeRevolutionGeometry({
     0,
   );
 
-  const hasCapBase = capBase && !collapsedAt[0];
-  const hasCapApex = capApex && !collapsedAt[ny];
-  const capBaseCount = hasCapBase ? capBaseSegments : 0;
-  const capApexCount = hasCapApex ? capApexSegments : 0;
-  const capFans = (capBaseCount > 0 ? 1 : 0) + (capApexCount > 0 ? 1 : 0);
+  // An end already collapsed to a true point apex gets no cap
+  const caps = [
+    capBase &&
+      !collapsedAt[0] && {
+        v: 0,
+        capSegments: capBaseSegments,
+        flip: 1,
+        normalY: -1,
+      },
+    capApex &&
+      !collapsedAt[ny] && {
+        v: 1,
+        capSegments: capApexSegments,
+        flip: -1,
+        normalY: 1,
+      },
+  ].filter(Boolean);
 
   const normalAt = (v, cosPhi, sinPhi) =>
     normalize([...equation({ v, cosPhi, sinPhi }).normal]).map(Math.fround);
@@ -291,18 +303,26 @@ export function computeRevolutionGeometry({
   }
   const at = (x, y) => rowOffsets[y] + (mergedAt[y] ? 0 : x % cols);
 
-  const capSize = (count) =>
-    count > 0 ? computeCapVertexCount(cols, count, mergeSeam) : 0;
-  const size = bodySize + capSize(capBaseCount) + capSize(capApexCount);
+  const capSize = caps.reduce(
+    (sum, { capSegments }) =>
+      sum +
+      (capSegments > 0
+        ? computeCapVertexCount(cols, capSegments, mergeSeam)
+        : 0),
+    0,
+  );
+  const capCellCount = caps.reduce(
+    (sum, { capSegments }) =>
+      sum + (capSegments > 0 ? (capSegments * 6 - 3) * nx : 0),
+    0,
+  );
+  const size = bodySize + capSize;
 
   const positions = new Float32Array(size * 3);
   const normals = new Float32Array(size * 3);
   const uvs = new Float32Array(size * 2);
   const cells = new (getCellsTypedArray(size))(
-    ny * nx * 6 -
-      fans * nx * 3 +
-      (capBaseCount + capApexCount) * nx * 6 -
-      capFans * nx * 3,
+    ny * nx * 6 - fans * nx * 3 + capCellCount,
   );
 
   let vertexIndex = 0;
@@ -365,19 +385,21 @@ export function computeRevolutionGeometry({
     }
   };
 
-  for (let y = 0; y <= ny; y++) {
+  // A collapsed ring has one vertex per wedge: centering its u between the
+  // wedge's two rim columns keeps the pole's uv tear symmetric. Fans pick pole
+  // column x for wedge x, from either side, leaving column nx unused (kept at
+  // u = 1 so it stays in range).
+  const writeRow = (y) => {
     const v = vDistribution(y / ny);
-
-    // A collapsed ring has one vertex per wedge: centering its u between the
-    // wedge's two rim columns keeps the pole's uv tear symmetric. Fans pick
-    // pole column x for wedge x, from either side, leaving column nx unused
-    // (kept at u = 1 so it stays in range).
     const centered = collapsedAt[y] && !mergedAt[y];
     const count = mergedAt[y] ? 1 : cols;
     for (let x = 0; x < count; x++, vertexIndex++) {
       writeVertex(x, v, centered && x < nx ? 0.5 : 0);
     }
+  };
 
+  for (let y = 0; y <= ny; y++) {
+    writeRow(y);
     if (y > 0) writeRowQuads(y);
   }
 
@@ -387,7 +409,7 @@ export function computeRevolutionGeometry({
   // The rim's x/z extent, probed from the equation itself rather than passed
   // in; its sign is folded into the cap's own cos/sin so the reconstructed rim
   // lands bit-exactly on the body's boundary ring while sx/sy stay positive.
-  const addCap = (v, capSegments, flip, normalY) => {
+  const addCap = ({ v, capSegments, flip, normalY }) => {
     const atCos = equation({ v, cosPhi: 1, sinPhi: 0 });
     const atSin = equation({ v, cosPhi: 0, sinPhi: 1 });
 
@@ -413,8 +435,7 @@ export function computeRevolutionGeometry({
     });
   };
 
-  if (hasCapBase) addCap(0, capBaseSegments, 1, -1);
-  if (hasCapApex) addCap(1, capApexSegments, -1, 1);
+  for (const cap of caps) addCap(cap);
 
   return { positions, normals, uvs, cells, indices };
 }

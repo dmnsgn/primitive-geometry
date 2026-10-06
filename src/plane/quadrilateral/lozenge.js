@@ -9,11 +9,11 @@ import { rhombus, rhombusPath } from "./rhombus.js";
  * @property {number} [sx=0.5]
  * @property {number} [sy=sx*2]
  * @property {number} [radius=0.5]
- * @property {number} [edgeSegments=1]
- * @property {number} [innerSegments=16]
+ * @property {import("../../../types.js").PositiveInteger} [edgeSegments=1]
+ * @property {import("../../../types.js").PositiveInteger} [innerSegments=16]
  * @property {number} [innerRadius=0]
- * @property {number} [theta=TAU]
- * @property {number} [thetaOffset=HALF_PI]
+ * @property {import("../../../types.js").Angle} [theta=TAU]
+ * @property {import("../../../types.js").Angle} [thetaOffset=HALF_PI]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
  * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
  *   edge for mappings wrapping there (eg. `mappings.polar`).
@@ -60,9 +60,9 @@ export function lozenge({
  * @property {number} [sx=0.5]
  * @property {number} [sy=sx*2]
  * @property {number} [radius=0.5]
- * @property {number} [edgeSegments=1]
- * @property {number} [theta=TAU]
- * @property {number} [thetaOffset=HALF_PI]
+ * @property {import("../../../types.js").PositiveInteger} [edgeSegments=1]
+ * @property {import("../../../types.js").Angle} [theta=TAU]
+ * @property {import("../../../types.js").Angle} [thetaOffset=HALF_PI]
  * @property {boolean} [closed=false]
  */
 

@@ -1,5 +1,13 @@
 /** @typedef {number[] | Uint8Array | Uint16Array | Uint32Array} TypedArrayLike */
 
+/** @typedef {number} PositiveInteger Integer >= 1. */
+
+/** @typedef {number} NonNegativeInteger Integer >= 0. */
+
+/** @typedef {number} Angle In radians. */
+
+/** @typedef {number} PolarAngle In radians, from the pole, within [0, π]. */
+
 /**
  * @typedef {object} SimplicialComplex Triangle cells over shared positions.
  * @property {Float32Array} positions

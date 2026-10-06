@@ -14,10 +14,10 @@ import {
  * @property {number} [sx=1]
  * @property {number} [sy=0.5]
  * @property {number} [radius=0.5]
- * @property {number} [segments=32]
- * @property {number} [innerSegments=16]
- * @property {number} [theta=TAU]
- * @property {number} [thetaOffset=0]
+ * @property {import("../../../types.js").PositiveInteger} [segments=32]
+ * @property {import("../../../types.js").PositiveInteger} [innerSegments=16]
+ * @property {import("../../../types.js").Angle} [theta=TAU]
+ * @property {import("../../../types.js").Angle} [thetaOffset=0]
  * @property {number} [innerRadius=0] Like `annulus`'s: a hole radius the fill
  *   stops at instead of reaching the center. `0` (default): no hole, fill
  *   reaches the center (subject to `mergeCentroid`).
@@ -82,9 +82,9 @@ export function ellipse({
  * @property {number} [sx=1]
  * @property {number} [sy=0.5]
  * @property {number} [radius=0.5]
- * @property {number} [segments=32]
- * @property {number} [theta=TAU]
- * @property {number} [thetaOffset=0]
+ * @property {import("../../../types.js").PositiveInteger} [segments=32]
+ * @property {import("../../../types.js").Angle} [theta=TAU]
+ * @property {import("../../../types.js").Angle} [thetaOffset=0]
  * @property {boolean} [closed=false]
  */
 

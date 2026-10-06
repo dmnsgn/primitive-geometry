@@ -55,9 +55,9 @@ export function cubePolygons({ sx = 1, sy = sx, sz = sx } = {}) {
  * @property {number} [sx=1]
  * @property {number} [sy=sx]
  * @property {number} [sz=sx]
- * @property {number} [nx=1]
- * @property {number} [ny=nx]
- * @property {number} [nz=nx]
+ * @property {import("../../../types.js").PositiveInteger} [nx=1]
+ * @property {import("../../../types.js").PositiveInteger} [ny=nx]
+ * @property {import("../../../types.js").PositiveInteger} [nz=nx]
  */
 
 /**

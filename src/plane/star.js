@@ -30,8 +30,8 @@ function computeStarEdge(points, radius, notchRadius, theta, thetaOffset, t) {
 
 /**
  * @typedef {object} StarOptions
- * @property {number} [points=5]
- * @property {number} [density=2] Schläfli "skip" factor: must be `< points / 2`
+ * @property {import("../../types.js").PositiveInteger} [points=5]
+ * @property {import("../../types.js").PositiveInteger} [density=2] Schläfli "skip" factor: must be `< points / 2`
  *   (and coprime with `points` for a genuine, non-compound star polygon) or the
  *   auto-computed `notchRadius` degenerates.
  * @property {number} [radius=0.5]
@@ -44,10 +44,10 @@ function computeStarEdge(points, radius, notchRadius, theta, thetaOffset, t) {
  * @property {boolean} [circularHole=false] Only relevant when `innerRadius` is
  *   non-zero: `false` (default) traces the hole as a smaller, self-similar copy
  *   of the outer star; `true` traces it as a plain circle.
- * @property {number} [edgeSegments=1]
- * @property {number} [innerSegments=16]
- * @property {number} [theta=TAU]
- * @property {number} [thetaOffset=0]
+ * @property {import("../../types.js").PositiveInteger} [edgeSegments=1]
+ * @property {import("../../types.js").PositiveInteger} [innerSegments=16]
+ * @property {import("../../types.js").Angle} [theta=TAU]
+ * @property {import("../../types.js").Angle} [thetaOffset=0]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
  * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
  *   edge for mappings wrapping there (eg. `mappings.polar`).
@@ -112,13 +112,13 @@ export function star({
 
 /**
  * @typedef {object} StarPathOptions
- * @property {number} [points=5]
- * @property {number} [density=2]
+ * @property {import("../../types.js").PositiveInteger} [points=5]
+ * @property {import("../../types.js").PositiveInteger} [density=2]
  * @property {number} [radius=0.5]
  * @property {number} [notchRadius=radius*computeStarRatio(points,density)]
- * @property {number} [edgeSegments=1]
- * @property {number} [theta=TAU]
- * @property {number} [thetaOffset=0]
+ * @property {import("../../types.js").PositiveInteger} [edgeSegments=1]
+ * @property {import("../../types.js").Angle} [theta=TAU]
+ * @property {import("../../types.js").Angle} [thetaOffset=0]
  * @property {boolean} [closed=false]
  */
 

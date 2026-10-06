@@ -15,9 +15,9 @@ import {
  * @property {number} [radius=0.5] Radius of each of the 3 circles, and the side
  *   length of the equilateral triangle formed by their centers - a canonical
  *   Triquetra has no separate spacing parameter.
- * @property {number} [segments=32] Column count, swept angularly per wedge, for
+ * @property {import("../../../types.js").PositiveInteger} [segments=32] Column count, swept angularly per wedge, for
  *   both the core and the petals.
- * @property {number} [innerSegments=16] Row count between the two boundaries at
+ * @property {import("../../../types.js").PositiveInteger} [innerSegments=16] Row count between the two boundaries at
  *   each column.
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  *   Uv mapping function. Defaults to a flat, bounding-box-relative unwrap; pass a

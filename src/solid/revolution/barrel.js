@@ -16,13 +16,13 @@ import { computeFlatRevolutionGeometry } from "../../utils/revolution.js";
  *   = radius degenerates to a plain cylinder, endRadius > radius pinches inward
  *   instead (a barrel held together the wrong way round, still a valid NaN-free
  *   surface)
- * @property {number} [nx=32]
- * @property {number} [ny=16]
- * @property {number} [capSegments=1]
+ * @property {import("../../../types.js").PositiveInteger} [nx=32]
+ * @property {import("../../../types.js").PositiveInteger} [ny=16]
+ * @property {import("../../../types.js").PositiveInteger} [capSegments=1]
  * @property {boolean} [capApex=true]
  * @property {boolean} [capBase=true]
- * @property {number} [phi=TAU]
- * @property {number} [phiOffset=0]
+ * @property {import("../../../types.js").Angle} [phi=TAU]
+ * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
  * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
  * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap

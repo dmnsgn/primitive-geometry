@@ -43,8 +43,8 @@ export function quad({ scale = 1 } = {}) {
 /**
  * @typedef {object} SquarePathOptions
  * @property {number} [scale=1] Side length.
- * @property {number} [nx=1] Segments along the bottom/top edges
- * @property {number} [ny=nx] Segments along the left/right edges
+ * @property {import("../../../types.js").PositiveInteger} [nx=1] Segments along the bottom/top edges
+ * @property {import("../../../types.js").PositiveInteger} [ny=nx] Segments along the left/right edges
  */
 
 /**

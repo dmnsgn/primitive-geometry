@@ -15,8 +15,8 @@ import { concatGeometries } from "../../utils/common.js";
  *   above the baseline) and tangent to each other where they meet it:
  *   `innerRadius` and `radius - innerRadius` apart from the enclosing
  *   semicircle's left/right ends, respectively.
- * @property {number} [segments=32] Column count, swept left to right.
- * @property {number} [innerSegments=16] Row count between the bottom and top
+ * @property {import("../../../types.js").PositiveInteger} [segments=32] Column count, swept left to right.
+ * @property {import("../../../types.js").PositiveInteger} [innerSegments=16] Row count between the bottom and top
  *   boundary at each column.
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  *   Uv mapping function. Defaults to a flat, bounding-box-relative unwrap; pass a

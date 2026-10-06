@@ -36,12 +36,12 @@ function computeTriangleCorners(sx, sy, apexOffset) {
  *   `±sx` lands it directly above a base corner (a right triangle); anything
  *   else gives a scalene triangle.
  * @property {number} [radius=0.5]
- * @property {number} [edgeSegments=1]
- * @property {number} [innerSegments=16]
+ * @property {import("../../../types.js").PositiveInteger} [edgeSegments=1]
+ * @property {import("../../../types.js").PositiveInteger} [innerSegments=16]
  * @property {number} [innerRadius=0]
- * @property {number} [theta=TAU] Negative values aren't supported: the corner
+ * @property {import("../../../types.js").Angle} [theta=TAU] Negative values aren't supported: the corner
  *   lookup assumes `t - thetaOffset` stays non-negative.
- * @property {number} [thetaOffset=0]
+ * @property {import("../../../types.js").Angle} [thetaOffset=0]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
  * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
  *   edge for mappings wrapping there (eg. `mappings.polar`).
@@ -109,9 +109,9 @@ export function triangle({
  * @property {number} [sy=1]
  * @property {number} [apexOffset=0]
  * @property {number} [radius=0.5]
- * @property {number} [edgeSegments=1]
- * @property {number} [theta=TAU]
- * @property {number} [thetaOffset=0]
+ * @property {import("../../../types.js").PositiveInteger} [edgeSegments=1]
+ * @property {import("../../../types.js").Angle} [theta=TAU]
+ * @property {import("../../../types.js").Angle} [thetaOffset=0]
  * @property {boolean} [closed=false]
  */
 

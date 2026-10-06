@@ -11,10 +11,10 @@ import { computeSpindleArcRevolution } from "../../utils/revolution.js";
  * @property {number} [height=radius] Full height between the two dimple points,
  *   silently clamped to (0, radius*2] - the generating circle's own radius must
  *   exceed its offset from the axis (see below), which fails past that bound
- * @property {number} [nx=32]
- * @property {number} [ny=16]
- * @property {number} [phi=TAU]
- * @property {number} [phiOffset=0]
+ * @property {import("../../../types.js").PositiveInteger} [nx=32]
+ * @property {import("../../../types.js").PositiveInteger} [ny=16]
+ * @property {import("../../../types.js").Angle} [phi=TAU]
+ * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
  *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */

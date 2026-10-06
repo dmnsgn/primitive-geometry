@@ -14,8 +14,8 @@ import {
  * @typedef {object} AntiprismOptions
  * @property {number} [radius=0.25]
  * @property {number} [height=1]
- * @property {number} [sides=6]
- * @property {number} [phiOffset=0]
+ * @property {import("../../../types.js").PositiveInteger} [sides=6]
+ * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
  * @property {boolean} [mergeSeam=false] `true` shares the caps' wrap column and
  *   center vertices, wrapping uvs back to 0 there.

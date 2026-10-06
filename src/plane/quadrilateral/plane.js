@@ -10,8 +10,8 @@ import { computePlane } from "../../utils/plane-grid.js";
  * @typedef {object} PlaneOptions
  * @property {number} [sx=1]
  * @property {number} [sy=sx]
- * @property {number} [nx=1]
- * @property {number} [ny=nx]
+ * @property {import("../../../types.js").PositiveInteger} [nx=1]
+ * @property {import("../../../types.js").PositiveInteger} [ny=nx]
  * @property {PlaneDirection} [direction="z"]
  */
 
@@ -53,8 +53,8 @@ export function plane({
  * @typedef {object} RectanglePathOptions
  * @property {number} [sx=1]
  * @property {number} [sy=0.5]
- * @property {number} [nx=1] Segments along the bottom/top edges
- * @property {number} [ny=nx] Segments along the left/right edges
+ * @property {import("../../../types.js").PositiveInteger} [nx=1] Segments along the bottom/top edges
+ * @property {import("../../../types.js").PositiveInteger} [ny=nx] Segments along the left/right edges
  */
 
 /**
