@@ -5,9 +5,7 @@
 
 import { SQRT3 } from "../../utils/common.js";
 
-// Vertex-welding cache keys quantize x/y relative to dx (each hex's own
-// scale) rather than to an absolute epsilon, so welding stays reliable
-// regardless of sx/nx
+// Weld keys are quantized relative to dx so welding holds whatever sx/nx
 const WELD_KEY_SCALE = 1e9;
 
 /**
@@ -19,7 +17,7 @@ const WELD_KEY_SCALE = 1e9;
  */
 
 /**
- * Hexagonal grid tiling regular hexagons
+ * A grid of regular hexagons.
  *
  * @param {HexagonalGridOptions} [options={}]
  * @returns {import("../../../types.js").PolygonalComplex}

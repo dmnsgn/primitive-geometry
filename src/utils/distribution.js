@@ -10,13 +10,11 @@
  */
 
 /**
- * Uniform spacing: v maps to itself. The default `vDistribution`.
+ * Uniform spacing, the default `vDistribution`.
  *
- * `vDistribution` remaps the evenly spaced rows of a solid of revolution along
- * its meridian. Only exposed where the meridian isn't swept at constant speed:
+ * `vDistribution` remaps rows along meridians not swept at constant speed:
  * `ellipsoid`, `superellipsoid`, `superegg`, `paraboloid`, `barrel`, `funnel`
- * and `hyperboloid`. Circular arcs (eg. `sphere`, `apple`, `capsule`) and
- * straight meridians (eg. `cylinder`, `cone`) are already evenly sampled.
+ * and `hyperboloid`.
  *
  * @type {DistributionFn}
  */
@@ -25,9 +23,8 @@ export function linear(t) {
 }
 
 /**
- * Chebyshev-node-like spacing: clusters rows toward both ends of the meridian
- * sweep (t = 0 and t = 1), sparser through the middle. Suits a meridian curving
- * the most at both ends (eg. a prolate `ellipsoid`'s poles, with sy > sx).
+ * Chebyshev spacing: clusters rows toward both ends, eg. a prolate
+ * `ellipsoid`'s poles.
  *
  * @type {DistributionFn}
  */
@@ -36,9 +33,7 @@ export function chebyshev(t) {
 }
 
 /**
- * Smoothstep (Hermite ease-in-out) spacing: same both-ends clustering as
- * `chebyshev`, as a cheap polynomial instead of a cosine - the standard
- * "smoothstep" curve used throughout computer graphics.
+ * Smoothstep spacing: clusters rows toward both ends, like `chebyshev`.
  *
  * @type {DistributionFn}
  */
@@ -47,11 +42,7 @@ export function smoothstep(t) {
 }
 
 /**
- * Power/ease-out spacing: clusters rows toward t = 1 only, leaving t = 0 as
- * sparse as `linear` - unlike `chebyshev`/`smoothstep`'s symmetric, both-ends
- * clustering. `exponent = 2` exactly cancels a sqrt radius law (eg.
- * `paraboloid`'s apex, where r = radius·sqrt(1 - v)); `exponent = 1` is
- * `linear`.
+ * Power spacing: clusters rows toward t = 1. `2` evens out `paraboloid`'s apex.
  *
  * @param {number} [exponent=2]
  * @returns {function(number): number}

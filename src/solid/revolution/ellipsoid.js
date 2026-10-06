@@ -14,11 +14,10 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @property {number} [sx=1]
  * @property {number} [sy=0.5]
  * @property {number} [sz=sy]
- * @property {import("../../../types.js").PolarAngle} [theta=Math.PI] Meridian sweep length, silently clamped to
- *   [-thetaOffset, PI - thetaOffset]: a pole can only sit at the sweep's own
- *   start or end, never partway through.
- * @property {import("../../../types.js").PolarAngle} [thetaOffset=0] Meridian sweep start (0 = north pole),
- *   silently clamped to [0, PI] - see theta.
+ * @property {import("../../../types.js").PolarAngle} [theta=Math.PI] Meridian
+ *   sweep length, clamped so poles stay at its ends.
+ * @property {import("../../../types.js").PolarAngle} [thetaOffset=0] Meridian
+ *   sweep start from the north pole, clamped to [0, π].
  * @property {import("../../../types.js").Angle} [phi=TAU]
  * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
@@ -27,14 +26,8 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  */
 
 /**
- * Unit-sphere direction cosines for a given meridian angle t (0 = north pole)
- * and (already computed) equatorial cosPhi/sinPhi: the [dx, dy, dz] this
- * module's own `equation` scales by radius/sx/sy/sz for position, and by
- * 1/sx/1/sy/1/sz for its gradient-based normal. Exported so other spherical
- * shapes (eg. `hollowSphere`'s theta/phi cut caps) can place a point on - or a
- * direction from - the exact same sphere without re-deriving the formula. This
- * guarantees bit-identical positions where they must weld to an
- * `ellipsoid`/`sphere` surface.
+ * Unit-sphere direction at meridian angle t, shared so surfaces welding to an
+ * ellipsoid (eg. `hollowSphere`'s cut caps) get bit-identical positions.
  *
  * @private
  * @param {number} t Meridian angle, 0 at the north pole
@@ -53,7 +46,9 @@ export function sphereDirection(t, cosPhi, sinPhi) {
 }
 
 /**
- * Default to an oblate spheroid.
+ * An ellipsoid, oblate by default.
+ *
+ * Special cases: sphere (sx = sy = sz), prolate spheroid (sy > sx = sz).
  *
  * @param {EllipsoidOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -83,8 +78,7 @@ export function ellipsoid({
 
     return {
       position: [radius * sx * dx, radius * sy * dy, radius * sz * dz],
-      // Ellipsoid normal is the gradient of x²/sx² + y²/sy² + z²/sz² = 1,
-      // i.e. inverse-square scaled, not the same scaling used for position.
+      // Gradient of x²/sx² + y²/sy² + z²/sz² = 1
       normal: [dx / sx, dy / sy, dz / sz],
       // Ensure poles weld exactly at multiples of PI
       collapsed: t % Math.PI === 0,

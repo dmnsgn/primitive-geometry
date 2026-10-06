@@ -7,24 +7,19 @@ import { rectangular } from "../../mappings.js";
 
 /**
  * @typedef {object} LensOptions
- * @property {number} [radius=0.5] Radius of the first circle, centered at
- *   `-distance / 2`.
- * @property {number} [radius2=radius] Radius of the second circle, centered at
- *   `distance / 2`. Equal to `radius` (a symmetric lens) by default.
- * @property {number} [distance=radius] Distance between the two circles'
- *   centers.
- * @property {import("../../../types.js").PositiveInteger} [segments=32] Column count, swept left to right.
- * @property {import("../../../types.js").PositiveInteger} [innerSegments=16] Row count between the bottom and top
- *   boundary at each column.
+ * @property {number} [radius=0.5] First circle radius.
+ * @property {number} [radius2=radius] Second circle radius.
+ * @property {number} [distance=radius] Distance between centers.
+ * @property {import("../../../types.js").PositiveInteger} [segments=32]
+ *   Columns, left to right.
+ * @property {import("../../../types.js").PositiveInteger} [innerSegments=16]
+ *   Rows between the bottom and top boundaries.
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
- *   Uv mapping function. Defaults to a flat, bounding-box-relative unwrap; pass a
- *   function using `uRatio`/`vRatio` (the swept parametrization) to follow the
- *   arcs instead.
+ *   Use `uRatio`/`vRatio` to follow the arcs.
  */
 
 /**
- * Lens: the convex region where two circles overlap, centered on the x axis and
- * offset symmetrically by `distance`. Defaults to a Vesica Piscis.
+ * A lens: the overlap of 2 circles. Defaults to a vesica piscis.
  *
  * @param {LensOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -47,8 +42,7 @@ export function lens({
   const uMin = Math.max(c1 - r1, c2 - r2);
   const uMax = Math.min(c1 + r1, c2 + r2);
 
-  // Intersection is always convex, so the tighter of the two arcs at each
-  // column bounds it directly, regardless of how radius/radius2/distance compare.
+  // The overlap is convex: the tighter arc bounds each column
   const height = (x) =>
     Math.min(
       Math.sqrt(Math.max(r1 * r1 - (x - c1) ** 2, 0)),

@@ -14,13 +14,8 @@ import {
 
 const CORNER_COUNT = 4;
 
-// The 4 corners, recentered on their own average: computePolarGeometry's
-// merged apex is pinned at (0, 0), which would bunch rings tight on one
-// side and stretch them thin on the other whenever topOffset pulls the
-// outline off-center. Recentering fans from the shape's own center instead;
-// each caller then translates every vertex back by that same offset so the
-// documented, topOffset-relative corner positions are unaffected. Shared by
-// trapezoid (radial fan) and trapezoidPath (radius scale).
+// Recentered on their average: the fan's centroid is pinned at the origin, so
+// an off-center outline would bunch rings on one side. Callers translate back.
 function computeTrapezoidCorners(sx, sy, topRatio, topOffset) {
   return centerCorners([
     [-sx, -sy],
@@ -33,34 +28,27 @@ function computeTrapezoidCorners(sx, sy, topRatio, topOffset) {
 /**
  * @typedef {object} TrapezoidOptions
  * @property {number} [sx=1] Bottom edge half-width.
- * @property {number} [sy=1] Half-height: the bottom/top edges sit at `y =
- *   -sy`/`y = sy`.
+ * @property {number} [sy=1] Half-height.
  * @property {number} [topRatio=0.5] Top edge half-width, as a fraction of `sx`.
- *   `1` matches the bottom edge's width (a parallelogram once `topOffset`
- *   shifts it off-center); `0` collapses the top edge to a point (a triangle).
- * @property {number} [topOffset=0] Horizontal shift of the top edge's center,
- *   in the same units as `sx`. `0` (default) keeps both legs symmetric (an
- *   isosceles trapezoid); a non-zero shift skews it into a right/scalene
- *   trapezoid.
+ * @property {number} [topOffset=0] Horizontal shift of the top edge.
  * @property {number} [radius=0.5]
  * @property {import("../../../types.js").PositiveInteger} [edgeSegments=1]
  * @property {import("../../../types.js").PositiveInteger} [innerSegments=16]
  * @property {number} [innerRadius=0]
- * @property {import("../../../types.js").Angle} [theta=TAU] Negative values aren't supported: the corner
- *   lookup assumes `t - thetaOffset` stays non-negative.
+ * @property {import("../../../types.js").Angle} [theta=TAU] Negative values
+ *   aren't supported.
  * @property {import("../../../types.js").Angle} [thetaOffset=0]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
- * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
- *   edge for mappings wrapping there (eg. `mappings.polar`).
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap edge
+ *   for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
- *   Uv mapping function. Defaults to a flat, bounding-box-relative unwrap.
  */
 
 /**
- * A trapezoid: a quad with horizontal top/bottom edges, the top narrowed to
- * `topRatio` of the bottom's width and optionally shifted by `topOffset`. The
- * default `thetaOffset=0` starts at the bottom-left corner and sweeps CCW
- * through bottom-right, top-right, top-left.
+ * A trapezoid with horizontal edges, swept CCW from the bottom-left corner.
+ *
+ * Special cases: isosceles (topOffset = 0), parallelogram (topRatio = 1),
+ * triangle (topRatio = 0).
  *
  * @param {TrapezoidOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -127,8 +115,7 @@ export function trapezoid({
  */
 
 /**
- * Outline dual of `trapezoid`: the same 4 corners, walked directly instead of
- * fanned.
+ * Outline dual of `trapezoid`.
  *
  * @param {TrapezoidPathOptions} [options={}]
  * @returns {import("../../../types.js").PolylineComplex}

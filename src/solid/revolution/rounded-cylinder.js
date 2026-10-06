@@ -9,13 +9,15 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @typedef {object} RoundedCylinderOptions
  * @property {number} [height=1]
  * @property {number} [radius=0.25]
- * @property {number} [roundRadius=radius*0.3] Fillet radius at the top/bottom
- *   rim, silently clamped to [0, min(radius, height/2)] - the fillet can
- *   neither exceed the body's own radius nor meet itself across the height
+ * @property {number} [roundRadius=radius*0.3] Rim fillet radius, clamped to [0,
+ *   min(radius, height / 2)].
  * @property {import("../../../types.js").PositiveInteger} [nx=16]
- * @property {import("../../../types.js").PositiveInteger} [ny=1] Straight side segments
- * @property {import("../../../types.js").PositiveInteger} [roundSegments=8] Fillet segments (each end)
- * @property {import("../../../types.js").PositiveInteger} [capSegments=1] Flat cap segments (each end)
+ * @property {import("../../../types.js").PositiveInteger} [ny=1] Straight side
+ *   segments.
+ * @property {import("../../../types.js").PositiveInteger} [roundSegments=8]
+ *   Fillet segments per end.
+ * @property {import("../../../types.js").PositiveInteger} [capSegments=1] Flat
+ *   cap segments per end.
  * @property {import("../../../types.js").Angle} [phi=TAU]
  * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
@@ -23,11 +25,9 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  */
 
 /**
- * A cylinder with its top/bottom rim edges filleted instead of sharp - a flat
- * cap blended into the straight side by a quarter-circle fillet, both ends
- * symmetric. `roundRadius = 0` gives a plain flat-capped `cylinder`;
- * `roundRadius = radius = height / 2` pinches the flat cap away entirely,
- * becoming `capsule`'s hemisphere.
+ * A cylinder with filleted rims.
+ *
+ * Special cases: cylinder (roundRadius = 0), capsule (roundRadius = radius).
  *
  * @param {RoundedCylinderOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -81,9 +81,7 @@ export function roundedCylinder({
 
     let r, y, normalRadial, normalY, uvV;
 
-    // v = 0 -> bottom, v = 1 -> top (matching capsule/ellipsoid's own pole
-    // convention - empirically required: the mirrored, top-at-v=0 layout
-    // produced a mesh wound backwards, confirmed via flippedNormalTriangles)
+    // v = 0 at the bottom, as in capsule/ellipsoid, for outward winding
     if (v <= v1) {
       const localFraction = v1 === 0 ? 0 : v / v1;
       r = flatRadius * localFraction;
@@ -135,10 +133,7 @@ export function roundedCylinder({
     };
   }
 
-  // Every junction (flat cap -> fillet, fillet -> side) is C1-continuous
-  // (the fillet's tangent is horizontal at the cap, vertical at the side, by
-  // construction), so the whole meridian is one continuous sweep through
-  // both poles in a single call, no concatGeometries seam needed.
+  // Every junction is C1-continuous: one sweep, no seam
   const { positions, normals, uvs, cells } = computeRevolutionGeometry({
     nx,
     ny: nyTotal,

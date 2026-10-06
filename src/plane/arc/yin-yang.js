@@ -9,29 +9,22 @@ import { clamp, concatGeometries } from "../../utils/common.js";
 /**
  * @typedef {object} YinYangOptions
  * @property {number} [radius=0.5] Radius of the enclosing circle.
- * @property {number} [dotRadius=radius/6] Radius of the hole cut at each
- *   returned half's own dot position. `0` omits the hole(s).
- * @property {"yin" | "yang" | "yin-yang"} [part="yin-yang"] `"yin"`/`"yang"`
- *   return one S-curve-divided half (bounded by half the outer circle and the
- *   S-curve), with its dot hole centered at the other half's bulge (`(0,
- *   -radius/2)` for yang, `(0, radius/2)` for yin). `"yin-yang"` merges both
- *   into one mesh; without per-face material/color the S-curve seam is then
- *   invisible (indistinguishable from a disc with two holes).
- * @property {import("../../../types.js").PositiveInteger} [segments=32] Row count for the outer circle/S-curve
- *   boundary, swept bottom to top.
- * @property {import("../../../types.js").PositiveInteger} [holeSegments=16] Row count for a dot hole's own boundary,
- *   independent of the outer boundary's `segments`.
- * @property {import("../../../types.js").PositiveInteger} [innerSegments=16] Column count spanning each side of a
- *   dot hole (or the whole half, where the hole doesn't reach) at each row.
+ * @property {number} [dotRadius=radius/6] Dot hole radius. `0` omits it.
+ * @property {"yin" | "yang" | "yin-yang"} [part="yin-yang"] One half, or both
+ *   merged in one mesh.
+ * @property {import("../../../types.js").PositiveInteger} [segments=32] Rows
+ *   along the outer circle and S-curve.
+ * @property {import("../../../types.js").PositiveInteger} [holeSegments=16]
+ *   Rows along a dot hole.
+ * @property {import("../../../types.js").PositiveInteger} [innerSegments=16]
+ *   Columns on each side of a dot hole.
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
- *   Uv mapping function. Defaults to a flat, bounding-box-relative unwrap; pass a
- *   function using `uRatio`/`vRatio` (the swept parametrization) to follow the
- *   arcs instead.
+ *   Use `uRatio`/`vRatio` to follow the arcs.
  */
 
 /**
- * Yin-Yang (taijitu): a circle divided by an S-shaped seam of two opposing
- * semicircles, each side holed by a dot at the other's bulge.
+ * A yin-yang (taijitu): a circle split by an S-curve, each half holed at the
+ * other's bulge.
  *
  * @param {YinYangOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -54,17 +47,12 @@ export function yinYang({
       : -Math.sqrt(Math.max((R / 2) ** 2 - (y + R / 2) ** 2, 0));
   const diskEdge = (y) => Math.sqrt(Math.max(R * R - y * y, 0));
 
-  // Both dots' breakpoints, shared by both halves so the S-curve is
-  // sampled at identical y-values regardless of which half is built.
   const yangDotBottom = -R / 2 - dotRadius;
   const yangDotTop = -R / 2 + dotRadius;
   const yinDotBottom = R / 2 - dotRadius;
   const yinDotTop = R / 2 + dotRadius;
-  // Each half is built from two bands (left/right of its dot's own x = 0),
-  // split into five y-sub-sweeps around both dots' row ranges, not just
-  // this half's own - so yin and yang always sample the shared S-curve
-  // boundary at identical y-values. Skipped when dotRadius is 0, back to
-  // one sweep per band.
+  // Both halves sweep both dots' breakpoints so they sample the shared S-curve
+  // at identical y-values
   const schedule =
     dotRadius <= 0
       ? [[-R, R, segments]]
@@ -76,8 +64,7 @@ export function yinYang({
           [yinDotTop, R, segments],
         ];
 
-  // Builds one S-curve-divided half, holed at its own dot position.
-  // center/sx/sy set the bounding box the uv mapping is relative to.
+  // center/sx/sy: the bounding box uvs are relative to
   function buildHalf(isYin, center, sx, sy) {
     const outerMin = (y) => (isYin ? -diskEdge(y) : curve(y));
     const outerMax = (y) => (isYin ? curve(y) : diskEdge(y));
@@ -85,16 +72,13 @@ export function yinYang({
     const dotBottom = isYin ? yinDotBottom : yangDotBottom;
     const dotTop = isYin ? yinDotTop : yangDotTop;
 
-    // Compares against dotBottom/dotTop directly rather than re-deriving
-    // via y - dotCenterY, which doesn't reliably round-trip to dotRadius.
+    // y - dotCenterY doesn't reliably round-trip to dotRadius
     const holeHalfWidth = (y) =>
       y <= dotBottom || y >= dotTop
         ? 0
         : Math.sqrt(Math.max(dotRadius * dotRadius - (y - dotCenterY) ** 2, 0));
 
-    // holeHalfWidth is 0 outside this half's own dot range (including the
-    // other half's dot range, where this half has no hole); clamp collapses
-    // a band to a point wherever it doesn't straddle x = 0 at all.
+    // clamp collapses a band to a point where it doesn't straddle x = 0
     const leftBounds = (y) => {
       const lo = outerMin(y);
       const hi = outerMax(y);
@@ -133,8 +117,7 @@ export function yinYang({
 
   if (part !== "yin-yang") {
     const isYin = part === "yin";
-    // Bounding box is asymmetric in x (the S-curve bulges further one way)
-    // but always spans [-R, R] in y.
+    // The S-curve bulges further one way in x
     return buildHalf(isYin, [(isYin ? -R : R) / 4, 0], (3 * R) / 4, R);
   }
 

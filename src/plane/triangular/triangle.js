@@ -14,9 +14,8 @@ import {
 
 const CORNER_COUNT = 3;
 
-// The 3 corners, recentered on their own average so an off-center apex
-// doesn't bunch rings tight on one side (same reasoning as trapezoid's own
-// helper). Shared by triangle (radial fan) and trianglePath (radius scale).
+// Recentered on their average so an off-center apex doesn't bunch rings on one
+// side
 function computeTriangleCorners(sx, sy, apexOffset) {
   return centerCorners([
     [-sx, -sy],
@@ -27,32 +26,27 @@ function computeTriangleCorners(sx, sy, apexOffset) {
 
 /**
  * @typedef {object} TriangleOptions
- * @property {number} [sx=1] Base half-width: the base corners sit at `x =
- *   -sx`/`x = sx`.
- * @property {number} [sy=1] Half-height: the base sits at `y = -sy`, the apex
- *   at `y = sy`.
- * @property {number} [apexOffset=0] Horizontal shift of the apex, in the same
- *   units as `sx`. `0` (default) keeps it centered (an isosceles triangle);
- *   `±sx` lands it directly above a base corner (a right triangle); anything
- *   else gives a scalene triangle.
+ * @property {number} [sx=1] Base half-width.
+ * @property {number} [sy=1] Half-height.
+ * @property {number} [apexOffset=0] Horizontal apex shift.
  * @property {number} [radius=0.5]
  * @property {import("../../../types.js").PositiveInteger} [edgeSegments=1]
  * @property {import("../../../types.js").PositiveInteger} [innerSegments=16]
  * @property {number} [innerRadius=0]
- * @property {import("../../../types.js").Angle} [theta=TAU] Negative values aren't supported: the corner
- *   lookup assumes `t - thetaOffset` stays non-negative.
+ * @property {import("../../../types.js").Angle} [theta=TAU] Negative values
+ *   aren't supported.
  * @property {import("../../../types.js").Angle} [thetaOffset=0]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
- * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
- *   edge for mappings wrapping there (eg. `mappings.polar`).
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap edge
+ *   for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
- *   Uv mapping function. Defaults to a flat, bounding-box-relative unwrap.
  */
 
 /**
- * A triangle: a horizontal base with the apex placed anywhere above it via
- * `apexOffset`. `thetaOffset=0` starts at the bottom-left corner and sweeps CCW
- * through bottom-right, apex.
+ * A triangle with a horizontal base, swept CCW from the bottom-left corner.
+ *
+ * Special cases: isosceles (apexOffset = 0), right (apexOffset = ±sx), scalene
+ * otherwise.
  *
  * @param {TriangleOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -116,8 +110,7 @@ export function triangle({
  */
 
 /**
- * Outline dual of `triangle`: the same 3 corners, walked directly instead of
- * fanned.
+ * Outline dual of `triangle`.
  *
  * @param {TrianglePathOptions} [options={}]
  * @returns {import("../../../types.js").PolylineComplex}

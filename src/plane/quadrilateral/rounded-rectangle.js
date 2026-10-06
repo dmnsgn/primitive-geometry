@@ -13,8 +13,10 @@ import { computePlane } from "../../utils/plane-grid.js";
  * @property {number} [sy=sx]
  * @property {number} [radius=sx * 0.25]
  * @property {import("../../../types.js").PositiveInteger} [roundSegments=8]
- * @property {import("../../../types.js").PositiveInteger} [nx=1] Segments along the straight top/bottom sections.
- * @property {import("../../../types.js").PositiveInteger} [ny=nx] Segments along the straight left/right sections.
+ * @property {import("../../../types.js").PositiveInteger} [nx=1] Segments along
+ *   the straight top/bottom sections.
+ * @property {import("../../../types.js").PositiveInteger} [ny=nx] Segments
+ *   along the straight left/right sections.
  * @property {RoundedRectangleCorner[]} [roundedCorners=["top-left", "top-right", "bottom-right", "bottom-left"]]
  */
 
@@ -39,8 +41,7 @@ export function roundedRectangle({
   const widthX = sx - r2;
   const widthY = sy - r2;
 
-  // Collapse zero-size straight sections into a single welded column so they
-  // don't produce degenerate cells (eg. stadium)
+  // Zero-length straight sections would produce degenerate cells (eg. stadium)
   if (widthX === 0) nx = 0;
   if (widthY === 0) ny = 0;
 
@@ -58,8 +59,7 @@ export function roundedRectangle({
 
   const indices = { vertex: 0, cell: 0 };
 
-  // A single welded grid so face, edges and corners share their boundary
-  // vertices: no duplicated seams nor T-junctions.
+  // One welded grid: no duplicated seams or T-junctions
   computePlane(
     geometry,
     indices,
@@ -81,9 +81,7 @@ export function roundedRectangle({
   return geometry;
 }
 
-// signX/signY locate each corner's reference point; angleStart is where its
-// quarter-arc begins, sweeping +HALF_PI to the next corner - see
-// roundedRectanglePath's own doc comment for the derivation.
+// Walked CCW: each corner's quadrant and the start of its quarter arc
 const PATH_CORNERS = [
   { name: "bottom-left", signX: -1, signY: -1, angleStart: Math.PI },
   { name: "bottom-right", signX: 1, signY: -1, angleStart: 1.5 * Math.PI },
@@ -104,11 +102,7 @@ const PATH_CORNERS = [
  */
 
 /**
- * Outline dual of `roundedRectangle`: same radius/segment/roundedCorners
- * conventions, walked directly (bottom-left → bottom-right → top-right →
- * top-left). A rounded corner contributes `roundSegments` samples along its
- * quarter-circle arc; a sharp one contributes its single corner point. Produces
- * identical output to `rectanglePath` when `radius` is `0`.
+ * Outline dual of `roundedRectangle`.
  *
  * @param {RoundedRectanglePathOptions} [options={}]
  * @returns {import("../../../types.js").PolylineComplex}
@@ -126,8 +120,7 @@ export function roundedRectanglePath({
   const x = sx * 0.5;
   const y = sy * 0.5;
 
-  // Collapse a zero-size straight section into a single welded column, same
-  // as roundedRectangle (eg. stadium)
+  // Zero-length straight sections would duplicate vertices (eg. stadium)
   if (sx === radius * 2) nx = 0;
   if (sy === radius * 2) ny = 0;
 
@@ -137,9 +130,7 @@ export function roundedRectanglePath({
   const cornerCounts = isRounded.map((rounded) =>
     rounded ? roundSegments : 1,
   );
-  // Edge after corner c, in [bottom, right, top, left] order: an unrounded
-  // corner's exit point is its single already-written vertex, so that edge
-  // skips its own t = 0 sample to avoid duplicating it.
+  // A sharp corner's single vertex is also its edge's first sample
   const edgeCounts = [nx, ny, nx, ny].map((n, c) =>
     n > 0 && !isRounded[c] ? n - 1 : n,
   );
@@ -185,8 +176,6 @@ export function roundedRectanglePath({
 
     const [x0, y0] = point(c, HALF_PI);
     const [x1, y1] = point((c + 1) % 4, 0);
-    // Skips t = 0 on an unrounded corner: its exit point is already
-    // written as that corner's own single vertex.
     const start = isRounded[c] ? 0 : 1;
 
     for (let i = start; i < n; i++) {

@@ -9,9 +9,7 @@ import {
   computePolarPathGeometry,
 } from "../../utils/polar.js";
 
-// Lamé curve boundary point at angle t, already scaled by rx/ry - shared by
-// superellipse's radial fill (rx/ry vary per ring) and superellipsePath's
-// outline (rx/ry fixed at sx * radius/sy * radius, no ring interpolation).
+// Boundary point at angle t, scaled by rx/ry
 function computeSuperellipseEdge(rx, ry, cosTheta, sinTheta, m, n) {
   return [
     rx * Math.abs(cosTheta) ** (2 / m) * Math.sign(cosTheta),
@@ -30,15 +28,18 @@ function computeSuperellipseEdge(rx, ry, cosTheta, sinTheta, m, n) {
  * @property {import("../../../types.js").Angle} [theta=TAU]
  * @property {import("../../../types.js").Angle} [thetaOffset=0]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
- * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
- *   edge for mappings wrapping there (eg. `mappings.polar`).
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap edge
+ *   for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.lamé]
  * @property {number} [m=2]
  * @property {number} [n=m]
  */
 
 /**
- * Lamé curve See elliptical-mapping example for a few special cases
+ * A superellipse (Lamé curve).
+ *
+ * Special cases: squircle (m = 4), rectellipse (m = 4, sx != sy), astroid (m =
+ * 2/3), diamond (m = 1), Piet Hein's superellipse (m = 5/2).
  *
  * @param {SuperellipseOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -91,8 +92,7 @@ export function superellipse({
  */
 
 /**
- * Outline dual of `superellipse`: the same Lamé curve, sampled directly with no
- * radial fill.
+ * Outline dual of `superellipse`.
  *
  * @param {SuperellipsePathOptions} [options={}]
  * @returns {import("../../../types.js").PolylineComplex}

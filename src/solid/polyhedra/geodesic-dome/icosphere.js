@@ -14,8 +14,7 @@ import { icosahedronPolygons } from "../regular/icosahedron.js";
  */
 
 /**
- * A geodesic sphere built by radially projecting and welding a subdivided
- * icosahedron.
+ * A geodesic sphere from a subdivided icosahedron.
  *
  * @param {IcosphereOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}

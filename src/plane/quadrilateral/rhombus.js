@@ -17,15 +17,15 @@ import { HALF_PI, TAU } from "../../utils/common.js";
  * @property {import("../../../types.js").Angle} [theta=TAU]
  * @property {import("../../../types.js").Angle} [thetaOffset=HALF_PI]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
- * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
- *   edge for mappings wrapping there (eg. `mappings.polar`).
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap edge
+ *   for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.concentric]
  */
 
 /**
- * A rhombus: a diamond with vertices at top/right/bottom/left, sx and sy
- * independently scaling the horizontal and vertical diagonals. Equal sx/sy
- * gives a square rotated 45°.
+ * A rhombus: `polygon` with 4 sides, sx/sy scaling its diagonals.
+ *
+ * Special cases: square rotated 45° (sx = sy).
  *
  * @param {RhombusOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -71,7 +71,7 @@ export function rhombus({
  */
 
 /**
- * Outline dual of `rhombus`: `polygonPath` with sides fixed to `4`.
+ * Outline dual of `rhombus`.
  *
  * @param {RhombusPathOptions} [options={}]
  * @returns {import("../../../types.js").PolylineComplex}

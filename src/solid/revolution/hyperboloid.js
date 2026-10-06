@@ -10,12 +10,8 @@ import { computeFlatRevolutionGeometry } from "../../utils/revolution.js";
 /**
  * @typedef {object} HyperboloidOptions
  * @property {number} [height=1]
- * @property {number} [radius=0.25] Waist radius, at y = 0
- * @property {number} [endRadius=radius*2] Rim radius, at y = ±height/2 (both
- *   ends, symmetric) - the classic one-sheet shape needs endRadius > radius
- *   (pinched waist flaring to both rims); endRadius = radius degenerates to a
- *   plain cylinder, and endRadius < radius traces an oblate-spheroid-like
- *   profile instead (still a valid, NaN-free surface, just not a hyperbola)
+ * @property {number} [radius=0.25] Waist radius.
+ * @property {number} [endRadius=radius*2] Rim radius.
  * @property {import("../../../types.js").PositiveInteger} [nx=32]
  * @property {import("../../../types.js").PositiveInteger} [ny=16]
  * @property {import("../../../types.js").PositiveInteger} [capSegments=1]
@@ -30,10 +26,9 @@ import { computeFlatRevolutionGeometry } from "../../utils/revolution.js";
  */
 
 /**
- * Hyperboloid of one sheet (revolution of x² + z² = radius² + k·y², a
- * pinched-waist, flared-both-ends shape - cooling towers, gear/skew-roller
- * profiles). Both ends are flat rings, not points, cappable like `cylinder`'s
- * frustum.
+ * A hyperboloid of one sheet.
+ *
+ * Special cases: cylinder (endRadius = radius).
  *
  * @param {HyperboloidOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}

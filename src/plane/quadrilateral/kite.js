@@ -14,9 +14,8 @@ import {
  * @typedef {object} KiteOptions
  * @property {number} [sx=1]
  * @property {number} [sy=1]
- * @property {number} [ratio=0.5] Bottom vertex distance from center, as a
- *   fraction of the top vertex's (sy). `ratio=1` is a rhombus, `ratio=0`
- *   collapses the bottom to the center.
+ * @property {number} [ratio=0.5] Bottom vertex distance from the center, as a
+ *   fraction of the top's.
  * @property {number} [radius=0.5]
  * @property {import("../../../types.js").PositiveInteger} [edgeSegments=1]
  * @property {import("../../../types.js").PositiveInteger} [innerSegments=16]
@@ -24,14 +23,15 @@ import {
  * @property {import("../../../types.js").Angle} [theta=TAU]
  * @property {import("../../../types.js").Angle} [thetaOffset=HALF_PI]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
- * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
- *   edge for mappings wrapping there (eg. `mappings.polar`).
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap edge
+ *   for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.concentric]
  */
 
 /**
- * A kite: a rhombus with its bottom vertex pulled toward the center (by ratio)
- * while the top, left and right vertices stay put.
+ * A kite: a rhombus with its bottom vertex pulled toward the center.
+ *
+ * Special cases: rhombus (ratio = 1).
  *
  * @param {KiteOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -80,8 +80,7 @@ export function kite({
  */
 
 /**
- * Outline dual of `kite`: same shape, `ratio` pulling the bottom vertex toward
- * the center.
+ * Outline dual of `kite`.
  *
  * @param {KitePathOptions} [options={}]
  * @returns {import("../../../types.js").PolylineComplex}

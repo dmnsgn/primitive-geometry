@@ -20,19 +20,19 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @property {import("../../../types.js").Angle} [phi=TAU]
  * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
- * @property {number} [sxBase=1] Base ring x scale, elliptical when != szBase
- * @property {number} [szBase=1] Base ring z scale, elliptical when != sxBase
- * @property {number} [sxApex=1] Apex ring x scale, elliptical when != szApex
- * @property {number} [szApex=1] Apex ring z scale, elliptical when != sxApex
+ * @property {number} [sxBase=1] Base ring x scale.
+ * @property {number} [szBase=1] Base ring z scale.
+ * @property {number} [sxApex=1] Apex ring x scale.
+ * @property {number} [szApex=1] Apex ring z scale.
  * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
  *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */
 
 /**
- * Right circular cylinder by default. Other shapes fall out of the same
- * parameters: a tube (capBase/capApex false, any radii), a frustum/cone
- * (radiusApex != radiusBase, 0 for a true cone apex), and an elliptical cylinder
- * or frustum (sxBase != szBase, sxApex != szApex).
+ * A right circular cylinder.
+ *
+ * Special cases: tube (no caps), frustum (radiusApex != radiusBase), cone
+ * (radiusApex = 0), elliptical cylinder (sxBase != szBase, sxApex != szApex).
  *
  * @param {CylinderOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -60,9 +60,7 @@ export function cylinder({
 } = {}) {
   const halfHeight = height / 2;
 
-  // Ellipse scale varies linearly with height like radiusBase/radiusApex; the
-  // *Prime terms are their (constant) derivatives w.r.t. v, needed alongside
-  // r/rPrime for the tangent cross-product normal below (product rule)
+  // Derivatives w.r.t. v, for the tangent cross-product normal
   const rPrime = radiusApex - radiusBase;
   const sxPrime = sxApex - sxBase;
   const szPrime = szApex - szBase;
@@ -76,12 +74,8 @@ export function cylinder({
 
     return {
       position: [r * sxV * cosPhi, height * v - halfHeight, r * szV * sinPhi],
-      // Tangent_v x Tangent_phi of the elliptical-frustum surface, with the
-      // common r factor divided out (harmless since normalize() erases
-      // positive scalar multiples, and it keeps this well-defined at r = 0,
-      // ie. a cone apex, same trick the sx = sz = 1 formula already relied
-      // on). Reduces to (height*cosPhi, radiusBase-radiusApex, height*sinPhi)
-      // when every ring scale is 1.
+      // Tangent cross product with r factored out, so it stays defined at a
+      // cone apex
       normal: [
         height * szV * cosPhi,
         -(

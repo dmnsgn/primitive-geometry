@@ -15,14 +15,13 @@ import { rhombus, rhombusPath } from "./rhombus.js";
  * @property {import("../../../types.js").Angle} [theta=TAU]
  * @property {import("../../../types.js").Angle} [thetaOffset=HALF_PI]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
- * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
- *   edge for mappings wrapping there (eg. `mappings.polar`).
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap edge
+ *   for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.concentric]
  */
 
 /**
- * A rhombus elongated along its vertical diagonal by default (sy = sx * 2), the
- * classic narrow diamond look.
+ * A lozenge: `rhombus` with sy = sx * 2.
  *
  * @param {LozengeOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -67,8 +66,7 @@ export function lozenge({
  */
 
 /**
- * Outline dual of `lozenge`: `rhombusPath` elongated along its vertical
- * diagonal by default (sy = sx * 2).
+ * Outline dual of `lozenge`.
  *
  * @param {LozengePathOptions} [options={}]
  * @returns {import("../../../types.js").PolylineComplex}

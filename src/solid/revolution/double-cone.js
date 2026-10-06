@@ -11,7 +11,8 @@ import { computeConeSegment } from "./cone.js";
  * @property {number} [height=1]
  * @property {number} [radius=0.5]
  * @property {import("../../../types.js").PositiveInteger} [nx=16]
- * @property {import("../../../types.js").PositiveInteger} [ny=1] Meridian segments per half (top/bottom cone)
+ * @property {import("../../../types.js").PositiveInteger} [ny=1] Meridian
+ *   segments per cone.
  * @property {boolean} [capBase=true]
  * @property {boolean} [capApex=true]
  * @property {import("../../../types.js").PositiveInteger} [capBaseSegments=1]
@@ -19,16 +20,14 @@ import { computeConeSegment } from "./cone.js";
  * @property {import("../../../types.js").Angle} [phi=TAU]
  * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
- * @property {number} [sx=1] End ring x scale, elliptical when != sz
- * @property {number} [sz=1] End ring z scale, elliptical when != sx
+ * @property {number} [sx=1] End ring x scale.
+ * @property {number} [sz=1] End ring z scale.
  * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
  *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */
 
 /**
- * Two right circular cones joined apex-to-apex at the waist (an hourglass of
- * revolution) - the wide top/bottom ends are flat, so unlike `bicone` it takes
- * the same cap options as `cylinder`.
+ * Two cones joined apex to apex.
  *
  * @param {DoubleConeOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -67,9 +66,8 @@ export function doubleCone({
       capOptions,
     });
 
-  // Two independent cones concatenated at the waist rather than one function
-  // with a v = 0.5 kink - see bicone.js for why that shared-row approach
-  // can't give a correctly-wound normal on both sides.
+  // Two segments rather than one with a kink: a shared waist row can't hold
+  // both halves' normals
   return concatGeometries([
     segment(-halfHeight, 0, radius, 0, {
       capBase,

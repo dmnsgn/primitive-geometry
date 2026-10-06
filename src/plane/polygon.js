@@ -22,16 +22,15 @@ import {
  * @property {import("../../types.js").Angle} [theta=TAU]
  * @property {import("../../types.js").Angle} [thetaOffset=0]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
- * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
- *   edge for mappings wrapping there (eg. `mappings.polar`).
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap edge
+ *   for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../mappings.js").MappingFn} [mapping=mappings.concentric]
  */
 
 /**
- * A regular polygon: sides corners evenly spaced around a circle, connected by
- * straight edges rather than ellipse's elliptical arc (rhombus is this shape's
- * sides=4 case). sx/sy independently scale the two axes; equal values keep it
- * regular, different values stretch it into an ellipse-inscribed polygon.
+ * A regular polygon, stretched when sx != sy.
+ *
+ * Special cases: rhombus (sides = 4).
  *
  * @param {PolygonOptions} [options={}]
  * @returns {import("../../types.js").SimplicialComplex}
@@ -80,13 +79,10 @@ export function polygon({
  */
 
 /**
- * Outline dual of `polygon`: sides corners evenly spaced around a circle,
- * connected by straight edges (rhombus is this shape's sides=4 case).
+ * Outline dual of `polygon`.
  *
  * @param {PolygonPathOptions} [options={}]
- * @returns {import("../../types.js").PolylineComplex} `edgeSegments *
- *   sides` positions (`+ 1` for a partial `theta`) and a single path cell of
- *   that many indices (`+ 1`, repeating index `0`, when `closed`)
+ * @returns {import("../../types.js").PolylineComplex}
  */
 export function polygonPath({
   sides = 6,

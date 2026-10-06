@@ -48,15 +48,11 @@ export const PHI = (1 + Math.sqrt(5)) / 2;
 // Math
 
 /**
- * Ratio of a regular star polygon {points/density}'s inner (notch) radius to
- * its outer (tip) radius, ie. cos(density * PI / points) / cos((density - 1)
- *
- * - PI / points). `computeStarRatio(5, 2)` is `1 / PHI ** 2`, the pentagram's
- *   fixed ratio.
+ * Regular {points/density} star polygon inner to outer radius ratio.
  *
  * @private
  * @param {number} points
- * @param {number} [density=2] Default is `2`
+ * @param {number} [density=2]
  * @returns {number}
  * @see [Wolfram MathWorld – Star Polygon]{@link https://mathworld.wolfram.com/StarPolygon.html}
  */
@@ -97,16 +93,12 @@ export function clamp(value, min, max) {
 }
 
 /**
- * Clamp a theta/thetaOffset meridian sweep to [0, PI]: thetaOffset first (0 =
- * north pole), then theta to whatever range keeps thetaOffset + theta inside
- * [0, PI] too. Shared by every meridian-based revolution shape (ellipsoid,
- * superellipsoid, superegg, hollowSphere's cut caps): a pole can only sit at
- * the sweep's own start or end, never partway through.
+ * Clamp a meridian sweep within [0, PI] so poles only sit at its ends.
  *
  * @private
  * @param {number} theta
  * @param {number} thetaOffset
- * @returns {[number, number] | undefined} ClampedTheta, clampedThetaOffset
+ * @returns {[number, number] | undefined} Theta, thetaOffset
  */
 export function clampMeridianSweep(theta, thetaOffset) {
   const clampedThetaOffset = clamp(thetaOffset, 0, Math.PI);
@@ -132,11 +124,8 @@ export function lerp(a, b, t) {
 }
 
 /**
- * Snap a near-zero value to exact 0. Math.cos/sin of an exact multiple of PI/2
- * aren't bit-exact (eg. Math.cos(Math.PI / 2) is ~6e-17) - left as-is, that
- * residual can make two vertices meant to be identical (a pole, a wrap seam)
- * compare as distinct and read as a crack, or - raised to a negative signedPow
- * exponent - explode into a huge, effectively-random-signed value.
+ * Snap a near-zero value to 0: trig at multiples of PI/2 isn't exact, which
+ * cracks welds and blows up under negative `signedPow` exponents.
  *
  * @private
  * @param {number} x
@@ -147,12 +136,7 @@ export function snapToZero(x) {
 }
 
 /**
- * X raised to a signed power: sign(x) * |x|^e. Used for superquadric/
- * superellipse curves, where e can be a fraction (even < 1, a pinched cusp) and
- * x negative - plain `x ** e` is only defined for non-negative x. x = 0
- * short-circuits to 0, avoiding both `0 ** negative` (Infinity) and JS's `0 **
- * 0 = 1` quirk; the true tangent at a pinched pole is a genuine cusp with no
- * well-defined direction anyway, so 0 is as good a fallback as any.
+ * Sign(x) * |x|^e, and 0 at x = 0 rather than `0 ** negative` or `0 ** 0`.
  *
  * @private
  * @param {number} x
@@ -216,16 +200,8 @@ export function slerpTriangle(uA, uB, uC, v, w) {
 // Geometry
 
 /**
- * A single triangle, 3x oversized so its 3 vertices land past every edge of the
- * [-1, 1] clip-space square: the standard vertex-shader trick for a fullscreen
- * pass (rasterizes to exactly the viewport once clipped, with no diagonal seam
- * and no overdraw compared to a quad split into 2 triangles). xy positions
- * only
- *
- * - No z, no normals/uvs, no cells - since a fullscreen pass reads screen-space
- *   data directly (`gl_FragCoord`, or a uv derived from the clip position
- *   in-shader) rather than interpolated vertex attributes, and needs no index
- *   buffer for a single triangle.
+ * A single triangle covering clip space, for fullscreen passes. xy positions
+ * only.
  *
  * @returns {{ positions: Float32Array }}
  */
@@ -244,7 +220,7 @@ export function fullscreenTriangle() {
 let TYPED_ARRAY_TYPE;
 
 /**
- * Enforce a typed array constructor for cells
+ * Enforce a typed array constructor for cells.
  *
  * @param {Class<Uint8Array> | Class<Uint16Array> | Class<Uint32Array>} type
  */
@@ -253,7 +229,7 @@ export function setTypedArrayType(type) {
 }
 
 /**
- * Select cells typed array from a size determined by amount of vertices.
+ * Select the smallest cells typed array fitting `size`.
  *
  * @param {number} size The max value expected
  * @returns {Uint8Array | Uint16Array | Uint32Array}
@@ -264,19 +240,10 @@ export const getCellsTypedArray = (size) =>
   (size <= 255 ? Uint8Array : size <= 65_535 ? Uint16Array : Uint32Array);
 
 /**
- * Fan-triangulate a list of closed n-gon faces (a `PolygonalComplex`'s
- * `cells`, e.g. `[0, 1, 2, 3]`) from each face's last corner into a flat,
- * stride-3 `SimplicialComplex`-style typed array (e.g. `[3, 0, 1, 3, 1, 2]`).
- * Anchoring on the last corner rather than the first is deliberate for quads:
- * for the BL/BR/TR/TL winding used by eg. `rectanglePath`, it splits the quad
- * along the same diagonal a row-major `TRIANGLE_STRIP` produces (and that
- * `computePlane`/`computePolarGeometry`/ `computeRevolutionGeometry` already
- * use), so displacement in a vertex shader creases consistently across every
- * primitive in this library. Only valid for convex, planar faces.
+ * Fan-triangulate convex, planar polygon cells.
  *
  * @param {import("../../types.js").TypedArrayLike[]} cells
- * @param {number} numVertices Used to pick the returned typed array's element
- *   size
+ * @param {number} numVertices Picks the typed array size
  * @returns {Uint8Array | Uint16Array | Uint32Array}
  */
 export function triangulateFaces(cells, numVertices) {
@@ -287,6 +254,8 @@ export function triangulateFaces(cells, numVertices) {
 
   let index = 0;
   for (const face of cells) {
+    // From the last corner: quads split along the same diagonal as every grid
+    // here, so vertex shader displacement creases consistently
     const anchor = face.at(-1);
     for (let i = 0; i < face.length - 2; i++) {
       triangles[index] = anchor;
@@ -300,9 +269,7 @@ export function triangulateFaces(cells, numVertices) {
 }
 
 /**
- * Concatenate SimplicialComplex geometries into one, offsetting each one's cell
- * indices by the running vertex count. Positions coincident across inputs (eg.
- * two bands sharing a seam) stay as separate, unwelded vertices.
+ * Concatenate geometries, without welding coincident positions.
  *
  * @param {import("../../types.js").SimplicialComplex[]} geometries
  * @returns {import("../../types.js").SimplicialComplex}
@@ -339,10 +306,7 @@ export function concatGeometries(geometries) {
 }
 
 /**
- * Flip a geometry inside-out: negate every normal and swap 2 of each triangle's
- * 3 indices so winding stays consistent with the flipped normal. Used to turn
- * an outward-facing surface (eg. a standalone sphere or cylinder) into the
- * inward-facing wall of a shell around it.
+ * Flip a geometry inside out: negated normals, reversed winding.
  *
  * @param {import("../../types.js").SimplicialComplex} geometry
  * @returns {import("../../types.js").SimplicialComplex}
@@ -380,14 +344,12 @@ export function subtract(positions, a, b) {
 }
 
 /**
- * Per-face constants: a flat normal and a tangent basis (+ extent) used for the
- * default per-face planar uv unwrap. The normal is summed via Newell's method
- * over every edge, so it stays correct for faces with (nearly) collinear
- * corners and averages out slightly non-planar faces.
+ * Per-face flat normal and tangent basis, for planar uv unwrapping.
  *
  * @private
  */
 export function computeFaceContext(seedPositions, face) {
+  // Newell's method: robust to collinear corners and slightly non-planar faces
   const normal = [0, 0, 0];
   for (let i = 0; i < face.length; i++) {
     const a = point(seedPositions, face[i]);

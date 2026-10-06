@@ -22,11 +22,8 @@ import {
  */
 
 /**
- * Antiprism: like `prism`, but the top sides-gon is rotated by half a sector
- * relative to the bottom one, so the two rings connect through a zigzag band of
- * 2 * sides flat triangles (each with its own hard-edged normal) instead of
- * prism's sides flat rectangles. The 2 end caps are otherwise identical to
- * prism's own, just with the top one rotated to match its own ring.
+ * An antiprism: a `prism` with its top rotated half a sector, joined by a band
+ * of triangles.
  *
  * @param {AntiprismOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -42,10 +39,7 @@ export function antiprism({
   const halfHeight = height / 2;
   const topOffset = phiOffset + TAU / sides / 2;
 
-  // Shared by the band corners and the cap rims below, so a corner's
-  // position is computed by the exact same expression as its coincident cap
-  // vertex - required for them to weld bit-identically (analyze()'s crack
-  // check), not just approximately.
+  // Shared by band corners and cap rims so they weld bit-identically
   const bottomAngleAt = (i) => (i === sides ? 0 : i / sides) * TAU + phiOffset;
   const topAngleAt = (i) => (i === sides ? 0 : i / sides) * TAU + topOffset;
 
@@ -120,13 +114,8 @@ export function antiprism({
     const u1 = (i + 1) / sides;
     const uMid = (u0 + u1) / 2;
 
-    // v = 0 at the bottom rising to 1 at the top, same as cylinder and every
-    // other computeRevolutionGeometry-based solid.
-    // Base on the bottom ring's edge, apex on the top ring (directly above
-    // that edge's own midpoint, since the top ring is offset by half a
-    // sector)
+    // Apex above the bottom edge's midpoint, the top ring being offset
     writeTriangle(bottomA, bottomB, topA, [u0, 0], [u1, 0], [uMid, 1]);
-    // Base on the top ring's edge, apex on the bottom ring
     writeTriangle(topB, topA, bottomB, [u1, 1], [u0, 1], [u1, 0]);
   }
 

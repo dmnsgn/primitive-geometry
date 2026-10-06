@@ -11,9 +11,8 @@ import { computePolyhedron } from "../../../utils/polyhedron.js";
  */
 
 /**
- * Great icosahedron, sharing the icosahedron's 12 vertices; each of its 20
- * triangular faces connects a vertex to two of its "second-shell" neighbors
- * (rather than its 5 immediate ones), deeply interpenetrating the rest.
+ * Great icosahedron faces: on the icosahedron's vertices, each triangle joining
+ * second-nearest neighbors.
  *
  * @param {GreatIcosahedronPolygonsOptions} [options={}]
  * @returns {import("../../../../types.js").PolygonalComplex}

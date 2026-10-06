@@ -26,24 +26,19 @@ import {
  * @property {import("../../../types.js").PositiveInteger} [capStartSegments=1]
  * @property {import("../../../types.js").PositiveInteger} [capEndSegments=1]
  * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
- * @property {number} [sx=1] Major sweep x scale (footprint), elliptical when !=
- *   sy
- * @property {number} [sy=1] Major sweep y scale (footprint), elliptical when !=
- *   sx
- * @property {number} [minorSx=1] Tube radial scale (meridian cross-section),
- *   elliptical when != minorSy
- * @property {number} [minorSy=1] Tube z scale (meridian cross-section),
- *   elliptical when != minorSx
+ * @property {number} [sx=1] Footprint x scale.
+ * @property {number} [sy=1] Footprint y scale.
+ * @property {number} [minorSx=1] Tube radial scale.
+ * @property {number} [minorSy=1] Tube z scale.
  * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
  *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */
 
 /**
- * Ring torus by default. Other shapes fall out of the same parameters: a
- * partial/open torus (phi < TAU, optionally capped via capStart/capEnd), an
- * elliptical torus (sx != sy, an oval/racetrack footprint), and a tube with an
- * elliptical cross-section (minorSx != minorSy, like a flattened or
- * spindle-shaped bagel).
+ * A ring torus.
+ *
+ * Special cases: open torus (phi < TAU), elliptical torus (sx != sy),
+ * elliptical tube (minorSx != minorSy).
  *
  * @param {TorusOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -71,46 +66,50 @@ export function torus({
   minorSy = 1,
   mergeSeam = false,
 } = {}) {
-  // Wrap the last column/ring to the exact first angle for full revolutions
   const wrapPhi = phi % TAU === 0;
   const wrapTheta = theta % TAU === 0;
 
-  // A full phi revolution has no seam to cap
-  const hasCapStart = capStart && !wrapPhi && capStartSegments > 0;
-  const hasCapEnd = capEnd && !wrapPhi && capEndSegments > 0;
+  // A full turn has no seam to cap
+  const caps = wrapPhi
+    ? []
+    : [
+        capStart && {
+          pAngle: phiOffset,
+          capSegments: capStartSegments,
+          flip: -1,
+        },
+        capEnd && {
+          pAngle: phiOffset + phi,
+          capSegments: capEndSegments,
+          flip: 1,
+        },
+      ].filter((cap) => cap && cap.capSegments > 0);
 
   const cols = mergeSeam && wrapPhi ? segments : segments + 1;
   const rows = mergeSeam && wrapTheta ? minorSegments : minorSegments + 1;
   const at = (i, j) => (j % rows) * cols + (i % cols);
 
-  const capCount =
-    (hasCapStart ? capStartSegments : 0) + (hasCapEnd ? capEndSegments : 0);
-  const capSize = (has, count) =>
-    has ? computeCapVertexCount(rows, count, mergeSeam) : 0;
-
-  const size =
-    rows * cols +
-    capSize(hasCapStart, capStartSegments) +
-    capSize(hasCapEnd, capEndSegments);
+  const size = caps.reduce(
+    (sum, { capSegments }) =>
+      sum + computeCapVertexCount(rows, capSegments, mergeSeam),
+    rows * cols,
+  );
 
   const positions = new Float32Array(size * 3);
   const normals = new Float32Array(size * 3);
   const uvs = new Float32Array(size * 2);
 
-  // Each cap's innermost ring is collapsed to a point: fan with a single
-  // triangle per segment instead of two, skipping the degenerate one
-  const capFans = (hasCapStart ? 1 : 0) + (hasCapEnd ? 1 : 0);
-
+  // Caps fan from a collapsed center: one triangle per segment on that ring
   const cells = new (getCellsTypedArray(size))(
-    minorSegments * segments * 6 +
-      minorSegments * capCount * 6 -
-      minorSegments * capFans * 3,
+    caps.reduce(
+      (sum, { capSegments }) => sum + minorSegments * (capSegments * 6 - 3),
+      minorSegments * segments * 6,
+    ),
   );
 
   const indices = { vertex: 0, cell: 0 };
 
-  // Last ring/column reuses the first angle exactly on a full revolution, so
-  // the wrap welds instead of landing a hair away from it
+  // A full turn's last ring/column reuses the first angle exactly so it welds
   const angleAt = (j) => {
     const v = j / minorSegments;
     const t = (wrapTheta && j === minorSegments ? 0 : v) * theta + thetaOffset;
@@ -136,15 +135,8 @@ export function torus({
       positions[indices.vertex * 3 + 1] = sy * radial * sinPhi;
       positions[indices.vertex * 3 + 2] = minorRadius * minorSy * sinTheta;
 
-      // sx/sy (footprint) and minorSx/minorSy (tube cross-section) together
-      // scale the standard torus by a constant diagonal matrix, so its
-      // normal (radially outward from the meridian's own center, ie.
-      // cosTheta*cosPhi, cosTheta*sinPhi, sinTheta) needs the matching
-      // inverse-scale correction; multiplying by the complementary pair
-      // (rather than dividing by the vertex's own scale) avoids a division
-      // by zero and is equivalent up to the positive common factor
-      // sx*sy*minorSx*minorSy. Reduces to the plain radial direction when
-      // sx = sy = minorSx = minorSy = 1.
+      // Inverse-scaled normal: multiplied by the complementary scales rather
+      // than divided by its own, so a zero scale can't divide by zero
       TMP[0] = sy * minorSy * cosTheta * cosPhi;
       TMP[1] = sx * minorSy * cosTheta * sinPhi;
       TMP[2] = sx * sy * minorSx * sinTheta;
@@ -160,9 +152,7 @@ export function torus({
     }
   }
 
-  // flip=-1: with i (phi) as the row-stride axis, this is the winding that
-  // keeps the b-c split facing the same way as the original a-d split it
-  // replaces
+  // Outward winding with phi as the row-stride axis
   for (let j = 1; j <= minorSegments; j++) {
     for (let i = 1; i <= segments; i++) {
       computeGridQuad(
@@ -174,12 +164,9 @@ export function torus({
     }
   }
 
-  // Basis for the cap's local 2D plane at a fixed phi angle: local x runs
-  // along the meridian's radial (cos) direction, local y along the torus
-  // axis - both already scaled by minorSx/minorSy upstream, via computeCap's
-  // own sx/sy below. The footprint scale (sx, sy) only affects the final
-  // world X/Y, applied here as a constant linear map of that plane, so the
-  // cap stays flat.
+  // Cap plane at a fixed phi: x radial, y along the torus axis. computeCap
+  // applies minorSx/minorSy, sx/sy are applied here as a linear map so the cap
+  // stays flat.
   const capPoint = (pAngle) => {
     const cosPhi = -Math.cos(pAngle);
     const sinPhi = Math.sin(pAngle);
@@ -189,44 +176,25 @@ export function torus({
         sy * (radius + x) * sinPhi,
         y,
       ],
-      // Outward normal of that plane (flip already folded in), derived from
-      // basisA x basisB with basisA = (sx*cosPhi, sy*sinPhi, 0), basisB = (0, 0, 1)
+      // (sx * cosPhi, sy * sinPhi, 0) x (0, 0, 1), oriented by flip
       normalFor: (flip) => [sy * sinPhi * flip, -sx * cosPhi * flip, 0],
     };
   };
 
   const geometry = { positions, normals, uvs, cells };
 
-  if (hasCapStart) {
-    const { point, normalFor } = capPoint(phiOffset);
+  for (const { pAngle, capSegments, flip } of caps) {
+    const { point, normalFor } = capPoint(pAngle);
     computeCap(geometry, indices, {
       ringSegments: minorSegments,
-      capSegments: capStartSegments,
+      capSegments,
       capRadius: minorRadius,
       sx: minorSx,
       sy: minorSy,
-      flip: -1,
+      flip,
       angleAt,
       point,
-      normal: normalFor(-1),
-      mapping: capMapping,
-      cols: rows,
-      mergeSeam,
-    });
-  }
-
-  if (hasCapEnd) {
-    const { point, normalFor } = capPoint(phiOffset + phi);
-    computeCap(geometry, indices, {
-      ringSegments: minorSegments,
-      capSegments: capEndSegments,
-      capRadius: minorRadius,
-      sx: minorSx,
-      sy: minorSy,
-      flip: 1,
-      angleAt,
-      point,
-      normal: normalFor(1),
+      normal: normalFor(flip),
       mapping: capMapping,
       cols: rows,
       mergeSeam,

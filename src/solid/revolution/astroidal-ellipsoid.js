@@ -13,11 +13,10 @@ import { TAU } from "../../utils/common.js";
  * @property {number} [sx=1]
  * @property {number} [sy=0.5]
  * @property {number} [sz=sy]
- * @property {import("../../../types.js").PolarAngle} [theta=Math.PI] Meridian sweep length, silently clamped to
- *   [-thetaOffset, PI - thetaOffset] - see ellipsoid.js's EllipsoidOptions for
- *   why.
- * @property {import("../../../types.js").PolarAngle} [thetaOffset=0] Meridian sweep start, silently clamped to
- *   [0, PI] - see theta.
+ * @property {import("../../../types.js").PolarAngle} [theta=Math.PI] Meridian
+ *   sweep length, clamped so poles stay at its ends.
+ * @property {import("../../../types.js").PolarAngle} [thetaOffset=0] Meridian
+ *   sweep start from the north pole, clamped to [0, π].
  * @property {import("../../../types.js").Angle} [phi=TAU]
  * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
@@ -25,11 +24,8 @@ import { TAU } from "../../utils/common.js";
  */
 
 /**
- * A superellipsoid special case (n1 = n2 = 2/3): the surface
- *
- * |x/a|^(2/3) + |y/b|^(2/3) + |z/c|^(2/3) = 1, pinched to 6 cusps along
- *
- * The axes.
+ * An astroidal ellipsoid: `superellipsoid` with n1 = n2 = 2/3, pinched to 6
+ * cusps.
  *
  * @param {AstroidalEllipsoidOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}

@@ -18,15 +18,13 @@ import {
  * @property {import("../../../types.js").PositiveInteger} [innerSegments=16]
  * @property {import("../../../types.js").Angle} [theta=TAU]
  * @property {import("../../../types.js").Angle} [thetaOffset=0]
- * @property {number} [innerRadius=0] Like `annulus`'s: a hole radius the fill
- *   stops at instead of reaching the center. `0` (default): no hole, fill
- *   reaches the center (subject to `mergeCentroid`).
+ * @property {number} [innerRadius=0] Hole radius. `0` fills to the center.
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
- * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
- *   edge for mappings wrapping there (eg. `mappings.polar`).
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap edge
+ *   for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.elliptical]
- * @property {EllipseEquationFn} [equation] Maps each (rx, ry, cosTheta,
- *   sinTheta) sample to its [x, y] position, defaulting to an ellipse's arc.
+ * @property {EllipseEquationFn} [equation] Sample to [x, y] position. Defaults
+ *   to the ellipse's arc.
  */
 
 /**
@@ -89,13 +87,10 @@ export function ellipse({
  */
 
 /**
- * Outline dual of `ellipse`: sx/sy independently scale the two axes, same as
- * `circlePath` with sx = sy = 1.
+ * Outline dual of `ellipse`.
  *
  * @param {EllipsePathOptions} [options={}]
- * @returns {import("../../../types.js").PolylineComplex} `segments`
- *   positions (`+ 1` for a partial `theta`) and a single path cell of that many
- *   indices (`+ 1`, repeating index `0`, when `closed`)
+ * @returns {import("../../../types.js").PolylineComplex}
  */
 export function ellipsePath({
   sx = 1,

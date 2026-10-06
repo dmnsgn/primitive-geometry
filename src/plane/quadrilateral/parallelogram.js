@@ -6,11 +6,9 @@ import { trapezoid, trapezoidPath } from "./trapezoid.js";
 
 /**
  * @typedef {object} ParallelogramOptions
- * @property {number} [sx=0.5] Narrower than `trapezoid`'s default so the
- *   sheared top edge still fits the unit box.
+ * @property {number} [sx=0.5]
  * @property {number} [sy=1]
- * @property {number} [shear=0.3] Horizontal shift of the top edge's center, in
- *   the same units as `sx`.
+ * @property {number} [shear=0.3] Horizontal shift of the top edge.
  * @property {number} [radius=0.5]
  * @property {import("../../../types.js").PositiveInteger} [edgeSegments=1]
  * @property {import("../../../types.js").PositiveInteger} [innerSegments=16]
@@ -18,14 +16,13 @@ import { trapezoid, trapezoidPath } from "./trapezoid.js";
  * @property {import("../../../types.js").Angle} [theta=TAU]
  * @property {import("../../../types.js").Angle} [thetaOffset=0]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
- * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
- *   edge for mappings wrapping there (eg. `mappings.polar`).
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap edge
+ *   for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  */
 
 /**
- * A parallelogram: `trapezoid` with `topRatio` fixed to `1` (top and bottom
- * edges the same width) and shifted sideways by `shear`.
+ * A parallelogram: `trapezoid` with `topRatio = 1`.
  *
  * @param {ParallelogramOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -74,8 +71,7 @@ export function parallelogram({
  */
 
 /**
- * Outline dual of `parallelogram`: `trapezoidPath` with `topRatio` fixed to
- * `1`, shifted sideways by `shear`.
+ * Outline dual of `parallelogram`.
  *
  * @param {ParallelogramPathOptions} [options={}]
  * @returns {import("../../../types.js").PolylineComplex}

@@ -10,11 +10,8 @@ import { computeFlatRevolutionGeometry } from "../../utils/revolution.js";
 /**
  * @typedef {object} FunnelOptions
  * @property {number} [height=1]
- * @property {number} [radiusBase=0.1] Spout radius, at y = -height/2
- * @property {number} [radiusApex=0.5] Mouth radius, at y = height/2 - must be >
- *   radiusBase for the usual flared-outward shape; radiusApex = radiusBase
- *   degenerates to a plain cylinder, radiusApex < radiusBase flips the taper
- *   (still a valid, NaN-free surface, just narrowing toward the top instead)
+ * @property {number} [radiusBase=0.1] Spout radius.
+ * @property {number} [radiusApex=0.5] Mouth radius.
  * @property {import("../../../types.js").PositiveInteger} [nx=32]
  * @property {import("../../../types.js").PositiveInteger} [ny=16]
  * @property {boolean} [capBase=true]
@@ -30,10 +27,9 @@ import { computeFlatRevolutionGeometry } from "../../utils/revolution.js";
  */
 
 /**
- * Revolution of y = a·ln(r) (equivalently r = radiusBase·e^(k·(y+height/2)), an
- * exponential - not linear (`cone`) or hyperbolic (`hyperboloid`) - radius law)
- * between a narrow spout and a wide mouth. Both ends stay flat, open rings,
- * cappable exactly like `hyperboloid`'s.
+ * A funnel: a logarithmic profile from spout to mouth.
+ *
+ * Special cases: cylinder (radiusApex = radiusBase).
  *
  * @param {FunnelOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -55,8 +51,7 @@ export function funnel({
   vDistribution = linear,
   mergeSeam = false,
 } = {}) {
-  // r = radiusBase·e^(k·(y + height/2)), fixed by r = radiusApex at
-  // y = height/2
+  // r = radiusBase·e^(k·(y + height/2)), with r = radiusApex at the top
   const k = Math.log(radiusApex / radiusBase) / height;
 
   const { positions, normals, uvs, cells } = computeFlatRevolutionGeometry({

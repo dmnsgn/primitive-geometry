@@ -15,13 +15,13 @@ import { TAU } from "../../utils/common.js";
  * @property {import("../../../types.js").Angle} [theta=TAU]
  * @property {import("../../../types.js").Angle} [thetaOffset=0]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
- * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
- *   edge for mappings wrapping there (eg. `mappings.polar`).
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap edge
+ *   for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.lamé]
  */
 
 /**
- * Hypocycloid with 4 cusps: a superellipse special case (m = n = 2/3).
+ * A 4-cusped hypocycloid: `superellipse` with m = n = 2/3.
  *
  * @param {AstroidOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -65,7 +65,7 @@ export function astroid({
  */
 
 /**
- * Outline dual of `astroid`: `superellipsePath` with `m = n = 2 / 3`.
+ * Outline dual of `astroid`.
  *
  * @param {AstroidPathOptions} [options={}]
  * @returns {import("../../../types.js").PolylineComplex}

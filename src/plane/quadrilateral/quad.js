@@ -43,13 +43,14 @@ export function quad({ scale = 1 } = {}) {
 /**
  * @typedef {object} SquarePathOptions
  * @property {number} [scale=1] Side length.
- * @property {import("../../../types.js").PositiveInteger} [nx=1] Segments along the bottom/top edges
- * @property {import("../../../types.js").PositiveInteger} [ny=nx] Segments along the left/right edges
+ * @property {import("../../../types.js").PositiveInteger} [nx=1] Segments along
+ *   the bottom/top edges
+ * @property {import("../../../types.js").PositiveInteger} [ny=nx] Segments
+ *   along the left/right edges
  */
 
 /**
- * Outline dual of `quad`: `rectanglePath` with `sx = sy = scale`, same as
- * `quad` itself is built from it.
+ * Outline dual of `quad`.
  *
  * @param {SquarePathOptions} [options={}]
  * @returns {import("../../../types.js").PolylineComplex}

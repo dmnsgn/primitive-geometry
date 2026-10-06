@@ -9,12 +9,9 @@ import {
   computePolarPathGeometry,
 } from "../../utils/polar.js";
 
-// Fernández-Guasti squircle boundary point at angle t, already scaled by
-// rx/ry - shared by squircle's radial fill (rx/ry vary per ring) and
-// squirclePath's outline (rx/ry fixed at sx * radius/sy * radius, no ring
-// interpolation).
+// Boundary point at angle t, scaled by rx/ry
 function computeSquircleEdge(rx, ry, cosTheta, sinTheta, t, squareness) {
-  // Fix singularities
+  // Exact values on the axes, where the formula divides by zero
   // https://codereview.stackexchange.com/questions/233496/handling-singularities-in-squircle-parametric-equations
   switch (t) {
     case 0:
@@ -58,14 +55,16 @@ function computeSquircleEdge(rx, ry, cosTheta, sinTheta, t, squareness) {
  * @property {import("../../../types.js").Angle} [theta=TAU]
  * @property {import("../../../types.js").Angle} [thetaOffset=0]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
- * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
- *   edge for mappings wrapping there (eg. `mappings.polar`).
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap edge
+ *   for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.fgSquircular]
- * @property {number} [squareness=0.95] Squareness (0 < s <= 1)
+ * @property {number} [squareness=0.95] In (0, 1]
  */
 
 /**
- * Fernández-Guasti squircle
+ * A Fernández-Guasti squircle.
+ *
+ * Special cases: circle (squareness → 0), square (squareness = 1).
  *
  * @param {SquircleOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -115,8 +114,7 @@ export function squircle({
  */
 
 /**
- * Outline dual of `squircle`: the same Fernández-Guasti curve, sampled directly
- * with no radial fill.
+ * Outline dual of `squircle`.
  *
  * @param {SquirclePathOptions} [options={}]
  * @returns {import("../../../types.js").PolylineComplex}

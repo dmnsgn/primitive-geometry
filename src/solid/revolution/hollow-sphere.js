@@ -15,13 +15,8 @@ import { sphere } from "./sphere.js";
 import { sphereDirection } from "./ellipsoid.js";
 
 /**
- * Flat annular wall at a fixed meridian angle t (a theta cut, ie. where the
- * theta sweep stops short of a pole): r sweeps innerRadius -> radius, phi
- * sweeps the same phiOffset/phi range as the outer/inner bands, sampled on the
- * exact same nx grid so its rim welds bit-identically to theirs. flip (1 or -1)
- * picks which of the 2 possible caps this is (t = the sweep's start or end),
- * driving both the outward normal (the +-theta tangent of `sphereDirection`)
- * and winding.
+ * Flat wall closing a theta cut, on the bands' nx grid so its rims weld. flip
+ * picks the start or end cap.
  *
  * @private
  */
@@ -95,13 +90,8 @@ function thetaCap({
 }
 
 /**
- * Flat annular wall at a fixed equatorial angle p (a phi cut, ie. where the phi
- * sweep is a partial revolution): r sweeps innerRadius -> radius, theta sweeps
- * the same clamped thetaOffset/theta range as the outer/inner bands, sampled on
- * the exact same ny grid so its rim welds bit-identically to theirs. flip (1 or
- * -1) picks which of the 2 possible caps this is (p = the sweep's start or
- * end), driving both the outward normal (the +-phi tangent of
- * `sphereDirection`) and winding.
+ * Flat wall closing a phi cut, on the bands' ny grid so its rims weld. flip
+ * picks the start or end cap.
  *
  * @private
  */
@@ -156,9 +146,7 @@ function phiCap({
     }
   }
 
-  // flip is inverted relative to thetaCap: with i (theta) as the row-stride
-  // axis here instead of phi, the same flip value maps to the opposite
-  // winding for an outward normal
+  // Theta is the row-stride axis here, so flip is inverted relative to thetaCap
   const at = (i, j) => j * rows + i;
   for (let j = 1; j <= capSegments; j++) {
     for (let i = 1; i <= ny; i++) {
@@ -180,11 +168,12 @@ function phiCap({
  * @property {number} [innerRadius=radius*0.5]
  * @property {import("../../../types.js").PositiveInteger} [nx=32]
  * @property {import("../../../types.js").PositiveInteger} [ny=16]
- * @property {import("../../../types.js").PositiveInteger} [capSegments=1] Radial segments of each cut cap
- * @property {import("../../../types.js").PolarAngle} [theta=Math.PI / 2] Meridian sweep length, silently
- *   clamped like `ellipsoid`'s
- * @property {import("../../../types.js").PolarAngle} [thetaOffset=Math.PI / 4] Meridian sweep start, silently
- *   clamped like `ellipsoid`'s
+ * @property {import("../../../types.js").PositiveInteger} [capSegments=1]
+ *   Radial segments per cut cap.
+ * @property {import("../../../types.js").PolarAngle} [theta=Math.PI / 2]
+ *   Meridian sweep length, clamped like `ellipsoid`'s.
+ * @property {import("../../../types.js").PolarAngle} [thetaOffset=Math.PI / 4]
+ *   Meridian sweep start, clamped like `ellipsoid`'s.
  * @property {import("../../../types.js").Angle} [phi=TAU]
  * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
@@ -192,11 +181,7 @@ function phiCap({
  */
 
 /**
- * A sphere with a smaller, concentric sphere hollowed out of it: a shell of
- * uniform wall thickness. Defaults to a quarter band (theta/thetaOffset) rather
- * than a full sphere, since a closed hollow sphere looks identical to a plain
- * `sphere` from outside - the partial default exposes the cavity and cut caps
- * immediately.
+ * A spherical shell. Defaults to a band, exposing the cavity.
  *
  * @param {HollowSphereOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}

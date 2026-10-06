@@ -11,9 +11,7 @@ import { cubePolygons } from "../../cuboid/cube.js";
  */
 
 /**
- * Regular hexahedron (cube) faces: 8 corners, cells order +x, -x, +y, -y, +z,
- * -z - `cubePolygons`'s own layout, since a regular hexahedron is exactly a cube
- * whose half-extent (`radius`) is the same on all 3 axes.
+ * Regular hexahedron (cube) faces, ordered +x, -x, +y, -y, +z, -z.
  *
  * @param {HexahedronPolygonsOptions} [options={}]
  * @returns {import("../../../../types.js").PolygonalComplex}

@@ -16,8 +16,8 @@ import { TAU } from "../../utils/common.js";
  * @property {import("../../../types.js").Angle} [theta=TAU]
  * @property {import("../../../types.js").Angle} [thetaOffset=0]
  * @property {number} [innerRadius=radius * 0.5]
- * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
- *   edge for mappings wrapping there (eg. `mappings.polar`).
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap edge
+ *   for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.concentric]
  */
 
@@ -67,9 +67,7 @@ export function annulus({
  */
 
 /**
- * Outline dual of `annulus`: unlike every other path in this module, an
- * annulus's boundary is 2 disjoint loops, not one - 2 path cells (outer loop
- * first, inner second).
+ * Outline dual of `annulus`: 2 path cells, outer loop first.
  *
  * @param {AnnulusPathOptions} [options={}]
  * @returns {import("../../../types.js").PolylineComplex}
@@ -84,8 +82,6 @@ export function annulusPath({
   innerRadius = radius * 0.5,
   closed = false,
 } = {}) {
-  // 2 disjoint ellipsePath loops concatenated into one geometry, rather than
-  // fanned into a single ring of triangles between them.
   const outer = ellipsePath({
     sx,
     sy,

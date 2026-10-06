@@ -8,26 +8,19 @@ import { concatGeometries } from "../../utils/common.js";
 
 /**
  * @typedef {object} ArbelosOptions
- * @property {number} [radius=0.5] Outer (enclosing) semicircle's radius: half
- *   the total baseline width.
- * @property {number} [innerRadius=radius*0.25] Radius of the left of the 2
- *   inner semicircles, both bulging the _same_ way as the enclosing one (up,
- *   above the baseline) and tangent to each other where they meet it:
- *   `innerRadius` and `radius - innerRadius` apart from the enclosing
- *   semicircle's left/right ends, respectively.
- * @property {import("../../../types.js").PositiveInteger} [segments=32] Column count, swept left to right.
- * @property {import("../../../types.js").PositiveInteger} [innerSegments=16] Row count between the bottom and top
- *   boundary at each column.
+ * @property {number} [radius=0.5] Outer semicircle radius.
+ * @property {number} [innerRadius=radius*0.25] Left inner semicircle radius.
+ *   The right one fills the rest.
+ * @property {import("../../../types.js").PositiveInteger} [segments=32]
+ *   Columns, left to right.
+ * @property {import("../../../types.js").PositiveInteger} [innerSegments=16]
+ *   Rows between the bottom and top boundaries.
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
- *   Uv mapping function. Defaults to a flat, bounding-box-relative unwrap; pass a
- *   function using `uRatio`/`vRatio` (the swept parametrization) to follow the
- *   arcs instead.
+ *   Use `uRatio`/`vRatio` to follow the arcs.
  */
 
 /**
- * Arbelos ("shoemaker's knife"): the region inside a big semicircle and outside
- * 2 smaller ones sharing its baseline, tangent where their diameters meet.
- * Area: `pi * innerRadius * (radius - innerRadius)`.
+ * An arbelos: a semicircle minus 2 tangent semicircles on its diameter.
  *
  * @param {ArbelosOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -48,8 +41,7 @@ export function arbelos({
   const splitX = leftCenter + r1;
 
   const outer = (x) => Math.sqrt(Math.max(R * R - x * x, 0));
-  // Exactly 0 at the shared tangent point, rather than 2 formulas that
-  // agree only up to floating-point noise.
+  // Exactly 0 at the tangent point, where both formulas only agree up to noise
   const leftInner = (x) =>
     x === splitX ? 0 : Math.sqrt(Math.max(r1 * r1 - (x - leftCenter) ** 2, 0));
   const rightInner = (x) =>

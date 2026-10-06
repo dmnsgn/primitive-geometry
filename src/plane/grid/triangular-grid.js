@@ -14,7 +14,7 @@ import { SQRT3 } from "../../utils/common.js";
  */
 
 /**
- * Isometric grid tiling equilateral triangles
+ * An isometric grid of equilateral triangles.
  *
  * @param {TriangularGridOptions} [options={}]
  * @returns {import("../../../types.js").PolygonalComplex}

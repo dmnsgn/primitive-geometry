@@ -7,28 +7,18 @@ import { rectangular } from "../../mappings.js";
 
 /**
  * @typedef {object} SalinonOptions
- * @property {number} [radius=0.5] Outer (enclosing) radius: half the total
- *   width, and the radius of the semicircle forming the bottom boundary.
- * @property {number} [innerRadius=radius*0.25] Radius of the central
- *   semicircle, bulging _opposite_ the enclosing one (up, above the baseline)
- *   over the middle third. The two flanking "ear" semicircles bulge the _same_
- *   way as the enclosing one (down, a shallower dip below the baseline) over
- *   the outer two thirds, sized to meet it at the baseline: `(radius -
- *   innerRadius) / 2` each.
- * @property {import("../../../types.js").PositiveInteger} [segments=32] Column count, swept left to right.
- * @property {import("../../../types.js").PositiveInteger} [innerSegments=16] Row count between the bottom and top
- *   boundary at each column.
+ * @property {number} [radius=0.5] Bottom semicircle radius.
+ * @property {number} [innerRadius=radius*0.25] Top central semicircle radius.
+ * @property {import("../../../types.js").PositiveInteger} [segments=32]
+ *   Columns, left to right.
+ * @property {import("../../../types.js").PositiveInteger} [innerSegments=16]
+ *   Rows between the bottom and top boundaries.
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
- *   Uv mapping function. Defaults to a flat, bounding-box-relative unwrap; pass a
- *   function using `uRatio`/`vRatio` (the swept parametrization) to follow the
- *   arcs instead.
+ *   Use `uRatio`/`vRatio` to follow the arcs.
  */
 
 /**
- * Archimedes' salinon: a "salt cellar" bounded by four semicircles - one
- * full-width on the bottom, a smaller one opposite it on top, and two "ear"
- * semicircles filling the remaining top thirds. Area: `pi/4 * (radius +
- * innerRadius) ** 2` (Archimedes' theorem).
+ * Archimedes' salinon: a shape bounded by 4 semicircles.
  *
  * @param {SalinonOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}

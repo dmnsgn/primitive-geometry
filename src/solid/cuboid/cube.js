@@ -14,8 +14,7 @@ import { computePlane } from "../../utils/plane-grid.js";
  */
 
 /**
- * Cuboid faces: 8 positions and 6 quad faces (indices into positions). Cells
- * order: +x, -x, +y, -y, +z, -z.
+ * Cuboid faces: 8 positions and 6 quads, ordered +x, -x, +y, -y, +z, -z.
  *
  * @param {CubePolygonsOptions} [options={}]
  * @returns {import("../../../types.js").PolygonalComplex}

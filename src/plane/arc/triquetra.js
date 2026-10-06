@@ -12,22 +12,18 @@ import {
 
 /**
  * @typedef {object} TriquetraOptions
- * @property {number} [radius=0.5] Radius of each of the 3 circles, and the side
- *   length of the equilateral triangle formed by their centers - a canonical
- *   Triquetra has no separate spacing parameter.
- * @property {import("../../../types.js").PositiveInteger} [segments=32] Column count, swept angularly per wedge, for
- *   both the core and the petals.
- * @property {import("../../../types.js").PositiveInteger} [innerSegments=16] Row count between the two boundaries at
- *   each column.
+ * @property {number} [radius=0.5] Radius of each circle, and distance between
+ *   their centers.
+ * @property {import("../../../types.js").PositiveInteger} [segments=32]
+ *   Angular columns per piece.
+ * @property {import("../../../types.js").PositiveInteger} [innerSegments=16]
+ *   Rows between the two boundaries.
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
- *   Uv mapping function. Defaults to a flat, bounding-box-relative unwrap; pass a
- *   function using `uRatio`/`vRatio` (the swept parametrization) to follow the
- *   arcs instead.
+ *   Use `uRatio`/`vRatio` to follow the arcs.
  */
 
 /**
- * Triquetra: three mutually intersecting vesica piscis lenses, centered at the
- * vertices of an equilateral triangle of side `radius`.
+ * A triquetra: 3 interlaced lenses centered on an equilateral triangle.
  *
  * @param {TriquetraOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -42,11 +38,8 @@ export function triquetra({
   const r = radius;
   const R = radius / Math.sqrt(3);
 
-  // Circle centers, at the equilateral triangle's vertices. Each is shared
-  // by 2 core wedges and 2 petals below; reused as one precomputed point
-  // rather than re-derived per wedge, since re-deriving it from different
-  // rotated angles can disagree in the last float bit and register as a
-  // crack.
+  // Precomputed: re-deriving the circle centers from rotated angles can disagree
+  // in the last bit and crack the mesh
   const angleC0 = (7 * Math.PI) / 6;
   const angleC1 = (11 * Math.PI) / 6;
   const angleC2 = Math.PI / 2;
@@ -56,8 +49,7 @@ export function triquetra({
   ]);
   const offsets = [0, TAU / 3, (2 * TAU) / 3];
 
-  // Distance from the centroid to the circle centered at angle `alpha`,
-  // along the ray at angle `theta`.
+  // Distance from the centroid to circle `alpha`, along the ray at `theta`
   const ray = (alpha, theta) => {
     const d = theta - alpha;
     return (
@@ -65,10 +57,8 @@ export function triquetra({
     );
   };
 
-  // seam(theta) is the boundary a core wedge shares with its petal: the
-  // distance to the "opposite" circle (the one not forming that petal).
-  // Both pieces sweep the same angle range through the same formula, so the
-  // seam matches exactly and the mesh never double-covers area.
+  // Core and petal share this boundary through the same formula so it matches
+  // exactly
   const seam = (theta) => ray(angleC2, theta);
   const outer = (theta) => Math.min(ray(angleC0, theta), ray(angleC1, theta));
 
@@ -76,7 +66,7 @@ export function triquetra({
   const uMax = angleC1;
   const cols = segments + 1;
 
-  // Shared bounding box, so a uv mapping stays continuous across pieces.
+  // Shared bounding box so uvs stay continuous across pieces
   const center = [0, 0];
   const sx = r;
   const sy = 2 * R;
@@ -106,18 +96,11 @@ export function triquetra({
     });
   };
 
-  // A core wedge is a triangle fan from the centroid, not a 2-boundary
-  // strip: computeSweptArc has no vMin/vMax band here (vMin is always 0, ie. every
-  // column reaches all the way to one shared apex), so it's built directly
-  // instead - mirroring computePolarGeometry's own single-apex/concentric-
-  // ring fan, but sharing computeSweptArc's own Chebyshev spacing for its columns
-  // to keep the outer boundary sampled at the exact same angles as the
-  // petals'.
+  // A core wedge fans from the centroid, which computeSweptArc can't build. Same
+  // Chebyshev columns as the petals so their shared boundary matches.
   const columnAngle = (i) => computeChebyshevColumn(i, segments, uMin, uMax);
 
-  // Angle, radius and position of ring `j`, column `i` of core wedge `k`. Both
-  // end columns lie on a circle center, so the outer ring returns the
-  // precomputed vertex rather than a point re-derived from a rotated angle.
+  // End columns' outer ring lands on a circle center: reuse its vertex
   const coreColumn = (k, i, j) => {
     const theta = columnAngle(i);
     const isEnd = i === 0 || i === segments;
@@ -131,8 +114,7 @@ export function triquetra({
     return [theta, v, [v * Math.cos(angle), v * Math.sin(angle)]];
   };
 
-  // The first ring fans from the shared apex at index 0, the rest bridge to the
-  // ring before them.
+  // The first ring fans from the apex at index 0
   const writeCoreCells = (cells, cellIndex, ringOffset, isFirstRing) => {
     if (isFirstRing) {
       for (let i = 0; i < segments; i++, cellIndex += 3) {
@@ -209,9 +191,8 @@ export function triquetra({
     return { positions, normals, uvs, cells };
   };
 
-  // Split into 6 non-overlapping wedges instead of 3 full lenses: 3 `core`
-  // wedges (together the Reuleaux triangle common to all 3 disks) and 3
-  // `petal`s (each lens minus the core), 120deg apart.
+  // 6 non-overlapping pieces rather than 3 overlapping lenses: 3 core wedges
+  // (the shared Reuleaux triangle) and 3 petals
   return concatGeometries([
     core(0),
     core(1),

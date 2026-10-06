@@ -20,7 +20,7 @@ const MAX_VERTICES = 1e7;
 const POLE_EPSILON = 1e-5;
 
 /**
- * Undirected seed edge key, stable whichever way the edge is walked
+ * Undirected seed edge key.
  *
  * @private
  */
@@ -30,10 +30,8 @@ const edgeKey = (a, b, numSeedVertices) =>
 const isPole = (v) => v < POLE_EPSILON || v > 1 - POLE_EPSILON;
 
 /**
- * Vertex and triangle counts for a seed polyhedron, from face lengths only (no
- * vertex math): projecting welds seed corners and seed-edge points across
- * faces, so those are counted once; diagonal and strictly-interior points never
- * are.
+ * Vertex and triangle counts from face lengths only. Projecting welds corners
+ * and edge points, so those are counted once.
  *
  * @private
  */
@@ -93,29 +91,21 @@ function barycentricPoint(seedPositions, a, b, c, i, j, S) {
 }
 
 /**
- * Build a flat-shaded (or, with `project`, smooth) triangle mesh from a seed
- * polyhedron: n-gon faces are fan-triangulated, each triangle optionally
- * subdivided into a barycentric grid. By default each face keeps its own
- * vertices for flat per-face normals. `project` instead normalizes vertices
- * onto `radius` and welds them across faces into a geodesic sphere.
+ * Flat-shaded mesh from a seed polyhedron, optionally subdivided. `project`
+ * welds it onto a sphere instead.
  *
  * @private
- * @param {import("../../types.js").PolygonalComplex} seed Seed
- *   polyhedron: flat xyz positions (radius already baked in by the caller) and
- *   CCW n-gon faces (indices into positions)
+ * @param {import("../../types.js").PolygonalComplex} seed Positions with radius
+ *   baked in, and CCW faces
  * @param {object} [options={}]
- * @param {number} [options.radius=0.5] Only used to re-normalize when project
- *   is true
- * @param {number} [options.subdivisions=0] Barycentric grid subdivisions per
- *   fan triangle
- * @param {boolean} [options.project=false] Radially project and weld across
- *   faces
- * @param {"gnomonic" | "spherical"} [options.projection="gnomonic"] How
- *   subdivided points are placed when project is true: "gnomonic" subdivides
- *   flat then projects (denser near seed vertices); "spherical" interpolates
- *   along great circles instead
- * @param {import("../mappings.js").MappingFn} [options.mapping] Defaults to
- *   mappings.spherical when project, mappings.rectangular otherwise
+ * @param {number} [options.radius=0.5] Sphere radius when projecting
+ * @param {number} [options.subdivisions=0] Barycentric subdivisions per
+ *   triangle
+ * @param {boolean} [options.project=false]
+ * @param {"gnomonic" | "spherical"} [options.projection="gnomonic"] Subdivide
+ *   flat then project, or along great circles
+ * @param {import("../mappings.js").MappingFn} [options.mapping] `spherical`
+ *   when projecting, `rectangular` otherwise
  * @returns {import("../../types.js").SimplicialComplex}
  * @throws {Error} If subdivisions would produce more than 1e7 vertices
  */
@@ -346,10 +336,9 @@ export function computePolyhedron(
 
   const geometry = { positions, normals, uvs, cells };
 
-  // Welding (project) shares one uv per vertex, but the spherical mapping's
-  // longitude wraps at u = 0/1 and is undefined at the poles. This can't help a
-  // triangle whose 3 corners are already ~120deg apart in longitude before
-  // subdivision (eg. tetraSphere's 4 huge faces at low subdivisions).
+  // Welded vertices share one uv, but spherical's longitude wraps and is
+  // undefined at the poles. Can't fix triangles spanning ~120° of longitude
+  // (eg. a low-subdivision tetrasphere).
   return project && mapping === spherical
     ? splitSeam(geometry, {
         isPole: (index) => isPole(uvs[index * 2 + 1]),

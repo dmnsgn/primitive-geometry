@@ -10,7 +10,7 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
 /**
  * @typedef {object} ParaboloidOptions
  * @property {number} [height=1]
- * @property {number} [radius=0.5] Rim radius, at the open (base) end
+ * @property {number} [radius=0.5] Rim radius.
  * @property {import("../../../types.js").PositiveInteger} [nx=32]
  * @property {import("../../../types.js").PositiveInteger} [ny=16]
  * @property {import("../../../types.js").PositiveInteger} [capSegments=1]
@@ -24,11 +24,7 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  */
 
 /**
- * Circular paraboloid (revolution of x² + z² = k·(apexY - y), the classic
- * satellite-dish/reflector shape) - apex up, rim down, same orientation as
- * `cone`, and like `cone` only the rim end takes a cap option. Unlike a cone's
- * apex, the surface here is smooth at the apex (no crease), with a single
- * well-defined normal there.
+ * A circular paraboloid, apex up.
  *
  * @param {ParaboloidOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}

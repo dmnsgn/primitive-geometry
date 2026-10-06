@@ -17,14 +17,11 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @property {number} [sy=5/6] Vertical (polar) scale
  * @property {import("../../../types.js").PositiveInteger} [nx=32]
  * @property {import("../../../types.js").PositiveInteger} [ny=16]
- * @property {number} [n=2.5] Roundness exponent - Piet Hein's original; n > 2
- *   gives a "true" superegg, n = 2 is a spheroid, n < 2 rounds toward a
- *   cylinder-capped-with-cones shape
- * @property {import("../../../types.js").PolarAngle} [theta=Math.PI] Meridian sweep length, silently clamped to
- *   [-thetaOffset, PI - thetaOffset] - see ellipsoid.js's EllipsoidOptions for
- *   why.
- * @property {import("../../../types.js").PolarAngle} [thetaOffset=0] Meridian sweep start, silently clamped to
- *   [0, PI] - see theta.
+ * @property {number} [n=2.5] Roundness exponent.
+ * @property {import("../../../types.js").PolarAngle} [theta=Math.PI] Meridian
+ *   sweep length, clamped so poles stay at its ends.
+ * @property {import("../../../types.js").PolarAngle} [thetaOffset=0] Meridian
+ *   sweep start from the north pole, clamped to [0, π].
  * @property {import("../../../types.js").Angle} [phi=TAU]
  * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
@@ -33,10 +30,9 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  */
 
 /**
- * Piet Hein's superegg: a superellipsoid special case (n2 = 2, sx = sz) with a
- * circular cross-section at every height, ie. an actual surface of revolution -
- * unlike the general superellipsoid, whose cross-sections are themselves
- * superelliptical.
+ * Piet Hein's superegg: a superellipsoid of revolution.
+ *
+ * Special cases: spheroid (n = 2).
  *
  * @param {SupereggOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -79,9 +75,7 @@ export function superegg({
         radius * sy * -signedPow(cosTheta, e),
         radius * sinPhi * s,
       ],
-      // Same complementary-exponent gradient as superellipsoid, with the
-      // cross-section term left plain (e2 = 1, self-complementary) since
-      // the whole point of the superegg is a circular cross-section
+      // superellipsoid's gradient with a circular cross-section (e2 = 1)
       normal: [
         (-cosPhi * signedPow(sinTheta, 2 - e)) / radius,
         -signedPow(cosTheta, 2 - e) / (radius * sy),

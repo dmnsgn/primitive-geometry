@@ -10,10 +10,11 @@ import { computeConeSegment } from "./cone.js";
  * @typedef {object} HollowCylinderOptions
  * @property {number} [height=1]
  * @property {number} [radius=0.5]
- * @property {number} [innerRadius=radius*0.5] Bore radius
+ * @property {number} [innerRadius=radius*0.5] Bore radius.
  * @property {import("../../../types.js").PositiveInteger} [nx=32]
  * @property {import("../../../types.js").PositiveInteger} [ny=1]
- * @property {import("../../../types.js").PositiveInteger} [capSegments=1] Radial segments of each annular cap
+ * @property {import("../../../types.js").PositiveInteger} [capSegments=1]
+ *   Radial segments per cap.
  * @property {boolean} [capApex=true]
  * @property {boolean} [capBase=true]
  * @property {import("../../../types.js").Angle} [phi=TAU]
@@ -23,10 +24,7 @@ import { computeConeSegment } from "./cone.js";
  */
 
 /**
- * A cylinder with a concentric cylindrical bore through it - a washer/pipe
- * extruded to a given height. Doesn't close the `phi < TAU` wedge cut (no wall
- * between the outer/inner walls or the 2 caps there) - same limitation as a
- * plain `cylinder({ phi: <TAU })`.
+ * A cylinder with a concentric bore. A `phi < TAU` cut is left open.
  *
  * @param {HollowCylinderOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -46,8 +44,7 @@ export function hollowCylinder({
 } = {}) {
   const halfHeight = height / 2;
 
-  // A flat annular ring: computeConeSegment with yFrom = yTo degenerates its
-  // usual slope to none, so y stays constant while r sweeps rFrom -> rTo
+  // A cone segment with yFrom = yTo is a flat ring
   const annularCap = (y, rFrom, rTo) =>
     computeConeSegment({
       yFrom: y,
@@ -61,9 +58,6 @@ export function hollowCylinder({
       phiOffset,
     });
 
-  // cylinder's own lateral surface (capBase/capApex false, its "tube" case)
-  // called twice: once at radius for the outer wall, once at innerRadius
-  // inverted for the bore wall.
   const pieces = [
     cylinder({
       height,

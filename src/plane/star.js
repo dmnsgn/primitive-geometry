@@ -31,34 +31,27 @@ function computeStarEdge(points, radius, notchRadius, theta, thetaOffset, t) {
 /**
  * @typedef {object} StarOptions
  * @property {import("../../types.js").PositiveInteger} [points=5]
- * @property {import("../../types.js").PositiveInteger} [density=2] Schläfli "skip" factor: must be `< points / 2`
- *   (and coprime with `points` for a genuine, non-compound star polygon) or the
- *   auto-computed `notchRadius` degenerates.
+ * @property {import("../../types.js").PositiveInteger} [density=2] Schläfli
+ *   skip factor: `< points / 2`, coprime with `points` for a non-compound
+ *   star.
  * @property {number} [radius=0.5]
  * @property {number} [notchRadius=radius*computeStarRatio(points,density)]
- *   Radius of the points/tips' flanking concave vertices, ie. how deep the star's
- *   notches cut in.
- * @property {number} [innerRadius=0] Like `annulus`'s: a hole radius the fill
- *   stops at instead of reaching the center. `0` (default): no hole, fill
- *   reaches the center (subject to `mergeCentroid`).
- * @property {boolean} [circularHole=false] Only relevant when `innerRadius` is
- *   non-zero: `false` (default) traces the hole as a smaller, self-similar copy
- *   of the outer star; `true` traces it as a plain circle.
+ *   Radius of the concave vertices between tips.
+ * @property {number} [innerRadius=0] Hole radius. `0` fills to the center.
+ * @property {boolean} [circularHole=false] Trace the hole as a circle instead
+ *   of a scaled star.
  * @property {import("../../types.js").PositiveInteger} [edgeSegments=1]
  * @property {import("../../types.js").PositiveInteger} [innerSegments=16]
  * @property {import("../../types.js").Angle} [theta=TAU]
  * @property {import("../../types.js").Angle} [thetaOffset=0]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
- * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
- *   edge for mappings wrapping there (eg. `mappings.polar`).
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap edge
+ *   for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../mappings.js").MappingFn} [mapping=mappings.concentric]
  */
 
 /**
- * Regular {points/density} star polygon: `points` outer tips alternating with
- * `points` inner notches. `notchRadius` defaults to the tips' own
- * `{points/density}` ratio, so e.g. the default `star()` traces a regular
- * pentagram.
+ * A regular {points/density} star polygon: the default is a pentagram.
  *
  * @param {StarOptions} [options={}]
  * @returns {import("../../types.js").SimplicialComplex}
@@ -123,13 +116,10 @@ export function star({
  */
 
 /**
- * Outline dual of `star`: `points` outer tips alternating with `points` inner
- * notches, connected by straight edges.
+ * Outline dual of `star`.
  *
  * @param {StarPathOptions} [options={}]
- * @returns {import("../../types.js").PolylineComplex} `edgeSegments *
- *   points * 2` positions (`+ 1` for a partial `theta`) and a single path cell
- *   of that many indices (`+ 1`, repeating index `0`, when `closed`)
+ * @returns {import("../../types.js").PolylineComplex}
  */
 export function starPath({
   points = 5,

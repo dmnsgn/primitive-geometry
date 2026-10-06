@@ -13,13 +13,14 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
 /**
  * @typedef {object} SphericalRingOptions
- * @property {number} [radius=0.5] Sphere radius
- * @property {number} [innerRadius=radius*0.5] Cylindrical bore radius, silently
- *   clamped to [0, radius] - a bore wider than the sphere has no sensible rim
- *   to meet
+ * @property {number} [radius=0.5] Sphere radius.
+ * @property {number} [innerRadius=radius*0.5] Bore radius, clamped to [0,
+ *   radius].
  * @property {import("../../../types.js").PositiveInteger} [nx=32]
- * @property {import("../../../types.js").PositiveInteger} [ny=16] Outer spherical band meridian segments
- * @property {import("../../../types.js").PositiveInteger} [holeSegments=1] Inner bore wall segments
+ * @property {import("../../../types.js").PositiveInteger} [ny=16] Outer band
+ *   meridian segments.
+ * @property {import("../../../types.js").PositiveInteger} [holeSegments=1]
+ *   Bore wall segments.
  * @property {import("../../../types.js").Angle} [phi=TAU]
  * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
@@ -27,12 +28,7 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  */
 
 /**
- * A sphere with a cylindrical hole drilled through its center - MathWorld's
- * Spherical Ring, aka a napkin ring. Unlike what "ring" might suggest, there's
- * no flat annulus at either end: at the rim (height `sqrt(radius² -
- * innerRadius²)`), the sphere's and bore's surfaces meet directly, so the
- * meridian cross-section is a single closed loop - topologically a torus with a
- * lens-shaped minor curve instead of a circular one.
+ * A spherical ring (napkin ring): a sphere with a cylindrical bore.
  *
  * @param {SphericalRingOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -72,11 +68,7 @@ export function sphericalRing({
     };
   }
 
-  // computeRevolutionGeometry only wraps its phi columns, not its v rows, so
-  // the sphere+bore's single closed meridian loop can't be swept in one
-  // call - built instead as two open pieces (outer band, inner wall)
-  // concatenated at their shared rims, the same pattern bicone/doubleCone
-  // use for a meridian that genuinely kinks.
+  // Rows don't wrap, so the closed meridian loop is split into band and bore
   const outer = computeRevolutionGeometry({
     nx,
     ny,
@@ -92,16 +84,11 @@ export function sphericalRing({
   const yTop = topRim[1];
 
   function innerEquation({ v, cosPhi, sinPhi }) {
-    // Reuse the outer band's own v = 0 rim x/z formula directly instead of
-    // rederiving it, guaranteeing a bit-identical weld (the bore has a
-    // constant radius, so the same x/z holds at both ends - only y sweeps)
+    // The outer rim's own x/z, so the weld is bit-identical
     const { position: rim } = outerEquation({ v: 0, cosPhi, sinPhi });
 
     return {
-      // v = 0 -> yBottom, v = 1 -> yTop, matching the outer band's own sweep
-      // direction - the same inner/outer v convention cylinder/hollowCylinder/
-      // hollowSphere use. The normal below points naturally outward; invert()
-      // flips it inward and corrects winding to face into the bore.
+      // Outward like the band: invert() turns it into the bore
       position: [rim[0], yBottom + (yTop - yBottom) * v, rim[2]],
       normal: [rim[0], 0, rim[2]],
       collapsed: false,

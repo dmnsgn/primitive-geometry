@@ -14,9 +14,7 @@ import { hexahedronPolygons } from "../regular/hexahedron.js";
  */
 
 /**
- * A geodesic sphere built by radially projecting and welding a subdivided
- * hexahedron (cube) - an alternative to icosphere's topology, with
- * cubemap-friendly UVs.
+ * A geodesic sphere from a subdivided cube.
  *
  * @param {HexasphereOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}

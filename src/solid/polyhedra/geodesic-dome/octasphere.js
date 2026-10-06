@@ -14,8 +14,7 @@ import { octahedronPolygons } from "../regular/octahedron.js";
  */
 
 /**
- * A geodesic sphere built by radially projecting and welding a subdivided
- * octahedron.
+ * A geodesic sphere from a subdivided octahedron.
  *
  * @param {OctasphereOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}

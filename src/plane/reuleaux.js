@@ -19,14 +19,12 @@ import {
  * @property {import("../../types.js").Angle} [theta=TAU]
  * @property {import("../../types.js").Angle} [thetaOffset=0]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
- * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
- *   edge for mappings wrapping there (eg. `mappings.polar`).
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap edge
+ *   for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../mappings.js").MappingFn} [mapping=mappings.concentric]
  */
 
-// Reuleaux polygon boundary point at angle t, unit radius - shared by
-// reuleaux's radial fill (scaled by rx per ring) and reuleauxPath's outline
-// (scaled by radius directly, no ring interpolation).
+// Unit-radius boundary point at angle t
 function computeReuleauxEdge(
   sides,
   cosSides,
@@ -46,7 +44,7 @@ function computeReuleauxEdge(
 
 /**
  * A Reuleaux polygon: a constant-width curve built from `sides` circular arcs,
- * each centered on the opposite vertex.
+ * each centered on the opposite vertex. Defaults to a Reuleaux triangle.
  *
  * @param {ReuleauxOptions} [options={}]
  * @returns {import("../../types.js").SimplicialComplex}
@@ -107,8 +105,7 @@ export function reuleaux({
  */
 
 /**
- * Outline dual of `reuleaux`: same parametric boundary, sampled directly with
- * no radial fill.
+ * Outline dual of `reuleaux`.
  *
  * @param {ReuleauxPathOptions} [options={}]
  * @returns {import("../../types.js").PolylineComplex}

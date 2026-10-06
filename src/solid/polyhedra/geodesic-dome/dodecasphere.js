@@ -14,8 +14,7 @@ import { dodecahedronPolygons } from "../regular/dodecahedron.js";
  */
 
 /**
- * A geodesic sphere built by radially projecting and welding a subdivided
- * dodecahedron
+ * A geodesic sphere from a subdivided dodecahedron.
  *
  * @param {DodecasphereOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}

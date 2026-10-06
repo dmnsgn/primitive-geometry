@@ -12,9 +12,7 @@ import {
 
 const CORNER_COUNT = 12;
 
-// CCW from the right arm's bottom-right corner, 2 outer + 1 inner corner per
-// arm - shared by cross's radial fill (self-similar copy scaled per ring)
-// and crossPath's outline (this exact boundary, no scaling needed).
+// CCW from the right arm's bottom-right corner: 2 outer + 1 inner per arm
 function computeCrossOutline(r, w) {
   return [
     [r, -w],
@@ -35,24 +33,20 @@ function computeCrossOutline(r, w) {
 /**
  * @typedef {object} CrossOptions
  * @property {number} [radius=0.5] Distance from the center to each arm's tip.
- * @property {number} [armWidth=radius/3] Half-width of each arm. Defaults to a
- *   third of `radius`, the classic Greek cross made of 5 equal squares.
+ * @property {number} [armWidth=radius/3] Half-width of each arm. The default
+ *   makes 5 equal squares.
  * @property {import("../../types.js").PositiveInteger} [edgeSegments=1]
- * @property {import("../../types.js").PositiveInteger} [innerSegments=16] Row count between the center and the
- *   outline at each column.
- * @property {number} [innerRadius=0] Like `star`'s: a hole radius the fill
- *   stops at instead of reaching the center, traced as a smaller, self- similar
- *   copy of the outer cross. `0` (default): no hole, fill reaches the center.
+ * @property {import("../../types.js").PositiveInteger} [innerSegments=16]
+ * @property {number} [innerRadius=0] Hole radius, traced as a scaled cross. `0`
+ *   fills to the center.
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
- * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
- *   edge for mappings wrapping there (eg. `mappings.polar`).
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap edge
+ *   for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../mappings.js").MappingFn} [mapping=mappings.rectangular]
- *   Uv mapping function. Defaults to a flat, bounding-box-relative unwrap.
  */
 
 /**
- * Greek cross: a plus-sign shaped non-regular dodecagon - 4 equal arms
- * extending from a square center, filled with a fan from the center.
+ * A Greek cross: 4 equal arms around a square center.
  *
  * @param {CrossOptions} [options={}]
  * @returns {import("../../types.js").SimplicialComplex}
@@ -83,9 +77,7 @@ export function cross({
     mergeSeam,
     mapping,
     equation: ({ rx, t }) => {
-      // rx is the ring's interpolated radius (innerRadius..radius); scale
-      // the full-size outline by its fraction of radius, a self-similar
-      // copy of the outer cross at every ring, down to innerRadius.
+      // Each ring is a scaled copy of the outline
       const scale = rx / r;
       const [x, y] = computeOutlineEdge(outline, 0, t);
       return [scale * x, scale * y];
@@ -102,8 +94,7 @@ export function cross({
  */
 
 /**
- * Outline dual of `cross`: the same 12-corner outline, walked directly instead
- * of fanned from the center.
+ * Outline dual of `cross`.
  *
  * @param {CrossPathOptions} [options={}]
  * @returns {import("../../types.js").PolylineComplex}

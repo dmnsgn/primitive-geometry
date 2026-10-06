@@ -6,11 +6,8 @@ import { concatGeometries, snapToZero } from "../../utils/common.js";
 import { computeConeSegment } from "./cone.js";
 
 /**
- * `computeConeSegment`'s phi = PI boundary column hits Math.sin(PI) (~1e-16,
- * not exact 0): harmless on its own, but `twist` below moves that residual into
- * a different coordinate slot, where it collides with an apex point that's
- * exactly 0 there (r = 0 forces it). Snapping before twisting keeps both copies
- * bit-identical.
+ * Math.sin(PI) isn't exactly 0, and `twist` moves that residual where an apex
+ * is: snapping keeps both copies bit-identical.
  *
  * @private
  */
@@ -19,14 +16,8 @@ function snapZeros(array) {
 }
 
 /**
- * Rotate a geometry's positions/normals by (x, y, z) -> (-y, -x, -z): the
- * rigid, orientation-preserving map that carries `half` (apex N = (0, r, 0),
- * shared equator rim through W = (-r, 0, 0), (0, 0, r), E = (r, 0, 0)) onto the
- * other two quarter-cones (apex W, shared rim through N, (0, 0, -r), S = (0,
- * -r, 0)). This is the 90°-twisted reattachment that makes a sphericon a
- * sphericon rather than a plain bicone. Since it's a proper rotation (not a
- * reflection), normals carry over unchanged in direction - no inverse-transpose
- * needed, and winding stays correct.
+ * Rotate by (x, y, z) -> (-y, -x, -z), the sphericon's 90° twist. A proper
+ * rotation, so normals and winding carry over.
  *
  * @private
  */
@@ -50,17 +41,14 @@ function twist({ positions, normals, uvs, cells }) {
 /**
  * @typedef {object} SphericonOptions
  * @property {number} [radius=0.5]
- * @property {import("../../../types.js").PositiveInteger} [nx=16] Segments per quarter-cone's half-turn sweep
- * @property {import("../../../types.js").PositiveInteger} [ny=1] Meridian segments per quarter-cone (its meridian is
- *   a straight cone slant, so ny > 1 buys nothing by default, same as
- *   cone/bicone/doubleCone)
+ * @property {import("../../../types.js").PositiveInteger} [nx=16] Segments per
+ *   quarter-cone half-turn.
+ * @property {import("../../../types.js").PositiveInteger} [ny=1] Meridian
+ *   segments per quarter-cone.
  */
 
 /**
- * A right-circular bicone with a 90° apex angle, split along the plane through
- * both apexes and reattached with one half rotated 90° - the classic
- * 4-quarter-cone rolling solid. No flat faces: a single continuous developable
- * surface that rolls by wobbling in a straight line.
+ * A sphericon: a bicone split through its apexes, one half turned 90°.
  *
  * @param {SphericonOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}

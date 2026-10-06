@@ -19,13 +19,12 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @property {number} [sx=1]
  * @property {number} [sy=0.5]
  * @property {number} [sz=sy]
- * @property {number} [n1=3] North-south (meridian) roundness exponent
- * @property {number} [n2=n1] East-west (cross-section) roundness exponent
- * @property {import("../../../types.js").PolarAngle} [theta=Math.PI] Meridian sweep length, silently clamped to
- *   [-thetaOffset, PI - thetaOffset] - see ellipsoid.js's EllipsoidOptions for
- *   why.
- * @property {import("../../../types.js").PolarAngle} [thetaOffset=0] Meridian sweep start, silently clamped to
- *   [0, PI] - see theta.
+ * @property {number} [n1=3] Meridian roundness exponent.
+ * @property {number} [n2=n1] Cross-section roundness exponent.
+ * @property {import("../../../types.js").PolarAngle} [theta=Math.PI] Meridian
+ *   sweep length, clamped so poles stay at its ends.
+ * @property {import("../../../types.js").PolarAngle} [thetaOffset=0] Meridian
+ *   sweep start from the north pole, clamped to [0, π].
  * @property {import("../../../types.js").Angle} [phi=TAU]
  * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
@@ -34,11 +33,10 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  */
 
 /**
- * Superquadric ellipsoid (Barr 1981): generalizes ellipsoid by raising its
- * meridian (n1) and cross-section (n2) sin/cos terms to signed powers - n = 2
- * is a plain ellipsoid, n < 2 rounds toward a box, n > 2 (the default, n1 = n2
- * = 3) pinches toward a star/octahedron. See superegg for the n2 = 2 (circular
- * cross-section) special case.
+ * A superellipsoid: n > 2 rounds toward a box, n < 2 pinches.
+ *
+ * Special cases: ellipsoid (n1 = n2 = 2), octahedron (n1 = n2 = 1), astroidal
+ * ellipsoid (n1 = n2 = 2/3), superegg-like (n2 = 2, sx = sz).
  *
  * @param {SuperellipsoidOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -83,10 +81,7 @@ export function superellipsoid({
 
     return {
       position: [radius * sx * dx, radius * sy * dy, radius * sz * dz],
-      // Barr's complementary-exponent (2 - e) form of the implicit
-      // surface's gradient, verified numerically against the tangent cross
-      // product - reduces exactly to ellipsoid.js's dx/sx, dy/sy, dz/sz at
-      // n1 = n2 = 2 (e1 = e2 = 1, self-complementary).
+      // Barr's complementary-exponent gradient: ellipsoid's at n1 = n2 = 2
       normal: [
         (-signedPow(cosPhi, 2 - e2) * signedPow(sinTheta, 2 - e1)) / sx,
         -signedPow(cosTheta, 2 - e1) / sy,

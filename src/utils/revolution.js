@@ -10,26 +10,9 @@ import { linear } from "./distribution.js";
 export const TMP = [0, 0, 0];
 
 /**
- * Fan-triangulated flat disk cap shared by revolution solids (cylinder/cone,
- * torus): capSegments + 1 concentric rings of `cols` angular samples
- * (ringSegments + 1, or ringSegments when the caller merges a full turn's wrap
- * column). The innermost ring collapses to a point - a single vertex with
- * mergeSeam - and fans with a single triangle per quad instead of two,
- * skipping the degenerate one.
- *
- * The disk is defined in the caller's own local 2D coordinates: x along the
- * angular sample's cosine, y along its sine, both scaled by capRadius *
- * radiusRatio, then independently by sx/sy for an elliptical cap. `point(x, y)`
- * embeds those into the solid's 3D space; `normal` is that embedding's flat
- * outward normal. Both are the caller's responsibility, since the two solids
- * embed their cap plane differently (cylinder: axis-aligned; torus: offset and
- * rotated by its phi angle). A flat disk's normal only depends on the plane it
- * sits in, not its in-plane shape - so sx/sy don't affect `normal`, only the
- * position/uv scale.
- *
- * `flip` (1 or -1) selects which of a cap pair (base/apex, start/end) this is,
- * driving winding order. `normal` must already have flip folded in, so it
- * points outward, ie. away from the solid.
+ * Flat disk cap fanning from a collapsed center. `point(x, y)` embeds the local
+ * disk (x along cos, y along sin) in 3D, `normal` is its outward normal with
+ * `flip` folded in, and `flip` picks the winding.
  *
  * @private
  */
@@ -60,8 +43,7 @@ export function computeCap(
       ? start + (mergeSeam ? 0 : j % cols)
       : start + centerCount + (r - 1) * cols + (j % cols);
 
-  // Summed from the same samples as the outer ring, so it's the length of the
-  // body's own boundary ring the cap welds onto
+  // Same samples as the body's boundary ring, so the perimeters match
   let perimeter = 0;
   for (let j = 0; j < ringSegments; j++) {
     const a = angleAt(j);
@@ -129,8 +111,7 @@ export function computeCap(
       const c = at(r, j + 1);
       const d = at(r + 1, j + 1);
 
-      // The innermost ring is collapsed at the center: fan with a single
-      // triangle, skipping the degenerate one
+      // The center ring is collapsed: one triangle per wedge
       if (r > 0) writeTriangle(a, c, d);
 
       writeTriangle(a, d, b);
@@ -149,19 +130,14 @@ export function computeCapVertexCount(cols, capSegments, mergeSeam = false) {
 }
 
 /**
- * Triangulate one quad of a row-major vertex grid: a/b on the previous row, c/d
- * on the current one, b/d one column after a/c.
- *
- * Splits along the b-c diagonal, matching `computePlane`/
- * `computePolarGeometry`/`computeRevolutionGeometry`, so displacement in a
- * vertex shader creases consistently across the library. flip (1 or -1) picks
- * the winding, same convention as `computeCap`. Which value maps to "outward"
- * depends on how the caller's row/col axes relate to its own surface normal -
- * callers work that out for themselves (see torus.js/hollow-sphere.js).
+ * Triangulate one grid quad: a/b on the previous row, c/d on the current, b/d
+ * one column after. `flip` picks the winding.
  *
  * @private
  */
 export function computeGridQuad(cells, indices, [a, b, c, d], flip) {
+  // Split along b-c like every grid here, so vertex shader displacement creases
+  // consistently
   if (flip === 1) {
     cells[indices.cell] = a;
     cells[indices.cell + 1] = c;
@@ -184,54 +160,15 @@ export function computeGridQuad(cells, indices, [a, b, c, d], flip) {
 }
 
 /**
- * A grid of meridian rings (v = 0..1, row-major/outer) by nx + 1 angular
- * columns (phi, inner), revolved around the y-axis. The last column reuses the
- * first's angle when phi is a multiple of TAU, so their positions match
- * bit-identically, same rule as every other revolution solid. mergeSeam shares
- * them instead (nx columns), along with collapsed rings whose normal doesn't
- * depend on phi (a smooth pole, not a cone's apex).
+ * Meridian rows by angular columns, revolved around y.
  *
- * `equation({ v, cosPhi, sinPhi })` computes one vertex's analytic
- * position/normal, already embedding whatever axis-scale or ellipse the caller
- * needs (eg. cylinder's per-end sx/sz, ellipsoid's rx/ry/rz), plus whether the
- * whole v-ring is pinched to a point on the axis (a pole or an apex).
- * `collapsed` must depend on v only: it's probed once per row (at cosPhi = 1,
- * sinPhi = 0) to size and fan-triangulate the mesh before the main fill. This
- * generalizes ellipsoid's original pole handling to any meridian curve, not
- * just an ellipse's sin/cos one. A pole is only supported at v = 0 or v = 1 -
- * the meridian curve must not cross the axis anywhere in between - so callers
- * with a bounded theta/thetaOffset (eg. ellipsoid) clamp them so their sweep
- * can't.
- *
- * `vDistribution(t)` remaps the row's linear index fraction `t` (0..1, evenly
- * spaced) to the actual `v` fed into `equation` - `linear` (the default) is the
- * identity, `chebyshev` clusters rows toward both ends of the sweep. This
- * changes vertex positions, not just texturing: a row's `v` drives its position
- * through `equation`, so redistributing `v` moves where rows actually sit along
- * the meridian (see distribution.js).
- *
- * The uv v-coordinate defaults to the redistributed `v`, not the row fraction
- * `t`, so the texture stays put on the surface whatever `vDistribution` does:
- * it only changes tessellation. `equation` may return its own `v` to override
- * just the uv (eg. capsule.js's meridian arc length, since its sections get
- * independent row counts); structural v (row spacing, pole detection) is
- * unaffected, since it's only ever read from the input parameter, never the
- * return value.
- *
- * CapBase/capApex add a flat disk at v = 0/v = 1, skipped when that end is
- * already collapsed to a true point apex (same convention cylinder/cone use
- * today). position.x/z are always linear in (cosPhi, sinPhi) with no cross
- * term, for an axis-aligned surface of revolution (the defining property of
- * this whole family). So each cap's radius/ellipse-scale is reconstructed by
- * probing `equation` at that end rather than requiring the caller to pass it
- * separately: `equation(v, 1, 0).position` and `equation(v, 0, 1).position`
- * give the rim's x/z extent directly, positive or negative depending on the
- * shape's own sign convention (eg. cylinder's cosPhi = -cos(p)). capRadius is
- * fixed at 1, and the sign is folded into a per-cap cos/sin flip instead of
- * `Math.abs`-ing it away blindly - so the reconstructed rim still lands exactly
- * on the body's own boundary ring (bit-identical, the same "seam" convention as
- * every other welded boundary here), while keeping the cap's sx/sy positive for
- * mapping functions that divide by them (eg. `rectangular`).
+ * - `equation({ v, cosPhi, sinPhi })` returns a vertex's `position`, `normal`,
+ *   `collapsed` for rows pinched to the axis (only at v = 0 or 1), and
+ *   optionally its uv `v`.
+ * - `vDistribution` remaps rows along the meridian. Uv v follows it, so the
+ *   texture stays put.
+ * - `mergeSeam` shares the wrap column and smooth poles.
+ * - `capBase`/`capApex` add flat disks at uncollapsed ends.
  *
  * @private
  */
@@ -253,8 +190,8 @@ export function computeRevolutionGeometry({
   const wrap = phi % TAU === 0;
   const cols = mergeSeam && wrap ? nx : nx + 1;
 
-  // Rings collapsed to a point (poles, apexes) fan with a single triangle per
-  // quad instead of two, skipping the degenerate one
+  // Probed once per row, so `collapsed` must depend on v only. Collapsed rows
+  // fan with one triangle per quad.
   const collapsedAt = Array.from(
     { length: ny + 1 },
     (_, y) =>
@@ -328,8 +265,7 @@ export function computeRevolutionGeometry({
   let vertexIndex = 0;
   let cellIndex = 0;
 
-  // The last column reuses the first angle exactly on a full revolution, so
-  // the wrap welds instead of landing a hair away from it
+  // A full turn's last column reuses the first angle exactly so it welds
   const phiAt = (x) => (wrap && x === nx ? 0 : x / nx) * phi + phiOffset;
 
   const writeVertex = (x, v, uOffset) => {
@@ -358,8 +294,7 @@ export function computeRevolutionGeometry({
     uvs[vertexIndex * 2 + 1] = uvV;
   };
 
-  // Quads between the row just written and the one before it, each half
-  // skipped when the ring it fans from is collapsed
+  // Each half is skipped when the row it fans from is collapsed
   const writeRowQuads = (y) => {
     for (let x = 0; x < nx; x++) {
       const a = at(x, y - 1);
@@ -385,10 +320,8 @@ export function computeRevolutionGeometry({
     }
   };
 
-  // A collapsed ring has one vertex per wedge: centering its u between the
-  // wedge's two rim columns keeps the pole's uv tear symmetric. Fans pick pole
-  // column x for wedge x, from either side, leaving column nx unused (kept at
-  // u = 1 so it stays in range).
+  // A pole's u is centered between its wedge's rim columns so the uv tear is
+  // symmetric. Column nx is unused, kept at u = 1.
   const writeRow = (y) => {
     const v = vDistribution(y / ny);
     const centered = collapsedAt[y] && !mergedAt[y];
@@ -406,9 +339,8 @@ export function computeRevolutionGeometry({
   const geometry = { positions, normals, uvs, cells };
   const indices = { vertex: vertexIndex, cell: cellIndex };
 
-  // The rim's x/z extent, probed from the equation itself rather than passed
-  // in; its sign is folded into the cap's own cos/sin so the reconstructed rim
-  // lands bit-exactly on the body's boundary ring while sx/sy stay positive.
+  // Rim extent probed from the equation, its sign folded into cos/sin so the
+  // rim welds exactly while sx/sy stay positive
   const addCap = ({ v, capSegments, flip, normalY }) => {
     const atCos = equation({ v, cosPhi: 1, sinPhi: 0 });
     const atSin = equation({ v, cosPhi: 0, sinPhi: 1 });
@@ -441,13 +373,8 @@ export function computeRevolutionGeometry({
 }
 
 /**
- * A point on a regular sides-gon ring at the given angle/radius/height - same
- * x/z sign convention as `cylinder`'s own `equation()`, so a prism, antiprism
- * and cylinder built with the same radius/phiOffset share a corner. Shared by
- * prism/antiprism's own wall corners and cap rims (see `computePolygonCap`), so
- * a wall corner's position is computed by the exact same expression as its
- * coincident cap vertex - required for them to weld bit-identically
- * (`analyze()`'s crack check), not just approximately.
+ * Polygon ring corner, with `cylinder`'s sign convention. Shared by prism walls
+ * and caps so they weld bit-identically.
  *
  * @private
  */
@@ -456,11 +383,7 @@ export function computePolygonCorner(angle, radius, y) {
 }
 
 /**
- * A prism/antiprism's flat sides-gon cap: `computeCap`'s own `sides + 1` angle
- * samples with no further interpolation between them trace a straight sides-gon
- * boundary, not an arc (see `prism.js`'s own doc comment for why). Shared by
- * `prism` (whose bottom/top ends sample the same `angleAt`) and `antiprism`
- * (whose top ring is rotated by half a sector, so each end supplies its own).
+ * A prism's flat polygon cap: `computeCap` sampled at its corners only.
  *
  * @private
  */
@@ -487,23 +410,9 @@ export function computePolygonCap(
 }
 
 /**
- * A spindle-torus generating-circle revolution: the meridian is an arc of a
- * circle (radius `a`, offset from the axis) that crosses the revolution axis at
- * its own two endpoints. This produces cusped poles - not smooth tangent points
- * like a sphere's - each with its own per-column normal. Shared by `apple` (the
- * major, more-than-half-circle arc) and `lemon` (the minor,
- * less-than-half-circle arc of the same construction, opposite sign
- * convention); see each file's own doc comment for the halfHeight domain that
- * distinguishes them. This helper takes `a`/`thetaCross`/
- * `poleCosTheta`/`radiusAt` as given rather than re-deriving them, since the
- * two files' sign conventions for the circle's own axis offset are mirrored.
- *
- * `radiusAt(cosTheta)` computes the meridian's radius away from the poles.
- * `poleCosTheta` is the same circle's cosTheta at r = 0, used for the pole's
- * own normal. It's kept separate from `radiusAt`, since deriving it via
- * `radiusAt`'s own formula wouldn't reliably round-trip to exactly 0 in
- * floating point - leaving the pole undetected as collapsed (see apple.js's own
- * comment on its equation for the full reasoning).
+ * Revolution of a circular arc crossing the axis at both ends, with cusped
+ * poles: `apple` and `lemon`. `poleCosTheta` is passed separately, as deriving
+ * it from `radiusAt` misses r = 0.
  *
  * @private
  */
@@ -539,11 +448,7 @@ export function computeSpindleArcRevolution({
 
     return {
       position: [-cosPhi * r, y, sinPhi * r],
-      // Direction from the generating circle's own (off-axis) center, not
-      // from the revolution axis - unlike a sphere/ellipsoid, position and
-      // normal direction aren't simply proportional here. `a` is left out
-      // (normalize() erases positive scalar multiples), same "factor out
-      // the radius" trick cylinder/cone's tangent-cross-product normals use.
+      // From the generating circle's off-axis center, `a` factored out
       normal: [-cosPhi * cosTheta, sinTheta, sinPhi * cosTheta],
       collapsed: r === 0,
     };
@@ -560,17 +465,10 @@ export function computeSpindleArcRevolution({
 }
 
 /**
- * A flat-ended surface of revolution around the y axis, both ends open rings
- * cappable exactly like `cylinder`'s. Shared plumbing for
- * `barrel`/`funnel`/`hyperboloid`, which only differ in their own radius law
- * (parabolic/exponential/hyperbolic). `profile(y, v)` returns `[r, normalY]`:
- * the meridian's radius at that height, and the y-component of the implicit
- * surface's gradient there (x/z components are always `x`/`z` themselves for
- * this whole family, since none of their defining equations has an x/y or z/y
- * cross term). Both `y` and the raw sweep parameter `v` are passed through, so
- * a caller whose own radius law is naturally written in terms of one or the
- * other (eg. funnel's exponential, in `v`) doesn't have to round-trip through
- * the other and risk a 1-ULP drift.
+ * Flat-ended surface of revolution, cappable like `cylinder`: `barrel`,
+ * `funnel`, `hyperboloid`. `profile(y, v)` returns the radius and the
+ * gradient's y component. Both y and v are passed so a radius law needn't
+ * round-trip between them.
  *
  * @private
  */

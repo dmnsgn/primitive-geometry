@@ -11,8 +11,7 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @property {number} [radius=0.25]
  * @property {import("../../../types.js").PositiveInteger} [nx=16]
  * @property {import("../../../types.js").PositiveInteger} [ny=1]
- * @property {import("../../../types.js").NonNegativeInteger} [roundSegments=16] `0` collapses both hemispheres away,
- *   leaving an open tube.
+ * @property {import("../../../types.js").NonNegativeInteger} [roundSegments=16]
  * @property {import("../../../types.js").Angle} [phi=TAU]
  * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
@@ -20,7 +19,9 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  */
 
 /**
- * A cylindrical body capped with two hemispheres (a "pill" shape).
+ * A capsule: a cylinder capped with 2 hemispheres.
+ *
+ * Special cases: open tube (roundSegments = 0).
  *
  * @param {CapsuleOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -38,23 +39,13 @@ export function capsule({
   const halfHeight = height / 2;
   const halfPi = Math.PI / 2;
 
-  // The meridian sweep is piecewise (hemisphere/cylinder/hemisphere) but
-  // stays a single computeRevolutionGeometry call below: a cylinder's side
-  // normal is already purely radial, matching a sphere's own normal at its
-  // equator, so both joins are C1-continuous and need no seam vertices -
-  // unlike bicone/doubleCone's genuinely kinked joins (see bicone.js).
-  //
-  // Row budget across the whole meridian: roundSegments rings per hemisphere,
-  // ny for the straight body - same proportions as the pre-refactor version.
+  // One sweep: both joins are C1-continuous so need no seam, unlike bicone's
   const nyTotal = 2 * roundSegments + ny;
   const bodyStart = roundSegments / nyTotal;
   const bodyEnd = (roundSegments + ny) / nyTotal;
 
-  // computeRevolutionGeometry's default uv v is the row-index fraction,
-  // which would stretch across whichever section (caps vs body) got more
-  // rows. Rederive it from arc length along the meridian instead (same as
-  // roundedCylinder): axial y would squash the texture's ends into the
-  // poles, where y barely moves between the first rings.
+  // uv v from meridian arc length: row fractions stretch unevenly across
+  // sections, and axial y squashes the texture into the poles
   const quarterArc = radius * halfPi;
   const meridianLength = 2 * quarterArc + height;
 

@@ -19,9 +19,12 @@ import {
  * @property {number} [sz=sx]
  * @property {number} [radius=sx * 0.25]
  * @property {import("../../../types.js").PositiveInteger} [roundSegments=8]
- * @property {import("../../../types.js").PositiveInteger} [nx=1] Segments along the straight x sections.
- * @property {import("../../../types.js").PositiveInteger} [ny=nx] Segments along the straight y sections.
- * @property {import("../../../types.js").PositiveInteger} [nz=nx] Segments along the straight z sections.
+ * @property {import("../../../types.js").PositiveInteger} [nx=1] Segments along
+ *   the straight x sections.
+ * @property {import("../../../types.js").PositiveInteger} [ny=nx] Segments
+ *   along the straight y sections.
+ * @property {import("../../../types.js").PositiveInteger} [nz=nx] Segments
+ *   along the straight z sections.
  * @property {RoundedCubeDirection} [roundDirection="all"]
  */
 
@@ -47,8 +50,8 @@ export function roundedCube({
   const widthY = sy - r2;
   const widthZ = sz - r2;
 
-  // Collapse zero-size straight sections into a single welded column so they
-  // don't produce degenerate cells (eg. radius = half size)
+  // Zero-length straight sections would produce degenerate cells (eg. radius =
+  // half size)
   if (widthX === 0) nx = 0;
   if (widthY === 0) ny = 0;
   if (widthZ === 0) nz = 0;
@@ -63,8 +66,7 @@ export function roundedCube({
       (colsX + 1) * (colsZ + 1)) *
     2;
 
-  // Each face is a single welded grid (face, edges and corners share their
-  // boundary vertices) so seams only remain between faces where UVs differ.
+  // One welded grid per face: seams only remain where uvs differ
   const geometry = {
     positions: new Float32Array(size * 3),
     normals: new Float32Array(size * 3),
@@ -94,9 +96,8 @@ export function roundedCube({
     [widthX, widthY, nx, ny, "-z", -halfSZ],
   ];
 
-  // Blend one face's flat grid vertex onto the rounded shell: clamp it into
-  // the inner box, then push it back out by radius along whatever the clamp
-  // took off. A vertex inside the box is untouched, so flat sections stay flat.
+  // Clamp into the inner box, then push back out by radius along what the clamp
+  // took off: flat sections stay flat
   const roundVertex = (vertexIndex, position) => {
     TMP[0] = position[0];
     TMP[1] = position[1];
@@ -140,11 +141,8 @@ export function roundedCube({
       for (let x = 0; x <= cols; x++) {
         const x0 = getPlaneCoordinate(x, nu, su, radius, roundSegments);
 
-        // Recomputed in double precision, not read back from the
-        // Float32Array, so this vertex stays bit-identical to the matching
-        // corner vertex on a neighboring face rounded by computePlane's 2D
-        // corners - reading the rounded value back would drift by ~1 ULP
-        // and crack their shared boundary.
+        // Recomputed in double precision: reading the Float32Array back drifts
+        // by ~1 ULP from the neighboring face's corner and cracks the seam
         const position = [0, 0, 0];
         position[u] = x0 * flipU;
         position[v] = y0 * flipV;
@@ -160,9 +158,7 @@ export function roundedCube({
     const outOfPlaneAxis = PLANE_DIRECTIONS[direction][2];
     const startVertex = indices.vertex;
 
-    // False when this face's own (out-of-plane) axis is the excluded one: the
-    // face is flat along it, so its corners are rounded by computePlane's 2D
-    // corner mapping instead of the 3D blend above.
+    // A face normal to the excluded axis gets computePlane's 2D corners instead
     const axisActive = outOfPlaneAxis !== excludedAxis;
 
     computePlane(

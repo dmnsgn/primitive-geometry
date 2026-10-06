@@ -11,9 +11,8 @@ import { computePolyhedron } from "../../../utils/polyhedron.js";
  */
 
 /**
- * Great dodecahedron, sharing the icosahedron's 12 vertices; each of its 12
- * pentagonal faces is the convex pentagon formed by one vertex's 5 neighbors,
- * deeply interpenetrating the other 11 faces.
+ * Great dodecahedron faces: on the icosahedron's vertices, one pentagon per
+ * vertex's 5 neighbors.
  *
  * @param {GreatDodecahedronPolygonsOptions} [options={}]
  * @returns {import("../../../../types.js").PolygonalComplex}

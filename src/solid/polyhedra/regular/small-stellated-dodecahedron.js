@@ -12,9 +12,7 @@ import { computePolyhedron } from "../../../utils/polyhedron.js";
  */
 
 /**
- * Small stellated dodecahedron: the same 12 vertices and pentagon groupings as
- * the great dodecahedron, with each face's 5 corners connected as a pentagram
- * (skip-one star) instead of a convex pentagon.
+ * Small stellated dodecahedron faces: the great dodecahedron's, as pentagrams.
  *
  * @param {SmallStellatedDodecahedronPolygonsOptions} [options={}]
  * @returns {import("../../../../types.js").PolygonalComplex}

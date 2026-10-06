@@ -53,14 +53,14 @@ export function plane({
  * @typedef {object} RectanglePathOptions
  * @property {number} [sx=1]
  * @property {number} [sy=0.5]
- * @property {import("../../../types.js").PositiveInteger} [nx=1] Segments along the bottom/top edges
- * @property {import("../../../types.js").PositiveInteger} [ny=nx] Segments along the left/right edges
+ * @property {import("../../../types.js").PositiveInteger} [nx=1] Segments along
+ *   the bottom/top edges
+ * @property {import("../../../types.js").PositiveInteger} [ny=nx] Segments
+ *   along the left/right edges
  */
 
 /**
- * Outline dual of `plane`: just its `z`-facing boundary loop, walked directly
- * (bottom-left → bottom-right → top-right → top-left) rather than extracted
- * from the full grid.
+ * Outline dual of `plane`, facing z.
  *
  * @param {RectanglePathOptions} [options={}]
  * @returns {import("../../../types.js").PolylineComplex}

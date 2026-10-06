@@ -8,9 +8,8 @@ import { SQRT2, SQRT3, SQRT6 } from "../../../utils/common.js";
 /**
  * @typedef {object} TetrahedronPolygonsOptions
  * @property {number} [radius=0.5]
- * @property {boolean} [center=true] Center the bounding box at the origin. Set
- *   to false to keep every vertex at exactly the circumradius from the origin -
- *   needed as-is wherever radial projection applies.
+ * @property {boolean} [center=true] Center the bounding box. `false` keeps
+ *   vertices on the circumsphere.
  */
 
 /**
@@ -20,9 +19,7 @@ import { SQRT2, SQRT3, SQRT6 } from "../../../utils/common.js";
  * @returns {import("../../../../types.js").PolygonalComplex}
  */
 export function tetrahedronPolygons({ radius = 0.5, center = true } = {}) {
-  // A tetrahedron has no center of symmetry, so its bounding box can't touch
-  // the unit box on every axis when centered; scale instead so its tallest
-  // axis (apex to base) touches.
+  // No center of symmetry: scaled so the apex-to-base axis fills the box
   const circumradius = (radius * SQRT6) / 2;
   const r0 = (circumradius * 2 * SQRT2) / 3;
   // prettier-ignore

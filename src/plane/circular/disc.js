@@ -15,8 +15,8 @@ import { TAU } from "../../utils/common.js";
  * @property {import("../../../types.js").Angle} [theta=TAU]
  * @property {import("../../../types.js").Angle} [thetaOffset=0]
  * @property {boolean} [mergeCentroid="innerRadius === 0"]
- * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap
- *   edge for mappings wrapping there (eg. `mappings.polar`).
+ * @property {boolean} [mergeSeam=true] `false` splits the full turn's wrap edge
+ *   for mappings wrapping there (eg. `mappings.polar`).
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.concentric]
  */
 
@@ -62,12 +62,10 @@ export function disc({
  */
 
 /**
- * Outline dual of `disc`: `ellipsePath` with sx = sy = 1.
+ * Outline dual of `disc`.
  *
  * @param {CirclePathOptions} [options={}]
- * @returns {import("../../../types.js").PolylineComplex} `segments`
- *   positions (`+ 1` for a partial `theta`) and a single path cell of that many
- *   indices (`+ 1`, repeating index `0`, when `closed`)
+ * @returns {import("../../../types.js").PolylineComplex}
  */
 export function circlePath({
   radius = 0.5,

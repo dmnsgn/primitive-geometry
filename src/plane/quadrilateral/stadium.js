@@ -42,9 +42,7 @@ export function stadium({ sx = 1, sy = 0.5, nx, ny, roundSegments } = {}) {
  */
 
 /**
- * Outline dual of `stadium`: `roundedRectanglePath` with `radius` fixed to half
- * the shorter side, collapsing that axis's straight section to 0 (two
- * semicircular caps joined by straight edges).
+ * Outline dual of `stadium`.
  *
  * @param {StadiumPathOptions} [options={}]
  * @returns {import("../../../types.js").PolylineComplex}

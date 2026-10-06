@@ -5,27 +5,20 @@
 import { computeStarRatio } from "../../../utils/common.js";
 
 /**
- * The regular pentagram ({5/2} star polygon)'s inner (reflex) to outer (tip)
- * radius ratio, `1 / PHI ** 2`. Also used by great-stellated-dodecahedron.js,
- * whose own depth-1 notches sit at the same ratio's reciprocal.
+ * Regular pentagram inner to outer radius ratio, `1 / PHI ** 2`.
  *
  * @private
  */
 export const PENTAGRAM_RATIO = computeStarRatio(5, 2);
 
 /**
- * The 5 points of a regular pentagon's "other" star layer: point i sits between
- * the given points i and i + 1, along their bisector (the sum of the two
- * centroid-relative vectors, since they're 72° apart), at `ratio` times the
- * given points' distance from their centroid. `PENTAGRAM_RATIO` (the {5/2} star
- * polygon's inner/outer radius ratio, `1 / PHI ** 2`) yields the inner (reflex)
- * pentagon of a pentagram whose tips are given; its reciprocal (`PHI ** 2`)
- * yields the tips reached by extending the given pentagon's own edges until
- * they meet (one stellation step).
+ * A pentagon's other star layer: point i on the bisector of points i and i + 1,
+ * at `ratio` times their radius. `PENTAGRAM_RATIO` gives a pentagram's inner
+ * pentagon, its reciprocal the stellated tips.
  *
  * @private
- * @param {number[][]} points 5 coplanar, equidistant-from-centroid points, in
- *   consecutive (not skip-2/star-path) cyclic order
+ * @param {number[][]} points 5 coplanar points, equidistant from their
+ *   centroid, in cyclic order
  * @param {number} ratio
  * @returns {number[][]}
  */
@@ -62,26 +55,17 @@ export function computeStarLayer(points, ratio) {
 }
 
 /**
- * Decompose a regular pentagram (5-pointed star) face into 8 filled triangles:
- * 5 "point" triangles plus a 3-triangle fan across the inner pentagon where its
- * edges cross. The 5 vertices not given are new points, not shared with any
- * other face - two star faces only ever share the given, non-computed layer.
+ * Split a pentagram face into 8 triangles: 5 points and a 3-triangle fan across
+ * the inner pentagon. Computed vertices aren't shared with other faces.
  *
  * @private
- * @param {number[][]} points 5 coplanar, equidistant-from-centroid points, in
- *   consecutive (not skip-2/star-path) cyclic order
+ * @param {number[][]} points 5 coplanar points, equidistant from their
+ *   centroid, in cyclic order
  * @param {object} [options={}]
- * @param {boolean} [options.stellate=false] `false` (default): `points` are the
- *   star's outer tips, and the inner (reflex) pentagon - where the star's edges
- *   cross - is computed at the regular pentagram's fixed inner/outer radius
- *   ratio `1/phi^2`. `true`: `points` are instead the _inner_ pentagon (e.g. a
- *   convex polyhedron's own face corners), and new outer tips are computed at
- *   `phi^2` - the genuine "extend a regular pentagon's edges until they meet"
- *   stellation, which needs `points`' own radius scaled up rather than a fresh
- *   smaller pentagon scaled down.
- * @returns {import("../../../../types.js").PolygonalComplex} 10
- *   positions (tips followed by inner points, regardless of which one was
- *   `points`) and 8 triangles, local indices
+ * @param {boolean} [options.stellate=false] `points` are the inner pentagon,
+ *   tips are computed, rather than the reverse
+ * @returns {import("../../../../types.js").PolygonalComplex} 10 positions, tips
+ *   first, and 8 triangles
  */
 export function computePentagram(points, { stellate = false } = {}) {
   const other = computeStarLayer(
@@ -89,13 +73,8 @@ export function computePentagram(points, { stellate = false } = {}) {
     stellate ? 1 / PENTAGRAM_RATIO : PENTAGRAM_RATIO,
   );
 
-  // Point-triangle i's apex (index i) sits, by the bisector definition
-  // above, between points i and i + 1 - so its flanking inner-layer corners
-  // are (i, i + 1) when the apex is the *computed* layer (stellate, where
-  // that edge is also the fan's own boundary, making it an internal
-  // diagonal rather than the face's outer edge), but (i, i - 1) when the
-  // apex is the *given* layer (its own i already lines up with the computed
-  // inner_i, whose bisector partner is i + 1)
+  // Computed point i sits between given points i and i + 1, so a tip's inner
+  // corners are (i, i + 1) when tips are computed, (i, i - 1) otherwise
   const cells = [];
   for (let i = 0; i < 5; i++) {
     cells.push(
@@ -111,15 +90,8 @@ export function computePentagram(points, { stellate = false } = {}) {
 }
 
 /**
- * Snap near-duplicate positions (mathematically identical points that ended up
- * computed independently, from different local contexts, and so agree only to
- * within float precision rather than bit-for-bit) onto one shared
- * representative, so they weld into exact seams instead of showing up as
- * cracks. Mutates each position array in place. The tolerance is relative to
- * the largest coordinate so any `radius` welds equally well, and each point is
- * compared against the representatives found so far (no spatial hashing, so no
- * grid-boundary misses). A linear scan meant for seed-sized point sets, not
- * arbitrary meshes.
+ * Snap near-duplicate positions onto one representative so seams weld exactly.
+ * Mutates in place.
  *
  * @private
  * @param {number[][]} positions
@@ -130,8 +102,10 @@ export function weldNearDuplicates(positions, epsilon = 1e-5) {
   for (const p of positions) {
     scale = Math.max(scale, Math.abs(p[0]), Math.abs(p[1]), Math.abs(p[2]));
   }
+  // Relative so any radius welds alike
   const tolerance = (scale || 1) * epsilon;
 
+  // Linear scan: seeds are small, and no hashing means no grid-boundary misses
   const canonical = [];
   for (const p of positions) {
     const match = canonical.find(
@@ -157,10 +131,7 @@ export function weldNearDuplicates(positions, epsilon = 1e-5) {
  */
 
 /**
- * Assemble per-face geometry fragments into one seed: each face is a group of
- * indices into `vertexPositions`, handed as points to `computeFace`, whose
- * local positions/cells are offset into the shared arrays. Positions that
- * coincide across faces are then welded (see above) so the seed is watertight.
+ * Assemble per-face fragments into one welded seed.
  *
  * @private
  * @param {Float32Array | number[]} vertexPositions Flat xyz positions

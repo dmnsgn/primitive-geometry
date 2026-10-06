@@ -12,7 +12,7 @@
  */
 
 /**
- * Regular grid
+ * A grid of quads.
  *
  * @param {QuadGridOptions} [options={}]
  * @returns {import("../../../types.js").PolygonalComplex}

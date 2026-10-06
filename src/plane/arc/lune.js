@@ -8,27 +8,20 @@ import { concatGeometries } from "../../utils/common.js";
 
 /**
  * @typedef {object} LuneOptions
- * @property {number} [radius=0.5] Radius of the big circle (`b` in MathWorld's
- *   notation), centered at the origin.
- * @property {number} [innerRadius=radius] Radius of the small circle (`a`),
- *   whose disk is subtracted from the big one. Must be `< radius`.
- * @property {number} [distance=radius*0.5] Offset of the small circle's center
- *   from the origin, along +x (`c`). For a proper crescent (both arcs
- *   contributing to the boundary) `distance + innerRadius` must exceed
- *   `radius`, ie. the small circle actually pokes through the big one's edge
- *   rather than sitting fully inside it.
- * @property {import("../../../types.js").PositiveInteger} [segments=32] Column count, swept left to right.
- * @property {import("../../../types.js").PositiveInteger} [innerSegments=16] Row count between the two halves'
- *   near/far boundary at each column.
+ * @property {number} [radius=0.5] Big circle radius.
+ * @property {number} [innerRadius=radius] Small circle radius.
+ * @property {number} [distance=radius*0.5] Small circle center offset along +x.
+ *   `distance + innerRadius > radius` for a crescent.
+ * @property {import("../../../types.js").PositiveInteger} [segments=32]
+ *   Columns, left to right.
+ * @property {import("../../../types.js").PositiveInteger} [innerSegments=16]
+ *   Rows between each half's boundaries.
  * @property {import("../../mappings.js").MappingFn} [mapping=mappings.rectangular]
- *   Uv mapping function. Defaults to a flat, bounding-box-relative unwrap; pass a
- *   function using `uRatio`/`vRatio` (the swept parametrization) to follow the
- *   arcs instead.
+ *   Use `uRatio`/`vRatio` to follow the arcs.
  */
 
 /**
- * Lune: a crescent, the region inside the big circle and outside the offset
- * small one.
+ * A lune: a big circle minus an offset small one.
  *
  * @param {LuneOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -48,22 +41,19 @@ export function lune({
 
   const uMin = -b;
   const uMax = (b * b - a * a + d * d) / (2 * d);
-  // Near boundary (see sweepBand) kinks here: flat, then a vertical tangent.
+  // The near boundary kinks here: flat, then a vertical tangent
   const kink = d - a;
 
   const outerBound = (x) => Math.sqrt(Math.max(b * b - x * x, 0));
   const innerBound = (x) => Math.sqrt(Math.max(a * a - (x - d) ** 2, 0));
 
-  // Shared bounding box, so a uv mapping stays continuous across pieces.
+  // Shared bounding box so uvs stay continuous across pieces
   const center = [(uMin + uMax) / 2, 0];
   const sx = (uMax - uMin) / 2;
   const sy = outerBound(Math.min(Math.max(0, uMin), uMax));
 
-  // A single top/bottom sweep would bifurcate past the small circle's
-  // leftmost point (it only removes a middle sliver there, not the full
-  // band), so each half is built as its own band split along y = 0, mirror
-  // flipping top/bottom. The near boundary's kink further splits each band
-  // into a flat "cap" sweep up to it and a curved "horn" sweep beyond it.
+  // One sweep would bifurcate past the small circle's leftmost point: each half
+  // is its own band, split at the kink into a flat cap and a curved horn
   function sweepBand(mirror) {
     const pieces = [];
     const flat = (x) => (mirror ? [-outerBound(x), 0] : [0, outerBound(x)]);

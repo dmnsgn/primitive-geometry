@@ -10,12 +10,8 @@ import { computeFlatRevolutionGeometry } from "../../utils/revolution.js";
 /**
  * @typedef {object} BarrelOptions
  * @property {number} [height=1]
- * @property {number} [radius=0.5] Belly radius, at the equator (y = 0)
- * @property {number} [endRadius=radius*0.7] Rim radius, at y = ±height/2 (both
- *   ends, symmetric) - must be < radius for an actual outward bulge; endRadius
- *   = radius degenerates to a plain cylinder, endRadius > radius pinches inward
- *   instead (a barrel held together the wrong way round, still a valid NaN-free
- *   surface)
+ * @property {number} [radius=0.5] Belly radius.
+ * @property {number} [endRadius=radius*0.7] Rim radius.
  * @property {import("../../../types.js").PositiveInteger} [nx=32]
  * @property {import("../../../types.js").PositiveInteger} [ny=16]
  * @property {import("../../../types.js").PositiveInteger} [capSegments=1]
@@ -30,10 +26,9 @@ import { computeFlatRevolutionGeometry } from "../../utils/revolution.js";
  */
 
 /**
- * Barrel/cask: a cylinder that bulges outward at the equator and tapers back to
- * a narrower flat rim at both ends. Unlike `superegg` (which also bulges but
- * tapers all the way to a point at each pole), both ends here stay flat, open
- * rings, cappable like `cylinder`'s.
+ * A barrel: a cylinder bulging at the equator.
+ *
+ * Special cases: cylinder (endRadius = radius), pinched (endRadius > radius).
  *
  * @param {BarrelOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}

@@ -14,8 +14,7 @@ import { tetrahedronPolygons } from "../regular/tetrahedron.js";
  */
 
 /**
- * A geodesic sphere built by radially projecting and welding a subdivided
- * tetrahedron.
+ * A geodesic sphere from a subdivided tetrahedron.
  *
  * @param {TetrasphereOptions} [options={}]
  * @returns {import("../../../../types.js").SimplicialComplex}

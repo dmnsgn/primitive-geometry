@@ -7,15 +7,7 @@ import { TAU } from "../../utils/common.js";
 import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
 /**
- * A single right-circular-cone-frustum segment of a meridian sweep between two
- * arbitrary y's. It's cylinder.js's elliptical-frustum case, minus the per-end
- * ellipse (sx/sz are constant across the segment, since a frustum end that
- * isn't a single point never occurs here), generalized from a
- * height/halfHeight-centered span to an arbitrary yFrom/yTo. `cone` below is
- * one such segment (apex at one end); bicone.js and doubleCone.js each
- * concatenate two others at their shared seam, instead of using a single
- * function with a v = 0.5 kink - see bicone.js for why that shared-row approach
- * can't be wound correctly on both sides.
+ * A frustum segment between yFrom and yTo, with constant sx/sz.
  *
  * @private
  */
@@ -42,8 +34,7 @@ export function computeConeSegment({
 
     return {
       position: [r * sx * cosPhi, yFrom + yPrime * v, r * sz * sinPhi],
-      // Same r-factored tangent cross-product as cylinder's cone case, with
-      // sx/sz constant (no per-end ellipse - each end is a point)
+      // cylinder's r-factored normal, with constant sx/sz
       normal: [yPrime * sz * cosPhi, -(rPrime * sx * sz), yPrime * sx * sinPhi],
       collapsed: r === 0,
     };
@@ -71,17 +62,16 @@ export function computeConeSegment({
  * @property {import("../../../types.js").Angle} [phi=TAU]
  * @property {import("../../../types.js").Angle} [phiOffset=0]
  * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
- * @property {number} [sx=1] Base ring x scale, elliptical when != sz
- * @property {number} [sz=1] Base ring z scale, elliptical when != sx
+ * @property {number} [sx=1] Base ring x scale.
+ * @property {number} [sz=1] Base ring z scale.
  * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
  *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */
 
 /**
- * Right circular cone by default. Other shapes fall out of the same parameters:
- * an open cone/funnel (capBase false) and an elliptical cone (sx != sz).
- * There's no apex-side ellipse - the apex is always a single point, so any apex
- * scale would be a no-op.
+ * A right circular cone.
+ *
+ * Special cases: open cone (capBase = false), elliptical cone (sx != sz).
  *
  * @param {ConeOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}

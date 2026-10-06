@@ -13,17 +13,11 @@ import { PHI } from "../../../utils/common.js";
 
 /**
  * @typedef {object} GreatStellatedDodecahedronPolygonsOptions
- * @property {number} [radius=0.5] Radius the star's tips touch (box
- *   half-extent)
+ * @property {number} [radius=0.5] Tip radius.
  */
 
 /**
- * Great stellated dodecahedron: the 3rd (outermost) stellation of the
- * dodecahedron. Each face's 5 edges, extended within its own plane, first cross
- * at a "depth 1" ring (exactly the icosahedron's vertex positions - small
- * stellated dodecahedron's own tips) before crossing a second, further ring at
- * "depth 2" - the true tips here, a plain radial scale of the dodecahedron's
- * own vertices by `phi^3`.
+ * Great stellated dodecahedron faces: the dodecahedron's outermost stellation.
  *
  * @param {GreatStellatedDodecahedronPolygonsOptions} [options={}]
  * @returns {import("../../../../types.js").PolygonalComplex}
@@ -55,8 +49,7 @@ export function greatStellatedDodecahedronPolygons({ radius = 0.5 } = {}) {
 /**
  * @typedef {object} GreatStellatedDodecahedronOptions
  * @property {number} [radius=0.5]
- * @property {import("../../../../types.js").NonNegativeInteger} [subdivisions=0] Barycentric grid subdivisions per
- *   triangle
+ * @property {import("../../../../types.js").NonNegativeInteger} [subdivisions=0]
  * @property {import("../../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  */
 

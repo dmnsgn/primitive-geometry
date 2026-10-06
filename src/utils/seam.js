@@ -66,8 +66,8 @@ function unwrapTriangle(w, pole) {
  * @param {object} [options={}]
  * @param {number} [options.component=0] The uv component wrapping at 0/1: `0`
  *   for u, `1` for v.
- * @param {function(number): boolean} [options.isPole] Vertices with no value
- *   of their own in that component (eg. a sphere's poles, a fan's centroid):
+ * @param {function(number): boolean} [options.isPole] Vertices with no value of
+ *   their own in that component (eg. a sphere's poles, a fan's centroid):
  *   duplicated per triangle, midway between the two other corners.
  * @returns {import("../../types.js").SimplicialComplex} A new geometry, or the
  *   input one when no seam is found.
@@ -82,10 +82,8 @@ export function splitSeam(
   const extraPositions = [];
   const extraNormals = [];
   const extraUvs = [];
-  // Non-pole corners need at most one alternate value (+1), so their own
-  // vertex index is already a unique cache key. Poles can need any value
-  // depending on the triangle, so those are tagged into a disjoint numeric
-  // range above vertexCount instead.
+  // Non-pole corners need at most one alternate value, so their index is a
+  // unique key. Poles can need any, so they're keyed above vertexCount.
   const duplicateCache = new Map();
   let nextIndex = vertexCount;
 
@@ -110,8 +108,7 @@ export function splitSeam(
     return dup;
   };
 
-  // Patches are recorded as (cell index, replacement vertex) pairs for the
-  // rare triangles that need a fix, rather than rewriting the full cells array
+  // Sparse patches: few triangles need fixing
   const patchAt = [];
   const patchTo = [];
 

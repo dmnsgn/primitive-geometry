@@ -22,10 +22,7 @@ import {
  */
 
 /**
- * Right prism: a regular sides-gon extruded into sides flat rectangular side
- * faces, each with its own hard-edged normal - unlike `cylinder`'s smooth
- * per-vertex normal, which just makes a large-nx cylinder look faceted rather
- * than actually being one.
+ * A right prism: a regular polygon extruded with flat-shaded sides.
  *
  * @param {PrismOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -40,10 +37,7 @@ export function prism({
 } = {}) {
   const halfHeight = height / 2;
 
-  // Shared by both the wall corners and the cap rim below, so a wall
-  // corner's position is computed by the exact same expression as its
-  // coincident cap vertex - required for them to weld bit-identically
-  // (analyze()'s crack check), not just approximately.
+  // Shared by wall corners and cap rims so they weld bit-identically
   const angleAt = (i) => (i === sides ? 0 : i / sides) * TAU + phiOffset;
 
   const wallVertexCount = sides * 4;
@@ -66,9 +60,7 @@ export function prism({
   for (let i = 0; i < sides; i++) {
     const angle0 = angleAt(i);
     const angle1 = angleAt(i + 1);
-    // angle0 + sector/2, not (angle0 + angle1) / 2: angle1 snaps to 0 on the
-    // wrap face, which would average to the opposite side of the polygon
-    // instead of that face's own true midpoint
+    // Not (angle0 + angle1) / 2: angle1 snaps to 0 on the wrap face
     const midAngle = angle0 + sector / 2;
 
     const [x0, , z0] = computePolygonCorner(angle0, radius, 0);
@@ -79,14 +71,11 @@ export function prism({
 
     const base = indices.vertex;
 
-    // u wraps once around the whole perimeter (like cylinder's u = x / nx),
-    // not per-face; v = 0 at the bottom rising to 1 at the top, same as
-    // cylinder and every other computeRevolutionGeometry-based solid.
+    // u wraps once around the perimeter, like cylinder's
     const u0 = i / sides;
     const u1 = (i + 1) / sides;
 
-    // Bottom-left, bottom-right, top-right, top-left: CCW as seen from
-    // outside (nx, 0, nz), matching every other quad face in this library
+    // CCW from outside, from the bottom-left
     for (const [px, py, pz, u, v] of [
       [x0, -halfHeight, z0, u0, 0],
       [x1, -halfHeight, z1, u1, 0],
@@ -106,10 +95,8 @@ export function prism({
       indices.vertex++;
     }
 
-    // Anchored on the last (TL) corner, same as triangulateFaces's own
-    // BL/BR/TR/TL fan: splits along the TL-BR diagonal, matching
-    // computePlane/computePolarGeometry/computeRevolutionGeometry so
-    // displacement in a vertex shader creases consistently across the library
+    // Split along the TL-BR diagonal, like every other grid, so vertex shader
+    // displacement creases consistently
     cells[indices.cell] = base + 3;
     cells[indices.cell + 1] = base;
     cells[indices.cell + 2] = base + 1;
