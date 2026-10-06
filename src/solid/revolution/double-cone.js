@@ -12,10 +12,10 @@ import { computeConeSegment } from "./cone.js";
  * @property {number} [radius=0.5]
  * @property {number} [nx=16]
  * @property {number} [ny=1] Meridian segments per half (top/bottom cone)
- * @property {number} [capSegments=1]
- * @property {boolean} [capApex=true]
  * @property {boolean} [capBase=true]
- * @property {number} [capBaseSegments=capSegments]
+ * @property {boolean} [capApex=true]
+ * @property {number} [capBaseSegments=1]
+ * @property {number} [capApexSegments=1]
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
  * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
@@ -28,7 +28,7 @@ import { computeConeSegment } from "./cone.js";
 /**
  * Two right circular cones joined apex-to-apex at the waist (an hourglass of
  * revolution) - the wide top/bottom ends are flat, so unlike `bicone` it takes
- * the same capBase/capApex/capSegments/capMapping options as `cylinder`.
+ * the same cap options as `cylinder`.
  *
  * @param {DoubleConeOptions} [options={}]
  * @returns {import("../../../types.js").SimplicialComplex}
@@ -38,10 +38,10 @@ export function doubleCone({
   radius = 0.5,
   nx = 16,
   ny = 1,
-  capSegments = 1,
-  capApex = true,
   capBase = true,
-  capBaseSegments = capSegments,
+  capApex = true,
+  capBaseSegments = 1,
+  capApexSegments = 1,
   phi = TAU,
   phiOffset = 0,
   capMapping = rectangular,
@@ -78,7 +78,7 @@ export function doubleCone({
     }),
     segment(0, halfHeight, 0, radius, {
       capApex,
-      capApexSegments: capSegments,
+      capApexSegments,
       capMapping,
     }),
   ]);

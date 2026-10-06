@@ -96,7 +96,8 @@ describe("prism", () => {
     const phiOffset = 0.3;
     const g = Primitives.prism({ radius, sides, phiOffset });
     const c = Primitives.cylinder({
-      radius,
+      radiusBase: radius,
+      radiusApex: radius,
       nx: sides,
       phi: Math.PI * 2,
       phiOffset,

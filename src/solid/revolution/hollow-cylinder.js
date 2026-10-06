@@ -67,7 +67,8 @@ export function hollowCylinder({
   const pieces = [
     cylinder({
       height,
-      radius,
+      radiusBase: radius,
+      radiusApex: radius,
       nx,
       ny,
       phi,
@@ -79,7 +80,8 @@ export function hollowCylinder({
     invert(
       cylinder({
         height,
-        radius: innerRadius,
+        radiusBase: innerRadius,
+        radiusApex: innerRadius,
         nx,
         ny,
         phi,

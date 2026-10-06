@@ -233,12 +233,12 @@ const cases = [
   ["cylinder", () => Primitives.cylinder(), { unused: 2 }],
   ["cylinder nx=15", () => Primitives.cylinder({ nx: 15 }), { unused: 2 }],
   [
-    "cylinder elliptical (sx/sz, independent per end)",
+    "cylinder elliptical (independent per end)",
     () =>
       Primitives.cylinder({
         radiusApex: 0.15,
-        sx: 2,
-        sz: 0.5,
+        sxBase: 2,
+        szBase: 0.5,
         sxApex: 0.3,
         szApex: 3,
       }),
@@ -341,8 +341,13 @@ const cases = [
     { unused: 2 },
   ],
   [
-    "torus phi=PI capSegments=3",
-    () => Primitives.torus({ phi: Math.PI, capSegments: 3 }),
+    "torus phi=PI cap segments=3",
+    () =>
+      Primitives.torus({
+        phi: Math.PI,
+        capStartSegments: 3,
+        capEndSegments: 3,
+      }),
     { unused: 2 },
   ],
   [
@@ -354,7 +359,8 @@ const cases = [
         minorSx: 0.4,
         minorSy: 2.5,
         phi: Math.PI,
-        capSegments: 2,
+        capStartSegments: 2,
+        capEndSegments: 2,
       }),
     { unused: 2 },
   ],

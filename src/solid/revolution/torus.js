@@ -21,11 +21,10 @@ import {
  * @property {number} [thetaOffset=0]
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
- * @property {number} [capSegments=1]
  * @property {boolean} [capStart=true]
  * @property {boolean} [capEnd=true]
- * @property {number} [capStartSegments=capSegments]
- * @property {number} [capEndSegments=capSegments]
+ * @property {number} [capStartSegments=1]
+ * @property {number} [capEndSegments=1]
  * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
  * @property {number} [sx=1] Major sweep x scale (footprint), elliptical when !=
  *   sy
@@ -60,11 +59,10 @@ export function torus({
   phi = TAU,
   phiOffset = 0,
 
-  capSegments = 1,
   capStart = true,
   capEnd = true,
-  capStartSegments = capSegments,
-  capEndSegments = capSegments,
+  capStartSegments = 1,
+  capEndSegments = 1,
   capMapping = rectangular,
 
   sx = 1,

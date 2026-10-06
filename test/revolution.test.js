@@ -25,7 +25,12 @@ describe("cylinder", () => {
     const nx = 16;
     const ny = 1;
     const capSegments = 3;
-    const g = Primitives.cylinder({ nx, ny, capSegments });
+    const g = Primitives.cylinder({
+      nx,
+      ny,
+      capBaseSegments: capSegments,
+      capApexSegments: capSegments,
+    });
 
     // Sides + two caps, minus one fan per cap innermost ring
     assert.equal(
@@ -37,6 +42,65 @@ describe("cylinder", () => {
 
   it("faces outward", () => {
     assert.equal(inwardTriangles(Primitives.cylinder()), 0);
+  });
+
+  it("sizes and caps each end independently", () => {
+    const nx = 8;
+    const ny = 1;
+    const g = Primitives.cylinder({
+      nx,
+      ny,
+      radiusBase: 0.4,
+      radiusApex: 0.1,
+      capBaseSegments: 1,
+      capApexSegments: 3,
+    });
+    const cols = nx + 1;
+
+    assert.ok(Math.abs(Math.hypot(g.positions[0], g.positions[2]) - 0.4) < 1e-6);
+    const apex = ny * cols * 3;
+    assert.ok(
+      Math.abs(Math.hypot(g.positions[apex], g.positions[apex + 2]) - 0.1) <
+        1e-6,
+    );
+    assert.equal(
+      g.cells.length / 3,
+      nx * ny * 2 + (nx * 1 * 2 - nx) + (nx * 3 * 2 - nx),
+    );
+  });
+});
+
+describe("funnel", () => {
+  it("spans radiusBase at the spout to radiusApex at the mouth", () => {
+    const nx = 8;
+    const ny = 4;
+    const g = Primitives.funnel({
+      nx,
+      ny,
+      radiusBase: 0.2,
+      radiusApex: 0.6,
+      capBase: false,
+      capApex: false,
+    });
+    const apex = ny * (nx + 1) * 3;
+
+    assert.ok(Math.abs(Math.hypot(g.positions[0], g.positions[2]) - 0.2) < 1e-6);
+    assert.ok(
+      Math.abs(Math.hypot(g.positions[apex], g.positions[apex + 2]) - 0.6) <
+        1e-6,
+    );
+  });
+
+  it("caps each end independently", () => {
+    const base = Primitives.funnel({ capBaseSegments: 1, capApexSegments: 1 });
+    const apex = Primitives.funnel({ capBaseSegments: 1, capApexSegments: 3 });
+    const flipped = Primitives.funnel({
+      capBaseSegments: 3,
+      capApexSegments: 1,
+    });
+
+    assert.ok(apex.cells.length > base.cells.length);
+    assert.equal(apex.cells.length, flipped.cells.length);
   });
 });
 
@@ -315,6 +379,21 @@ describe("bicone", () => {
 });
 
 describe("doubleCone", () => {
+  it("caps each end independently", () => {
+    const nx = 8;
+    const ny = 1;
+    const g = Primitives.doubleCone({
+      nx,
+      ny,
+      capBaseSegments: 1,
+      capApexSegments: 3,
+    });
+    const plain = Primitives.doubleCone({ nx, ny });
+
+    assert.equal(g.cells.length / 3 - plain.cells.length / 3, nx * 2 * 2);
+    assert.equal(analyze(g).degenerate, 0);
+  });
+
   it("welds the wrap column exactly, including inexact 1/nx", () => {
     for (const nx of [16, 15]) {
       const result = analyze(Primitives.doubleCone({ nx }));
@@ -345,7 +424,12 @@ describe("doubleCone", () => {
     for (const g of [
       Primitives.doubleCone(),
       Primitives.doubleCone({ capBase: false, capApex: false }),
-      Primitives.doubleCone({ sx: 2, sz: 0.5, capSegments: 3 }),
+      Primitives.doubleCone({
+        sx: 2,
+        sz: 0.5,
+        capBaseSegments: 3,
+        capApexSegments: 3,
+      }),
     ]) {
       assert.equal(flippedNormalTriangles(g), 0);
     }
@@ -784,7 +868,6 @@ describe("torus", () => {
       phi: Math.PI / 2,
       capStart: true,
       capEnd: false,
-      capSegments: 1,
     });
     assert.ok(
       start.positions
@@ -800,7 +883,6 @@ describe("torus", () => {
       phi: Math.PI / 2,
       capStart: false,
       capEnd: true,
-      capSegments: 1,
     });
     assert.ok(
       end.positions
@@ -819,7 +901,8 @@ describe("torus", () => {
       segments,
       minorSegments,
       phi: Math.PI,
-      capSegments,
+      capStartSegments: capSegments,
+      capEndSegments: capSegments,
     });
 
     // Body + two caps, minus one fan per cap innermost ring
@@ -966,7 +1049,12 @@ describe("capMapping", () => {
     [
       "cylinder",
       (capMapping) =>
-        Primitives.cylinder({ nx: 8, capSegments: 2, capMapping }),
+        Primitives.cylinder({
+          nx: 8,
+          capBaseSegments: 2,
+          capApexSegments: 2,
+          capMapping,
+        }),
     ],
     [
       "cone",
@@ -975,7 +1063,12 @@ describe("capMapping", () => {
     [
       "doubleCone",
       (capMapping) =>
-        Primitives.doubleCone({ nx: 8, capSegments: 2, capMapping }),
+        Primitives.doubleCone({
+          nx: 8,
+          capBaseSegments: 2,
+          capApexSegments: 2,
+          capMapping,
+        }),
     ],
     [
       "torus",
@@ -984,7 +1077,8 @@ describe("capMapping", () => {
           segments: 8,
           minorSegments: 6,
           phi: Math.PI,
-          capSegments: 2,
+          capStartSegments: 2,
+          capEndSegments: 2,
           capMapping,
         }),
     ],
@@ -1015,10 +1109,15 @@ describe("capMapping", () => {
   }
 
   it("defaults to mappings.rectangular, matching the pre-option cap uv formula", () => {
-    const withDefault = Primitives.cylinder({ nx: 8, capSegments: 2 });
+    const withDefault = Primitives.cylinder({
+      nx: 8,
+      capBaseSegments: 2,
+      capApexSegments: 2,
+    });
     const withExplicitDefault = Primitives.cylinder({
       nx: 8,
-      capSegments: 2,
+      capBaseSegments: 2,
+      capApexSegments: 2,
       capMapping: rectangular,
     });
     assert.deepEqual(
@@ -1048,7 +1147,9 @@ describe("capMapping", () => {
       const options = { nx: 12, ny: 2, capSegments: 3 };
       const g = Primitives.cylinder({
         ...options,
-        radius: 0.4,
+        capBaseSegments: options.capSegments,
+        capApexSegments: options.capSegments,
+        radiusBase: 0.4,
         radiusApex: 0.1,
         height: 2,
         capMapping: circumferential,
@@ -1069,8 +1170,12 @@ describe("capMapping", () => {
       const options = { nx: 16, ny: 1, capSegments: 2 };
       const g = Primitives.cylinder({
         ...options,
-        sx: 2,
-        sz: 0.5,
+        capBaseSegments: options.capSegments,
+        capApexSegments: options.capSegments,
+        sxBase: 2,
+        szBase: 0.5,
+        sxApex: 2,
+        szApex: 0.5,
         capMapping: circumferential,
       });
 
@@ -1306,13 +1411,13 @@ describe("vDistribution", () => {
 
 describe("elliptical revolution solids", () => {
   describe("cylinder/cone", () => {
-    it("sx = sz = 1 is a no-op (matches the pre-ellipse output)", () => {
+    it("unit ring scales are a no-op (matches the pre-ellipse output)", () => {
       const plain = Primitives.cylinder({ nx: 16, ny: 3 });
       const explicit = Primitives.cylinder({
         nx: 16,
         ny: 3,
-        sx: 1,
-        sz: 1,
+        sxBase: 1,
+        szBase: 1,
         sxApex: 1,
         szApex: 1,
       });
@@ -1324,7 +1429,14 @@ describe("elliptical revolution solids", () => {
     });
 
     it("elliptical cylinder: watertight and correctly wound", () => {
-      const g = Primitives.cylinder({ nx: 32, ny: 4, sx: 2, sz: 0.5 });
+      const g = Primitives.cylinder({
+        nx: 32,
+        ny: 4,
+        sxBase: 2,
+        szBase: 0.5,
+        sxApex: 2,
+        szApex: 0.5,
+      });
       const result = analyze(g);
       assert.equal(result.cracks, 0);
       assert.equal(result.degenerate, 0);
@@ -1336,8 +1448,6 @@ describe("elliptical revolution solids", () => {
         nx: 32,
         ny: 6,
         radiusApex: 0.15,
-        sx: 1,
-        sz: 1,
         sxApex: 3,
         szApex: 0.2,
       });
@@ -1359,10 +1469,13 @@ describe("elliptical revolution solids", () => {
       const g = Primitives.cylinder({
         nx: 32,
         ny: 4,
-        sx: 2,
-        sz: 0.5,
+        sxBase: 2,
+        szBase: 0.5,
+        sxApex: 2,
+        szApex: 0.5,
         phi: Math.PI,
-        capSegments: 2,
+        capBaseSegments: 2,
+        capApexSegments: 2,
       });
       const result = analyze(g);
       assert.equal(result.cracks, 0);
@@ -1441,7 +1554,8 @@ describe("elliptical revolution solids", () => {
         minorSx: 0.4,
         minorSy: 2.5,
         phi: Math.PI,
-        capSegments: 2,
+        capStartSegments: 2,
+        capEndSegments: 2,
       });
       const result = analyze(g);
       assert.equal(result.cracks, 0);
@@ -1479,7 +1593,15 @@ describe("mergeSeam", () => {
 
   for (const name of solids) {
     it(`${name}: merges without changing the surface`, () => {
-      for (const options of [{}, { capSegments: 3 }]) {
+      // Each geometry only reads the cap segment options it supports
+      const capped = {
+        capSegments: 3,
+        capBaseSegments: 3,
+        capApexSegments: 3,
+        capStartSegments: 3,
+        capEndSegments: 3,
+      };
+      for (const options of [{}, capped]) {
         const split = Primitives[name](options);
         const merged = Primitives[name]({ ...options, mergeSeam: true });
 

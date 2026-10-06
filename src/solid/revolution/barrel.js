@@ -66,7 +66,8 @@ export function barrel({
     phiOffset,
     capApex,
     capBase,
-    capSegments,
+    capApexSegments: capSegments,
+    capBaseSegments: capSegments,
     capMapping,
     vDistribution,
     // Gradient of x² + z² - radius + k·y² = 0, ie. (2x, 2k·y, 2z)

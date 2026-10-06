@@ -10,16 +10,17 @@ import { computeFlatRevolutionGeometry } from "../../utils/revolution.js";
 /**
  * @typedef {object} FunnelOptions
  * @property {number} [height=1]
- * @property {number} [radius=0.1] Spout radius, at y = -height/2
- * @property {number} [radiusApex=radius*5] Mouth radius, at y = height/2 - must
- *   be > radius for the usual flared-outward shape; radiusApex = radius
- *   degenerates to a plain cylinder, radiusApex < radius flips the taper (still
- *   a valid, NaN-free surface, just narrowing toward the top instead)
+ * @property {number} [radiusBase=0.1] Spout radius, at y = -height/2
+ * @property {number} [radiusApex=0.5] Mouth radius, at y = height/2 - must be >
+ *   radiusBase for the usual flared-outward shape; radiusApex = radiusBase
+ *   degenerates to a plain cylinder, radiusApex < radiusBase flips the taper
+ *   (still a valid, NaN-free surface, just narrowing toward the top instead)
  * @property {number} [nx=32]
  * @property {number} [ny=16]
- * @property {number} [capSegments=1]
- * @property {boolean} [capApex=true]
  * @property {boolean} [capBase=true]
+ * @property {boolean} [capApex=true]
+ * @property {number} [capBaseSegments=1]
+ * @property {number} [capApexSegments=1]
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
  * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
@@ -29,7 +30,7 @@ import { computeFlatRevolutionGeometry } from "../../utils/revolution.js";
  */
 
 /**
- * Revolution of y = a·ln(r) (equivalently r = radius·e^(k·(y+height/2)), an
+ * Revolution of y = a·ln(r) (equivalently r = radiusBase·e^(k·(y+height/2)), an
  * exponential - not linear (`cone`) or hyperbolic (`hyperboloid`) - radius law)
  * between a narrow spout and a wide mouth. Both ends stay flat, open rings,
  * cappable exactly like `hyperboloid`'s.
@@ -40,21 +41,23 @@ import { computeFlatRevolutionGeometry } from "../../utils/revolution.js";
  */
 export function funnel({
   height = 1,
-  radius = 0.1,
-  radiusApex = radius * 5,
+  radiusBase = 0.1,
+  radiusApex = 0.5,
   nx = 32,
   ny = 16,
-  capSegments = 1,
-  capApex = true,
   capBase = true,
+  capApex = true,
+  capBaseSegments = 1,
+  capApexSegments = 1,
   phi = TAU,
   phiOffset = 0,
   capMapping = rectangular,
   vDistribution = linear,
   mergeSeam = false,
 } = {}) {
-  // r = radius·e^(k·(y + height/2)), fixed by r = radiusApex at y = height/2
-  const k = Math.log(radiusApex / radius) / height;
+  // r = radiusBase·e^(k·(y + height/2)), fixed by r = radiusApex at
+  // y = height/2
+  const k = Math.log(radiusApex / radiusBase) / height;
 
   const { positions, normals, uvs, cells } = computeFlatRevolutionGeometry({
     height,
@@ -63,13 +66,14 @@ export function funnel({
     phi,
     mergeSeam,
     phiOffset,
-    capApex,
     capBase,
-    capSegments,
+    capApex,
+    capBaseSegments,
+    capApexSegments,
     capMapping,
     vDistribution,
     profile: (_, v) => {
-      const r = radius * (radiusApex / radius) ** v;
+      const r = radiusBase * (radiusApex / radiusBase) ** v;
       // Gradient of x² + z² - r(y)² = 0, ie. (2x, -2k·r², 2z)
       return [r, -k * (r * r)];
     },
