@@ -8,8 +8,8 @@ import { SQRT2, SQRT3 } from "../../../utils/common.js";
 /**
  * @typedef {object} TetrahedronPolygonsOptions
  * @property {number} [radius=0.5] Circumradius.
- * @property {boolean} [center=true] Center the bounding box. `false` centers the
- *   centroid, keeping vertices on the circumsphere.
+ * @property {boolean} [center=true] Center the bounding box. `false` centers
+ *   the centroid, keeping vertices on the circumsphere.
  */
 
 /**

@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+# [3.2.0](https://github.com/dmnsgn/primitive-geometry/compare/v3.1.0...v3.2.0) (2026-10-06)
+
+### Bug Fixes
+
+* center pole vertex u between wedge columns in revolution geometries ([d3955de](https://github.com/dmnsgn/primitive-geometry/commit/d3955deef402e48265a69dcdcfbcea4e4dc89566))
+* make v follow distance along the curved profile for capsule hemispheres ([ad27fea](https://github.com/dmnsgn/primitive-geometry/commit/ad27fea4be088e35e2b1dcd161a69aa8da1e2039))
+* threeSquircular mapping condition ([4c1006c](https://github.com/dmnsgn/primitive-geometry/commit/4c1006c5303baf6d0db349e86fb268136ba55898))
+
+### Features
+
+* add circumferential mapping for caps ([8ce644a](https://github.com/dmnsgn/primitive-geometry/commit/8ce644a94d6646c26e308e8fc9fdd577a0b5eb6c))
+* add mergeSeam option ([d06f57e](https://github.com/dmnsgn/primitive-geometry/commit/d06f57efa93973864a18c4c71110742a536279ce))
+* add welded support for revolution geometries ([dc16336](https://github.com/dmnsgn/primitive-geometry/commit/dc16336e32f71fcd39e1744d2a736b7986a5d90a))
+* scope vDistribution to non-uniformly swept meridians ([47aa847](https://github.com/dmnsgn/primitive-geometry/commit/47aa8475d95f3c2ad7faa4dcf1078135e05d727a))
+* size polyhedra by circumradius ([09637cc](https://github.com/dmnsgn/primitive-geometry/commit/09637ccfabe7e9e621520d15be70a343fbf3a83a))
+* split two-ended revolution options into per-end pairs ([7a159f8](https://github.com/dmnsgn/primitive-geometry/commit/7a159f8712a7797aa258e3101dcae8cf99bd1595))
+
 # [3.1.0](https://github.com/dmnsgn/primitive-geometry/compare/v3.0.0...v3.1.0) (2026-09-29)
 
 ### Features
