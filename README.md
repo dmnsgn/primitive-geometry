@@ -28,6 +28,7 @@ npm install primitive-geometry
 
 - **71 geometries**: planes and grids, quadrilaterals and arcs, solids of revolution, prisms, platonic and stellated polyhedra, geodesic spheres - plus 21 outline paths and 10 polyhedra polygon variants.
 - **Common API**: options object in, complex out: a `SimplicialComplex` (triangles with normals and uvs), a `PolygonalComplex` (grids and `*Polygons`) or a `PolylineComplex` (`*Path`). Parameters are named the same everywhere (`sx/sy/sz`, `nx/ny/nz`, `radius`, `segments`, `theta`/`phi`).
+- **Unit-sized defaults**: every geometry fits in the origin-centered unit cube. Polyhedra and geodesic spheres share a 0.5 circumradius (tips for star polyhedra), like `sphere`, so they read at a common scale (the tetrahedron centers its bounding box rather than its centroid); cuboids and planes fill the cube.
 - **TypedArray out**: `Float32Array` for positions, normals and uvs, cells narrowed to `Uint8Array|Uint16Array|Uint32Array` by vertex count (or pinned with `setTypedArrayType`).
 - **Welded, crack-free meshes**: vertices shared between patches are bit-identical, not merely close. Every geometry is checked for cracks, non-manifold edges, degenerate cells, winding and uv continuity across [101 configurations](test/seams.test.js).
 - **Partial shapes**: `theta`/`phi` sweeps with optional caps, hollow variants, and `vDistribution` to choose how rows spread along a revolution's meridian.

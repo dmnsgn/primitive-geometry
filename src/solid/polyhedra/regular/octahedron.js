@@ -6,7 +6,7 @@ import { computePolyhedron } from "../../../utils/polyhedron.js";
 
 /**
  * @typedef {object} OctahedronPolygonsOptions
- * @property {number} [radius=0.5]
+ * @property {number} [radius=0.5] Circumradius.
  */
 
 /**
@@ -41,7 +41,7 @@ export function octahedronPolygons({ radius = 0.5 } = {}) {
 
 /**
  * @typedef {object} OctahedronOptions
- * @property {number} [radius=0.5]
+ * @property {number} [radius=0.5] Circumradius.
  * @property {import("../../../../types.js").NonNegativeInteger} [subdivisions=0]
  * @property {import("../../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  */

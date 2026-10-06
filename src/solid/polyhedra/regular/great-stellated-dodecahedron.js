@@ -13,7 +13,7 @@ import { PHI } from "../../../utils/common.js";
 
 /**
  * @typedef {object} GreatStellatedDodecahedronPolygonsOptions
- * @property {number} [radius=0.5] Tip radius.
+ * @property {number} [radius=0.5] Circumradius.
  */
 
 /**
@@ -48,7 +48,7 @@ export function greatStellatedDodecahedronPolygons({ radius = 0.5 } = {}) {
 
 /**
  * @typedef {object} GreatStellatedDodecahedronOptions
- * @property {number} [radius=0.5]
+ * @property {number} [radius=0.5] Circumradius.
  * @property {import("../../../../types.js").NonNegativeInteger} [subdivisions=0]
  * @property {import("../../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  */

@@ -7,7 +7,7 @@ import { PHI } from "../../../utils/common.js";
 
 /**
  * @typedef {object} IcosahedronPolygonsOptions
- * @property {number} [radius=0.5]
+ * @property {number} [radius=0.5] Circumradius.
  */
 
 /**
@@ -17,7 +17,7 @@ import { PHI } from "../../../utils/common.js";
  * @returns {import("../../../../types.js").PolygonalComplex}
  */
 export function icosahedronPolygons({ radius = 0.5 } = {}) {
-  const s = radius / PHI;
+  const s = radius / Math.hypot(1, PHI);
   const f = PHI * s;
 
   return {
@@ -63,7 +63,7 @@ export function icosahedronPolygons({ radius = 0.5 } = {}) {
 
 /**
  * @typedef {object} IcosahedronOptions
- * @property {number} [radius=0.5]
+ * @property {number} [radius=0.5] Circumradius.
  * @property {import("../../../../types.js").NonNegativeInteger} [subdivisions=0]
  * @property {import("../../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  */

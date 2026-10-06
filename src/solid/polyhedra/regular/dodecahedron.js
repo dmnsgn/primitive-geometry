@@ -3,11 +3,11 @@
  * @ignore
  */
 import { computePolyhedron } from "../../../utils/polyhedron.js";
-import { PHI } from "../../../utils/common.js";
+import { PHI, SQRT3 } from "../../../utils/common.js";
 
 /**
  * @typedef {object} DodecahedronPolygonsOptions
- * @property {number} [radius=0.5]
+ * @property {number} [radius=0.5] Circumradius.
  */
 
 /**
@@ -17,9 +17,10 @@ import { PHI } from "../../../utils/common.js";
  * @returns {import("../../../../types.js").PolygonalComplex}
  */
 export function dodecahedronPolygons({ radius = 0.5 } = {}) {
-  const a = radius;
-  const b = radius / PHI;
-  const c = radius * (2 - PHI);
+  // Cube corners (±b, ±b, ±b) on the circumsphere
+  const b = radius / SQRT3;
+  const a = b * PHI;
+  const c = b / PHI;
 
   return {
     // prettier-ignore
@@ -64,7 +65,7 @@ export function dodecahedronPolygons({ radius = 0.5 } = {}) {
 
 /**
  * @typedef {object} DodecahedronOptions
- * @property {number} [radius=0.5]
+ * @property {number} [radius=0.5] Circumradius.
  * @property {import("../../../../types.js").NonNegativeInteger} [subdivisions=0]
  * @property {import("../../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  */

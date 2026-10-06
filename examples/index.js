@@ -7,7 +7,30 @@ const params = new URLSearchParams(location.search);
 // I don't like performances, just give me the biggest you've got
 // Primitives.utils.setTypedArrayType(Uint32Array);
 
-const named = (name, geometry) => Object.assign(geometry, { name });
+// Sized by circumradius: drawn with the unit sphere guide
+const polyhedra = [
+  "tetrahedron",
+  "hexahedron",
+  "octahedron",
+  "dodecahedron",
+  "icosahedron",
+  "greatDodecahedron",
+  "greatIcosahedron",
+  "smallStellatedDodecahedron",
+  "greatStellatedDodecahedron",
+];
+const circumscribed = new Set([
+  ...polyhedra,
+  ...polyhedra.map((name) => `${name}Polygons`),
+  "tetrasphere",
+  "hexasphere",
+  "octasphere",
+  "dodecasphere",
+  "icosphere",
+]);
+
+const named = (name, geometry) =>
+  Object.assign(geometry, { name, circumscribed: circumscribed.has(name) });
 
 const geometries = params.has("geometry")
   ? [

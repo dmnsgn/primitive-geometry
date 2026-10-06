@@ -8,7 +8,7 @@ import { computePolyhedron } from "../../../utils/polyhedron.js";
 
 /**
  * @typedef {object} SmallStellatedDodecahedronPolygonsOptions
- * @property {number} [radius=0.5] Radius of the shared icosahedron vertices
+ * @property {number} [radius=0.5] Circumradius.
  */
 
 /**
@@ -27,7 +27,7 @@ export function smallStellatedDodecahedronPolygons({ radius = 0.5 } = {}) {
 
 /**
  * @typedef {object} SmallStellatedDodecahedronOptions
- * @property {number} [radius=0.5]
+ * @property {number} [radius=0.5] Circumradius.
  * @property {import("../../../../types.js").NonNegativeInteger} [subdivisions=0]
  * @property {import("../../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  */

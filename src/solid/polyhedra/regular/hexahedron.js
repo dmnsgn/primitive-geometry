@@ -4,10 +4,11 @@
  */
 import { computePolyhedron } from "../../../utils/polyhedron.js";
 import { cubePolygons } from "../../cuboid/cube.js";
+import { SQRT3 } from "../../../utils/common.js";
 
 /**
  * @typedef {object} HexahedronPolygonsOptions
- * @property {number} [radius=0.5]
+ * @property {number} [radius=0.5] Circumradius.
  */
 
 /**
@@ -17,12 +18,12 @@ import { cubePolygons } from "../../cuboid/cube.js";
  * @returns {import("../../../../types.js").PolygonalComplex}
  */
 export function hexahedronPolygons({ radius = 0.5 } = {}) {
-  return cubePolygons({ sx: radius * 2, sy: radius * 2, sz: radius * 2 });
+  return cubePolygons({ sx: (radius * 2) / SQRT3 });
 }
 
 /**
  * @typedef {object} HexahedronOptions
- * @property {number} [radius=0.5]
+ * @property {number} [radius=0.5] Circumradius.
  * @property {import("../../../../types.js").NonNegativeInteger} [subdivisions=0]
  * @property {import("../../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  */

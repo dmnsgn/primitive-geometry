@@ -7,7 +7,7 @@ import { computePolyhedron } from "../../../utils/polyhedron.js";
 
 /**
  * @typedef {object} GreatIcosahedronPolygonsOptions
- * @property {number} [radius=0.5] Radius of the shared icosahedron vertices
+ * @property {number} [radius=0.5] Circumradius.
  */
 
 /**
@@ -49,7 +49,7 @@ export function greatIcosahedronPolygons({ radius = 0.5 } = {}) {
 
 /**
  * @typedef {object} GreatIcosahedronOptions
- * @property {number} [radius=0.5]
+ * @property {number} [radius=0.5] Circumradius.
  * @property {import("../../../../types.js").NonNegativeInteger} [subdivisions=0]
  * @property {import("../../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  */

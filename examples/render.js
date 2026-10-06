@@ -219,6 +219,27 @@ const bboxCells = ctx.indexBuffer(
 const unitBox = Primitives.cubePolygons();
 unitBox.edges = computeEdges(unitBox.positions, unitBox.cells);
 
+// Great circles in the xy, yz and zx planes: polyhedra reach it with their
+// circumradius
+const circle = Primitives.circlePath({ segments: 64 });
+const circleVertexCount = circle.positions.length / 3;
+const unitSphere = {
+  positions: new Float32Array(circle.positions.length * 3),
+  cells: [],
+};
+for (let ring = 0; ring < 3; ring++) {
+  const offset = ring * circleVertexCount;
+  for (let i = 0; i < circleVertexCount; i++) {
+    for (let axis = 0; axis < 3; axis++) {
+      unitSphere.positions[(offset + i) * 3 + ((axis + ring) % 3)] =
+        circle.positions[i * 3 + axis];
+    }
+  }
+  // Closed face rather than path: computeEdges wraps the last index back
+  unitSphere.cells.push(circle.cells[0].map((index) => index + offset));
+}
+unitSphere.edges = computeEdges(unitSphere.positions, unitSphere.cells);
+
 const drawAxesCmd = {
   ...drawLinesCmd,
   attributes: {
@@ -315,25 +336,30 @@ ctx.frame(() => {
     });
 
     if (CONFIG.bbox) {
-      unitBox.positionsBuffer ||= ctx.vertexBuffer(unitBox.positions);
-      unitBox.colorsBuffer ||= ctx.vertexBuffer(unitBox.positions.map(() => 1));
-      unitBox.indicesBuffer ||= ctx.indexBuffer(unitBox.edges);
-      ctx.submit(drawLinesCmd, {
-        attributes: {
-          aPosition: unitBox.positionsBuffer,
-          aColor: unitBox.colorsBuffer,
-        },
-        indices: unitBox.indicesBuffer,
-        uniforms: {
-          uOpacity: 0.2,
-          uMode: modeOptions.indexOf(CONFIG.mode),
-          uProjectionMatrix: camera.projectionMatrix,
-          uViewMatrix: camera.viewMatrix,
-          uInverseViewMatrix: camera.inverseViewMatrix,
-          uNormalMatrix: mesh.normalMatrix,
-          uModelMatrix: mesh.modelMatrix,
-        },
-      });
+      const guides = mesh.geometry.circumscribed
+        ? [unitBox, unitSphere]
+        : [unitBox];
+      for (const guide of guides) {
+        guide.positionsBuffer ||= ctx.vertexBuffer(guide.positions);
+        guide.colorsBuffer ||= ctx.vertexBuffer(guide.positions.map(() => 1));
+        guide.indicesBuffer ||= ctx.indexBuffer(guide.edges);
+        ctx.submit(drawLinesCmd, {
+          attributes: {
+            aPosition: guide.positionsBuffer,
+            aColor: guide.colorsBuffer,
+          },
+          indices: guide.indicesBuffer,
+          uniforms: {
+            uOpacity: 0.3,
+            uMode: modeOptions.indexOf(CONFIG.mode),
+            uProjectionMatrix: camera.projectionMatrix,
+            uViewMatrix: camera.viewMatrix,
+            uInverseViewMatrix: camera.inverseViewMatrix,
+            uNormalMatrix: mesh.normalMatrix,
+            uModelMatrix: mesh.modelMatrix,
+          },
+        });
+      }
 
       mesh.bboxPositions ||= ctx.vertexBuffer(mesh.bbox);
       mesh.bboxColors ||= ctx.vertexBuffer(mesh.bbox.map((p) => p * 0.5 + 0.5));

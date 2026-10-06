@@ -70,6 +70,28 @@ function normalsAtFirstDuplicatePosition(geometry) {
   return [];
 }
 
+// Every vertex on the circumsphere (or inside it for star notches), and the
+// whole solid inside the unit cube
+function assertCircumradius(name, { positions }, radius) {
+  let max = 0;
+  for (let i = 0; i < positions.length / 3; i++) {
+    max = Math.max(
+      max,
+      Math.hypot(positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2]),
+    );
+    for (let axis = 0; axis < 3; axis++) {
+      assert.ok(
+        Math.abs(positions[i * 3 + axis]) <= radius + 1e-6,
+        `${name} axis ${axis} exceeds the radius-sized unit cube`,
+      );
+    }
+  }
+  assert.ok(
+    Math.abs(max - radius) < 1e-6,
+    `${name}: expected circumradius ${radius}, got ${max}`,
+  );
+}
+
 describe("polyhedron (flat platonic solids)", () => {
   for (const [name, create] of [
     ["tetrahedron", () => Primitives.tetrahedron()],
@@ -111,30 +133,26 @@ describe("polyhedron (flat platonic solids)", () => {
     );
   });
 
-  it("hexahedron/octahedron/dodecahedron/icosahedron touch a radius-sized unit box on all 6 faces", () => {
-    // Tetrahedron excluded: its apex-up construction doesn't have equal
-    // bounding-box extents on all 3 axes (see its own test below).
+  it("hexahedron/octahedron/dodecahedron/icosahedron have radius as circumradius", () => {
+    // Tetrahedron excluded: bounding box centered by default (see its own test)
     const radius = 0.5;
     for (const [name, create] of [
-      ["hexahedron", () => Primitives.hexahedron({ radius })],
-      ["octahedron", () => Primitives.octahedron({ radius })],
-      ["dodecahedron", () => Primitives.dodecahedron({ radius })],
-      [
-        "icosahedron",
-        () => Primitives.icosahedron({ radius, subdivisions: 0 }),
-      ],
+      ["hexahedron", Primitives.hexahedron],
+      ["octahedron", Primitives.octahedron],
+      ["dodecahedron", Primitives.dodecahedron],
+      ["icosahedron", Primitives.icosahedron],
     ]) {
-      const { positions } = create();
-      const half = [0, 0, 0];
-      for (let i = 0; i < positions.length / 3; i++) {
-        for (let axis = 0; axis < 3; axis++) {
-          half[axis] = Math.max(half[axis], Math.abs(positions[i * 3 + axis]));
-        }
-      }
-      for (let axis = 0; axis < 3; axis++) {
+      const g = create({ radius });
+      assertCircumradius(name, g, radius);
+      for (let i = 0; i < g.positions.length / 3; i++) {
+        const length = Math.hypot(
+          g.positions[i * 3],
+          g.positions[i * 3 + 1],
+          g.positions[i * 3 + 2],
+        );
         assert.ok(
-          Math.abs(half[axis] - radius) < 1e-6,
-          `${name} axis ${axis}: expected half-extent ${radius}, got ${half[axis]}`,
+          Math.abs(length - radius) < 1e-6,
+          `${name}: vertex off circumsphere`,
         );
       }
     }
@@ -147,7 +165,7 @@ describe("polyhedron (flat platonic solids)", () => {
     // Nothing keeps them in sync structurally, so this pins the two systems
     // to producing the same result by hand.
     const h = Primitives.hexahedron();
-    const c = Primitives.cube();
+    const c = Primitives.cube({ sx: 1 / Math.sqrt(3) });
 
     // Position + normal together identify a corner unambiguously: a cube
     // corner is shared by 3 faces, each with a different facing and (in
@@ -175,8 +193,9 @@ describe("polyhedron (flat platonic solids)", () => {
     }
   });
 
-  it("tetrahedron is a regular tetrahedron with a centered bounding box", () => {
-    const g = Primitives.tetrahedron({ radius: 0.5 });
+  it("tetrahedron is a regular tetrahedron, apex-up, with a centered bounding box", () => {
+    const radius = 0.5;
+    const g = Primitives.tetrahedron({ radius });
     const corners = [];
     const seen = new Set();
     for (let i = 0; i < g.positions.length / 3; i++) {
@@ -193,22 +212,22 @@ describe("polyhedron (flat platonic solids)", () => {
     }
     assert.equal(corners.length, 4);
 
-    // Bounding box centered at the origin per this library's convention, and
-    // its tallest axis (z) touches the radius-sized unit box exactly - the
-    // other two stay inside since apex-up doesn't have equal extents per axis
-    const radius = 0.5;
-    let tallest = 0;
     for (let axis = 0; axis < 3; axis++) {
       const values = corners.map((p) => p[axis]);
       const min = Math.min(...values);
       const max = Math.max(...values);
       assert.ok(Math.abs(min + max) < 1e-6, `axis ${axis} not centered`);
-      tallest = Math.max(tallest, max);
+      assert.ok(max <= radius, `axis ${axis} exceeds the unit cube`);
     }
-    assert.ok(
-      Math.abs(tallest - radius) < 1e-6,
-      "tallest axis must touch radius",
+
+    // Circumradius measured from the centroid
+    const centroid = [0, 1, 2].map(
+      (axis) => corners.reduce((total, p) => total + p[axis], 0) / 4,
     );
+    for (const p of corners) {
+      const length = Math.hypot(...p.map((v, axis) => v - centroid[axis]));
+      assert.ok(Math.abs(length - radius) < 1e-6, "vertex off circumsphere");
+    }
 
     // Still a true regular tetrahedron: all 6 edges equal
     const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
@@ -264,22 +283,13 @@ describe("Kepler-Poinsot solids", () => {
     }
   });
 
-  it("greatDodecahedron/greatIcosahedron touch a radius-sized unit box on all 6 faces (same convention as icosahedron)", () => {
+  it("greatDodecahedron/greatIcosahedron have radius as circumradius (same as icosahedron)", () => {
     const radius = 0.5;
-    for (const create of [
-      Primitives.greatDodecahedron,
-      Primitives.greatIcosahedron,
+    for (const [name, create] of [
+      ["greatDodecahedron", Primitives.greatDodecahedron],
+      ["greatIcosahedron", Primitives.greatIcosahedron],
     ]) {
-      const { positions } = create({ radius });
-      const half = [0, 0, 0];
-      for (let i = 0; i < positions.length / 3; i++) {
-        for (let axis = 0; axis < 3; axis++) {
-          half[axis] = Math.max(half[axis], Math.abs(positions[i * 3 + axis]));
-        }
-      }
-      for (let axis = 0; axis < 3; axis++) {
-        assert.ok(Math.abs(half[axis] - radius) < 1e-6);
-      }
+      assertCircumradius(name, create({ radius }), radius);
     }
   });
 
@@ -307,22 +317,13 @@ describe("Kepler-Poinsot solids", () => {
     }
   });
 
-  it("smallStellatedDodecahedron/greatStellatedDodecahedron touch a radius-sized unit box on all 6 faces with their tips (not their inner points)", () => {
+  it("smallStellatedDodecahedron/greatStellatedDodecahedron have radius as tip circumradius", () => {
     const radius = 0.5;
-    for (const create of [
-      Primitives.smallStellatedDodecahedron,
-      Primitives.greatStellatedDodecahedron,
+    for (const [name, create] of [
+      ["smallStellatedDodecahedron", Primitives.smallStellatedDodecahedron],
+      ["greatStellatedDodecahedron", Primitives.greatStellatedDodecahedron],
     ]) {
-      const { positions } = create({ radius });
-      const half = [0, 0, 0];
-      for (let i = 0; i < positions.length / 3; i++) {
-        for (let axis = 0; axis < 3; axis++) {
-          half[axis] = Math.max(half[axis], Math.abs(positions[i * 3 + axis]));
-        }
-      }
-      for (let axis = 0; axis < 3; axis++) {
-        assert.ok(Math.abs(half[axis] - radius) < 1e-6);
-      }
+      assertCircumradius(name, create({ radius }), radius);
     }
   });
 

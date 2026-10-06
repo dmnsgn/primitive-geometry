@@ -7,7 +7,7 @@ import { computePolyhedron } from "../../../utils/polyhedron.js";
 
 /**
  * @typedef {object} GreatDodecahedronPolygonsOptions
- * @property {number} [radius=0.5]
+ * @property {number} [radius=0.5] Circumradius.
  */
 
 /**
@@ -41,7 +41,7 @@ export function greatDodecahedronPolygons({ radius = 0.5 } = {}) {
 
 /**
  * @typedef {object} GreatDodecahedronOptions
- * @property {number} [radius=0.5]
+ * @property {number} [radius=0.5] Circumradius.
  * @property {import("../../../../types.js").NonNegativeInteger} [subdivisions=0]
  * @property {import("../../../mappings.js").MappingFn} [mapping=mappings.rectangular]
  */
