@@ -4,7 +4,6 @@
  */
 import { rectangular } from "../../mappings.js";
 import { TAU, lerp } from "../../utils/common.js";
-import { linear } from "../../utils/distribution.js";
 import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
 /**
@@ -25,7 +24,6 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  * @property {number} [sz=1] Base ring z scale, elliptical when != sx
  * @property {number} [sxApex=sx] Apex ring x scale, independent of the base
  * @property {number} [szApex=sz] Apex ring z scale, independent of the base
- * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
  * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
  *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */
@@ -58,7 +56,6 @@ export function cylinder({
   sz = 1,
   sxApex = sx,
   szApex = sz,
-  vDistribution = linear,
   mergeSeam = false,
 } = {}) {
   const halfHeight = height / 2;
@@ -109,7 +106,6 @@ export function cylinder({
     capBaseSegments,
     capApexSegments: capSegments,
     capMapping,
-    vDistribution,
     equation,
   });
 

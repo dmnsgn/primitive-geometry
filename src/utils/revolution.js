@@ -210,13 +210,11 @@ export function computeGridQuad(cells, indices, [a, b, c, d], flip) {
  * through `equation`, so redistributing `v` moves where rows actually sit along
  * the meridian (see distribution.js).
  *
- * The uv v-coordinate defaults to `t`, not the (possibly redistributed) `v`, so
- * texture coordinates stay linear regardless of `vDistribution` unless a caller
- * allocates rows non-uniformly across the meridian for its own reasons (eg.
- * capsule.js packing more/fewer rows into its hemispheres than its cylindrical
- * body): the texture would stretch across whichever section got more rows,
- * instead of following actual surface position. `equation` may return its own
- * `v` to override just the uv; structural v (row spacing, pole detection) is
+ * The uv v-coordinate defaults to the redistributed `v`, not the row fraction
+ * `t`, so the texture stays put on the surface whatever `vDistribution` does:
+ * it only changes tessellation. `equation` may return its own `v` to override
+ * just the uv (eg. capsule.js's meridian arc length, since its sections get
+ * independent row counts); structural v (row spacing, pole detection) is
  * unaffected, since it's only ever read from the input parameter, never the
  * return value.
  *
@@ -314,13 +312,13 @@ export function computeRevolutionGeometry({
   // the wrap welds instead of landing a hair away from it
   const phiAt = (x) => (wrap && x === nx ? 0 : x / nx) * phi + phiOffset;
 
-  const writeVertex = (x, v, t, uOffset) => {
+  const writeVertex = (x, v, uOffset) => {
     const p = phiAt(x);
 
     const {
       position,
       normal,
-      v: uvV = t,
+      v: uvV = v,
     } = equation({ v, cosPhi: Math.cos(p), sinPhi: Math.sin(p) });
 
     positions[vertexIndex * 3] = position[0];
@@ -368,8 +366,7 @@ export function computeRevolutionGeometry({
   };
 
   for (let y = 0; y <= ny; y++) {
-    const t = y / ny;
-    const v = vDistribution(t);
+    const v = vDistribution(y / ny);
 
     // A collapsed ring has one vertex per wedge: centering its u between the
     // wedge's two rim columns keeps the pole's uv tear symmetric. Fans pick
@@ -378,7 +375,7 @@ export function computeRevolutionGeometry({
     const centered = collapsedAt[y] && !mergedAt[y];
     const count = mergedAt[y] ? 1 : cols;
     for (let x = 0; x < count; x++, vertexIndex++) {
-      writeVertex(x, v, t, centered && x < nx ? 0.5 : 0);
+      writeVertex(x, v, centered && x < nx ? 0.5 : 0);
     }
 
     if (y > 0) writeRowQuads(y);
@@ -499,7 +496,6 @@ export function computeSpindleArcRevolution({
   ny,
   phi,
   phiOffset,
-  vDistribution,
   mergeSeam,
 }) {
   function equation({ v, cosPhi: rawCosPhi, sinPhi: rawSinPhi }) {
@@ -537,7 +533,6 @@ export function computeSpindleArcRevolution({
     ny,
     phi,
     phiOffset,
-    vDistribution,
     mergeSeam,
     equation,
   });

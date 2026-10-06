@@ -3,7 +3,6 @@
  * @ignore
  */
 import { TAU, snapToZero } from "../../utils/common.js";
-import { linear } from "../../utils/distribution.js";
 import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
 /**
@@ -16,7 +15,6 @@ import { computeRevolutionGeometry } from "../../utils/revolution.js";
  *   leaving an open tube.
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
- * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
  * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
  *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */
@@ -35,7 +33,6 @@ export function capsule({
   roundSegments = 16,
   phi = TAU,
   phiOffset = 0,
-  vDistribution = linear,
   mergeSeam = false,
 } = {}) {
   const halfHeight = height / 2;
@@ -107,7 +104,6 @@ export function capsule({
     phi,
     mergeSeam,
     phiOffset,
-    vDistribution,
     equation,
   });
 

@@ -10,8 +10,13 @@
  */
 
 /**
- * Uniform spacing: v maps to itself. The default `vDistribution` for every
- * `computeRevolutionGeometry`-based solid.
+ * Uniform spacing: v maps to itself. The default `vDistribution`.
+ *
+ * `vDistribution` remaps the evenly spaced rows of a solid of revolution along
+ * its meridian. Only exposed where the meridian isn't swept at constant speed:
+ * `ellipsoid`, `superellipsoid`, `superegg`, `paraboloid`, `barrel`, `funnel`
+ * and `hyperboloid`. Circular arcs (eg. `sphere`, `apple`, `capsule`) and
+ * straight meridians (eg. `cylinder`, `cone`) are already evenly sampled.
  *
  * @type {DistributionFn}
  */
@@ -21,9 +26,8 @@ export function linear(t) {
 
 /**
  * Chebyshev-node-like spacing: clusters rows toward both ends of the meridian
- * sweep (t = 0 and t = 1), sparser through the middle - the classic fix for a
- * pole/cusp at each end whose radius shrinks faster than the sweep parameter
- * grows (eg. `ellipsoid`'s poles, `apple`/`lemon`'s cusps).
+ * sweep (t = 0 and t = 1), sparser through the middle. Suits a meridian curving
+ * the most at both ends (eg. a prolate `ellipsoid`'s poles, with sy > sx).
  *
  * @type {DistributionFn}
  */

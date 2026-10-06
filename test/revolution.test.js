@@ -1191,8 +1191,9 @@ describe("vDistribution", () => {
       (vDistribution) => Primitives.barrel({ nx: 8, ny: 8, vDistribution }),
     ],
     [
-      "apple",
-      (vDistribution) => Primitives.apple({ nx: 8, ny: 8, vDistribution }),
+      "hyperboloid",
+      (vDistribution) =>
+        Primitives.hyperboloid({ nx: 8, ny: 8, vDistribution }),
     ],
   ];
 
@@ -1204,7 +1205,7 @@ describe("vDistribution", () => {
 
   for (const [shapeName, create] of cases) {
     for (const [distributionName, distribution] of nonLinearDistributions) {
-      it(`${shapeName} + ${distributionName}: reshapes row spacing (positions) without affecting the default uvs or topology`, () => {
+      it(`${shapeName} + ${distributionName}: reshapes row spacing (positions), with body uvs following the redistributed v, without affecting topology`, () => {
         const withLinear = create(linear);
         const withDistribution = create(distribution);
         const label = `${shapeName} + ${distributionName}`;
@@ -1214,9 +1215,20 @@ describe("vDistribution", () => {
           Array.from(withLinear.positions),
           label,
         );
+        // Body rows come first: (nx + 1) * (ny + 1) vertices, caps after
+        const bodySize = 9 * 9;
+        for (let i = 0; i < bodySize; i++) {
+          const u = withDistribution.uvs[i * 2];
+          const v = withDistribution.uvs[i * 2 + 1];
+          assert.equal(u, withLinear.uvs[i * 2], label);
+          assert.ok(
+            Math.abs(v - distribution(withLinear.uvs[i * 2 + 1])) < 1e-6,
+            label,
+          );
+        }
         assert.deepEqual(
-          Array.from(withDistribution.uvs),
-          Array.from(withLinear.uvs),
+          Array.from(withDistribution.uvs.subarray(bodySize * 2)),
+          Array.from(withLinear.uvs.subarray(bodySize * 2)),
           label,
         );
         assert.deepEqual(

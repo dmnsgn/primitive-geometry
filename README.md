@@ -477,7 +477,6 @@ const cylinder = Primitives.cylinder({
   sz: 1,
   sxApex: 1,
   szApex: 1,
-  vDistribution: utils.linear,
 });
 const hollowCylinder = Primitives.hollowCylinder({
   height: 1,
@@ -501,7 +500,6 @@ const roundedCylinder = Primitives.roundedCylinder({
   capSegments: 1,
   phi: Math.PI * 2,
   phiOffset: 0,
-  vDistribution: utils.linear,
 });
 
 const cone = Primitives.cone({
@@ -516,7 +514,6 @@ const cone = Primitives.cone({
   capMapping: mappings.rectangular,
   sx: 1,
   sz: 1,
-  vDistribution: utils.linear,
 });
 const bicone = Primitives.bicone({
   height: 1,
@@ -556,7 +553,6 @@ const capsule = Primitives.capsule({
   roundSegments: 16,
   phi: Math.PI * 2,
   phiOffset: 0,
-  vDistribution: utils.linear,
 });
 
 const torus = Primitives.torus({
@@ -586,7 +582,6 @@ const apple = Primitives.apple({
   ny: 16,
   phi: Math.PI * 2,
   phiOffset: 0,
-  vDistribution: utils.linear,
 });
 const lemon = Primitives.lemon({
   radius: 0.3,
@@ -595,7 +590,6 @@ const lemon = Primitives.lemon({
   ny: 16,
   phi: Math.PI * 2,
   phiOffset: 0,
-  vDistribution: utils.linear,
 });
 const sphericalRing = Primitives.sphericalRing({
   radius: 0.5,
@@ -605,7 +599,6 @@ const sphericalRing = Primitives.sphericalRing({
   holeSegments: 1,
   phi: Math.PI * 2,
   phiOffset: 0,
-  vDistribution: utils.linear,
 });
 
 const prism = Primitives.prism({

@@ -3,7 +3,6 @@
  * @ignore
  */
 import { TAU, clamp } from "../../utils/common.js";
-import { linear } from "../../utils/distribution.js";
 import { computeSpindleArcRevolution } from "../../utils/revolution.js";
 
 /**
@@ -16,7 +15,6 @@ import { computeSpindleArcRevolution } from "../../utils/revolution.js";
  * @property {number} [ny=16]
  * @property {number} [phi=TAU]
  * @property {number} [phiOffset=0]
- * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
  * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
  *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */
@@ -38,7 +36,6 @@ export function apple({
   ny = 16,
   phi = TAU,
   phiOffset = 0,
-  vDistribution = linear,
   mergeSeam = false,
 } = {}) {
   const halfHeight = clamp(height, 0, radius * 2) / 2;
@@ -71,7 +68,6 @@ export function apple({
     phi,
     mergeSeam,
     phiOffset,
-    vDistribution,
   });
 
   return { positions, normals, uvs, cells };

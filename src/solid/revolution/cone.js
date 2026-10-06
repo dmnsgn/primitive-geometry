@@ -4,7 +4,6 @@
  */
 import { rectangular } from "../../mappings.js";
 import { TAU } from "../../utils/common.js";
-import { linear } from "../../utils/distribution.js";
 import { computeRevolutionGeometry } from "../../utils/revolution.js";
 
 /**
@@ -31,7 +30,6 @@ export function computeConeSegment({
   phiOffset,
   sx = 1,
   sz = 1,
-  vDistribution,
   mergeSeam,
   capOptions,
 }) {
@@ -57,7 +55,6 @@ export function computeConeSegment({
     phi,
     mergeSeam,
     phiOffset,
-    vDistribution,
     equation,
     ...capOptions,
   });
@@ -76,7 +73,6 @@ export function computeConeSegment({
  * @property {import("../../mappings.js").MappingFn} [capMapping=mappings.rectangular]
  * @property {number} [sx=1] Base ring x scale, elliptical when != sz
  * @property {number} [sz=1] Base ring z scale, elliptical when != sx
- * @property {import("../../utils/distribution.js").DistributionFn} [vDistribution=utils.linear]
  * @property {boolean} [mergeSeam=false] `true` shares the full turn's wrap
  *   column and smooth poles' vertices, wrapping uvs back to 0 there.
  */
@@ -102,7 +98,6 @@ export function cone({
   capMapping = rectangular,
   sx = 1,
   sz = 1,
-  vDistribution = linear,
   mergeSeam = false,
 } = {}) {
   const halfHeight = height / 2;
@@ -119,7 +114,6 @@ export function cone({
     phiOffset,
     sx,
     sz,
-    vDistribution,
     capOptions: { capBase, capBaseSegments: capSegments, capMapping },
   });
 
