@@ -155,6 +155,24 @@ describe("starPath", () => {
   });
 });
 
+describe("rectanglePath", () => {
+  it("closed repeats index 0 to explicitly close the loop", () => {
+    const g = Primitives.rectanglePath({ nx: 2, ny: 3, closed: true });
+    const n = g.positions.length / 3;
+    assert.equal(g.cells[0].length, n + 1);
+    assert.equal(g.cells[0][n], 0);
+  });
+});
+
+describe("squarePath", () => {
+  it("closed repeats index 0 to explicitly close the loop", () => {
+    const g = Primitives.squarePath({ closed: true });
+    const n = g.positions.length / 3;
+    assert.equal(g.cells[0].length, n + 1);
+    assert.equal(g.cells[0][n], 0);
+  });
+});
+
 describe("roundedRectanglePath", () => {
   it("matches rectanglePath exactly at radius = 0", () => {
     const nx = 3;

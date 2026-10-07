@@ -57,6 +57,7 @@ export function plane({
  *   the bottom/top edges
  * @property {import("../../../types.js").PositiveInteger} [ny=nx] Segments
  *   along the left/right edges
+ * @property {boolean} [closed=false]
  */
 
 /**
@@ -65,7 +66,13 @@ export function plane({
  * @param {RectanglePathOptions} [options={}]
  * @returns {import("../../../types.js").PolylineComplex}
  */
-export function rectanglePath({ sx = 1, sy = 0.5, nx = 1, ny = nx } = {}) {
+export function rectanglePath({
+  sx = 1,
+  sy = 0.5,
+  nx = 1,
+  ny = nx,
+  closed = false,
+} = {}) {
   const x = sx * 0.5;
   const y = sy * 0.5;
 
@@ -80,7 +87,7 @@ export function rectanglePath({ sx = 1, sy = 0.5, nx = 1, ny = nx } = {}) {
 
   const size = 2 * (nx + ny);
   const positions = new Float32Array(size * 3);
-  const path = Array.from({ length: size });
+  const path = Array.from({ length: size + (closed ? 1 : 0) });
 
   let vertexIndex = 0;
   for (let edge = 0; edge < 4; edge++) {
@@ -96,6 +103,8 @@ export function rectanglePath({ sx = 1, sy = 0.5, nx = 1, ny = nx } = {}) {
       vertexIndex++;
     }
   }
+
+  if (closed) path[size] = 0;
 
   return { positions, cells: [path] };
 }

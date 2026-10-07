@@ -47,6 +47,7 @@ export function quad({ scale = 1 } = {}) {
  *   the bottom/top edges
  * @property {import("../../../types.js").PositiveInteger} [ny=nx] Segments
  *   along the left/right edges
+ * @property {boolean} [closed=false]
  */
 
 /**
@@ -55,6 +56,6 @@ export function quad({ scale = 1 } = {}) {
  * @param {SquarePathOptions} [options={}]
  * @returns {import("../../../types.js").PolylineComplex}
  */
-export function squarePath({ scale = 1, nx = 1, ny = nx } = {}) {
-  return rectanglePath({ sx: scale, sy: scale, nx, ny });
+export function squarePath({ scale = 1, nx = 1, ny = nx, closed } = {}) {
+  return rectanglePath({ sx: scale, sy: scale, nx, ny, closed });
 }
