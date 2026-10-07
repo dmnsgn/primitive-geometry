@@ -3001,12 +3001,13 @@ Regular tetrahedron.
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name | Type                                             | Default          | Description                         |
-| ---- | ------------------------------------------------ | ---------------- | ----------------------------------- |
-| [sx] | <code>number</code>                              | <code>1</code>   |                                     |
-| [sy] | <code>number</code>                              | <code>0.5</code> |                                     |
-| [nx] | [<code>PositiveInteger</code>](#PositiveInteger) | <code>1</code>   | Segments along the bottom/top edges |
-| [ny] | [<code>PositiveInteger</code>](#PositiveInteger) | <code>nx</code>  | Segments along the left/right edges |
+| Name     | Type                                             | Default            | Description                         |
+| -------- | ------------------------------------------------ | ------------------ | ----------------------------------- |
+| [sx]     | <code>number</code>                              | <code>1</code>     |                                     |
+| [sy]     | <code>number</code>                              | <code>0.5</code>   |                                     |
+| [nx]     | [<code>PositiveInteger</code>](#PositiveInteger) | <code>1</code>     | Segments along the bottom/top edges |
+| [ny]     | [<code>PositiveInteger</code>](#PositiveInteger) | <code>nx</code>    | Segments along the left/right edges |
+| [closed] | <code>boolean</code>                             | <code>false</code> |                                     |
 
 <a name="module_primitiveGeometry..QuadOptions"></a>
 
@@ -3026,11 +3027,12 @@ Regular tetrahedron.
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 **Properties**
 
-| Name    | Type                                             | Default         | Description                         |
-| ------- | ------------------------------------------------ | --------------- | ----------------------------------- |
-| [scale] | <code>number</code>                              | <code>1</code>  | Side length.                        |
-| [nx]    | [<code>PositiveInteger</code>](#PositiveInteger) | <code>1</code>  | Segments along the bottom/top edges |
-| [ny]    | [<code>PositiveInteger</code>](#PositiveInteger) | <code>nx</code> | Segments along the left/right edges |
+| Name     | Type                                             | Default            | Description                         |
+| -------- | ------------------------------------------------ | ------------------ | ----------------------------------- |
+| [scale]  | <code>number</code>                              | <code>1</code>     | Side length.                        |
+| [nx]     | [<code>PositiveInteger</code>](#PositiveInteger) | <code>1</code>     | Segments along the bottom/top edges |
+| [ny]     | [<code>PositiveInteger</code>](#PositiveInteger) | <code>nx</code>    | Segments along the left/right edges |
+| [closed] | <code>boolean</code>                             | <code>false</code> |                                     |
 
 <a name="module_primitiveGeometry..RhombusOptions"></a>
 
