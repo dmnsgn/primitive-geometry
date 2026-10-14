@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.2.2](https://github.com/dmnsgn/primitive-geometry/compare/v3.2.1...v3.2.2) (2026-10-14)
+
+### Bug Fixes
+
+* types ([c53066d](https://github.com/dmnsgn/primitive-geometry/commit/c53066d88ef4b654978cf2eb2fd97f86d4cd59d7))
+
 ## [3.2.1](https://github.com/dmnsgn/primitive-geometry/compare/v3.2.0...v3.2.1) (2026-10-07)
 
 ### Bug Fixes

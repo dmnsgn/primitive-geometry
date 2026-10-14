@@ -932,7 +932,7 @@ Re-export all geometries, UV mappings functions and utils.
     - [~DiscOptions](#module_primitiveGeometry..DiscOptions) : <code>object</code>
     - [~CirclePathOptions](#module_primitiveGeometry..CirclePathOptions) : <code>object</code>
     - [~EllipseOptions](#module_primitiveGeometry..EllipseOptions) : <code>object</code>
-    - [~EllipseEquationFn](#module_primitiveGeometry..EllipseEquationFn) ⇒ <code>[x, y]</code>
+    - [~EllipseEquationFn](#module_primitiveGeometry..EllipseEquationFn) ⇒ <code>[x: number, y: number]</code>
     - [~EllipsePathOptions](#module_primitiveGeometry..EllipsePathOptions) : <code>object</code>
     - [~SquircleOptions](#module_primitiveGeometry..SquircleOptions) : <code>object</code>
     - [~SquirclePathOptions](#module_primitiveGeometry..SquirclePathOptions) : <code>object</code>
@@ -2701,7 +2701,7 @@ Regular tetrahedron.
 
 <a name="module_primitiveGeometry..EllipseEquationFn"></a>
 
-### primitiveGeometry~EllipseEquationFn ⇒ <code>[x, y]</code>
+### primitiveGeometry~EllipseEquationFn ⇒ <code>[x: number, y: number]</code>
 
 **Kind**: inner typedef of [<code>primitiveGeometry</code>](#module_primitiveGeometry)
 
@@ -4116,35 +4116,35 @@ Regular tetrahedron.
 
 - [mappings](#module_mappings)
   - _static_
-    - [.rectangular()](#module_mappings.rectangular) : <code>MappingsFn</code>
-    - [.circumferential()](#module_mappings.circumferential) : <code>MappingsFn</code>
-    - [.polar()](#module_mappings.polar) : <code>MappingsFn</code>
-    - [.spherical()](#module_mappings.spherical) : <code>MappingsFn</code>
-    - [.radial()](#module_mappings.radial) : <code>MappingsFn</code>
-    - [.concentric()](#module_mappings.concentric) : <code>MappingsFn</code>
-    - [.lamé()](#module_mappings.lamé) : <code>MappingsFn</code>
-    - [.elliptical()](#module_mappings.elliptical) : <code>MappingsFn</code>
-    - [.fgSquircular()](#module_mappings.fgSquircular) : <code>MappingsFn</code>
-    - [.twoSquircular()](#module_mappings.twoSquircular) : <code>MappingsFn</code>
-    - [.threeSquircular()](#module_mappings.threeSquircular) : <code>MappingsFn</code>
-    - [.cornerificTapered2()](#module_mappings.cornerificTapered2) : <code>MappingsFn</code>
-    - [.tapered4()](#module_mappings.tapered4) : <code>MappingsFn</code>
-    - [.nonAxial2Pinch()](#module_mappings.nonAxial2Pinch) : <code>MappingsFn</code>
-    - [.nonAxialHalfPinch()](#module_mappings.nonAxialHalfPinch) : <code>MappingsFn</code>
-    - [.squelched()](#module_mappings.squelched) : <code>MappingsFn</code>
-    - [.squelchedVertical()](#module_mappings.squelchedVertical) : <code>MappingsFn</code>
-    - [.squelchedHorizontal()](#module_mappings.squelchedHorizontal) : <code>MappingsFn</code>
+    - [.rectangular()](#module_mappings.rectangular) : <code>MappingFn</code>
+    - [.circumferential()](#module_mappings.circumferential) : <code>MappingFn</code>
+    - [.polar()](#module_mappings.polar) : <code>MappingFn</code>
+    - [.spherical()](#module_mappings.spherical) : <code>MappingFn</code>
+    - [.radial()](#module_mappings.radial) : <code>MappingFn</code>
+    - [.concentric()](#module_mappings.concentric) : <code>MappingFn</code>
+    - [.lamé()](#module_mappings.lamé) : <code>MappingFn</code>
+    - [.elliptical()](#module_mappings.elliptical) : <code>MappingFn</code>
+    - [.fgSquircular()](#module_mappings.fgSquircular) : <code>MappingFn</code>
+    - [.twoSquircular()](#module_mappings.twoSquircular) : <code>MappingFn</code>
+    - [.threeSquircular()](#module_mappings.threeSquircular) : <code>MappingFn</code>
+    - [.cornerificTapered2()](#module_mappings.cornerificTapered2) : <code>MappingFn</code>
+    - [.tapered4()](#module_mappings.tapered4) : <code>MappingFn</code>
+    - [.nonAxial2Pinch()](#module_mappings.nonAxial2Pinch) : <code>MappingFn</code>
+    - [.nonAxialHalfPinch()](#module_mappings.nonAxialHalfPinch) : <code>MappingFn</code>
+    - [.squelched()](#module_mappings.squelched) : <code>MappingFn</code>
+    - [.squelchedVertical()](#module_mappings.squelchedVertical) : <code>MappingFn</code>
+    - [.squelchedHorizontal()](#module_mappings.squelchedHorizontal) : <code>MappingFn</code>
   - _inner_
-    - [~MappingFn](#module_mappings..MappingFn) : <code>function</code>
+    - [~MappingFn](#module_mappings..MappingFn) ⇒ <code>void</code>
 
 <a name="module_mappings.rectangular"></a>
 
-### mappings.rectangular() : <code>MappingsFn</code>
+### mappings.rectangular() : <code>MappingFn</code>
 
 **Kind**: static method of [<code>mappings</code>](#module_mappings)
 <a name="module_mappings.circumferential"></a>
 
-### mappings.circumferential() : <code>MappingsFn</code>
+### mappings.circumferential() : <code>MappingFn</code>
 
 Solid caps only: centered, undistorted and at the same scale as the body's u
 around the rim.
@@ -4152,87 +4152,87 @@ around the rim.
 **Kind**: static method of [<code>mappings</code>](#module_mappings)
 <a name="module_mappings.polar"></a>
 
-### mappings.polar() : <code>MappingsFn</code>
+### mappings.polar() : <code>MappingFn</code>
 
 **Kind**: static method of [<code>mappings</code>](#module_mappings)
 <a name="module_mappings.spherical"></a>
 
-### mappings.spherical() : <code>MappingsFn</code>
+### mappings.spherical() : <code>MappingFn</code>
 
 **Kind**: static method of [<code>mappings</code>](#module_mappings)
 <a name="module_mappings.radial"></a>
 
-### mappings.radial() : <code>MappingsFn</code>
+### mappings.radial() : <code>MappingFn</code>
 
 **Kind**: static method of [<code>mappings</code>](#module_mappings)
 <a name="module_mappings.concentric"></a>
 
-### mappings.concentric() : <code>MappingsFn</code>
+### mappings.concentric() : <code>MappingFn</code>
 
 **Kind**: static method of [<code>mappings</code>](#module_mappings)
 <a name="module_mappings.lamé"></a>
 
-### mappings.lamé() : <code>MappingsFn</code>
+### mappings.lamé() : <code>MappingFn</code>
 
 **Kind**: static method of [<code>mappings</code>](#module_mappings)
 <a name="module_mappings.elliptical"></a>
 
-### mappings.elliptical() : <code>MappingsFn</code>
+### mappings.elliptical() : <code>MappingFn</code>
 
 **Kind**: static method of [<code>mappings</code>](#module_mappings)
 <a name="module_mappings.fgSquircular"></a>
 
-### mappings.fgSquircular() : <code>MappingsFn</code>
+### mappings.fgSquircular() : <code>MappingFn</code>
 
 **Kind**: static method of [<code>mappings</code>](#module_mappings)
 <a name="module_mappings.twoSquircular"></a>
 
-### mappings.twoSquircular() : <code>MappingsFn</code>
+### mappings.twoSquircular() : <code>MappingFn</code>
 
 **Kind**: static method of [<code>mappings</code>](#module_mappings)
 <a name="module_mappings.threeSquircular"></a>
 
-### mappings.threeSquircular() : <code>MappingsFn</code>
+### mappings.threeSquircular() : <code>MappingFn</code>
 
 **Kind**: static method of [<code>mappings</code>](#module_mappings)
 <a name="module_mappings.cornerificTapered2"></a>
 
-### mappings.cornerificTapered2() : <code>MappingsFn</code>
+### mappings.cornerificTapered2() : <code>MappingFn</code>
 
 **Kind**: static method of [<code>mappings</code>](#module_mappings)
 <a name="module_mappings.tapered4"></a>
 
-### mappings.tapered4() : <code>MappingsFn</code>
+### mappings.tapered4() : <code>MappingFn</code>
 
 **Kind**: static method of [<code>mappings</code>](#module_mappings)
 <a name="module_mappings.nonAxial2Pinch"></a>
 
-### mappings.nonAxial2Pinch() : <code>MappingsFn</code>
+### mappings.nonAxial2Pinch() : <code>MappingFn</code>
 
 **Kind**: static method of [<code>mappings</code>](#module_mappings)
 <a name="module_mappings.nonAxialHalfPinch"></a>
 
-### mappings.nonAxialHalfPinch() : <code>MappingsFn</code>
+### mappings.nonAxialHalfPinch() : <code>MappingFn</code>
 
 **Kind**: static method of [<code>mappings</code>](#module_mappings)
 <a name="module_mappings.squelched"></a>
 
-### mappings.squelched() : <code>MappingsFn</code>
+### mappings.squelched() : <code>MappingFn</code>
 
 **Kind**: static method of [<code>mappings</code>](#module_mappings)
 <a name="module_mappings.squelchedVertical"></a>
 
-### mappings.squelchedVertical() : <code>MappingsFn</code>
+### mappings.squelchedVertical() : <code>MappingFn</code>
 
 **Kind**: static method of [<code>mappings</code>](#module_mappings)
 <a name="module_mappings.squelchedHorizontal"></a>
 
-### mappings.squelchedHorizontal() : <code>MappingsFn</code>
+### mappings.squelchedHorizontal() : <code>MappingFn</code>
 
 **Kind**: static method of [<code>mappings</code>](#module_mappings)
 <a name="module_mappings..MappingFn"></a>
 
-### mappings~MappingFn : <code>function</code>
+### mappings~MappingFn ⇒ <code>void</code>
 
 **Kind**: inner typedef of [<code>mappings</code>](#module_mappings)
 
@@ -4243,6 +4243,8 @@ around the rim.
 | [mappingOptions.index]       | <code>number</code>       |                                 |
 | [mappingOptions.x]           | <code>number</code>       |                                 |
 | [mappingOptions.y]           | <code>number</code>       |                                 |
+| [mappingOptions.u]           | <code>number</code>       |                                 |
+| [mappingOptions.v]           | <code>number</code>       |                                 |
 | [mappingOptions.radius]      | <code>number</code>       |                                 |
 | [mappingOptions.nx]          | <code>number</code>       |                                 |
 | [mappingOptions.ny]          | <code>number</code>       |                                 |
@@ -4351,9 +4353,9 @@ Enforce a typed array constructor for cells.
 
 **Kind**: static method of [<code>utils</code>](#module_utils)
 
-| Param | Type                                                                                                                      |
-| ----- | ------------------------------------------------------------------------------------------------------------------------- |
-| type  | <code>Class.&lt;Uint8Array&gt;</code> \| <code>Class.&lt;Uint16Array&gt;</code> \| <code>Class.&lt;Uint32Array&gt;</code> |
+| Param | Type                                                                                                             |
+| ----- | ---------------------------------------------------------------------------------------------------------------- |
+| type  | <code>Uint8ArrayConstructor</code> \| <code>Uint16ArrayConstructor</code> \| <code>Uint32ArrayConstructor</code> |
 
 <a name="module_utils.triangulateFaces"></a>
 
