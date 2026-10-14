@@ -129,6 +129,19 @@ function computeRingCells(
  * angle.
  *
  * @private
+ * @param {object} [options={}]
+ * @param {number} [options.sx=1]
+ * @param {number} [options.sy=1]
+ * @param {number} [options.radius=0.5]
+ * @param {number} [options.segments=32]
+ * @param {number} [options.innerSegments=16]
+ * @param {number} [options.theta=TAU]
+ * @param {number} [options.thetaOffset=0]
+ * @param {number} [options.innerRadius=0]
+ * @param {boolean} [options.mergeCentroid=true]
+ * @param {boolean} [options.mergeSeam=true]
+ * @param {import("../mappings.js").MappingFn} options.mapping
+ * @param {import("../plane/circular/ellipse.js").EllipseEquationFn} [options.equation]
  */
 export function computePolarGeometry({
   sx = 1,

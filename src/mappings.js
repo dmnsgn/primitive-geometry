@@ -8,6 +8,8 @@ import { HALF_PI, SQRT2, TAU } from "./utils/common.js";
  * @param {number} [mappingOptions.index]
  * @param {number} [mappingOptions.x]
  * @param {number} [mappingOptions.y]
+ * @param {number} [mappingOptions.u]
+ * @param {number} [mappingOptions.v]
  * @param {number} [mappingOptions.radius]
  * @param {number} [mappingOptions.nx]
  * @param {number} [mappingOptions.ny]
@@ -18,6 +20,7 @@ import { HALF_PI, SQRT2, TAU } from "./utils/common.js";
  * @param {number} [mappingOptions.radiusRatio]
  * @param {number} [mappingOptions.thetaRatio]
  * @param {number} [mappingOptions.perimeter] Cap rim length, solid caps only
+ * @returns {void}
  */
 
 const safeSqrt = (x) => Math.sqrt(Math.max(x, 0));
@@ -27,7 +30,7 @@ const isNegligeable = (x) => Math.abs(x) < Number.EPSILON * 2;
 const remapRectangular = (x, radius) => (x / radius + 1) / 2;
 const remap = (x) => (x + 1) / 2; // From [-1, 1] to [0, 1]
 
-/** @type {MappingsFn} */
+/** @type {MappingFn} */
 export function rectangular({ uvs, index, x, y, radius, sx = 1, sy = 1 }) {
   uvs[index] = remapRectangular(x, radius * sx);
   uvs[index + 1] = remapRectangular(y, radius * sy);
@@ -37,28 +40,28 @@ export function rectangular({ uvs, index, x, y, radius, sx = 1, sy = 1 }) {
  * Solid caps only: centered, undistorted and at the same scale as the body's u
  * around the rim.
  *
- * @type {MappingsFn}
+ * @type {MappingFn}
  */
 export function circumferential({ uvs, index, x, y, perimeter }) {
   uvs[index] = 0.5 + x / perimeter;
   uvs[index + 1] = 0.5 + y / perimeter;
 }
 
-/** @type {MappingsFn} */
+/** @type {MappingFn} */
 export function polar({ uvs, index, radiusRatio, thetaRatio }) {
   uvs[index] = radiusRatio;
   uvs[index + 1] = thetaRatio;
 }
 
 // Longitude/latitude from a normalized direction vector
-/** @type {MappingsFn} */
+/** @type {MappingFn} */
 export function spherical({ uvs, index, nx, ny, nz }) {
   uvs[index] = -Math.atan2(nz, nx) / TAU + 0.5;
   uvs[index + 1] = Math.asin(Math.min(1, Math.max(-1, ny))) / Math.PI + 0.5;
 }
 
 // Basic
-/** @type {MappingsFn} */
+/** @type {MappingFn} */
 export function radial({ uvs, index, u, v }) {
   const x = safeDivide(
     // eslint-disable-next-line unicorn/prefer-modern-math-apis
@@ -72,7 +75,7 @@ export function radial({ uvs, index, u, v }) {
 
 const FOUR_OVER_PI = 4 / Math.PI;
 
-/** @type {MappingsFn} */
+/** @type {MappingFn} */
 export function concentric({ uvs, index, u, v }) {
   const u2 = u ** 2;
   const v2 = v ** 2;
@@ -90,14 +93,14 @@ export function concentric({ uvs, index, u, v }) {
     uvs[index + 1] = remap(x * Math.sign(v));
   }
 }
-/** @type {MappingsFn} */
+/** @type {MappingFn} */
 export function lamé({ uvs, index, u, v }) {
   const u2 = u ** 2;
   const v2 = v ** 2;
   uvs[index] = remap(Math.sign(u) * Math.abs(u) ** (1 - u2 - v2));
   uvs[index + 1] = remap(Math.sign(v) * Math.abs(v) ** (1 - u2 - v2));
 }
-/** @type {MappingsFn} */
+/** @type {MappingFn} */
 export function elliptical({ uvs, index, u, v }) {
   const t = u ** 2 - v ** 2;
   const pu1 = 0.5 * safeSqrt(2 + t + 2 * SQRT2 * u);
@@ -119,7 +122,7 @@ function fixFGSingularities(uvs, index, u, v) {
   }
 }
 
-/** @type {MappingsFn} */
+/** @type {MappingFn} */
 export function fgSquircular({ uvs, index, u, v }) {
   const ok = fixFGSingularities(uvs, index, u, v);
   if (!ok) return;
@@ -131,7 +134,7 @@ export function fgSquircular({ uvs, index, u, v }) {
   uvs[index] = remap((sign / (v * SQRT2)) * sqrtUV);
   uvs[index + 1] = remap((sign / (u * SQRT2)) * sqrtUV);
 }
-/** @type {MappingsFn} */
+/** @type {MappingFn} */
 export function twoSquircular({ uvs, index, u, v }) {
   const ok = fixFGSingularities(uvs, index, u, v);
   if (!ok) return;
@@ -140,7 +143,7 @@ export function twoSquircular({ uvs, index, u, v }) {
   uvs[index] = remap((sign / (v * SQRT2)) * sqrtUV);
   uvs[index + 1] = remap((sign / (u * SQRT2)) * sqrtUV);
 }
-/** @type {MappingsFn} */
+/** @type {MappingFn} */
 export function threeSquircular({ uvs, index, u, v }) {
   const ok = fixFGSingularities(uvs, index, u, v);
   if (!ok) return;
@@ -153,7 +156,7 @@ export function threeSquircular({ uvs, index, u, v }) {
   uvs[index] = remap((sign / v) * sqrtUV);
   uvs[index + 1] = remap((sign / u) * sqrtUV);
 }
-/** @type {MappingsFn} */
+/** @type {MappingFn} */
 export function cornerificTapered2({ uvs, index, u, v }) {
   const ok = fixFGSingularities(uvs, index, u, v);
   if (!ok) return;
@@ -168,7 +171,7 @@ export function cornerificTapered2({ uvs, index, u, v }) {
   uvs[index] = remap((sign / v) * sqrtUV);
   uvs[index + 1] = remap((sign / u) * sqrtUV);
 }
-/** @type {MappingsFn} */
+/** @type {MappingFn} */
 export function tapered4({ uvs, index, u, v }) {
   const ok = fixFGSingularities(uvs, index, u, v);
   if (!ok) return;
@@ -187,7 +190,7 @@ export function tapered4({ uvs, index, u, v }) {
 // Non-axial
 const FOURTH_SQRT2 = 2 ** (1 / 4);
 
-/** @type {MappingsFn} */
+/** @type {MappingFn} */
 export function nonAxial2Pinch({ uvs, index, u, v }) {
   const u2 = u ** 2;
   const v2 = v ** 2;
@@ -210,7 +213,7 @@ export function nonAxial2Pinch({ uvs, index, u, v }) {
     );
   }
 }
-/** @type {MappingsFn} */
+/** @type {MappingFn} */
 export function nonAxialHalfPinch({ uvs, index, u, v }) {
   const u2 = u ** 2;
   const v2 = v ** 2;
@@ -233,7 +236,7 @@ export function nonAxialHalfPinch({ uvs, index, u, v }) {
 }
 
 // Variations of elliptical
-/** @type {MappingsFn} */
+/** @type {MappingFn} */
 export function squelched({ uvs, index, u, v, t }) {
   uvs[index] = [HALF_PI, TAU - HALF_PI].includes(t)
     ? 0.5
@@ -242,14 +245,14 @@ export function squelched({ uvs, index, u, v, t }) {
     ? 0.5
     : remap(v / Math.sqrt(1 - u ** 2));
 }
-/** @type {MappingsFn} */
+/** @type {MappingFn} */
 export function squelchedVertical({ uvs, index, u, v, t }) {
   uvs[index] = remap(u);
   uvs[index + 1] = [0, TAU, Math.PI].includes(t)
     ? 0.5
     : remap(v / Math.sqrt(1 - u ** 2));
 }
-/** @type {MappingsFn} */
+/** @type {MappingFn} */
 export function squelchedHorizontal({ uvs, index, u, v, t }) {
   uvs[index] = [HALF_PI, TAU - HALF_PI].includes(t)
     ? 0.5

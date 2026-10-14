@@ -222,7 +222,7 @@ let TYPED_ARRAY_TYPE;
 /**
  * Enforce a typed array constructor for cells.
  *
- * @param {Class<Uint8Array> | Class<Uint16Array> | Class<Uint32Array>} type
+ * @param {Uint8ArrayConstructor | Uint16ArrayConstructor | Uint32ArrayConstructor} type
  */
 export function setTypedArrayType(type) {
   TYPED_ARRAY_TYPE = type;

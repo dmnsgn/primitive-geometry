@@ -36,7 +36,7 @@ import {
  * @param {number} sample.sinTheta
  * @param {number} sample.s Radius ratio (0..1, innerRadius to radius)
  * @param {number} sample.t Angle
- * @returns {[x, y]}
+ * @returns {[x: number, y: number]}
  */
 
 /**

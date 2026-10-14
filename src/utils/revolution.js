@@ -160,6 +160,25 @@ export function computeGridQuad(cells, indices, [a, b, c, d], flip) {
 }
 
 /**
+ * @private
+ * @callback RevolutionEquationFn
+ * @param {object} sample
+ * @param {number} sample.v
+ * @param {number} sample.cosPhi
+ * @param {number} sample.sinPhi
+ * @returns {RevolutionSample}
+ */
+
+/**
+ * @private
+ * @typedef {object} RevolutionSample
+ * @property {number[]} position
+ * @property {number[]} normal
+ * @property {boolean} [collapsed] Row pinched to the axis
+ * @property {number} [v] Uv v override
+ */
+
+/**
  * Meridian rows by angular columns, revolved around y.
  *
  * - `equation({ v, cosPhi, sinPhi })` returns a vertex's `position`, `normal`,
@@ -171,6 +190,20 @@ export function computeGridQuad(cells, indices, [a, b, c, d], flip) {
  * - `capBase`/`capApex` add flat disks at uncollapsed ends.
  *
  * @private
+ * @param {object} [options={}]
+ * @param {number} [options.nx=32]
+ * @param {number} [options.ny=16]
+ * @param {number} [options.phi=TAU]
+ * @param {number} [options.phiOffset=0]
+ * @param {boolean} [options.capBase=false]
+ * @param {boolean} [options.capApex=false]
+ * @param {number} [options.capSegments=1]
+ * @param {number} [options.capBaseSegments=capSegments]
+ * @param {number} [options.capApexSegments=capSegments]
+ * @param {import("../mappings.js").MappingFn} [options.capMapping]
+ * @param {import("./distribution.js").DistributionFn} [options.vDistribution=linear]
+ * @param {boolean} [options.mergeSeam=false]
+ * @param {RevolutionEquationFn} options.equation
  */
 export function computeRevolutionGeometry({
   nx = 32,
