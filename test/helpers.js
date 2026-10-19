@@ -28,6 +28,8 @@ const triangleNormal = (positions, a, b, c) => {
  *
  * - Nan/outOfBounds/degenerate/unused: allocation and cell defects
  * - NonManifold: edges used by more than two triangles
+ * - Overlaps: coincident edges used by more than two triangles across unwelded
+ *   vertices (eg. internal faces between adjacent blocks)
  * - Boundaries: single-use edges with no coincident partner (open shapes)
  * - Seams: coincident duplicated edges with bit-identical positions (intentional:
  *   UV atlas borders, texture wrap columns...)
@@ -63,6 +65,7 @@ export function analyze(geometry, epsilon = EPSILON) {
   const unused = referenced.reduce((sum, r) => sum + (1 - r), 0);
 
   const edgeCounts = new Map();
+  const positionEdgeCounts = new Map();
   for (let i = 0; i < cells.length; i += 3) {
     for (let j = 0; j < 3; j++) {
       const a = cells[i + j];
@@ -70,6 +73,22 @@ export function analyze(geometry, epsilon = EPSILON) {
       if (a === b) continue;
       const key = a < b ? a * vertexCount + b : b * vertexCount + a;
       edgeCounts.set(key, (edgeCounts.get(key) || 0) + 1);
+    }
+
+    // Triangles with collapsed vertices (eg. unmerged poles, pinched tips)
+    // stack zero-area slivers on their neighbours' edges
+    const keys = [0, 1, 2].map((j) =>
+      positionKey(positions, cells[i + j], epsilon),
+    );
+    if (new Set(keys).size < 3) continue;
+    for (let j = 0; j < 3; j++) {
+      const ka = keys[j];
+      const kb = keys[(j + 1) % 3];
+      const groupKey = ka < kb ? `${ka}|${kb}` : `${kb}|${ka}`;
+      positionEdgeCounts.set(
+        groupKey,
+        (positionEdgeCounts.get(groupKey) || 0) + 1,
+      );
     }
   }
 
@@ -86,6 +105,9 @@ export function analyze(geometry, epsilon = EPSILON) {
     if (!groups.has(groupKey)) groups.set(groupKey, []);
     groups.get(groupKey).push([a, b]);
   }
+
+  let overlaps = 0;
+  for (const count of positionEdgeCounts.values()) if (count > 2) overlaps++;
 
   let boundaries = 0;
   let seams = 0;
@@ -120,6 +142,7 @@ export function analyze(geometry, epsilon = EPSILON) {
     degenerate,
     unused,
     nonManifold,
+    overlaps,
     boundaries,
     seams,
     cracks,

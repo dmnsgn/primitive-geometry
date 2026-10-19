@@ -11,6 +11,7 @@ import { analyze } from "./helpers.js";
 // - degenerate: collapsed rings kept on purpose (explicit mergeCentroid opt-out)
 // - unused: collapsed rings have one more duplicate (the wrap column) than fan
 //   triangles, kept for uniform grid indexing
+// - overlaps: self-intersecting shapes whose faces meet along shared edges
 // - epsilon: shapes with a genuine cusp (zero derivative) at the pole pinch
 //   the ring right after it to a tiny, non-uniform radius - two mirrored
 //   columns can land within the default 1e-4 proximity net despite being
@@ -392,13 +393,26 @@ const cases = [
   ],
   ["icosahedron subdivided", () => Primitives.icosahedron()],
 
-  ["greatDodecahedron", () => Primitives.greatDodecahedron()],
+  // Self-intersecting star polyhedra: faces pass through each other
+  [
+    "greatDodecahedron",
+    () => Primitives.greatDodecahedron(),
+    { overlaps: 4 },
+  ],
   ["greatIcosahedron", () => Primitives.greatIcosahedron()],
   // Pentagram faces can't be fan-triangulated, so each is decomposed into 8
   // triangles around new tip/inner vertices, welded across faces where they
   // coincide (see src/solid/polyhedra/regular/pentagram.js)
-  ["smallStellatedDodecahedron", () => Primitives.smallStellatedDodecahedron()],
-  ["greatStellatedDodecahedron", () => Primitives.greatStellatedDodecahedron()],
+  [
+    "smallStellatedDodecahedron",
+    () => Primitives.smallStellatedDodecahedron(),
+    { overlaps: 30 },
+  ],
+  [
+    "greatStellatedDodecahedron",
+    () => Primitives.greatStellatedDodecahedron(),
+    { overlaps: 34 },
+  ],
 
   // tetrasphere/octasphere have a seed vertex exactly on a pole; the uv
   // seam zipper duplicates every triangle's corner there with a
@@ -417,6 +431,11 @@ describe("seams", () => {
       assert.equal(result.nan, 0, "NaN positions");
       assert.equal(result.outOfBounds, 0, "out of bounds cell indices");
       assert.equal(result.nonManifold, 0, "non-manifold edges");
+      assert.equal(
+        result.overlaps,
+        expected.overlaps ?? 0,
+        "coincident edges shared by more than two triangles",
+      );
       assert.equal(
         result.cracks,
         0,

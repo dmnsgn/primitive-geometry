@@ -5,6 +5,7 @@
 import { getCellsTypedArray } from "../../utils/common.js";
 import { PLANE_DIRECTIONS, computePlane } from "../../utils/plane-grid.js";
 
+const AXES = ["x", "y", "z"];
 const DIRECTIONS = ["x", "-x", "y", "-y", "z", "-z"];
 
 /**
@@ -13,8 +14,8 @@ const DIRECTIONS = ["x", "-x", "y", "-y", "z", "-z"];
  *
  * @private
  */
-function computeBox(geometry, indices, dims, center, fullSize) {
-  for (const direction of DIRECTIONS) {
+function computeBox(geometry, indices, { dims, center, faces }, fullSize) {
+  for (const direction of faces) {
     const [u, v, w, flipU, flipV] = PLANE_DIRECTIONS[direction];
     const su = dims[u];
     const sv = dims[v];
@@ -72,13 +73,15 @@ export function hollowCube({
   for (const su of [-1, 1]) {
     for (const sv of [-1, 1]) {
       for (const sw of [-1, 1]) {
+        const signs = [su, sv, sw];
+        // Inward faces are covered by the 3 adjacent beams' end caps
+        const inward = new Set(
+          signs.map((s, i) => (s > 0 ? "-" : "") + AXES[i]),
+        );
         boxes.push({
           dims: [t, t, t],
-          center: [
-            su * (half[0] - t / 2),
-            sv * (half[1] - t / 2),
-            sw * (half[2] - t / 2),
-          ],
+          center: signs.map((s, i) => s * (half[i] - t / 2)),
+          faces: DIRECTIONS.filter((d) => !inward.has(d)),
         });
       }
     }
@@ -96,27 +99,32 @@ export function hollowCube({
         center[u] = su * (half[u] - t / 2);
         center[v] = sv * (half[v] - t / 2);
 
-        boxes.push({ dims, center });
+        // Both end caps are covered by the corner boxes
+        const ends = new Set([AXES[axis], `-${AXES[axis]}`]);
+        boxes.push({
+          dims,
+          center,
+          faces: DIRECTIONS.filter((d) => !ends.has(d)),
+        });
       }
     }
   }
 
-  const size = boxes.length * 6 * 4;
+  const faceCount = boxes.reduce((sum, { faces }) => sum + faces.length, 0);
+  const size = faceCount * 4;
 
   const geometry = {
     positions: new Float32Array(size * 3),
     normals: new Float32Array(size * 3),
     uvs: new Float32Array(size * 2),
-    cells: new (getCellsTypedArray(size))(boxes.length * 6 * 2 * 3),
+    cells: new (getCellsTypedArray(size))(faceCount * 2 * 3),
   };
 
   const indices = { vertex: 0, cell: 0 };
 
-  // 20 disjoint blocks, no boolean union: the faces where beams meet corners
-  // are hidden, so they only cost a few triangles
-  for (const { dims, center } of boxes) {
-    computeBox(geometry, indices, dims, center, fullSize);
-  }
+  // 20 blocks without their shared faces: a closed surface, vertices unwelded
+  // along the beam/corner seams like the cube's edges
+  for (const box of boxes) computeBox(geometry, indices, box, fullSize);
 
   return geometry;
 }
