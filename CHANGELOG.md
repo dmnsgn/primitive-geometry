@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+# [3.3.0](https://github.com/dmnsgn/primitive-geometry/compare/v3.2.2...v3.3.0) (2026-10-19)
+
+### Features
+
+* **hollowCube:** remove internal faces between corner and beam boxes ([495cfbe](https://github.com/dmnsgn/primitive-geometry/commit/495cfbeded2aedbb291b3dd0cb316ac5bd9fba3f))
+
 ## [3.2.2](https://github.com/dmnsgn/primitive-geometry/compare/v3.2.1...v3.2.2) (2026-10-14)
 
 ### Bug Fixes
