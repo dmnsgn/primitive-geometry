@@ -140,6 +140,19 @@ describe("roundedRectangle", () => {
       assert.equal(result.degenerate, 0);
       assert.equal(result.cracks, 0);
     });
+
+    it("selects corners when straight sections collapse (radius = sx / 2)", () => {
+      const g = Primitives.roundedRectangle({
+        radius: 0.5,
+        roundedCorners: ["top-left", "bottom-right"],
+      });
+      assert.ok(!isSharp(g, -1, 1));
+      assert.ok(isSharp(g, 1, 1));
+      assert.ok(!isSharp(g, 1, -1));
+      assert.ok(isSharp(g, -1, -1));
+      assert.equal(flippedTriangles2D(g), 0);
+      assert.equal(analyze(g).degenerate, 0);
+    });
   });
 });
 

@@ -67,15 +67,14 @@ export function getPlaneCornerReference(value, half) {
 }
 
 /**
- * Whether the corner at [cx, cy] is rounded. `roundCorners` is a boolean or a
- * [-u-v, +u-v, +u+v, -u+v] array.
+ * Whether the corner region containing [x, y] is rounded. `roundCorners` is a
+ * boolean or a [-u-v, +u-v, +u+v, -u+v] array.
  *
  * @private
  */
-export function isPlaneCornerRounded(cx, cy, roundCorners) {
-  if (cx === null || cy === null) return false;
+export function isPlaneCornerRounded(x, y, roundCorners) {
   if (roundCorners === true || roundCorners === false) return roundCorners;
-  const index = cx < 0 ? (cy < 0 ? 0 : 3) : cy < 0 ? 1 : 2;
+  const index = x < 0 ? (y < 0 ? 0 : 3) : y < 0 ? 1 : 2;
   return roundCorners[index];
 }
 
@@ -126,7 +125,11 @@ export function computePlane(
       const cx = getPlaneCornerReference(x0, su / 2);
       const cy = getPlaneCornerReference(y0, sv / 2);
 
-      if (isPlaneCornerRounded(cx, cy, roundCorners)) {
+      if (
+        cx !== null &&
+        cy !== null &&
+        isPlaneCornerRounded(x0, y0, roundCorners)
+      ) {
         const [dx, dy] = remapCornerOffset(x0 - cx, y0 - cy);
         x = cx + dx;
         y = cy + dy;
