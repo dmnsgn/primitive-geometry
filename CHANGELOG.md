@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.3.1](https://github.com/dmnsgn/primitive-geometry/compare/v3.3.0...v3.3.1) (2026-10-26)
+
+### Bug Fixes
+
+* **roundedRectangle:** select corners from vertex quadrant when straight sections collapse ([1603235](https://github.com/dmnsgn/primitive-geometry/commit/1603235f3d8b32db55926e32ab921bc821b820a3)), closes [#22](https://github.com/dmnsgn/primitive-geometry/issues/22)
+
 # [3.3.0](https://github.com/dmnsgn/primitive-geometry/compare/v3.2.2...v3.3.0) (2026-10-19)
 
 ### Features
